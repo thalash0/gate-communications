@@ -28,3 +28,4 @@ Sources: `src/chapters/*.html` (text + KaTeX math + widget scripts), `src/js/lib
 (keys for 2014, 2021–2026). 2015–2018 questions were studied from the solved-papers PDF placed in the
 parent folder (read only for question topics; solutions in the book are my own).
 `pyq-src/DIGEST.md` summarises the findings.
+# gate-communications
