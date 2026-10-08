@@ -1,65 +1,125 @@
-<!--meta {"id": "ch12", "num": "12", "part": "Part IV · Digital Communication", "title": "From Waves to Numbers: Sampling, PCM and Friends", "lede": "A voice is a continuous wave; a computer only knows numbers. Digitising a signal is the art of throwing away exactly the information nobody can hear."} -->
+<!--meta {"id":"ch12","num":"12","part":"Part IV · Digital Communication","title":"From Waves to Numbers: Quantisation, PCM and Predictive Coding","lede":"A voice is a continuous wave; a computer only knows numbers. Digitising a signal is the art of throwing away exactly the information nobody can hear."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Explain <b>why</b> communications went digital (regeneration, accumulation of noise over repeaters) and quantify it.</li>
+<li><b>Derive</b> the quantisation-noise power $\Delta^2/12$, the SQNR for sine, uniform and Gaussian signals, and the $6.02n+1.76$ dB rule; understand ENOB, loading and clipping, and the ADC architectures that implement it.</li>
+<li>Derive how companding ($\mu$-law, A-law) makes the SQNR nearly constant and compute its value ($\approx38$ dB for 8 bits).</li>
+<li>Derive the total SNR of PCM in the presence of channel bit errors, the threshold effect, and the bandwidth of a PCM link.</li>
+<li>Derive the oversampling and noise-shaping gains of sigma–delta conversion.</li>
+<li>Analyse delta modulation (slope overload, granular noise) and DPCM (prediction gain); relate them to speech coding and ADPCM.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 3 (sampling), Chapter 4 (uniform distribution), Chapter 10 (rate–distortion preview).</p></div>
 
 <div class="box story"><span class="tag">History · a patent 20 years too early, and a conversation that had to be secret</span>
-<p>In 1937 Alec Reeves, working at ITT's laboratory in Paris, filed a patent for <strong>pulse-code modulation</strong>: sample the voice, express each sample as a binary number, send the bits. His reasoning was exactly Chapter 7's: <em>bits can be regenerated</em>. An analog signal gets a little noisier at every repeater, but a bit is either 0 or 1, and a repeater can clean it up completely, so noise cannot accumulate. Vacuum tubes were too clumsy to build the thing economically.</p>
+<p>In 1937 Alec Reeves, working at ITT’s laboratory in Paris, filed a patent for <strong>pulse-code modulation</strong>: sample the voice, express each sample as a binary number, send the bits. His reasoning was exactly the one we make below: <em>bits can be regenerated</em>. An analog signal gets a little noisier at every repeater, but a bit is either 0 or 1, and a repeater can clean it up completely, so noise cannot accumulate. Vacuum tubes were too clumsy to build the thing economically.</p>
 <p>The war changed that. <strong>SIGSALY</strong> (1943), the Bell Labs system that carried the Roosevelt–Churchill telephone conferences, digitised speech with PCM and encrypted it by adding a random number, delivered on <em>vinyl phonograph records</em> played in sync at both ends (a true one-time pad). The terminal weighed 55 tons. After the war, the transistor made PCM cheap: the Bell <strong>T1 carrier</strong> (1962) multiplexed 24 phone calls on two twisted pairs at 1.544 Mbit/s. Every telephone call, CD, MP3 and video you have used since is a descendant.</p></div>
 
 <div class="box real"><span class="tag">Real world · numbers you use every day</span>
-<p>Telephone speech: band-limited to 3.4 kHz, sampled at <b>8 kHz</b>, 8 bits per sample: $8\times8=\mathbf{64}$ kbit/s (ITU G.711). CD audio: 44.1 kHz, 16 bits, 2 channels: 1.41 Mbit/s. A 12-bit camera sensor or a 10-bit ADC in an oscilloscope: same principle. In India and Europe the telephone trunk standard E1 carries 32 slots × 64 kbit/s = 2.048 Mbit/s; North America's T1 carries 24 slots plus 1 framing bit: $193\times8000=1.544$ Mbit/s.</p></div>
+<p>Telephone speech: band-limited to 3.4 kHz, sampled at <b>8 kHz</b>, 8 bits per sample: $8\times8=\mathbf{64}$ kbit/s (ITU G.711). CD audio: 44.1 kHz, 16 bits, 2 channels: 1.41 Mbit/s. A 12-bit camera sensor or a 10-bit ADC in an oscilloscope: same principle. In India and Europe the telephone trunk standard E1 carries 32 slots × 64 kbit/s = 2.048 Mbit/s; North America’s T1 carries 24 slots plus 1 framing bit: $193\times8000=1.544$ Mbit/s. A modern phone call is compressed by a speech codec to 5–24 kbit/s (AMR, EVS); streaming music at 128–320 kbit/s; high-resolution audio keeps 24 bits at 192 kHz.</p></div>
+
+<h2>Why go digital? Regeneration beats accumulation</h2>
+<p>A long-distance link has repeaters every few tens of kilometres, each of which amplifies the signal <em>and the noise already on it</em> and adds its own.</p>
+<div class="box derive"><span class="tag">Derivation · noise accumulation in analog and digital chains</span>
+<p><b>Analog.</b> Each of $N$ identical hops delivers the signal with the same power and adds independent noise of power $\sigma^2$ (referred to the repeater output, all hops having unit net gain). Noise powers add: after $N$ hops the noise is $N\sigma^2$ against an unchanged signal power: $\mathrm{SNR}_N=\mathrm{SNR}_1/N$, i.e. a <b>loss of $10\log N$ dB</b>: 100 hops cost 20 dB, so a hop SNR of 30 dB becomes 10 dB at the destination.</p>
+<p><b>Digital with regeneration.</b> Each repeater decides each bit and sends a clean new one. A bit arrives wrong only if an odd number of hops make an error; for small per-hop error probability $P_e$ this is $\approx NP_e$ (exactly $\frac12[1-(1-2P_e)^N]$, the cascade-of-BSCs formula of Chapter 11). 100 hops of $P_e=10^{-7}$ give $10^{-5}$: <em>linear</em> in $N$, and since $P_e$ falls exponentially with SNR (Chapter 14), buying back the factor $N$ needs only $\approx1$ dB of extra power per hop. <b>The quality of the message at the destination is set by the first conversion to bits, not by the length of the line.</b> The cost: more bandwidth than the analog message needs ($nW$ instead of $W$), and the quantisation noise we shall now compute.</p></div>
+<p>Further advantages of digital: error-control coding (Chapter 17), encryption, efficient multiplexing (Chapter 9), storage and computing on the signal, programmable receivers, and identical treatment of voice, data and video.</p>
 
 <h2>The three steps: sample, quantise, encode</h2>
-<div id="d-pcm" class="dia">PCM transmitter. The low-pass filter before the sampler prevents aliasing (Chapter 2). The quantiser rounds each sample to the nearest of $L=2^n$ levels. The encoder turns the level number into $n$ bits. The receiver reverses the last two steps and low-pass filters; <em>the quantisation error is the only thing it cannot undo</em>.</div>
-<p><strong>1. Sampling</strong> at $f_s\ge2W$ (the Nyquist theorem of Chapter 2). A practical sampler holds the value for a short time (flat-top sampling), which multiplies the spectrum by a $\sinc$ envelope (the "aperture effect"): a mild high-frequency droop that a receiver equaliser compensates. <strong>2. Quantisation</strong> is the irreversible step: each real number is replaced by the nearest of $L$ allowed values. <strong>3. Encoding</strong> assigns each level an $n$-bit code word, $L=2^n$.</p>
+<div id="d-pcm" class="dia">PCM transmitter. The low-pass filter before the sampler prevents aliasing (Chapter 3). The quantiser rounds each sample to the nearest of $L=2^n$ levels. The encoder turns the level number into $n$ bits. The receiver reverses the last two steps and low-pass filters; <em>the quantisation error is the only thing it cannot undo</em>.</div>
+<p><strong>1. Sampling</strong> at $f_s\ge2W$ (Nyquist). A practical sampler holds the value for a short time (flat-top sampling), which multiplies the spectrum by a $\sinc$ envelope (the “aperture effect”, Chapters 3 and 9): a mild high-frequency droop that a receiver equaliser compensates. <strong>2. Quantisation</strong> is the irreversible step: each real number is replaced by the nearest of $L$ allowed values. <strong>3. Encoding</strong> assigns each level an $n$-bit code word, $L=2^n$ (natural binary, Gray, or sign-magnitude for telephony).</p>
+<div class="box eng"><span class="tag">Engineering practice · how an ADC is built</span>
+<table>
+<tr><th>Architecture</th><th>Principle</th><th>Typical resolution / rate</th><th>Where used</th></tr>
+<tr><td>Flash</td><td>$2^n-1$ comparators in parallel against a resistor ladder</td><td>6–8 bits at several GS/s</td><td>Oscilloscopes, 100 Gb/s optical receivers</td></tr>
+<tr><td>Pipeline</td><td>Cascade of 1.5–3 bit stages with residue amplifiers</td><td>10–16 bits at 10–500 MS/s</td><td>Base stations, ultrasound, video</td></tr>
+<tr><td>SAR</td><td>Successive approximation: binary search with a DAC, $n$ clock cycles per sample</td><td>8–18 bits up to ~5 MS/s</td><td>Microcontrollers, sensors; low power</td></tr>
+<tr><td>Sigma–delta ($\Sigma\Delta$)</td><td>1-bit quantiser at very high rate with noise shaping + digital filter</td><td>16–24 bits at audio rates, MHz rates at 12–14 bits</td><td>Audio codecs, phones, precision measurement</td></tr>
+</table>
+<p>Real converters depart from the ideal: <b>DNL/INL</b> (step width and cumulative errors), offset, gain error, aperture jitter (Chapter 3: $-20\log2\pi f\sigma_t$), thermal noise ($kT/C$ of the sampling capacitor) and comparator metastability. The overall performance is captured by <b>SINAD</b> and the <b>effective number of bits</b> $\mathrm{ENOB}=\dfrac{\mathrm{SINAD}-1.76}{6.02}$ (GATE 2024 below). Adding a tiny random <b>dither</b> before quantisation makes the error truly noise-like and uncorrelated with the signal, trading a little noise for the removal of spurious tones.</p></div>
 
-<h2>Uniform quantisation and the famous "6 dB per bit"</h2>
-<p>Let the signal range over $[-m_p,m_p]$. Divide this into $L=2^n$ equal steps of width $\Delta=\dfrac{2m_p}{L}$. The quantisation error $e=m_q-m$ is, as long as the signal wanders over many steps, <strong>uniformly distributed on $[-\Delta/2,\Delta/2]$</strong>, which by Chapter 1 has mean 0 and
-$$\sigma_q^2=\frac{\Delta^2}{12}=\frac{m_p^2}{3L^2}=\frac{m_p^2}{3\cdot2^{2n}},\qquad|e|_{\max}=\frac\Delta2.$$
+<h2>Uniform quantisation and the famous “6 dB per bit”</h2>
+<p>Let the signal range over $[-m_p,m_p]$. Divide this into $L=2^n$ equal steps of width $\Delta=\dfrac{2m_p}{L}$. A <b>mid-rise</b> quantiser has a decision threshold at zero (levels at $\pm\Delta/2,\pm3\Delta/2,\dots$; no zero output); a <b>mid-tread</b> quantiser has a level at zero (used when idle noise should give a zero output).</p>
+<div class="box derive"><span class="tag">Derivation · quantisation noise and SQNR</span>
+<p>The error $e=m_q-m$ lies in $[-\Delta/2,\Delta/2]$. If the signal wanders over many steps with a smooth distribution (Bennett’s condition: $\Delta$ small compared with the scale on which the pdf changes), the error is <strong>uniformly distributed</strong> on that interval and uncorrelated with the signal, and has a nearly flat spectrum over $|f|\le f_s/2$. By Chapter 4 it has mean 0 and
+$$\sigma_q^2=\frac1\Delta\int_{-\Delta/2}^{\Delta/2}e^2\,de=\frac{\Delta^2}{12}=\frac{m_p^2}{3L^2}=\frac{m_p^2}{3\cdot2^{2n}},\qquad|e|_{\max}=\frac\Delta2.$$
 Hence for a message of power $P$,
 $$\mathrm{SQNR}=\frac{P}{\Delta^2/12}=3\cdot2^{2n}\frac{P}{m_p^2}.$$
-For a <b>full-scale sinusoid</b>, $P=m_p^2/2$ and
-$$\boxed{\mathrm{SQNR}=\tfrac32\,2^{2n}\ \Longrightarrow\ \mathrm{SQNR_{dB}}=6.02\,n+1.76\ \text{dB}}.$$
-Each extra bit adds 6 dB. (For a full-scale <em>uniformly distributed</em> signal, $P=m_p^2/3$, $\mathrm{SQNR}=2^{2n}$, i.e. $6.02n$ dB.) This is how every ADC data-sheet is read: a 10-bit ADC gives 61.96 dB, a 16-bit CD 98 dB.</p>
+<b>Sine at full scale</b> ($P=m_p^2/2$): $\mathrm{SQNR}=\tfrac32\,2^{2n}$, i.e.
+$$\boxed{\mathrm{SQNR_{dB}}=6.02\,n+1.76\ \text{dB}}$$
+Each extra bit adds 6 dB. <b>Uniformly distributed signal</b> at full scale ($P=m_p^2/3$): $\mathrm{SQNR}=2^{2n}$, $6.02n$ dB. <b>Gaussian signal</b> (a good model of noise-like multi-tone loads and of speech after normalisation by its RMS $\sigma$): it has no hard peak, so the quantiser must clip at some multiple $k\sigma$ ($m_p=k\sigma$): $\mathrm{SQNR}=3\cdot2^{2n}/k^2$. With $k=4$ (clipping 0.006% of the time) $\mathrm{SQNR}=6.02n-7.3$ dB: a Gaussian load wastes 9 dB relative to a full-scale sine, which is why a signal of high peak-to-average power ratio (PAPR; OFDM, Chapter 20) needs extra bits or more headroom.</p></div>
+<p>This is how every ADC data-sheet is read: a 10-bit ADC gives 61.96 dB, a 16-bit CD 98 dB. A <b>quiet signal uses only a few of the levels</b>: halving the amplitude loses 6 dB, exactly like losing a bit. <b>Loading</b> is a compromise: too high a level clips (overload distortion), too low wastes bits.</p>
 <div class="widget" id="w-quant">Quantise a sine wave with $n$ bits. The error (red) is a sawtooth-like waveform whose rms is $\Delta/\sqrt{12}$. Measured SQNR is computed from the actual samples and agrees with $6.02n+1.76$. Lower the amplitude and the SQNR drops dB for dB: a quiet signal uses only a few of the levels.</div>
 <div class="box ex"><span class="tag">Worked examples from real GATE papers</span>
 <p><b>GATE 2023 Q.31.</b> ADC SNR 61.96 dB for a full-scale sine: $n=\frac{61.96-1.76}{6.02}=\mathbf{10}$ bits. <b>GATE 2025 Q.44.</b> The same 10-bit ADC sampled at 1 MHz: SNR 61.96 dB and data rate $nf_s=10\times1\,\mathrm{MHz}=10$ Mbit/s (key A). (The 500 kHz input sits at exactly $f_s/2$, the worst allowable case.) <b>GATE 2024 Q.46.</b> Signal power 1 W, noise + distortion power 10 μW: SINAD $=50$ dB, so the <em>effective number of bits</em> is $\frac{50-1.76}{6.02}=8.01\approx\mathbf8$ (key B).</p>
 <p><b>GATE 2024 Q.57.</b> $X(t)=A\cos(2\pi f_0t+\Theta)$, $A\sim U[-2,2]$, autocorrelation $R_X(\tau)=\frac23\cos2\pi f_0\tau$, fed to an 8-bit uniform mid-rise quantiser. Power $=R_X(0)=\tfrac23$. The quantiser must cover the peak range $[-2,2]$: $\Delta=\frac4{256}=\frac1{64}$, noise $=\frac{\Delta^2}{12}=2.03\times10^{-5}$, so $\mathrm{SQNR}=\frac{2/3}{2.03\times10^{-5}}=32\,768\to\mathbf{45.15}$ dB (key 45.00–45.30).</p>
-<p><b>GATE 2014 Set 3 Q.14.</b> 0–8 V into 16 intervals: $\Delta=0.5$ V, max error $=\Delta/2=\mathbf{0.25}$ V. <b>GATE 2021 Q.52.</b> Message with p-p value 2 V, RMS 0.1 V, bandwidth 5 kHz, PCM output rate 50 kbps: Nyquist rate 10 kHz ⇒ 5 bits/sample, $L=32$, $\Delta=2/32=0.0625$, noise $\Delta^2/12=3.26\times10^{-4}$, signal $0.01$ ⇒ SQNR $=\mathbf{30.7}$ (as a plain ratio; $=14.87$ dB). The official key accepts 30.00–34.00, i.e. <b>the answer is the ratio, not dB</b>. (A reminder that "6.02n+1.76" only applies to a full-scale sine; here the message is much quieter than full scale.)</p></div>
+<p><b>GATE 2014 Set 3 Q.14.</b> 0–8 V into 16 intervals: $\Delta=0.5$ V, max error $=\Delta/2=\mathbf{0.25}$ V. <b>GATE 2021 Q.52.</b> Message with p-p value 2 V, RMS 0.1 V, bandwidth 5 kHz, PCM output rate 50 kbps: Nyquist rate 10 kHz ⇒ 5 bits/sample, $L=32$, $\Delta=2/32=0.0625$, noise $\Delta^2/12=3.26\times10^{-4}$, signal $0.01$ ⇒ SQNR $=\mathbf{30.7}$ (as a plain ratio; $=14.87$ dB). The official key accepts 30.00–34.00, i.e. <b>the answer is the ratio, not dB</b>. (A reminder that “6.02n+1.76” only applies to a full-scale sine; here the message is much quieter than full scale.)</p></div>
 
 <h3>Bandwidth: the price of bits</h3>
-<p>PCM produces $R_b=nf_s$ bits per second. A binary signal needs at least $R_b/2$ Hz (Nyquist, Chapter 9). With $f_s=2W$ the minimum PCM bandwidth is
+<p>PCM produces $R_b=nf_s$ bits per second. A binary signal needs at least $R_b/2$ Hz (Nyquist, Chapter 13). With $f_s=2W$ the minimum PCM bandwidth is
 $$B_{PCM}\ge\frac{R_b}2=nW.$$
-Look at the exchange rate: SQNR grows as $2^{2n}$ (exponentially) while bandwidth grows linearly in $n$. Exactly the FM bargain of Chapter 6, but with a far better rate: <strong>PCM trades bandwidth for SNR exponentially</strong>, until the channel noise starts making bit errors (then the error rate, Chapter 10, sets the limit).</p>
+Look at the exchange rate: SQNR grows as $2^{2n}$ (exponentially) while bandwidth grows linearly in $n$. Exactly the FM bargain of Chapter 8, but with a far better rate: <strong>PCM trades bandwidth for SNR exponentially</strong>, until the channel noise starts making bit errors, as the next derivation shows.</p>
 <div class="box ex"><span class="tag">Worked example · GATE 2014 Set 3 Q.51</span>
 <p>$m(t)=\sin100\pi t+\cos100\pi t$ V is sampled at the Nyquist rate and quantised with step 0.75 V. $f_{\max}=50$ Hz ⇒ $f_s=100$ Hz. Peak-to-peak range $=2\sqrt2=2.83$ V ⇒ $\frac{2.83}{0.75}=3.77\to4$ levels ⇒ 2 bits. Data rate $=2\times100=\mathbf{200}$ bps.</p></div>
 <div class="box ex"><span class="tag">Worked example · GATE 2019 Q.46</span>
 <p>$f(t)=A(1+m(t))\cos2\pi f_ct$, $m$ in 5–15 kHz, $f_c=600$ kHz: the highest frequency is 615 kHz, so the Nyquist rate is 1230 kHz and the sampling rate $1.2\times$ that is 1476 kHz. A 256-level quantiser needs $\log_2256=8$ bits: $R=1.476\,\text{MHz}\times8=\mathbf{11.81}$ Mbit/s.</p></div>
 
+<h3>PCM with a noisy channel: quantisation noise plus bit-error noise</h3>
+<div class="box derive"><span class="tag">Derivation · the PCM output SNR and its threshold</span>
+<p>Send the $n$-bit natural-binary codeword through a channel that flips each bit independently with probability $P_e$. A flip in bit $i$ (weight $2^i$, $i=0$ the least significant) changes the reconstructed level by $\pm2^i\Delta$, i.e. an error power $(2^i\Delta)^2$. Averaged over the bits, the expected error power from channel errors is
+$$\sigma_b^2=P_e\Delta^2\sum_{i=0}^{n-1}4^{\,i}=P_e\Delta^2\frac{4^n-1}{3}\approx\frac{P_e\Delta^24^n}3,$$
+dominated by the most significant bit. Together with the quantisation noise $\Delta^2/12$ (independent), for a full-scale uniform message ($P=m_p^2/3$, $\Delta=2m_p/2^n$):
+$$\boxed{\ \mathrm{SNR}_o=\frac{P}{\Delta^2/12+\sigma_b^2}=\frac{4^n}{1+4P_e\,4^n}\ }$$
+When $4P_e4^n\ll1$, i.e. $P_e\ll\dfrac1{4\cdot4^n}$, quantisation noise dominates and $\mathrm{SNR}_o=4^n$: <b>extra channel noise makes no difference, as long as no bit errors occur</b>. When $4P_e4^n\gg1$ the SNR collapses to $\approx\frac1{4P_e}$, independent of $n$. For $n=8$ the knee is at $P_e\approx3.8\times10^{-6}$; at $P_e=10^{-4}$ the SNR is $2409=33.8$ dB instead of $48.2$ dB. This <b>threshold effect</b> is PCM’s signature, like FM’s; in practice link designers keep $P_e\lesssim10^{-5}$ for voice. The MSB is the most precious bit: some systems protect it with extra coding (unequal error protection).</p></div>
+<div class="widget" id="w-pcmnoise">Output SNR of PCM against the channel bit-error probability $P_e$, for $n$ bits per sample. Below the knee the curve is flat at $6.02n$ dB (quantisation-limited); above it, errors in the most significant bits take over and the SNR falls 10 dB per decade of $P_e$. More bits help only if the channel is good enough to deserve them.</div>
+
 <h2>Non-uniform quantisation: giving the quiet parts more levels</h2>
 <p>Speech has a peaky distribution: most samples are tiny, a few are big. A uniform quantiser has the same $\Delta^2/12$ noise for loud and soft speakers, so soft speakers get poor SNR. <strong>Companding</strong> (compress then expand) fixes this: pass the signal through a logarithm-like compressor before a uniform quantiser, and apply the inverse expander at the receiver. The effective step size is small for small signals and large for large ones, so the SNR becomes nearly constant over a wide dynamic range (about 40 dB). The two standards for telephony:
 $$\mu\text{-law (USA, Japan; }\mu=255):\ \ y=\operatorname{sgn}(x)\frac{\ln(1+\mu|x|)}{\ln(1+\mu)},\qquad|x|\le1;$$
 $$\text{A-law (India, Europe; }A=87.6):\ \ y=\operatorname{sgn}(x)\begin{cases}\dfrac{A|x|}{1+\ln A}&|x|<\frac1A\\[2mm]\dfrac{1+\ln(A|x|)}{1+\ln A}&\frac1A\le|x|\le1\end{cases}.$$
-Both are approximated in practice by 8-bit codes with 16 piecewise-linear segments.</p>
+Both are approximated in practice by 8-bit codes with 16 (A-law: 13) piecewise-linear segments.</p>
+<div class="box derive"><span class="tag">Derivation · why companding gives constant SQNR</span>
+<p>Let the compressor be $y=c(x)$ with $|x|,|y|\le1$, followed by a uniform quantiser with step $\Delta_y=2/L$ in the $y$ domain. A step $\Delta_y$ corresponds, in the $x$ domain, to a local step $\Delta_x(x)=\Delta_y/c'(x)$. The noise power for a signal at $x$ is $\Delta_x^2/12$, so averaged over the signal
+$$N_q=\frac{\Delta_y^2}{12}\,\E\!\left[\frac1{c'(X)^2}\right].$$
+For $\mu$-law with $\mu|x|\gg1$: $c'(x)=\dfrac{\mu}{(1+\mu|x|)\ln(1+\mu)}\approx\dfrac1{|x|\ln(1+\mu)}$, so $1/c'^2=x^2\ln^2(1+\mu)$ and $N_q=\dfrac{\Delta_y^2}{12}\ln^2(1+\mu)\,\E[X^2]=\dfrac{\ln^2(1+\mu)}{3L^2}\,P_x$. Therefore
+$$\boxed{\ \mathrm{SQNR}\approx\frac{3L^2}{[\ln(1+\mu)]^2}\ }\quad\text{independent of the signal power }P_x.$$
+For $n=8$, $\mu=255$: $\dfrac{3\cdot65\,536}{(5.545)^2}=6394\to\mathbf{38.1}$ dB, constant from about $-40$ dBm0 up to full scale, whereas an 8-bit uniform quantiser would give 48 dB for a full-scale uniformly distributed signal and fall to 8 dB for a signal 40 dB below full scale. For small signals ($\mu|x|\ll1$) the compressor has slope $c'(0)=\mu/\ln(1+\mu)=46$, so the small-signal step is $46\times$ finer: a <b>33 dB</b> improvement exactly where speech spends most of its time. The price: at full scale the SQNR is 10 dB <i>worse</i> than uniform (38 dB vs 48 dB).</p></div>
 <div class="widget" id="w-compand">Left: compressor curves (try $\mu=0$, i.e. none, then 255). Right: measured SQNR of an 8-bit quantiser on a speech-like (Laplacian) signal as the signal level drops. A uniform quantiser loses 1 dB for every dB of level; the $\mu$-law quantiser holds its SNR within a few dB over about 40 dB of range.</div>
+<div class="box eng"><span class="tag">Engineering practice · G.711 and the digital telephone</span>
+<p>The 8-bit telephone codeword is: 1 sign bit, 3 bits to select one of 8 segments (a chord) of the piecewise-linear approximation, and 4 bits to select one of 16 uniform steps within the chord. Each successive segment doubles the step size. The 8-bit companded code is equivalent in quality to a 13-bit (A-law) or 14-bit ($\mu$-law) <em>uniform</em> code: 5–6 bits saved per sample, a saving of 40% in line rate. The same law is applied in reverse in the DAC. Digital loss-pads and conferencing bridges must therefore expand to linear PCM before adding signals. The incompatibility of the two laws means that calls between a $\mu$-law network and an A-law network (e.g. North America and India or Europe) need a transcoder at the gateway.</p></div>
+
+<h2>Oversampling and sigma–delta conversion</h2>
+<p>Quantisation noise has a fixed total power $\Delta^2/12$, spread over $[-f_s/2,f_s/2]$. If we sample at $f_s=2W\cdot\mathrm{OSR}$ (oversampling ratio OSR), only a fraction $1/\mathrm{OSR}$ falls in the signal band $|f|\le W$ and a digital low-pass filter can remove the rest: SQNR improves by $10\log\mathrm{OSR}$ (3 dB per doubling, half a bit). <b>Noise shaping</b> does far better. In a first-order sigma–delta modulator the quantiser sits in a feedback loop with an integrator; the loop gives the quantisation error the transfer function $\mathrm{NTF}(z)=1-z^{-1}$, with $|\mathrm{NTF}(f)|^2=4\sin^2(\pi f/f_s)\approx(2\pi f/f_s)^2$ for $f\ll f_s$: noise is pushed out to high frequencies, where it is filtered away.</p>
+<div class="box derive"><span class="tag">Derivation · in-band noise of a first-order $\Sigma\Delta$ modulator</span>
+<p>The quantisation noise (power $\sigma_q^2=\Delta^2/12$) has a flat one-sided PSD $\sigma_q^2/(f_s/2)$. After shaping, the in-band noise is
+$$N_{\rm in}=\int_0^W\frac{\sigma_q^2}{f_s/2}\Big(\frac{2\pi f}{f_s}\Big)^2df=\frac{2\sigma_q^2}{f_s}\frac{4\pi^2}{f_s^2}\frac{W^3}3=\sigma_q^2\frac{8\pi^2}3\Big(\frac W{f_s}\Big)^3=\frac{\pi^2}{3}\frac{\sigma_q^2}{\mathrm{OSR}^3}$$
+using $W/f_s=1/(2\,\mathrm{OSR})$. The noise falls as $\mathrm{OSR}^{-3}$: <b>each doubling of OSR gives $9$ dB ($1.5$ bits)</b>, against 3 dB for plain oversampling. With a 1-bit quantiser ($\sigma_q^2$ of order 1) and an OSR of 128, the first-order modulator reaches about 10 bits; a second-order loop ($\mathrm{NTF}=(1-z^{-1})^2$, noise $\propto\mathrm{OSR}^{-5}$, 15 dB per doubling) reaches 16 bits at OSR 128, and higher-order loops more. This is how a $1$-bit comparator running at a few MHz delivers the 24-bit audio of a smartphone, with the digital decimation filter doing the rest.</p></div>
 
 <h2>Delta modulation: a one-bit quantiser</h2>
-<p>If you sample much faster than Nyquist, neighbouring samples are almost equal, so you need not send their values, only whether the signal went <em>up or down</em>. <strong>Delta modulation (DM)</strong> sends one bit per sample: the receiver adds $+\Delta$ or $-\Delta$ to a running staircase; the transmitter keeps an identical staircase and compares it with the input. Two kinds of distortion arise:</p>
+<p>If you sample much faster than Nyquist, neighbouring samples are almost equal, so you need not send their values, only whether the signal went <em>up or down</em>. <strong>Delta modulation (DM)</strong> sends one bit per sample: the receiver adds $+\Delta$ or $-\Delta$ to a running staircase (an integrator); the transmitter keeps an identical staircase and compares it with the input. Two kinds of distortion arise:</p>
 <ul>
 <li><b>Slope overload:</b> the input rises faster than the staircase can climb ($\Delta\cdot f_s$ per second). To avoid it we need $\left|\dfrac{dm}{dt}\right|_{\max}\le\Delta f_s$. For $m=A\cos2\pi f_mt$: $\boxed{\,2\pi f_mA\le\Delta f_s\,}$ i.e. $\Delta\ge\dfrac{2\pi f_mA}{f_s}$. (GATE 2021 Q.24: $A=4$ V, $f_m=4$ kHz, $f_s=32$ kHz: $\Delta_{\min}=\frac{2\pi\cdot4000\cdot4}{32000}=\pi=\mathbf{3.14}$ V.)</li>
 <li><b>Granular noise:</b> when the input is flat, the staircase hunts up and down by $\pm\Delta$ around it. The cure is the opposite of the slope-overload cure: smaller $\Delta$. Hence the trade-off, solved by <em>adaptive DM</em> (step size grows during overload and shrinks when idle).</li>
 </ul>
 <div class="widget" id="w-dm">Delta modulation of a sinusoid. The red segments are slope-overload intervals; the zig-zag around the peaks is granular noise. The readout gives the minimum step $\Delta=2\pi f_mA/f_s$ that avoids overload. Raise $f_s$ or $\Delta$ to cure overload; lower $\Delta$ to reduce granular noise.</div>
+<p>Take the optimum $\Delta=2\pi f_mA/f_s$ (just avoids overload). The granular error is roughly uniform over $\pm\Delta$ with power $\Delta^2/3$, spread over the band up to $f_s$, of which the fraction $W/f_s$ lies in-band, giving the classic approximation
+$$\mathrm{SNR}_{DM}\approx\frac{A^2/2}{(\Delta^2/3)(W/f_s)}=\frac{3f_s^3}{8\pi^2f_m^2W}.$$
+The $f_s^3$ again: <b>doubling the sampling rate buys 9 dB</b>, the same as first-order $\Sigma\Delta$ (DM is $\Sigma\Delta$’s ancestor: the same loop without the integrator in the forward path). For $f_s=64$ kHz, $f_m=1$ kHz, $W=4$ kHz this gives $\approx2500$ (34 dB) at 64 kbit/s, no better than PCM at the same rate (8 bits at 8 kHz gives 50 dB for a full-scale sine). DM is therefore attractive only for its simplicity, not its efficiency.</p>
 
 <h2>DPCM: send only the surprise</h2>
 <p>Real signals are <em>correlated</em>: the next sample is partly predictable from the previous ones. <strong>Differential PCM</strong> predicts $\hat m[n]$ from the past <em>reconstructed</em> samples, and quantises and sends only the prediction error $d[n]=m[n]-\hat m[n]$. If the predictor is good, $d$ has a much smaller variance than $m$ itself, so the same number of bits $n$ gives a much finer step size and a smaller noise power. The encoder contains a copy of the decoder (it predicts from the <em>quantised</em> values), so quantisation errors do not accumulate.</p>
 <div id="d-dpcm" class="dia">DPCM transmitter. The feedback loop contains the same predictor the receiver has; the quantiser sees only the small prediction error.</div>
-<p>With a first-order predictor $\hat m[n]=a\,m[n-1]$ and a signal of normalised correlation $\rho$ between neighbouring samples, the best $a=\rho$ gives $\sigma_d^2=\sigma_m^2(1-\rho^2)$. The <b>prediction gain</b> $G_p=\dfrac{\sigma_m^2}{\sigma_d^2}=\dfrac1{1-\rho^2}$ improves the SQNR by the same factor (or saves $\tfrac12\log_2G_p$ bits per sample at equal SQNR):
+<div class="box derive"><span class="tag">Derivation · prediction gain</span>
+<p>Predict with $\hat m[n]=a\,m[n-1]$ for a stationary signal of variance $\sigma_m^2$ and neighbour correlation $\rho=R[1]/R[0]$. The error power is $\sigma_d^2=\E[(m_n-am_{n-1})^2]=\sigma_m^2(1-2a\rho+a^2)$, minimised by $a=\rho$ (set the derivative to zero) at $\sigma_d^2=\sigma_m^2(1-\rho^2)$. For an order-$p$ predictor the optimum coefficients solve the <b>normal equations</b> (Yule–Walker) $\sum_{k=1}^pa_kR[|i-k|]=R[i]$, $i=1..p$, which is exactly the Wiener filter of Chapter 5 in discrete time, and the error power is $R[0]-\sum a_kR[k]$. The <b>prediction gain</b> $G_p=\dfrac{\sigma_m^2}{\sigma_d^2}=\dfrac1{1-\rho^2}$ improves the SQNR by the same factor (since the quantiser noise depends only on the step size, and the step size on the range of $d$), or saves $\tfrac12\log_2G_p$ bits per sample at equal SQNR:</p></div>
 <table>
 <tr><th>$\rho$</th><th>0.5</th><th>0.9</th><th>0.95</th><th>0.99</th></tr>
 <tr><th>$G_p$</th><td>1.33 (1.2 dB)</td><td>5.26 (7.2 dB)</td><td>10.3 (10.1 dB)</td><td>50.3 (17.0 dB)</td></tr>
 <tr><th>bits saved</th><td>0.2</td><td>1.2</td><td>1.7</td><td>2.8</td></tr>
 </table>
-Delta modulation is DPCM with a 1-bit quantiser and a first-order predictor ($a=1$).</p>
+<p>Delta modulation is DPCM with a 1-bit quantiser and a first-order predictor ($a=1$).</p>
 <div class="widget" id="w-dpcm">A correlated (first-order autoregressive) signal and its optimal prediction error. Drag $\rho$: the more correlated the signal, the smaller the error and the larger the prediction gain.</div>
+<div class="box real"><span class="tag">Real world · from ADPCM to the codec in your phone</span>
+<p><b>ADPCM</b> (ITU G.726) uses an adaptive quantiser and an adaptive predictor (a 6-zero, 2-pole filter updated sample by sample) to deliver toll-quality speech at 32 kbit/s (4 bits × 8 kHz), half of PCM; the DECT cordless phone and early digital voice mail used it. Modern <b>speech codecs</b> go further, modelling the vocal tract as an all-pole filter whose coefficients (linear-predictive coding, LPC) are sent every 20 ms together with a coded excitation: GSM full-rate (RPE-LTP) 13 kbit/s, GSM-EFR 12.2, AMR-NB 4.75–12.2, AMR-WB 6.6–23.85, EVS up to 128 kbit/s; vocoders at 2.4 kbit/s are intelligible but synthetic. All of them are DPCM’s relatives: exploit correlation (short-term in the vocal tract, long-term in the pitch), then quantise the residue with the bits you can afford.</p></div>
 
 <div class="box gate"><span class="tag">GATE pattern · sampling and quantisation</span>
 <ul>
@@ -69,6 +129,63 @@ Delta modulation is DPCM with a 1-bit quantiser and a first-order predictor ($a=
 </ul></div>
 
 <h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+Compared with an analog link of $N$ identical repeaters, a regenerative digital link
+<ol class="opts"><li>accumulates noise just as fast</li><li>accumulates bit errors only linearly with $N$ (and no noise)</li><li>needs less bandwidth</li><li>has no quantisation noise</li></ol>
+<div class="sol"><p>Each regenerator decides and re-sends clean bits; errors add roughly linearly ($\approx NP_e$), noise does not. (C) is false: PCM needs more bandwidth ($nW$), and (D) false: quantisation noise remains. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which statements about companding are correct?
+<ol class="opts"><li>It makes the SQNR nearly independent of the signal level over a wide range.</li><li>It improves the SQNR for full-scale signals compared with a uniform quantiser.</li><li>It uses finer steps for small amplitudes.</li><li>It requires no matching operation at the receiver.</li></ol>
+<div class="sol"><p>(A), (C). (B) false: full-scale SQNR is lower (38 dB vs 48 dB for 8 bits); (D) false: an expander restores the original scale.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+In a delta modulator, granular noise is reduced by
+<ol class="opts"><li>increasing the step size</li><li>decreasing the sampling rate</li><li>decreasing the step size</li><li>increasing the signal amplitude</li></ol>
+<div class="sol"><p>Granular (idle) noise has amplitude $\sim\Delta$; smaller $\Delta$ reduces it (but raises the risk of slope overload).</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="10" data-tol="0.1" data-marks="1" data-src="Original">
+An analog chain of 100 identical repeaters, each hop having an SNR of 30 dB, is built. The SNR at the destination (dB) is ______.
+<div class="sol"><p>$30-10\log_{10}100=\mathbf{10}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="10" data-tol="0.1" data-marks="1" data-src="Original">
+A regenerative digital chain has 100 hops, each with a bit-error probability of $10^{-7}$. The end-to-end bit-error probability, in units of $10^{-6}$, is about ______.
+<div class="sol"><p>$NP_e=100\times10^{-7}=10^{-5}=10\times10^{-6}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="1" data-src="Original">
+A full-scale sine wave must be digitised with SQNR of at least 40 dB. The minimum number of bits per sample is ______.
+<div class="sol"><p>$n\ge(40-1.76)/6.02=6.35$ ⇒ 7 bits.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="40.9" data-tol="0.2" data-marks="2" data-src="Original">
+An 8-bit uniform quantiser covers $\pm4\sigma$ of a Gaussian signal of RMS value $\sigma$ (clipping neglected). Its SQNR in dB is ______.
+<div class="sol"><p>$\mathrm{SQNR}=3\cdot2^{16}/16=12\,288\to10\log_{10}(12\,288)=\mathbf{40.9}$ dB $=6.02(8)-7.3$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="38.1" data-tol="0.2" data-marks="2" data-src="Original">
+An 8-bit $\mu$-law ($\mu=255$) companded PCM system. For signal levels well above $1/\mu$ the SQNR in dB, from $3L^2/\ln^2(1+\mu)$, is ______.
+<div class="sol"><p>$\dfrac{3\cdot65536}{5.545^2}=6394\to\mathbf{38.1}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="33.2" data-tol="0.3" data-marks="2" data-src="Original">
+The small-signal gain of a $\mu=255$ compressor, $c'(0)=\mu/\ln(1+\mu)$, expressed in dB (the reduction of the effective step size for tiny signals), is ______.
+<div class="sol"><p>$\mu/\ln256=255/5.545=46.0\to20\log_{10}46=\mathbf{33.2}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="33.8" data-tol="0.2" data-marks="2" data-src="Original">
+An 8-bit PCM link has bit-error probability $10^{-4}$. Using $\mathrm{SNR}_o=4^n/(1+4P_e4^n)$ the output SNR in dB is ______.
+<div class="sol"><p>$4^8=65536$; $4P_e4^n=26.2$; $\mathrm{SNR}_o=65536/27.2=2408\to\mathbf{33.8}$ dB (versus $48.2$ dB with no bit errors).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="9.03" data-tol="0.05" data-marks="1" data-src="Original">
+A first-order sigma–delta modulator’s oversampling ratio is doubled. The improvement in in-band SQNR (dB) is ______.
+<div class="sol"><p>Noise $\propto\mathrm{OSR}^{-3}$: $30\log_{10}2=\mathbf{9.03}$ dB (1.5 bits).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.2" data-tol="0.2" data-marks="2" data-src="Original">
+A DPCM system’s samples have neighbour correlation $\rho=0.9$. The number of bits per sample saved relative to PCM at the same SQNR is about ______. (Use optimal first-order prediction.)
+<div class="sol"><p>$G_p=1/(1-0.81)=5.26$; bits saved $=\tfrac12\log_2G_p=1.2$.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
 <div class="prob" data-type="nat" data-ans="10" data-tol="0.1" data-marks="1" data-src="GATE 2023 · EC · Q.31">
 The SNR of an ADC with a full-scale sinusoidal input is 61.96 dB. The resolution of the ADC is ______ bits (nearest integer).
 <div class="sol"><p>$n=(61.96-1.76)/6.02=10$.</p></div></div>
@@ -107,29 +224,18 @@ A 4 kHz sinusoidal message of amplitude 4 V is fed to a delta modulator operatin
 A message has peak-to-peak value 2 V, RMS value 0.1 V, bandwidth 5 kHz, and is sampled and fed to a PCM system with a uniform quantiser whose output rate is 50 kbps. Assuming a uniformly distributed quantisation error, the maximum signal-to-quantisation-noise ratio obtainable (two decimals, as a ratio) is ______.
 <div class="sol"><p>$n=50\text{k}/10\text{k}=5$ bits, $\Delta=2/32=0.0625$; noise $\Delta^2/12=3.255\times10^{-4}$; SQNR $=0.01/3.255\times10^{-4}=30.72$ (ratio; official key 30.00–34.00). In dB that is 14.87 dB, <em>not</em> what was asked.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="1" data-src="Original">
-A full-scale sine wave must be digitised with SQNR of at least 40 dB. The minimum number of bits per sample is ______.
-<div class="sol"><p>$n\ge(40-1.76)/6.02=6.35$ ⇒ 7 bits.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="1.2" data-tol="0.2" data-marks="2" data-src="Original">
-A DPCM system's samples have neighbour correlation $\rho=0.9$. The number of bits per sample saved relative to PCM at the same SQNR is about ______. (Use optimal first-order prediction.)
-<div class="sol"><p>$G_p=1/(1-0.81)=5.26$; bits saved $=\tfrac12\log_2G_p=1.2$.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
-In a delta modulator, granular noise is reduced by
-<ol class="opts"><li>increasing the step size</li><li>decreasing the sampling rate</li><li>decreasing the step size</li><li>increasing the signal amplitude</li></ol>
-<div class="sol"><p>Granular (idle) noise has amplitude $\sim\Delta$; smaller $\Delta$ reduces it (but raises the risk of slope overload).</p></div></div>
-
-<div class="summary"><h3>Chapter 8 in one breath</h3>
+<div class="summary"><h3>Chapter 12 in one breath</h3>
 <ul>
-<li>PCM = LPF → sample ($f_s\ge2W$) → quantise ($L=2^n$) → encode. Rate $R_b=nf_s$; bandwidth $\ge R_b/2$.</li>
-<li>Uniform quantiser: $\Delta=2m_p/2^n$; error uniform, variance $\Delta^2/12$, max $\Delta/2$; sine SQNR $=6.02n+1.76$ dB; general $3\cdot2^{2n}P/m_p^2$.</li>
-<li>Companding ($\mu=255$ or $A=87.6$) gives near-constant SNR over a wide range of signal levels.</li>
-<li>DM: 1 bit/sample; slope overload if $\Delta f_s<2\pi f_mA$; granular noise otherwise. DPCM: $G_p=\frac1{1-\rho^2}$.</li>
+<li>Digital wins by regeneration: analog SNR falls $10\log N$ dB over $N$ hops, digital errors grow only $\approx NP_e$. PCM = LPF → sample ($f_s\ge2W$) → quantise ($L=2^n$) → encode. Rate $R_b=nf_s$; bandwidth $\ge R_b/2$.</li>
+<li>Uniform quantiser: $\Delta=2m_p/2^n$; error uniform, variance $\Delta^2/12$, max $\Delta/2$; sine SQNR $=6.02n+1.76$ dB; uniform $6.02n$; Gaussian ($4\sigma$) $6.02n-7.3$; general $3\cdot2^{2n}P/m_p^2$; ENOB $=(\mathrm{SINAD}-1.76)/6.02$.</li>
+<li>With bit errors: $\mathrm{SNR}_o=4^n/(1+4P_e4^n)$; knee at $P_e\approx1/(4\cdot4^n)$.</li>
+<li>Companding ($\mu=255$, $A=87.6$): $\mathrm{SQNR}\approx3L^2/\ln^2(1+\mu)\approx38$ dB, constant over ~40 dB; 33 dB gain for tiny signals.</li>
+<li>$\Sigma\Delta$: in-band noise $\propto\mathrm{OSR}^{-3}$ (9 dB per doubling). DM: 1 bit/sample; slope overload if $\Delta f_s<2\pi f_mA$; $\mathrm{SNR}\propto f_s^3$. DPCM: $G_p=\frac1{1-\rho^2}$; ADPCM 32 kbit/s; LPC speech codecs 5–24 kbit/s.</li>
 <li>T1: $24\times64+8=1.544$ Mbps; E1: $32\times64=2.048$ Mbps.</li>
 </ul></div>
 
 <script>
+
 const m=GB.m, TAU=2*Math.PI;
 GB.diagram('d-pcm',{w:800,h:110,items:[['txt',8,40,'m(t)','t','start'],['arr',[40,40,70,40]],['box',70,18,80,44,'LPF','blue'],['arr',[150,40,180,40]],['box',180,18,80,44,'Sampler\nfs ≥ 2W','green'],['arr',[260,40,290,40],'m[n]'],['box',290,18,92,44,'Quantiser\nL = 2ⁿ levels','red'],['arr',[382,40,412,40]],['box',412,18,80,44,'Encoder','purple'],['arr',[492,40,522,40],'n bits'],['box',522,18,96,44,'Channel\n(regenerated)','orange'],['arr',[618,40,648,40]],['box',648,18,70,44,'Decode\n+ LPF','blue'],['arr',[718,40,760,40]],['txt',766,40,'m̂(t)','t','start']]});
 GB.diagram('d-dpcm',{w:800,h:150,items:[['txt',8,40,'m[n]','t','start'],['arr',[44,40,92,40]],['sum',110,40,17,'Σ'],['txt',100,22,'+','tm'],['txt',121,62,'−','tm'],['arr',[127,40,190,40],'d[n]'],['box',190,18,96,44,'Quantiser','red'],['arr',[286,40,330,40]],['box',330,18,80,44,'Encoder','purple'],['arr',[410,40,470,40],'bits'],['txt',480,40,'to channel','tm','start'],['ln',[300,40,300,98,230,98],'mute'],['sum',200,98,17,'Σ'],['arr',[215,98,150,98],'',''],['box',100,80,52,36,'Predictor','blue'],['arr',[100,98,60,98,60,70,110,57]],['txt',250,120,'m̂[n]  (prediction from past reconstructed samples)','tm','start']]});
@@ -164,4 +270,11 @@ GB.widget('w-dpcm',{title:'Prediction gain of DPCM',h:320,hm:340,controls:[{k:'r
   const sd=Math.sqrt(x.reduce((a,b)=>a+b*b,0)/N), sdd=Math.sqrt(d.slice(1).reduce((a,b)=>a+b*b,0)/(N-1)); const lim=Math.max(3.5,...x.map(Math.abs));
   const a=g.panel(0,2,{pad:{b:12}}).view(0,N,-lim,lim); a.axes({nox:true,ystep:2}); a.line(ts,x,'blue',1.8); a.title('signal m[n]'); const b=g.panel(1,2).view(0,N,-lim,lim); b.axes({xl:'n',ystep:2}); b.line(ts,d,'orange',1.8); b.title('prediction error d[n] = m[n] − ρ·m[n−1]','orange');
   return 'rms signal = '+sd.toFixed(2)+' · rms error = '+sdd.toFixed(2)+' · gain G_p = 1/(1−ρ²) = <b>'+(1/(1-p.rho**2)).toFixed(2)+'</b> = <b>'+(10*Math.log10(1/(1-p.rho**2))).toFixed(1)+' dB</b> ≈ '+(.5*Math.log2(1/(1-p.rho**2))).toFixed(2)+' bits saved'; }});
+
+/* ---------- PCM output SNR vs bit-error probability ---------- */
+GB.widget('w-pcmnoise',{title:'PCM output SNR with channel bit errors',h:320,hm:340,controls:[{k:'n',label:'bits per sample n',min:4,max:16,step:1,value:8,fmt:v=>String(v|0)}],
+ draw(g,p){ const n=p.n|0, L4=Math.pow(4,n); const v=g.full({l:46,b:30}).view(-9,-1,0,105); v.axes({xl:'log₁₀ Pₑ',ystep:20,xticks:[-8,-7,-6,-5,-4,-3,-2,-1].map(x=>[x,String(x)])}); const f=x=>10*Math.log10(L4/(1+4*Math.pow(10,x)*L4));
+  v.fn(f,'yellow',2.6,null,300); v.hline(6.02*n,'mute',[4,4]); v.text(-8.9,6.02*n+5,'6.02 n = '+(6.02*n).toFixed(1)+' dB (quantisation-limited)','mute','left',11);
+  const kn=Math.log10(1/(4*L4)); v.vline(kn,'red',[4,3]); v.text(kn+.1,95,'knee Pₑ ≈ '+Math.pow(10,kn).toExponential(1),'red','left',11);
+  return 'n = <b>'+n+'</b> bits: ideal SQNR = <b>'+(6.02*n).toFixed(1)+' dB</b>; at Pₑ = 10⁻⁴ the SNR is <b>'+f(-4).toFixed(1)+' dB</b>; at Pₑ = 10⁻² it is <b>'+f(-2).toFixed(1)+' dB</b> (≈ 1/(4Pₑ))'; }});
 </script>
