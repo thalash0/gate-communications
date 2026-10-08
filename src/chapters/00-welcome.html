@@ -1,0 +1,134 @@
+<div class="hero" id="hero">
+<canvas id="hero-cv" aria-hidden="true"></canvas>
+<div class="hero-text">
+<div class="eyebrow">A visual textbook · Communication Systems</div>
+<h1>Signals<br>in the Wild</h1>
+<p class="tag1">How a thought crosses an ocean, a planet, a galaxy: noise, waves, bits and the mathematics that tames them. From first principles to the GATE exam.</p>
+<div class="chips"><span>Noise &amp; probability</span><span>Fourier</span><span>AM · FM</span><span>Information theory</span><span>PCM</span><span>Detection</span><span>PSK · QAM</span><span>Error-correcting codes</span></div>
+<div class="stats">16 chapters + a physics interlude · 60+ live figures &amp; 3-D scenes · 96 real GATE questions solved · works offline on your phone</div>
+<div><a class="btn p" href="#ch01">Begin the journey →</a><a class="btn s" href="#ch13">Jump to the PYQ vault</a></div>
+</div></div>
+<p class="lede" style="font-size:1.12rem">Everything in this book is an answer to one question: how can I get a message from here to there, reliably, with limited power and limited bandwidth, when the universe adds noise to everything?</p>
+
+<!--meta {"id":"ch00","num":"0","part":"Start here","title":"Welcome: The Story of Sending a Thought","cover":true} -->
+
+<p>I want to start with a confession. When I first learned this subject, I memorised it: formulas for $\mu$, $\beta$, $Q(\sqrt{2E_b/N_0})$, Carson's rule, Huffman's algorithm. I could pass the exam. And I understood nothing, because nobody had told me the <em>story</em>: that every one of those formulas is a small, clever answer to a problem somebody once found very annoying.</p>
+<p>So this book does something different. In every chapter you will meet the person who got stuck, the picture that unstuck them, and only then the equation. Almost every figure moves; most have a slider. Play with them. If a formula feels arbitrary, change the slider until it stops feeling arbitrary. <em>That</em> is how the formulas stay in your head on exam day.</p>
+<p>And because you have a goal (the GATE exam), the book is also built around the questions GATE actually asks. I downloaded the official question papers of 2014 and 2019–2026 and read every communication question; <strong>96 of them are reproduced, solved and explained in these pages</strong> with their exam year, and each chapter closes with a "GATE pattern" box saying what to expect.</p>
+
+<h2>The whole subject in one picture</h2>
+<p>Claude Shannon drew this diagram in 1948. Every communication system, from smoke signals to 5G, fits into it. Learn to see the book as a walk along this chain:</p>
+<div id="d-chain" class="dia">Shannon's model of a communication system, annotated with the chapter that covers each block. Information theory (Ch 7) tells us the best possible performance of each half; the rest of the book builds the blocks.</div>
+<table>
+<tr><th>Block</th><th>The question it answers</th><th>Chapter</th></tr>
+<tr><td>Probability, Fourier, random processes</td><td>The language: noise, spectra, filters</td><td>1, 2, 3</td></tr>
+<tr><td>Analog modulation (AM, FM)</td><td>How do I ride a message on a carrier wave?</td><td>4, 5</td></tr>
+<tr><td>Receivers and noise</td><td>How do I tune in one station, and how good does it sound?</td><td>6</td></tr>
+<tr><td>Information theory</td><td>How much can I compress? How fast can I send?</td><td>7</td></tr>
+<tr><td>Sampling and PCM</td><td>How do I turn a voice into bits?</td><td>8</td></tr>
+<tr><td>Pulses and ISI</td><td>How do I send bits as voltages without smearing?</td><td>9</td></tr>
+<tr><td>Detection</td><td>The wave arrives noisy; what did they send?</td><td>10</td></tr>
+<tr><td>Digital modulation</td><td>ASK, PSK, FSK, QAM: which, and what does it cost?</td><td>11</td></tr>
+<tr><td>Coding</td><td>How do I fix errors that noise made anyway?</td><td>12</td></tr>
+<tr><td>★ Interlude: connections</td><td>How noise, Fourier, resonance, links and matched filtering appear in physics and other engineering subjects</td><td>★ (after 12)</td></tr>
+<tr><td>Exam toolkit</td><td>PYQ index, formula sheets, mock test, timeline</td><td>13–15</td></tr>
+</table>
+
+<h2>How the book is organised</h2>
+<div class="cols">
+<div class="box story"><span class="tag">History</span><p>Orange boxes. Who solved the problem and when. These are not decoration: remembering a story is the easiest way to remember a result.</p></div>
+<div class="box real"><span class="tag">Real world</span><p>Teal boxes. Where the idea lives in your phone, your car, a deep-space probe or a hospital.</p></div>
+<div class="box key"><span class="tag">Key idea</span><p>Yellow boxes. The formulas and rules to carry into the exam.</p></div>
+<div class="box gate"><span class="tag">GATE pattern</span><p>Green boxes. What the real papers asked, and how often.</p></div>
+<div class="box trap"><span class="tag">Trap</span><p>Red boxes. Mistakes that cost marks (factor-of-two errors, dB confusions).</p></div>
+<div class="box pause"><span class="tag">Pause and ponder</span><p>Dashed boxes. Try before you read on.</p></div>
+</div>
+<p><strong>Problems</strong> in each chapter come in the three GATE flavours: <em>MCQ</em> (click an option), <em>MSQ</em> (select all that apply, then Check), <em>NAT</em> (type a number). The tag on top says where the question came from (e.g. "GATE 2024 · EC · Q.28" for the real paper, or "Original"). Your results are saved in your browser, the sidebar shows your progress, and every solution is one tap away. <b>Try first. Then read.</b></p>
+
+<h2>What GATE actually asks: the pattern from real papers</h2>
+<div class="box key"><span class="tag">How this analysis was done</span>
+<p>I downloaded the official GATE Electronics &amp; Communication (EC) question papers from the organising institutes' websites: <b>2014 (all four sets), 2019, 2020, 2021, 2022, 2023, 2024, 2025 and 2026</b>, together with the official answer keys for 2014 and 2021–2026 (the 2021 key is a scanned image, read by OCR). For <b>2015–2018</b>, whose official files I could not find online, I used the chapter-wise solved-papers collection you added to the folder: I read only the Communication unit, to see which questions appeared and what they asked, and wrote my own solutions (its stated answers were used as a cross-check, which caught one disagreement: for 2019 Q.34 the collection prints (B), but the geometry gives $E=3$, i.e. (D); I trust the mathematics). The 2019–2021 papers are scanned images, so I read them with OCR and by eye; official keys for 2019 and 2020 were not available, so those answers are my own derivations (checked numerically). I then went through every question and kept the ones belonging to the Communications syllabus: random processes, analog, information theory, digital and coding. <b>This is my classification</b>; borderline questions (e.g. ADC SNR, which sits between Signals and Communications) are counted here. </p></div>
+<p>Communication has been worth roughly <strong>7 to 14 marks out of 100</strong>, and <b>the weight has grown</b>: papers of 2015–2018 (which had several sets, so I averaged per set) carried about <strong>7–8 marks</strong> of Communication; the eight papers 2019–2026 carried about <strong>11.5 on average</strong> (range 8–14). The split between 1-mark and 2-mark questions is roughly even. Here is where the marks went:</p>
+<div class="widget" id="w-pyq">Marks of Communication questions by topic (my classification of the official papers). Use the "view" menu for totals, a single year, or a comparison with the older papers. Notice the stability: <b>information theory, AM/FM, PCM/ADC and detection</b> are present nearly every year; random-process questions are in 7 of 8; coding in 6 of 8 and rising.</div>
+<div class="cols">
+<div class="box gate"><span class="tag">Almost every year</span>
+<ul>
+<li><b>Random process / noise through a filter</b> (7 of 8 years): $S_Y=|H|^2S_X$, white noise through RC, validity of an autocorrelation/PSD, WSS or not.</li>
+<li><b>Entropy / capacity / mutual information</b> (7 of 8): max entropy, BSC/BEC/DMC capacity, Shannon–Hartley, Huffman.</li>
+<li><b>ML/MAP detection with Gaussian noise</b> (7 of 8): midpoint thresholds, $Q(d/2\sigma)$, 3-level symbols.</li>
+<li><b>AM or FM numerical</b> (8 of 8): $\mu$, sideband power, instantaneous frequency, Carson, pre-emphasis.</li>
+</ul></div>
+<div class="box gate"><span class="tag">Most years</span>
+<ul>
+<li><b>PCM / ADC / delta modulation</b> (5 of 8): $6.02n+1.76$, bit rate $nf_s$, DM step.</li>
+<li><b>Hamming / CRC / block codes</b> (6 of 8 since 2019): syndrome, $d_{\min}$, $P_{\rm correct}$, CRC division.</li>
+<li><b>Digital modulation rates and BER</b> (3 of 8 + 2014): bits/symbol, bandwidth with raised cosine, $Q$-function BER.</li>
+</ul>
+<span class="tag" style="margin-top:.6em">Rare</span><ul><li>Superheterodyne (once: 2021), ISI/Nyquist criterion (2024), noise figure (never in this sample, but cheap to learn).</li></ul></div>
+</div>
+<div class="box trap"><span class="tag">Honest caveats</span>
+<p>(1) Eight (or twelve) papers is a small sample; a topic being absent does not make it impossible. 2015–2018 numbers are approximate: each year had 2–3 sets with different questions, the collection may not list every question, and I divided pooled marks by the number of sets. (2) I could not retrieve official keys for 2019 and 2020: I solved those myself and checked numerically, but treat them as "derived". (When I compared my 2021 answers to the OCR'd key, one needed fixing: Q.52 asks for the SQNR as a <em>ratio</em>, not in dB. Always read the units the question wants.) (3) GATE sometimes updates the syllabus; the book covers the syllabus you pasted at the start in full. (4) The questions here are reproduced from the public papers for study; for the real thing, always cross-check with the official files (links in Chapter 13).</p></div>
+
+<h2>A study plan that fits the data</h2>
+<table>
+<tr><th>Week</th><th>Chapters</th><th>Why in this order</th></tr>
+<tr><td>1</td><td>1–3 (maths) quickly, then 7 (information theory)</td><td>Information theory is high-yield and needs only Chapter 1; random processes (Ch 3) feed everything else.</td></tr>
+<tr><td>2</td><td>4–6 (analog)</td><td>AM/FM is every year; Chapter 6's FOM numbers are easy marks.</td></tr>
+<tr><td>3</td><td>8–10 (PCM, ISI, detection)</td><td>The $Q(\cdot)$ detection questions are the bread and butter.</td></tr>
+<tr><td>4</td><td>11–12 (modulation, coding)</td><td>Coding is rising; modulation formulas assemble the rest.</td></tr>
+<tr><td>5</td><td>13–15: PYQ index, mock test, cheat sheet</td><td>Solve every real PYQ again without looking; do the mock under time.</td></tr>
+</table>
+<p><b>Exam technique for this subject.</b> (i) Draw the picture: constellation, spectrum, or block diagram: it usually gives the answer in two lines. (ii) Keep a mental table of $Q(1)=0.159$, $Q(2)=0.0228$, $Q(3)=0.00135$, $Q(4)=3.2\times10^{-5}$. (iii) In every NAT, check units (dB vs ratio; Hz vs rad/s; one-sided vs two-sided PSD $N_0$ vs $N_0/2$). (iv) Spend 2 minutes per 1-mark question, 3–4 per 2-mark; this is a "fast-formula" subject, so be quick on the easy ones and bank the time.</p>
+
+<h2>Conventions used throughout</h2>
+<ul>
+<li>$\sinc(x)=\sin(\pi x)/(\pi x)$; frequencies $f$ in Hz; $\omega=2\pi f$.</li>
+<li>AWGN has two-sided PSD $N_0/2$; thermal noise $N_0=kT$; $\sigma^2=N_0/2$ per orthonormal dimension.</li>
+<li>$Q(x)=\int_x^\infty\frac1{\sqrt{2\pi}}e^{-t^2/2}dt=\frac12\erfc(x/\sqrt2)$. $\log$ means $\log_2$ in information theory.</li>
+<li>$E_b$ energy per bit, $E_s=E_b\log_2M$ energy per symbol, $\gamma=E_b/N_0$. dB values are $10\log_{10}$ of power ratios.</li>
+</ul>
+
+<div class="box real"><span class="tag">Reading this book on a phone or tablet</span>
+<p>The whole book is a single file, <code>gate-comm-book.html</code>. Copy it to your Android device (USB cable, Google Drive, Telegram "Saved Messages", e-mail to yourself) and open it with <b>Chrome</b>. It works offline, keeps your progress, and the layout adapts to the phone: tap ☰ for the table of contents, <b>A±</b> to change text size, ☀/☾ for light/dark. The 3-D diagrams use your phone's GPU; drag sideways to rotate them (vertical drag scrolls the page). See the README next to the file for details.</p></div>
+
+<script>
+GB.diagram('d-chain',{w:820,h:210,alt:'Shannon communication system with chapters',items:[
+ ['box',10,20,100,44,'Source\n(voice, video, bits)','blue'],['arr',[110,42,140,42]],['box',140,20,110,44,'Source encoder\ncompress / digitise','green'],['txt',195,78,'Ch 7, 8','tm'],['arr',[250,42,280,42]],['box',280,20,100,44,'Channel encoder\nadd redundancy','purple'],['txt',330,78,'Ch 12','tm'],['arr',[380,42,410,42]],['box',410,20,100,44,'Modulator\nAM FM ASK PSK QAM','orange'],['txt',460,78,'Ch 4, 5, 9, 11','tm'],['arr',[510,42,560,42]],
+ ['box',560,20,110,44,'Channel\n+ noise N(t)','red'],['txt',615,78,'Ch 2, 3, 6','tm'],
+ ['box',560,130,110,44,'Demodulator\ndetector','orange'],['txt',615,188,'Ch 4–6, 9–11','tm'],['arr',[615,64,615,130]],
+ ['arr',[560,152,530,152]],['box',420,130,110,44,'Channel decoder\ncorrect errors','purple'],['txt',475,188,'Ch 12','tm'],['arr',[420,152,390,152]],
+ ['box',280,130,110,44,'Source decoder\nreconstruct','green'],['arr',[280,152,250,152]],['box',140,130,110,44,'Destination','blue'],
+ ['txt',770,40,'noise','tm'],['arr',[740,60,680,45],'']]});
+
+GB.widget('w-pyq',{title:'Communication marks in the official GATE EC papers, by topic',h:360,hm:520,controls:[{k:'y',type:'select',label:'view',options:[[0,'all years 2019–2026'],[-1,'compare 2015–18 vs 2019–26 (marks per paper)'],[2019,'2019'],[2020,'2020'],[2021,'2021'],[2022,'2022'],[2023,'2023'],[2024,'2024'],[2025,'2025'],[2026,'2026']],value:0}],
+ draw(g,p){ const T=['AM / FM / receivers','Information theory','PCM / ADC / DM','ML-MAP detection','Random processes','Coding (Hamming, CRC)','Digital modulation / ISI','Probability (RV)'];
+  const D={2019:[1,0,2,4,2,1,0,0],2020:[4,1,0,2,1,0,0,0],2021:[5,3,3,0,1,1,0,0],2022:[2,3,2,2,1,2,1,0],2023:[2,2,1,0,3,0,0,2],2024:[1,1,4,2,1,2,1,0],2025:[2,5,2,2,2,1,0,0],2026:[2,2,0,2,0,2,2,2]};
+  const OLD=[2.04,0.92,0.5,1.33,1.33,0.42,0.71,0.08], NEW=T.map((_,i)=>Object.values(D).reduce((s,a)=>s+a[i],0)/8); const vals=p.y===-1?NEW:T.map((_,i)=>p.y?D[p.y][i]:Object.values(D).reduce((s,a)=>s+a[i],0)); const tot=vals.reduce((a,b)=>a+b,0), mx=Math.max(...vals,1,...(p.y===-1?OLD:[])), ctx=g.ctx, C=g.C; const cols=[C.orange,C.blue,C.green,C.red,C.purple,C.teal,C.pink,C.yellow];
+  const narrow=g.w<520, lw=narrow?150:200, x0=lw+6, W=g.w-x0-50, rh=(g.h-30)/T.length; ctx.font=(narrow?'11':'12.5')+'px system-ui'; T.forEach((t,i)=>{ const y=14+i*rh; ctx.fillStyle=C.fg; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillText(t,lw,y+rh/2-3); if(p.y===-1){ ctx.globalAlpha=.35; ctx.fillStyle=C.mute; ctx.fillRect(x0,y+rh/2-1,W*OLD[i]/(mx*1.05),(rh-12)/2); ctx.globalAlpha=.9; ctx.fillStyle=cols[i]; ctx.fillRect(x0,y+4,W*vals[i]/(mx*1.05),(rh-12)/2); ctx.globalAlpha=1; ctx.fillStyle=C.yellow; ctx.textAlign='left'; ctx.fillText(vals[i].toFixed(1)+' vs '+OLD[i].toFixed(1)+' (old)',x0+W*Math.max(vals[i],OLD[i])/(mx*1.05)+6,y+rh/2-3); } else { ctx.globalAlpha=.85; ctx.fillStyle=cols[i]; ctx.fillRect(x0,y+4,W*vals[i]/(mx*1.05),rh-12); ctx.globalAlpha=1; ctx.fillStyle=C.yellow; ctx.textAlign='left'; ctx.fillText(String(vals[i])+(p.y?'':'  ('+(vals[i]/8).toFixed(1)+'/yr)'),x0+W*vals[i]/(mx*1.05)+6,y+rh/2-3); } });
+  if(p.y===-1) return 'colour bars: 2019–2026 average, <b>'+tot.toFixed(1)+'</b> marks/paper · grey bars: 2015–2018 average, <b>'+OLD.reduce((a,b)=>a+b,0).toFixed(1)+'</b> marks/paper. Information theory, PCM and coding grew most; AM/FM stayed steady.'; return p.y?'<b>'+p.y+'</b>: '+tot+' marks of Communication questions (my classification)':'<b>'+tot+'</b> marks in 8 papers = <b>'+(tot/8).toFixed(1)+' marks per paper</b> on average'; }});
+
+/* ---------- cover animation ---------- */
+(function(){ const cv=document.getElementById('hero-cv'); if(!cv) return; const ctx=cv.getContext('2d'); const m=GB.m, TAU=Math.PI*2; let W=0,H=0,dpr=1,vis=true,raf=0,t0=performance.now();
+ const rng=m.rng(2024), stars=Array.from({length:150},()=>({x:rng(),y:rng(),p:rng()*TAU,s:.5+rng()*1.5})), cols=Array.from({length:40},()=>({x:rng(),sp:.05+rng()*.12,off:rng()*100,chs:Array.from({length:30},()=>rng()<.5?'0':'1')}));
+ const noiseDots=Array.from({length:9},(_,i)=>Array.from({length:6},()=>[m.randn(rng),m.randn(rng)]));
+ function size(){ const r=cv.getBoundingClientRect(); dpr=Math.min(2,window.devicePixelRatio||1); W=r.width; H=r.height; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); }
+ const wave=(fn,color,lw,glow,step)=>{ ctx.beginPath(); for(let x=0;x<=W;x+=step){ const y=fn(x); x?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.shadowColor=color; ctx.shadowBlur=glow; ctx.stroke(); ctx.shadowBlur=0; };
+ function frame(now){ if(!cv.isConnected){ return; } raf=0; const t=(now-t0)/1000; ctx.setTransform(dpr,0,0,dpr,0,0); const narrow=W<700;
+  const g=ctx.createRadialGradient(W*.72,H*.38,10,W*.6,H*.5,Math.max(W,H)*.85); g.addColorStop(0,'#1d2f57'); g.addColorStop(.5,'#0d1426'); g.addColorStop(1,'#05070d'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  stars.forEach(s=>{ ctx.globalAlpha=.12+.3*(.5+.5*Math.sin(t*s.s+s.p)); ctx.fillStyle='#cfe3ff'; ctx.fillRect(s.x*W,s.y*H,1.4,1.4); }); ctx.globalAlpha=1;
+  ctx.font='13px ui-monospace,Menlo,monospace'; ctx.textAlign='center'; cols.forEach((c,i)=>{ if(narrow&&i%2) return; const x=c.x*W*.55+6; for(let k=0;k<22;k++){ const yy=((c.off+t*c.sp*H*.9+k*20)%(H+40))-20; const a=Math.max(0,1-k/22)*.16; ctx.fillStyle='rgba(88,196,221,'+a+')'; ctx.fillText(c.chs[(k+Math.floor(t*(1+c.sp*8)))%30],x,yy); } });
+  const y0=H*.64; const k1=TAU/150, w1=2.2; const env=x=>1+.55*Math.sin(TAU*(x/W*1.3-t*.09));
+  wave(x=>y0+Math.sin(x*k1-t*w1)*36*env(x),'#58c4dd',2.2,14,3); wave(x=>y0-.5+Math.sin(x*k1-t*w1)*36*env(x)*-1,'rgba(88,196,221,.35)',1.2,0,3);
+  wave(x=>y0+44+Math.sin(x*TAU/70-t*3+3.2*Math.sin(x*TAU/520-t*1.1))*18,'#ffd866',2,12,2); 
+  wave(x=>y0-52+Math.sin(x*TAU/110-t*1.7)*10+ (Math.sin(x*12.9+t*40)+Math.sin(x*7.3-t*33))*3,'rgba(247,143,179,.8)',1.3,6,2);
+  // constellation (16-QAM with breathing noise)
+  const cx=W*(narrow?.5:.78), cy=H*(narrow?.22:.3), R=Math.min(W,H)*(narrow?.13:.19), sg=.1+.09*(.5+.5*Math.sin(t*.55)); ctx.save(); ctx.translate(cx,cy); ctx.rotate(Math.sin(t*.15)*.12); ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1; ctx.strokeRect(-R*1.2,-R*1.2,R*2.4,R*2.4); ctx.beginPath(); ctx.moveTo(-R*1.2,0); ctx.lineTo(R*1.2,0); ctx.moveTo(0,-R*1.2); ctx.lineTo(0,R*1.2); ctx.stroke();
+  const pal=['#58c4dd','#ffd866','#f78fb3','#83c167']; let n=0; for(let a=-3;a<=3;a+=2) for(let b=-3;b<=3;b+=2){ const px=a/3*R, py=b/3*R, col=pal[(n++)%4]; ctx.fillStyle=col; ctx.globalAlpha=.28; noiseDots[n%9].forEach(d=>{ const jx=d[0]+Math.sin(t*2.1+n*2+d[1]*3)*.4, jy=d[1]+Math.cos(t*1.7+n*3+d[0]*3)*.4; ctx.beginPath(); ctx.arc(px+jx*sg*R,py+jy*sg*R,2.2,0,TAU); ctx.fill(); }); ctx.globalAlpha=1; ctx.shadowColor=col; ctx.shadowBlur=12; ctx.beginPath(); ctx.arc(px,py,4,0,TAU); ctx.fill(); ctx.shadowBlur=0; } ctx.restore();
+  // FM spectrum bars
+  const beta=2.6+2.2*Math.sin(t*.5), bx=W*(narrow?.06:.5), bw=W*(narrow?.88:.46), nb=21, bh=H*.2, by=H-18; for(let i=-10;i<=10;i++){ const v=Math.abs(m.besselJ(Math.abs(i),beta)); const hh=Math.min(1,v/.6)*bh; const x=bx+(i+10.5)/nb*bw; const gr=ctx.createLinearGradient(0,by-hh,0,by); gr.addColorStop(0,'#ffd866'); gr.addColorStop(1,'#f78fb3'); ctx.fillStyle=gr; ctx.globalAlpha=.85; ctx.fillRect(x-bw/nb*.32,by-hh,bw/nb*.64,hh); } ctx.globalAlpha=.55; ctx.fillStyle='#97a1b6'; ctx.font='11px system-ui'; ctx.textAlign='right'; ctx.fillText('FM spectrum Jₙ(β),  β = '+beta.toFixed(1),bx+bw,by-bh-8); ctx.globalAlpha=1;
+  if(vis&&!document.hidden&&!reduce) raf=requestAnimationFrame(frame); }
+ const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ size(); new ResizeObserver(()=>{ size(); if(!raf) raf=requestAnimationFrame(frame); }).observe(cv);
+ if('IntersectionObserver' in window) new IntersectionObserver(es=>{ vis=es[0].isIntersecting; if(vis&&!raf) raf=requestAnimationFrame(frame); }).observe(cv);
+ document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&vis&&!raf) raf=requestAnimationFrame(frame); }); raf=requestAnimationFrame(frame); })();
+</script>

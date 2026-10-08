@@ -1,0 +1,339 @@
+
+
+=====PAGE 1=====
+Q. No. Session
+Question Type (QT)       
+MCQ/MSQ/NAT
+Subject Name (SN)
+Key/Range (KY)
+Mark (MK)
+1
+4 MCQ
+GA
+C
+1
+2
+4 MCQ
+GA
+A
+1
+3
+4 MCQ
+GA
+C
+1
+4
+4 MCQ
+GA
+C
+1
+5
+4 MCQ
+GA
+C
+1
+6
+4 MCQ
+GA
+D
+2
+7
+4 MCQ
+GA
+A
+2
+8
+4 MCQ
+GA
+B
+2
+9
+4 MCQ
+GA
+A
+2
+10
+4 MCQ
+GA
+C
+2
+11
+4 MCQ
+EC
+C
+1
+12
+4 MCQ
+EC
+B
+1
+13
+4 MCQ
+EC
+A
+1
+14
+4 MCQ
+EC
+B
+1
+15
+4 MCQ
+EC
+C
+1
+16
+4 MCQ
+EC
+A
+1
+17
+4 MCQ
+EC
+A
+1
+18
+4 MCQ
+EC
+D
+1
+19
+4 MCQ
+EC
+B
+1
+20
+4 MCQ
+EC
+D
+1
+21
+4 MCQ
+EC
+D
+1
+22
+4 MCQ
+EC
+MTA
+1
+23
+4 MCQ
+EC
+A
+1
+24
+4 MCQ
+EC
+A
+1
+25
+4 MCQ
+EC
+A
+1
+26
+4 MCQ
+EC
+B
+1
+27
+4 MCQ
+EC
+B
+1
+28
+4 MCQ
+EC
+C
+1
+29
+4 MCQ
+EC
+B
+1
+30
+4 MSQ
+EC
+A,B
+1
+31
+4 NAT
+EC
+10 to 10
+1
+32
+4 NAT
+EC
+1.30 to 1.40
+1
+33
+4 NAT
+EC
+80 to 80
+1
+34
+4 NAT
+EC
+02 to 02
+1
+35
+4 NAT
+EC
+04 to 04
+1
+36
+4 MCQ
+EC
+B
+2
+37
+4 MCQ
+EC
+B
+2
+38
+4 MCQ
+EC
+A
+2
+39
+4 MCQ
+EC
+A
+2
+40
+4 MCQ
+EC
+A
+2
+41
+4 MCQ
+EC
+A
+2
+42
+4 MCQ
+EC
+A
+2
+43
+4 MCQ
+EC
+A
+2
+44
+4 MCQ
+EC
+B
+2
+45
+4 MCQ
+EC
+B
+2
+GATE 2023 Electronics and Communication Engineering (EC)
+
+
+=====PAGE 2=====
+46
+4 MCQ
+EC
+MTA
+2
+47
+4 MCQ
+EC
+A
+2
+48
+4 MCQ
+EC
+C
+2
+49
+4 MCQ
+EC
+A
+2
+50
+4 MCQ
+EC
+D
+2
+51
+4 MCQ
+EC
+A
+2
+52
+4 MSQ
+EC
+B,C
+2
+53
+4 MSQ
+EC
+A,B,D
+2
+54
+4 MSQ
+EC
+B,C,D
+2
+55
+4 NAT
+EC
+0 to 0
+2
+56
+4 NAT
+EC
+2.20 to 2.30
+2
+57
+4 NAT
+EC
+4 to 4
+2
+58
+4 NAT
+EC
+15 to 15
+2
+59
+4 NAT
+EC
+0.24 to 0.26
+2
+60
+4 NAT
+EC
+0.12 to 0.14
+2
+61
+4 NAT
+EC
+60.00 to 70.00
+2
+62
+4 NAT
+EC
+8.30 to 8.34
+2
+63
+4 NAT
+EC
+250 to 250 OR 500 to 500
+2
+64
+4 NAT
+EC
+2.00 to 2.00
+2
+65
+4 NAT
+EC
+1.97 to 1.99
+2
+MTA = Marks to ALL

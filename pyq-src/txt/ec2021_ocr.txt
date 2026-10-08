@@ -1,0 +1,965 @@
+=====PAGE 1=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+GeneralAptitude(GA)
+Q.1-Q.5 Multiple Choice Question (MCQ),carry ONE mark each (for each wrong
+answer: -1/3).
+Q.1 The current population of a city is 11,02,500. If it has been increasing at the
+rate of 5% per annum, what was its population 2 years ago?
+(A) 9,92,500
+(B) 9,95,006
+(C)
+10,00,000
+(D) 12,51,506
+Q.2
+ p and q are positive integers and  + I = 3,
+qP
+then,
+(A) 3
+(B) 7
+(C)
+9
+(D) 11
+EC-CopyrightGATE2021 Page 1of 36
+=====PAGE 2=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 OrganisingInstitute-llTBombay
+Electronics and CommunicationEngineering (EC)
+Q.3
+The least number of squares that must be added so that the line P-Q
+becomes the line of symmetry is
+(A) 4
+(B) 3
+(C) ６
+(D) 7
+Q.4 Nostalgiaisto anticipationas is to
+Which one of the following options maintains a similar logical relation in the
+above sentence?
+(A) Present, past
+(B) Future, past
+(C) Past, future
+(D) Future, present
+EC - Copyright  GATE 2021
+Page2of36
+=====PAGE 3=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.5 Considerthefollowing sentences:
+(# I woke upfrom sleep.
+(i) I woked upfrom sleep.
+I waswokenupfrom sleep.
+(iv) I was wokened up from sleep.
+Which of the above sentences are grammatically CORRECT?
+(A) (i and (i)
+(B) (i) and (ii)
+(C) (i) and (ii)
+(D) (i) and (iv)
+EC-CopyrightGATE2021
+Page 3 of 36
+=====PAGE 4=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.6-Q.10 Multiple ChoiceQuestion (MCQ), carry TWO marks each (for each wrong
+answer:-2/3).
+Q.6 Givenbelowaretwostatementsandtwoconclusions.
+Statement 1:All purple are green.
+Statement 2: All black are green.
+Conclusion I: Some black are purple.
+Conclusion II: No black is purple.
+Based on the above statements and conclusions, which one of the following
+options is logically CORRECT?
+(A) Only conclusion I is correct.
+(B) Only conclusion II is correct.
+(C) Either conclusion I or II is correct.
+(D) Both conclusion I and II are correct.
+EC-Copyright  GATE2021
+Page 4 of 36
+=====PAGE 5=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.7 Computers areubiquitous.They areused toimprove efficiencyinalmost all
+fieldsfrom agriculture to space exploration.Artificial intelligence (Al) is
+currently ahot topic.AI enables computers to learn,given enough training
+data.Forhumans,sittinginfrontofacomputerforlonghourscanlead to
+health issues.
+Whichof thefollowingcanbededucedfromthe abovepassage?
+(i) Nowadays, computers are present in almost all places.
+( Computers cannot be used for solving problems in engineering.
+(ii) For humans, there are both positive and negative effects of using
+computers.
+(iv) Artificial intelligence can be done without data.
+(A) (i) and (ii)
+(B) (i) and (iv)
+(C) (i), (ii) and (iv)
+(D) (i) and (ii)
+Q.8 Consider a square sheet of side 1 unit. In the first step, it is cut along the
+main diagonal to get two triangles. In the next step, one of the cut triangles
+is revolved about its short edge to form a solid cone. The volume of the
+resulting cone, in cubic units, is
+(A) π-3
+-3
+(B)
+(C) 3π
+2
+(D) 3π
+Page5of 36
+EC-CopyrightGATE2021
+=====PAGE 6=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021
+OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.9
+Sunday 65
+55
+Saturday 50
+60
+35
+Friday
+20
+Thursday 55
+Wednesday 50
+Tuesday 65
+55
+Monday 70
+45
+0 10 20 30 40 50 60 70 80
+■YX
+The number of minutes spent by two students, X and Y, exercising every day
+in agivenweek are shown in thebar chart above.
+The number of days in the given week inwhich one of the students spent a
+minimum of10%more than the otherstudent,on agiven day,is
+(A) 4
+(B) 5
+(C) 6
+7
+(D)
+EC-Copyright  GATE 2021
+Page 6 of 36
+=====PAGE 7=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021
+OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.10
+Corners are cut from an equilateral triangle to produce a regular convex
+hexagon as shown in the figure above.
+The ratio of the area of the regular convex hexagon to the area of the original
+equilateral triangle is
+(A) 2:3
+(B) 3:4
+(C) 4:5
+(D) 5:6
+EC-CopyrightGATE2021
+Page 7 of 36
+=====PAGE 8=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021
+Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+ElectronicsandCommunicationEngineering(EC)
+Q.1 -- Q.15 Multiple Choice Question (MCQ), carry ONE mark each (for each wrong
+answer:-1/3).
+Q.1 The vector function F (r) = -xt + yj is defined over a circular arc C
+shown in the figure.
+The line integral of J. F (r). dr is
+(A) 1-2
+(B) 1-4
+(C) 1-6
+(D) 1
+-3
+EC-CopyrightGATE2021 Page 8 of 36
+=====PAGE 9=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.2 Considerthe differential equationgivenbelow.
+dy
+x
+dx 1-x2y=x√y
+Theintegratingfactor of thedifferential equationis
+(A) (1- x2)-3/4
+(B) (1- x2)-1/4
+(C) (1- x2)-3/2
+(D) (1- x2)-1/2
+Q.3 Two continuous random variables X and Y are related as
+Y=2X+3
+Let o? and o2 denote the variances of X and Y, respectively. The variances
+are related as
+(A) ² = 2 
+(B)  = 4
+(C) =5²
+(D) ² = 25 ²
+Q.4 Consider a real-valued base-band signal x(t), band limited to 10 kHz. The
+Nyquist rate for the signal y(t) = x(t) x( 1 + ) is
+(A) 15 kHz
+(B) 30kHz
+(C) 60 kHz
+(D) 20 kHz
+EC-CopyrightGATE2021 Page 9of 36
+=====PAGE 10=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.5 Consider two16-point sequencesx[n] andh[n].Let thelinearconvolution
+ofx[n]andh[n]bedenotedbyy[n],whilez[n]denotesthe16-pointinverse
+discreteFouriertransform(IDFT)of theproduct of the16-pointDFTs of
+x[n] and h[n]. The value(s) of k for which z[k]=y[k] is/are
+(A) k=0,1,2,.,15
+(B) k-0
+(C) k=15
+(D) k = 0 andk =15
+Q.6 A bar of silicon is doped with boron concentration of 1016 cm-3 and
+assumed tobefullyionized.Itis exposedtolightsuch thatelectron-holepairs
+are generated throughout the volume of the bar at the rate of 102° cm-3s-1.
+If the recombination lifetime is 100 μs, intrinsic carrier concentration of
+silicon is
+1010 cm-3 and assuming 100% ionization of boron, then the approximate
+product of steady-state electron and hole concentrations due to this light
+exposure is
+(A) 1020 cm -6
+(B) 2 × 1020 cm-6
+(C) 1032 cm-6
+(D) 2 x 1032 cm-6
+EC-CopyrightGATE2021 Page 10of 36
+=====PAGE 11=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021
+OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.7 Theenergybanddiagramofap-typesemiconductorbaroflengthLunder
+equilibriumcondition(ie.,theFermienergylevel EFisconstant) isshownin
+thefigure.ThevalancebandEvisslopedsincedopingisnon-uniformalong
+thebar.Thedifferencebetweentheenergylevelsofthevalencebandatthe
+twoedgesofthebaris.
+p-type
+E:
+If the charge of an electron is q, then the magnitude of the electric field
+developed inside this semiconductor bar is
+(A) △
+(B) 24
+(C)
+2qL
+(D) 34
+2qL
+EC-CopyrightGATE2021
+Page11of36
+=====PAGE 12=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021
+OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.8 Inthecircuit shown inthefigure,the transistorsMiandMare operating in
+saturation.The channellengthmodulationcoefficientsof boththe
+transistors arenon-zero.ThetransconductanceoftheMOSFETsMiandM2
+aregmandgm2,respectively,and theinternalresistanceoftheMOSFETs
+Mi and M are ro1 and ro2,respectively.
+VDD
+M2
+M
+Ignoringthebodyeffect,the acsmall signalvoltagegain（aVout/dVm)ofthe
+circuitis
+(A) -9m2 (ro1llro2 )
+(B) lro2
+9m2
+9m1
+(C) 1 Ilro1llro2
+9m1
+gm2
+(D) Ilro1llro2
+9m2
+9m1
+EC-CopyrightGATE2021 Page12of36
+=====PAGE 13=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.9 For thecircuitwithanideal OPAMPshowninthefigure,VREFisfixed.
+RIN RF
+WM W
++12V
+R1 Vour
+=100Ω
+If Vour = 1 volt for VIn = 0.1 volt and VouT = 6 volt for VIv = 1 volt, where
+VoUT is measured across Ri connected at the output of this OPAMP, the
+value of Rg/Rin is
+(A)
+3.285
+(B) 2.860
+(C) 3.825
+(D) 5.555
+EC-CopyrightGATE2021
+Page13of36
+=====PAGE 14=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.10 Considerthecircuitwithanideal OPAMPshowninthefigure.
+Vour
+REF
+Assuming IVinl < IVccl and IVreFl < IVccl, the condition at which VoUT
+equals to zero is
+VIn = VREF
+(A)
+(B) VIn = 0.5 VREF
+(C) VIN : 二 2 VREF
+(D) VIN = 2 + VREF
+Q.11 If (1235)x= (3033)y, where x and y indicate the bases of the
+corresponding numbers, then
+(A) x =7 andy = 5
+(B)
+x =8 andy = 6
+(C) x = 6 andy = 4
+(D) x = 9 andy = 7
+EC -Copyright  GATE 2021
+Page14of36
+=====PAGE 15=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.12 Addressing of a 32Kx16memory is realized usinga single decoder.The
+minimumnumberofANDgatesrequiredforthedecoderis
+(A) 28
+(B) 232
+(C) 215
+(D) 219
+Q.13 The block diagram of a feedback control system is shown in the figure.
+G2
+G
+H
+Thetransferfunction Y(s) 2 of the system is
+x(s)
+(A) G1 + G2 + G1G2H
+1+GH
+(B) G1 + G2
+1+ GH + G2H
+(C) G + G2
+1+GH
+(D) G1 + G2+ GG2H
+1+GH +G2H
+EC-CopyrightGATE 2021
+Page15of36
+=====PAGE 16=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.14 The completeNyquist plot of the open-loop transferfunction G(s)H(s) of a
+feedbackcontrolsystemisshowninthefigure.
+jImGH
+G(s)H(s)-plane
+Re GH
+(-1,j0)
+If G(s)H(s) has one zero in the right-half of the s-plane, the number of poles
+that the closed-loop system will have in the right-half of the S-plane is
+(A) 0
+(B) 1
+(C)
+4
+(D) 3
+EC-CopyrightGATE2021 Page16of36
+=====PAGE 17=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021
+OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.15 Consider a rectangular coordinate system (x, y, z) with unit vectors ax, ay,
+andaAplanewavetravelingintheregionz>Owithelectricfieldvector
+E =10 cos(2×10°t +βz)a, is incident normally on the plane at z =0,
+whereβisthephaseconstant.Theregionz>Oisinfree space and the
+region z <0 is filled with a lossless medium (permittivity & = Eo,
+permeability μ = 4μo, where Eo = 8.85 × 10-12 F/m and μo = 4π ×
+10-7H/m).The value of the reflection coefficient is
+1-3
+(A)
+(B) 3-5
+(C) 2-5
+(D) 2-3
+EC-CopyrightGATE2021 Page 17 of 36
+=====PAGE 18=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.16-Q.25 Numerical Answer Type (NAT), carry ONE mark each (no negative
+marks).
+Q.16 If the vectors (1.0, -1.0, 2.0), (7.0, 3.0,x) and (2.0, 3.0, 1.0) in R3
+arelinearlydependent,thevalue of xis
+Q.17 Consider thevectorfieldF=ax（4y-cz)+ay（4x+2z)+a(2y+z)in
+a rectangular coordinate system (x, y, z) with unit vectors ax, a, and a. If the
+field F is irrotational （conservative),then the constant C(in integer)is
+Q.18 Consider thecircuit shownin the figure.
+3Ω 2Ω
+7Ω
+The current I flowing through the 7 Q resistor between P and Q (rounded off
+toonedecimalplace)is A.
+EC-CopyrightGATE2021
+Page18of36
+=====PAGE 19=====
+GATE
+Graduate AptitudeTestinEngineering2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.19 Considerthecircuitshowninthefigure.
+6mA 1kQ
+W
+mA
+kQ
+1 kQ
+The value of Vo (rounded off to one decimal place) is
+Q.20 An 8-bit unipolar (all analog output values are positive) digital-to-analog
+converter (DAC)has a full-scale voltage range from 0 V to 7.68 V. If the
+digital input code is 10010110 (the leftmost bit is MSB), then the analog
+outputvoltage of the DAC (rounded offto one decimal place) is
+V.
+EC-CopyrightGATE2021 Page 19 of 36
+=====PAGE 20=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.21 The autocorrelation functionRx(t)of a wide-sense stationaryrandom
+processX(t)is shown in the figure.
+Rx(t)
+The average power of X(t) is
+Q.22 Consider a carrier signal which is amplitude modulated by a single-tone
+sinusoidal message signal with a modulation index of 50%. If the carrier and
+one of the sidebands are suppressed in the modulated signal, the percentage
+of power saved (rounded offto one decimal place) is
+Q.23 A speech signal, band limited to 4 kHz, is sampled at 1. 25 times the Nyquist
+rate. The speech samples, assumed to be statistically independent and
+uniformly distributed in the range -5 V to +5 V, are subsequently
+quantized in an 8-bit uniform quantizer and then transmitted over a voice-
+grade AWGN telephone channel. If the ratio of transmitted signal power to
+channel noise power is 26 dB, the minimum channel bandwidth required to
+ensure reliable transmission of the signal with arbitrarily small probability
+of transmission error (rounded off to two decimal places) is kHz.
+Q.24 A 4 kHz sinusoidal message signal having amplitude 4 V is fed to a delta
+modulator (DM) operating at a sampling rate of 32 kHz. The minimum step
+size required to avoid slope overload noise in the DM (rounded off to two
+decimalplaces)is V.
+Q.25 The refractive indices of the core and cladding of an optical fiber are 1.50
+and 1. 48, respectively. The critical propagation angle, which is defined as
+the maximum angle that the light beam makes with the axis of the optical
+fiber to achieve the total internal reflection, (rounded off to two decimal
+places)is degree.
+Page 20of 36
+EC-CopyrightGATE2021
+=====PAGE 21=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.26-Q.35MultipleChoiceQuestion(MCQ),carryTWOmarkseach(foreach
+wronganswer:-2/3).
+Q.26 Consider the integral
+sin(x)
+d.x
+x²(x² + 4)
+where C is a counter-clockwise oriented circle defined as |x - il = 2. The
+value of the integral is
+(A) π
+8 sin(2i)
+(B) π-8
+sin(2i)
+(C) π
+sin(2i)
+(D) π sin(2i)
+14
+Q.27 A box contains the following three coins.
+Afaircoinwithhead on oneface and tail on the otherface.
+I.
+I1. A coin with heads on both the faces.
+III. A coin with tails on both the faces.
+A coin is picked randomly from the box and tossed. Out of the two remaining
+coins in the box, one coin is then picked randomly and tossed. If the first toss
+results in a head, the probability of getting a head in the second toss is
+(A) 2-5
+1-3
+(B)
+(C) 1-2
+(D) 2-3
+EC-CopyrightGATE 2021 Page 21 of 36
+=====PAGE 22=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.28 The switch inthe circuit in thefigure is inpositionPfora long time andthen
+movedtopositionQattimet=0.
+5kΩ
+D
+10 kQ
+20V 20 kQ 1mF
+v(t)
+0.1 mH
+The value of dv(t) att = 0+ is
+P
+(A) 0 V/s
+(B) 3 V/s
+(C) -3 V/s
+(D)
+-5 V/s
+EC-CopyrightGATE2021
+Page22of36
+=====PAGE 23=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.29 Considerthetwo-portnetworkshown in thefigure.
+1Q
+W
+V V2
+The admittance parameters, in siemens, are
+(A) y11 = 2, y12 = -4, y21 = -4, y22 = 2
+(B) V11 1, y12 = -2, y21 = -1, y22 = 3
+三
+(C) y11 = 2, y12 = -4, y21 = -1, y22 = 2
+(D) y11 = 2, y12 = -4, y21 = -4, y22 = 3
+Q.30 For an n-channel silicon MOSFET with 10 nm gate oxide thickness, the
+substrate sensitivity (0Vr/0lVesl) is found to be 50 mV/V at a substrate
+voltage
+IVBsl = 2 V, where Vr is the threshold voltage of the MOSFET. Assume
+that, IVBsl >> 2Φg, where qΦg is the separation between the Fermi energy
+level EF and the intrinsic level E; in the bulk. Parameters given are
+Electron charge (q) = 1.6 x 10-19 C
+Vacuum permittivity (Eo) = 8.85 × 10-12 F/m
+Relative permittivity of silicon (si) = 12
+Relative permittivity of oxide (ox) = 4
+The doping concentration of the substrate is
+(A) 7.37 × 1015 cm-3
+(B) 4.37 × 1015 cm-3
+(C) 2.37 × 1015 cm-3
+(D) 9.37 × 1015 cm-3
+EC -Copyright GATE 2021
+Page 23 of 36
+=====PAGE 24=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.31 ThepropagationdelaysoftheXORgate,ANDgateandmultiplexer(MUX)
+inthecircuit showninthefigure are4ns,2nsand1ns,respectively.
+MUX
+R MUX
+S
+If all the inputs P, Q, R, S and T are applied simultaneously and held
+constant, themaximumpropagation delay of the circuit is
+(A) 3 ns
+5 ns
+(B)
+(C) 6 ns
+(D) 7 ns
+EC-CopyrightGATE2021
+Page24of36
+=====PAGE 25=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.32 The content of the registers areR=25H,R=30Hand R=40H.The
+followingmachineinstructionsareexecuted.
+PUSH(R1}
+PUSH(R}
+PUSH(R3}
+POP(R1}
+POP(R2}
+POP(R3}
+After execution, the content of registers R1, R2, R3 are
+(A) R = 40H, R2 = 30H, R3 = 25H
+(B) R1 25H,1 R2 = 30H, R3 = 40H
+(C) R1 30H, R2 40H, R3 25H
+= =
+(D) R1 = 40H, R2 = 25H, R3 =30H
+EC-CopyrightGATE2021 Page25of 36
+=====PAGE 26=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.33 Theelectrical systemshown in thefigureconverts input source currenti,(t)
+to output voltage v。(t).
+i(t)
+1H
+LW
+1Q
+i(t)
+Vc(t)
+Current i, (t) in the inductor and voltage ve(t) across the capacitor are
+taken as the state variables, both assumed to be initially equal to zero, i.e.,
+i (0)=0 and v(0)=0. The system is
+(A) completely state controllable as well as completely observable
+(B) completely state controllable but not observable
+(C) completely observable but not state controllable
+(D) neitherstate controllable nor observable
+EC-CopyrightGATE2021
+Page 26 of 36
+=====PAGE 27=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.34 Adigital transmissionsystemusesa(7,4)systematiclinearHammingcode
+fortransmittingdataoveranoisychannel.Ifthreeofthemessage-codeword
+pairs in this code（m;;c;),where c;is the codeword corresponding to the
+th messagem,areknowntobe（1100;0101100）,
+（1110;0011110)and（0110；1000110）,thenwhichofthe
+followingis avalidcodewordinthiscode?
+(A) 1101001
+(B) 1011010
+(C) 0001011
+(D) 0110100
+EC-CopyrightGATE2021 Page 27of 36
+=====PAGE 28=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.35 The impedancematchingnetworkshown inthefigure is tomatch a lossless
+linehavingcharacteristicimpedanceZ=5oQwithaloadimpedanceZ
+Aquarter-wavelinehavingacharacteristicimpedanceZ=75Qis
+connectedtoZ.Twostubshavingcharacteristicimpedanceof75Qeach
+areconnected to thisquarter-waveline.Oneisashort-circuited(S.C.) stub
+of length0.25AconnectedacrossPQand the otheroneisanopen-circuited
+(O.C.) stub oflength 0.5connected acrossRS.
+0.25
+0.25
+Z。=50 Ω Z = 75Ω
+gnis
+= 75Ω  Stub 5's
+C
+0.51
+The impedance matching is achieved when the real part of Z, is
+(A) 112.5Q
+(B) 75.0Ω
+(C) 50.0Ω
+(D) 33.3Ω
+EC-CopyrightGATE2021
+Page28of36
+=====PAGE 29=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.36-Q.55Numerical Answer Type (NAT),carryTWOmark each (no negative
+marks).
+Q.36 A real 2×2non-singularmatrixAwithrepeatedeigenvalue is given as
+x -3.0
+3.0 4.0
+where x is a real positive number. The value of x (rounded off to one decimal
+place) is
+Q.37 For a vector field D = p cos² p a, + z2 sin² @p a in a cylindrical coordinate
+system (p, Φ,z) with unit vectors ap, a and az, the net flux of D leaving the
+closed surface of the cylinder (p = 3, 0 ≤ z ≤ 2) (rounded off to two decimal
+places) is
+Q.38 In the circuit shown in the figure, the switch is closed at time t = O, while
+the capacitor is initially charged to --5 V (i.e., ve(0) = -5 V).
+250Ω
++VR-
+250Ω v() 0.6μF
+VR/500
+The time after which the voltage across the capacitor becomes zero (rounded
+off to three decimal places) is ms.
+EC-CopyrightGATE2021 Page29of 36
+=====PAGE 30=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 OrganisingInstitute-lITBombay
+Electronics and Communication Engineering (EC)
+Q.39 The exponential Fourierseriesrepresentation of a continuous-timeperiodic
+signal x(t)isdefinedas
+x(t) eikaot
+where wis thefundamental angularfrequency of x(t) and thecoefficients
+of the series are ak.The following information is given about x(t) and ak
+I. x(t) is real and even, having a fundamental period of 6
+II.
+The average value of x(t) is 2
+k, 1≤k≤3
+k>3
+0
+The average power of the signal x(t) (rounded off to one decimal place)
+is
+Q.40 For a unit step input u[n], a discrete-time LTI system produces an output
+signal (28[n + 1] + 8[n] + 8[n - 1]). Let y[n] be the output ofthe system
+for an input ()"u[n]). The value of y[O] is .
+Q.41 Consider the signals x[n]=2n-1u[-n+2] and y[n] =2-n+2u[n+1],
+where u[n] is the unit step sequence. Let X(ei?) and Y(ei?) be the discrete-
+time Fourier transform of x[n]andy[n],respectively.The value of the
+integral
+2π
+x(ejw) Y(e-jw) dw
+2π
+(roundedofftoonedecimalplace)is
+EC-CopyrightGATE2021 Page 30of 36
+=====PAGE 31=====
+GATE
+GraduateAptitudeTestinEngineering 2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.42 AsiliconP-Njunction isshownin the figure.The dopinginthe Pregion is
+5×1016cmand dopingintheNregionis10×1016cm-3.The parameters
+given are
+Built-in voltage(Φbi) = 0.8 V
+Electron charge (q) = 1. 6 x 10-19 C
+Vacuum permittivity (o) = 8.85 × 10-12 F/m
+Relative permittivity of silicon (Esi) = 12
+P N
+1.2 μm 0.2 μm
+The magnitude of reverse bias voltage that would completely deplete one of
+the two regions (P or N) prior to the other (rounded off to one decimal place)
+is V.
+Q.43 An asymmetrical periodic pulse train vin of 10V amplitude with on-time
+ToN = 1 ms and off-time TorF = 1 μs is applied to the circuit shown in the
+figure. The diode D1 is ideal.
+20 mF
+500kQ
+Thedifferencebetween themaximumvoltageandminimumvoltage of the
+output waveform vo (in integer) is V.
+EC-Copyright GATE2021 Page31of36
+=====PAGE 32=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.44 For the transistor Mi in the circuit shown in the figure, μn Cox = 100 μA/V2
+and (W/L) = 10, where μn is the mobility of electron, Cox is the oxide
+capacitance per unit area,W is the width and L is the length.
+RD = 20kΩ
+Vour
+M
+The channel length modulation coefficient is ignored. If the gate-to-source
+voltage Vcs is 1 V to keep the transistor at the edge of saturation, then the
+threshold voltage of the transistor (rounded off to one decimal place)
+is V.
+EC-CopyrightGATE2021
+Page32of36
+=====PAGE 33=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.45 Acircuitwith anideal OPAMPisshownin the figure.ApulseVInof 20ms
+duration is applied to the input.The capacitors areinitially uncharged.
+10kQ
+W
+0=1 t=20ms 1μF +12V
+VIN
+Vour
+1F
+The output voltage Vour of this circuit at t = O+ (in integer) is
+V.
+Q.46 The propagation delay of the exclusive-OR (XOR) gate in the circuit in the
+figure is 3 ns. The propagation delay of all the flip-flops is assumed to be
+zero. The clock (Clk) frequency provided to the circuit is 500 MHz.
+Startingfrom the initial value of theflip-flop outputsQ2QiQo=111with
+D2=1,the minimum number of triggering clock edges afterwhich theflip-
+flopoutputs Q2QiQobecomes100(in integer) is
+EC-CopyrightGATE2021
+Page33of36
+=====PAGE 34=====
+GATE
+GraduateAptitudeTestinEngineering2021
+2021
+Organising Institute-lIT Bombay
+Electronics and Communication Engineering (EC)
+Q.47 Thecircuit in thefigure contains a current source driving a load having an
+inductor andaresistorinseries,withashuntcapacitor across theload.The
+ammeterisassumedtohavezeroresistance.Theswitchisclosedattime
+t = 0.
+Ammeter
+Switch
+Current
+Source 10mH
+Shunt
+Capacitor 100 pF
+5kQ
+Initially,when the switch is open, the capacitor is discharged and the
+ammeter reads zero ampere. After the switch is closed, the ammeter reading
+keeps fluctuating for some time till it scttlcs to a final stcady valuc. Thc
+maximumammeterreadingthatonewill observeafter theswitchisclosed
+(rounded offto two decimal places)is A.
+EC-CopyrightGATE2021
+Page34of36
+=====PAGE 35=====
+GATE
+GraduateAptitude TestinEngineering 2021
+2021 OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.48 A unity feedback system that usesproportional-integral(PI) control is
+shown in the figure.
+2
+Y(s)
+s²+4s²+5s+2
+The stability of the overall system is controlled by tuning thePI control
+parameters Kp and K,. The maximum value of K, that can be chosen so as
+to keep the overall system stable or, in the worst case, marginally stable
+(roundedofftothreedecimalplaces)is
+Q.49 A sinusoidal message signal having root mean square value of 4 V and
+frequency of 1 kHz is fed to a phase modulator withphase deviation constant
+2 rad/volt. If the carrier signal is c(t) = 2 cos(2rt10°t), the maximum
+instantaneousfrequencyofthephasemodulatedsignal(roundedofftoone
+decimal place) is Hz.
+Q.50 Consider a superheterodyne receiver tuned to 600 kHz.If the local oscillator
+feeds a 100o kHz signal to the mixer, the image frequency (in integer)
+is
+kHz.
+Q.51 Inahighschool having equal numberof boystudents andgirlstudents,75%
+of the students study Science and the remaining 25% students study
+Commerce.Commercestudents aretwotimesmorelikelytobe aboy than
+are Science students. The amount of information gained in knowing that a
+randomlyselectedgirl studentstudies Commerce(roundedofftothree
+decimal places)is bits.
+Page 35of 36
+EC-Copyright GATE 2021
+=====PAGE 36=====
+GATE Graduate AptitudeTestinEngineering 2021
+2021
+OrganisingInstitute-llTBombay
+Electronics and Communication Engineering (EC)
+Q.52 A messagesignal havingpeak-to-peakvalue of2V,rootmeansquarevalue
+of0.1Vandbandwidthof5kHzissampledandfedtoapulsecode
+modulation (PCM) system thatuses a uniform quantizer.ThePCM output
+of50kbps.Assumingthatthequantizationerrorisuniformlydistributed,
+themaximumsignal toquantizationnoiseratiothatcanbeobtainedbythe
+PCMsystem(roundedofftotwodecimal places)is
+Q.53 Consider a polar non-return to zero (NRZ) waveform, using +2 V and -2
+V for representing binary ‘1’ and °0’ respectively, is transmitted in the
+presence of additive zero-mean white Gaussian noise with variance 0.4 V2.
+If the a priori probability of transmission of a binary‘1' is 0. 4, the optimum
+threshold voltage for a maximum a posteriori (MAP) receiver (rounded off to
+two decimal places) is V.
+Q.54 A standard air-filled rectangular waveguide with dimensions a = 8 cm,
+b = 4 cm, operates at 3.4 GHz. For the dominant mode of wave
+propagation, the phase velocity of the signal is vp. The value (rounded off to
+two decimal places) of vp/c, where c denotes the velocity of light, is
+Q.55 An antennawithadirectivegainof6dBisradiating a totalpower of16kW.
+The amplitude of the electric field in free space at a distance of 8 km from
+theantennainthedirectionof6dBgain(roundedofftothreedecimal places)
+is V/m.
+ENDOFTHEQUESTIONPAPER
+EC-Copyright  GATE 2021
+Page36of36
+=====PAGE 37=====
+GATE2021AnswerKeyforElectronics andCommunicationEngineering(EC)
+GraduateAptitudeTestinEngineering(GATE2021)
+Subject/Paper:Electronicsand CommunicationEngineering(EC)
+Question Type Section Answer Negative
+Q.No. Session Key/Range Marks
+MCQ/MSQ/NAT Name Marks
+1 4 MCQ GA 1 1/3
+2 4 MCQ GA B 1 1/3
+3 4 MCQ GA c 1 1/3
+4 4 MCQ c 1 1/3
+５ 4 MCQ B 1 1/3
+9 4 MCQ c 2 2/3
+MCQ D 2 2/3
+7 4
+8 4 MCQ GA A 2 2/3
+4 MCQ GA C 2 2/3
+6
+10 4 MCQ GA A 2 2/3
+MCQ EC  A 1 1/3
+1 4
+2 4 MCQ EC  B 1 1/3
+3 4 MCQ EC B 1 1/3
+4 4 MCQ EC B 1 1/3
+MCQ EC c 1 1/3
+5 4
+9 4 MCQ EC D 1 1/3
+MCQ EC A 1 1/3
+7 4
+8 4 MCQ EC D 1 1/3
+MCQ EC MTA 1 1/3
+9 4
+10 4 MCQ EC A 1 1/3
+=====PAGE 38=====
+GATE2021AnswerKeyforElectronics andCommunicationEngineering(EC)
+QuestionType
+Section Answer Negative
+Q. No. Session Marks
+MCQ/MSQ/NAT Name Key/Range Marks
+11 4 MCQ EC B 1 1/3
+12 4 MCQ EC C 1 1/3
+13 4 MCQ EC c 1 1/3
+14 4 MCQ EC D 1 1/3
+15 4 MCQ EC A 1 1/3
+16 4 NAT EC 8.0 to 8.0 1 0
+17 4 NAT EC Oto 0 1
+18 4 NAT EC 0.5 to 0.5 1
+NAT EC
+19 4 1.0 to 1.0 1
+20 4 NAT EC  4.5 to 4.5 1 0
+21 4 NAT EC  2.0 to 2.0 1 0
+22 4 NAT EC  94.2to94.6 1 0
+EC 9.24 to 9.28
+23 4 NAT 1
+24 4 NAT EC 2.80to3.20 1 0
+NAT EC
+25 4 9.30 to 9.44 1
+26 4 MCQ EC MTA 2 2/3
+27 4 MCQ EC B 2 2/3
+28 4 MCQ EC c 2 2/3
+2/3
+29 4 MCQ EC c 2
+30 4 MCQ EC A 2 2/3
+31 4 MCQ EC C 2 2/3
+32 4 MCQ EC A 2 2/3
+33 4 MCQ EC D 2 2/3
+=====PAGE 39=====
+GATE2021AnswerKeyforElectronicsandCommunicationEngineering(EC)
+Question Type
+Section Answer Negative
+Q. No. Session Name Key/Range Marks
+MCQ/MSQ/NAT Marks
+34 4 MCQ EC C 2 2/3
+EC 2/3
+35 4 MCQ A 2
+36 4 NAT EC 10.0 to 10.0 2 0
+37 4 NAT EC 56.50 to 56.60 2 0
+38 4 NAT EC 0.132to0.146 2 0
+39 4 NAT EC 31.9 to 32.1 2 0
+40 4 NAT EC  0.0 to 0.0 ２ 0
+41 4 NAT EC 7.9 to 8.1 2 0
+42 NAT EC  8.1 to 8.4
+4 2 0
+43 4 NAT EC 10 to 10 2 0
+44 4 NAT EC  0.5 to 0.5 2 0
+45 4 NAT EC -12 to -12 2 0
+46 NAT EC 5 to 5
+4 2 0
+47 4 NAT EC 1.40 to 1.50 2 0
+NAT EC
+48 4 3.125 to 3.125 2 0
+1011310.0 to
+49 4 NAT EC 2 0
+1011320.0
+50 4 NAT EC 1400 to 1400 2 0
+51 4 NAT EC 3.320to3.325 2 0
+NAT EC
+52 4 30.00to34.00 2 0
+53 4 NAT EC 0.03 to 0.05 2 0
+EC
+54 4 NAT 1.15 to 1.25 2 0
+55 4 NAT EC 0.224 to 0.264 2 0
+MTAmeansMarkstoAll

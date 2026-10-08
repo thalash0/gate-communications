@@ -1,0 +1,160 @@
+<!--meta {"id":"ch06","num":"6","part":"Part II · Analog Communication","title":"The Radio Receiver and the Price of Noise","lede":"How do you build a radio that can pick one whisper out of a thousand stations, and how good can the whisper sound once the noise has had its say?"} -->
+
+<div class="box story"><span class="tag">History · a trick from the trenches</span>
+<p>1918, Paris. Major Edwin Armstrong of the US Signal Corps was trying to detect the faint ignition noise of enemy aircraft at very high frequencies, where the available vacuum tubes gave almost no gain. The problem: tubes amplify well at low frequencies, and a tuned circuit is sharp (selective) only if it is built for a single fixed frequency. His solution was to <em>move the incoming signal to a fixed lower "intermediate" frequency</em> by mixing it with a locally generated oscillation, then amplify and filter at that fixed frequency with a stack of identical, carefully-tuned stages. He called it the "supersonic heterodyne" ("beats at a frequency above hearing"), now <strong>superheterodyne</strong>. (A French engineer, Lucien Lévy, filed a very similar patent at nearly the same time; the priority fight ran for a decade.) Nearly every radio built since, from the 1930s tube sets to the chip in your phone, uses some variant of this scheme.</p></div>
+
+<h2>The problem the superhet solves</h2>
+<p>An early "tuned-radio-frequency" (TRF) receiver amplified the antenna signal directly with several tunable stages. Two difficulties: (i) getting a sharp filter whose centre you can slide from 540 kHz to 1600 kHz is very hard (the ratio of bandwidth to centre frequency, $Q=f_0/B$, changes by 3× as you tune), and (ii) every stage of a tunable amplifier had to be adjusted together, and could oscillate. The superhet's idea: <strong>do the hard filtering once, at a fixed frequency</strong>.</p>
+<div id="d-superhet" class="dia">The superheterodyne receiver. Only the RF preselector and the local oscillator (LO) are tuned (by a single ganged knob). Almost all the gain and the sharp channel-selecting filter live in the fixed IF strip. AGC (automatic gain control) feeds the detected level back to hold the output steady.</div>
+<h3>The mixer arithmetic</h3>
+<p>A mixer multiplies the incoming signal by the LO. By the product-of-cosines identity, $\cos(2\pi f_st)\cos(2\pi f_{LO}t)=\tfrac12[\cos2\pi(f_{LO}-f_s)t+\cos2\pi(f_{LO}+f_s)t]$; the IF filter keeps the <em>difference</em>:
+$$f_{IF}=|f_{LO}-f_s|.$$
+Broadcast receivers use <strong>high-side injection</strong>, $f_{LO}=f_s+f_{IF}$. The reason is practical (below).</p>
+
+<h3>The image frequency: the superhet's one weakness</h3>
+<p>Mixing treats $f_{LO}+f_{IF}$ and $f_{LO}-f_{IF}$ identically: both are exactly $f_{IF}$ away from the LO. With high-side injection the wanted station sits at $f_s=f_{LO}-f_{IF}$, and a <em>second</em>, unwanted station at
+$$\boxed{\,f_{im}=f_s+2f_{IF}\,}$$
+(the "image", the mirror of $f_s$ about $f_{LO}$) also lands precisely on the IF and cannot be separated afterwards. The only defence is to remove it <em>before</em> the mixer, with the RF preselector. For a single tuned circuit of quality factor $Q$ the image rejection is
+$$\alpha=\sqrt{1+Q^2\rho^2},\qquad\rho=\frac{f_{im}}{f_s}-\frac{f_s}{f_{im}}.$$
+This explains why IF is chosen high enough: a larger $f_{IF}$ pushes the image further away, making the preselector's job easy. But a larger IF makes the IF filter less selective and harder to build. For AM broadcast the compromise is 455 kHz, for FM broadcast 10.7 MHz, for TV about 38.9 MHz.</p>
+<div class="widget" id="w-superhet">Tune the receiver. The blue bell is the preselector response around the station; the orange line is the local oscillator; the red marker is the image. The preselector attenuates the image by the amount shown. Switch to low-side injection to see why nobody does it (look at the LO range needed to cover the band).</div>
+<div class="box ex"><span class="tag">Worked examples</span>
+<p><b>GATE 2021 Q.50.</b> Receiver tuned to 600 kHz, LO at 1000 kHz. Then $f_{IF}=1000-600=400$ kHz and $f_{im}=f_{LO}+f_{IF}=1000+400=\mathbf{1400}$ kHz (or $f_s+2f_{IF}=600+800$).</p>
+<p><b>Why high-side injection?</b> AM band 540–1600 kHz, IF 455 kHz. High-side: LO tunes 995–2055 kHz, a frequency ratio of 2.07, so the oscillator's tuning capacitor must change by $(2.07)^2=\mathbf{4.27}\!:\!1$, easy. Low-side: LO tunes 85–1145 kHz, ratio 13.5, capacitance ratio 181:1, which is impossible.</p>
+<p><b>Image rejection.</b> $f_s=1$ MHz, $f_{IF}=455$ kHz, $Q=50$: $f_{im}=1.91$ MHz, $\rho=1.91-0.524=1.386$, $\alpha=\sqrt{1+2500\cdot1.92}=69.3$ ($36.8$ dB).</p></div>
+<table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Sensitivity</td><td>weakest signal giving a specified output SNR (set by front-end noise, Chapter 3)</td></tr>
+<tr><td>Selectivity</td><td>ability to reject adjacent channels (set by the IF filter)</td></tr>
+<tr><td>Fidelity</td><td>faithfulness of audio reproduction over the band</td></tr>
+<tr><td>Image rejection</td><td>$\alpha$ above (set by the preselector and IF choice)</td></tr>
+<tr><td>AGC</td><td>negative feedback on IF gain so that strong and weak stations give similar volume</td></tr>
+</table>
+
+<h2>Noise in analog receivers: what SNR do we get out?</h2>
+<p>We now ask the key performance question of analog communication: with a given <em>transmitted power</em> and a channel adding white noise of density $N_0/2$, how good is the demodulated signal? To compare schemes fairly we use the benchmark of sending the message <em>directly</em> (baseband) with the same power $P_T$ over a channel of the same bandwidth $W$:
+$$\gamma\;\triangleq\;\frac{P_T}{N_0W}\quad(\text{"channel SNR" or baseband SNR}),\qquad\text{figure of merit }=\frac{\mathrm{SNR}_o}{\gamma}.$$
+The receiver model is always the same: a band-pass filter of width $B_T$ around $f_c$ (the noise there is narrowband noise $n(t)=n_c\cos-n_s\sin$ with power $N_0B_T$), then the demodulator, then a low-pass filter of width $W$.</p>
+
+<h3>Coherent systems: DSB-SC and SSB</h3>
+<p>DSB-SC: $B_T=2W$, input noise power $N_0\cdot2W$. Multiply by $\cos2\pi f_ct$, low-pass: output $=\frac12[A_cm(t)+n_c(t)]$. Signal power $\frac{A_c^2}4P_m$; noise power $\frac14\cdot2N_0W=\frac{N_0W}2$. Since $P_T=\frac{A_c^2P_m}2$: $\ \mathrm{SNR}_o=\dfrac{A_c^2P_m}{2N_0W}=\gamma$. The quadrature noise $n_s$ is rejected by the synchronous detector; the other half of the input noise is thrown away. <strong>SSB gives the same $\mathrm{SNR}_o=\gamma$</strong> (half the signal power but half the noise bandwidth). So DSB-SC and SSB are as good as baseband transmission: figure of merit 1 (0 dB). Nothing can beat this without spending more bandwidth.</p>
+
+<h3>AM with an envelope detector</h3>
+<p>With $\mu\le1$ and a strong carrier, the envelope is $\approx A_c[1+\mu m]+n_c(t)$ (the quadrature noise only adds a second-order term). After removing DC, signal $=A_c^2\mu^2P_m$ and noise $=n_c$ power $=2N_0W$, but now $P_T=\frac{A_c^2}2(1+\mu^2P_m)$ <em>includes the wasted carrier</em>. So
+$$\mathrm{SNR}_o=\frac{\mu^2P_m}{1+\mu^2P_m}\,\gamma=\eta\,\gamma\ \le\ \tfrac13\gamma .$$
+For a sinusoid with $\mu=1$: FOM $=\frac13$ ($-4.8$ dB); at $\mu=0.5$: $\frac{1/8}{9/8}=\frac19$ ($-9.5$ dB). <b>The AM FOM is just the transmission efficiency $\eta$</b> of Chapter 4: the carrier carries no information, but costs power.</p>
+<div class="box trap"><span class="tag">Threshold effect (AM and FM)</span>
+<p>The formulas above assume the carrier is much stronger than the noise. Once the noise dominates, an envelope detector output is the envelope of <em>noise</em>, with the message (a small ripple on top) swamped: the output SNR collapses non-linearly. A coherent detector for AM does not show a threshold. FM has a much more dramatic threshold: see below.</p></div>
+
+<h3>FM: bandwidth bought as SNR</h3>
+<p>For FM with a strong carrier, the noise causes a <em>phase error</em> $\varphi_n\approx n_s(t)/A_c$ (the component of noise in quadrature with the carrier, relative to its amplitude). The discriminator outputs the frequency $\frac1{2\pi}\dot\varphi_n$: it <em>differentiates</em> the phase noise, so the output noise PSD is
+$$S_{n_o}(f)=\frac{N_0}{A_c^2}f^2\qquad(|f|\le W),$$
+<strong>parabolic</strong>, quiet near 0 and strongest at the band edge. Integrating, noise power $=\frac{2N_0W^3}{3A_c^2}$. The demodulated signal power is $k_f^2P_m$. Therefore
+$$\mathrm{SNR}_o=\frac{3A_c^2k_f^2P_m}{2N_0W^3}=3\,\frac{k_f^2P_m}{W^2}\,\gamma,\qquad\gamma=\frac{A_c^2/2}{N_0W}.$$
+With the deviation ratio $D=\frac{k_fm_p}{W}$ ($m_p$ the peak of $m$): $\ \mathrm{SNR}_o=3D^2\dfrac{P_m}{m_p^2}\gamma$. For a <b>sinusoidal</b> message $P_m/m_p^2=\frac12$, and
+$$\boxed{\ \mathrm{SNR}_o=\tfrac32\beta^2\gamma\ \ (\text{FM tone}),\qquad \mathrm{SNR}_o=k_p^2P_m\gamma\ \ (\text{PM}).\ }$$
+Look at what this says: the output SNR grows with the <em>square</em> of $\beta$, and by Carson's rule $B_T\approx2W(\beta+1)$ the bandwidth grows only linearly. FM at $\beta=5$ (broadcast) beats DSB-SC/SSB by $\frac32\cdot25=37.5$ times, which is <b>15.7 dB</b>, and beats AM ($\mu=1$) by 20.5 dB, at the price of 6× the bandwidth. This is Armstrong's insight and the first demonstration of a theme that returns in Chapter 7: <strong>bandwidth can be traded for SNR</strong> (Shannon later proved exactly how far).</p>
+<div class="widget" id="w-snr">Output SNR against channel SNR $\gamma$ for each scheme (dB scale). The dashed vertical line marks the FM threshold, $\gamma_{th}\approx20(\beta+1)$. Below the threshold FM's advantage vanishes and it can become <em>worse</em> than AM ("click" noise, where the phasor of noise occasionally encircles the origin and produces spikes). The post-threshold slope is 1 dB/dB for every scheme; FM is simply shifted up by $10\log(1.5\beta^2)$ dB.</div>
+<table>
+<tr><th>$\beta$</th><th>Bandwidth $B_T=2W(\beta+1)$</th><th>FOM $=\frac32\beta^2$</th><th>Gain over baseband</th><th>Threshold $\gamma_{th}\approx20(\beta+1)$</th></tr>
+<tr><td>1</td><td>$4W$</td><td>1.5</td><td>1.8 dB</td><td>13 dB</td></tr>
+<tr><td>2</td><td>$6W$</td><td>6</td><td>7.8 dB</td><td>18 dB</td></tr>
+<tr><td>5</td><td>$12W$</td><td>37.5</td><td>15.7 dB</td><td>20 dB</td></tr>
+<tr><td>10</td><td>$22W$</td><td>150</td><td>21.8 dB</td><td>23 dB</td></tr>
+</table>
+<p>And the other famous FM property: the <strong>capture effect</strong>. When two FM stations share a frequency, the receiver locks onto the stronger one and suppresses the other almost completely (not so in AM, where you hear both, plus a heterodyne whistle). Both effects come from the same cause: a limiter and a discriminator respond only to the phase of the dominant phasor.</p>
+
+<h3>Pre-emphasis and de-emphasis, quantitatively</h3>
+<p>Because the discriminator noise PSD $\propto f^2$ and music/speech PSD falls with $f$, boosting the high frequencies before transmission with $H_{pe}$ and attenuating them back with $H_{de}=1/H_{pe}$ at the receiver reduces output noise at no cost to the message. With $f_0=\frac1{2\pi RC}$ the improvement in output SNR is
+$$I=\frac{\int_{-W}^{W}f^2\,df}{\int_{-W}^{W}f^2|H_{de}(f)|^2df}=\frac{(W/f_0)^3}{3\,[\,W/f_0-\arctan(W/f_0)\,]}.$$
+For broadcast audio $W=15$ kHz and 75 μs ($f_0=2.12$ kHz): $I=20.9$ ($13.2$ dB). For the 50 μs standard used in India and Europe ($f_0=3.18$ kHz): $I=10.4$ ($10.2$ dB).</p>
+<div class="widget" id="w-preemph">The raw discriminator noise (grey parabola) is shaped by the de-emphasis filter into the green curve. The areas under the curves are the noise powers; their ratio is the improvement.</div>
+
+<div class="box real"><span class="tag">Real world · a link in numbers</span>
+<p>An FM station delivers $-80$ dBm to a receiver with noise figure 5 dB and a 200 kHz channel. Noise floor: $-174+10\log(200\,\mathrm{k})+5=-116$ dBm. Input SNR $=36$ dB, comfortably above the FM threshold ($\approx13$–$20$ dB), so the formulas above hold and audio SNR is $36+15.7\approx52$ dB minus de-emphasis effects: studio-quality. If the signal fades to $-100$ dBm the SNR falls to 16 dB, near threshold: the audio suddenly turns into a rough hiss with clicks. That abrupt cliff is why a car FM radio "drops out" rather than fading gracefully.</p></div>
+
+<div class="box gate"><span class="tag">GATE pattern · what to expect</span>
+<ul>
+<li>Superhet: IF/LO/image arithmetic (GATE 2021 Q.50), tuning ratios, which injection, image rejection. Typically 1 mark, rarely appears (once in 2014–2026).</li>
+<li>Noise in analog systems has appeared mainly in the form of <b>white noise through a filter and an SNR/figure-of-merit comparison</b>: know FOM($\mathrm{SSB}$)=1, FOM(AM)=$\eta$, FOM(FM)=$\frac32\beta^2$.</li>
+<li>Noise figure / Friis: Chapter 3.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<div class="prob" data-type="nat" data-ans="1400" data-tol="1" data-marks="2" data-src="GATE 2021 · EC · Q.50">
+Consider a superheterodyne receiver tuned to 600 kHz. If the local oscillator feeds a 1000 kHz signal to the mixer, the image frequency (integer) is ______ kHz.
+<div class="sol"><p>$f_{IF}=400$ kHz, image $=f_{LO}+f_{IF}=1400$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1910" data-tol="1" data-marks="1" data-src="Original">
+An AM broadcast superhet with $f_{IF}=455$ kHz (high-side injection) is tuned to 1000 kHz. The image frequency in kHz is ______.
+<div class="sol"><p>$f_s+2f_{IF}=1000+910=1910$ kHz.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="Original">
+An AM receiver covers 540–1600 kHz with $f_{IF}=455$ kHz and high-side injection. The tuning capacitor of the local oscillator must have a maximum-to-minimum capacitance ratio of about
+<ol class="opts"><li>2.07</li><li>4.27</li><li>8.5</li><li>181</li></ol>
+<div class="sol"><p>LO range 995–2055 kHz; $f\propto1/\sqrt{LC}$ so $C_{\max}/C_{\min}=(2055/995)^2=4.27$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="36.8" data-tol="0.5" data-marks="2" data-src="Original">
+A single-tuned preselector has $Q=50$. The receiver is tuned to 1 MHz with $f_{IF}=455$ kHz. The image rejection in dB is ______.
+<div class="sol"><p>$f_{im}=1.91$ MHz, $\rho=1.386$, $\alpha=\sqrt{1+(50\cdot1.386)^2}=69.3\to36.8$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-9.54" data-tol="0.1" data-marks="2" data-src="Original">
+A single-tone AM system with $\mu=0.5$ is demodulated by an envelope detector at high SNR. Its output SNR relative to the baseband benchmark $\gamma=P_T/(N_0W)$, in dB, is ______.
+<div class="sol"><p>$\eta=\frac{\mu^2/2}{1+\mu^2/2}=\frac{0.125}{1.125}=\frac19\to-9.54$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="15.74" data-tol="0.1" data-marks="2" data-src="Original">
+Single-tone FM with $\beta=5$ is demodulated above threshold. The ratio of output SNR to $\gamma$ in dB is ______.
+<div class="sol"><p>$\frac32\beta^2=37.5\to10\log_{10}37.5=15.74$ dB.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+When the input SNR of an FM receiver falls below the threshold, the output SNR
+<ol class="opts"><li>continues to fall at 1 dB per dB</li><li>improves because of the limiter</li><li>falls much faster than 1 dB per dB because of click noise</li><li>becomes equal to the baseband SNR</li></ol>
+<div class="sol"><p>Below threshold the noise phasor occasionally encircles the carrier phasor, each time producing a $2\pi$ phase jump (a click); output SNR collapses rapidly.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which of the following have a figure of merit (output SNR / $P_T/N_0W$) equal to 1?
+<ol class="opts"><li>SSB-SC with coherent detection</li><li>AM ($\mu=1$, tone) with envelope detection</li><li>DSB-SC with coherent detection</li><li>FM with $\beta=1$</li></ol>
+<div class="sol"><p>SSB and DSB-SC both give 1. AM gives $\frac13$. FM with $\beta=1$ gives $\frac32$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="5" data-tol="0.05" data-marks="1" data-src="GATE 2016 · EC (PYQ book)">
+A superheterodyne receiver (high-side injection, $f_{LO}=f_s+f_{IF}$) tunes the range 58–68 MHz. The minimum $f_{IF}$ (MHz) such that every image frequency falls outside the 58–68 MHz band is ______.
+<div class="sol"><p>Image $=f_s+2f_{IF}$; the lowest tuned frequency $58$ MHz gives the lowest image $58+2f_{IF}$, which must exceed 68 MHz: $f_{IF}>5$ MHz. Minimum $=\mathbf5$ MHz. (A larger IF buys image rejection but costs IF selectivity.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3485" data-tol="1" data-marks="1" data-src="GATE 2016 · EC (PYQ book)">
+A superheterodyne receiver has $f_{IF}=15$ MHz and $f_{LO}=3.5$ GHz. The received signal frequency is <em>greater</em> than the LO frequency. The image frequency (MHz) is ______.
+<div class="sol"><p>Now $f_s=f_{LO}+f_{IF}=3515$ MHz (a high-side received signal: <b>low-side injection</b>). The image is on the other side of the LO: $f_{im}=f_{LO}-f_{IF}=f_s-2f_{IF}=\mathbf{3485}$ MHz. General rule: the image is the mirror of the wanted signal about the LO.</p></div></div>
+
+<div class="summary"><h3>Chapter 6 in one breath</h3>
+<ul>
+<li>Superhet: $f_{IF}=|f_{LO}-f_s|$; high-side injection $f_{LO}=f_s+f_{IF}$; image $f_{im}=f_s+2f_{IF}$; preselector rejects it: $\alpha=\sqrt{1+Q^2\rho^2}$. AM IF = 455 kHz; FM IF = 10.7 MHz.</li>
+<li>Benchmark $\gamma=P_T/N_0W$. DSB-SC & SSB: $\mathrm{SNR}_o=\gamma$. AM: $\eta\gamma$ (≤⅓). FM: $\frac32\beta^2\gamma$ (tone), $3D^2\frac{P_m}{m_p^2}\gamma$ (general); PM: $k_p^2P_m\gamma$.</li>
+<li>FM discriminator noise PSD $\propto f^2$; pre/de-emphasis improves SNR by 10–13 dB.</li>
+<li>FM threshold ≈ $20(\beta+1)$ (≈ 10–13 dB input SNR); capture effect.</li>
+<li>Bandwidth ↔ SNR trade-off: preview of Shannon.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+GB.diagram('d-superhet',{w:800,h:120,items:[['txt',8,40,'antenna','tm','start'],['arr',[56,40,86,40]],['box',86,18,92,44,'RF amp\n+ preselector','blue'],['arr',[178,40,220,40]],['sum',240,40,18,'×'],['arr',[258,40,300,40]],['box',300,18,112,44,'IF filter + amp\nf_IF fixed','green'],['arr',[412,40,452,40]],['box',452,18,86,44,'Detector','purple'],['arr',[538,40,578,40]],['box',578,18,80,44,'Audio amp','blue'],['arr',[658,40,700,40]],['txt',708,40,'speaker','tm','start'],
+ ['box',200,86,80,28,'LO','orange'],['arr',[240,86,240,58]],['ln',[86,62,86,100,150,100],'mute',true],['txt',150,104,'ganged tuning','tm','start'],['ln',[495,62,495,96,300,96,300,100],'red',true],['txt',420,106,'AGC','tm']]});
+
+/* ---------- superhet picture ---------- */
+GB.widget('w-superhet',{title:'Station, local oscillator and image',h:330,hm:360,controls:[{k:'fs',label:'tuned station fs (kHz)',min:540,max:1600,step:5,value:900},{k:'IF',label:'intermediate frequency f_IF (kHz)',min:100,max:1500,step:5,value:455},{k:'Q',label:'preselector Q',min:5,max:200,step:5,value:50},{k:'inj',type:'select',label:'injection',options:[[1,'high-side (fLO = fs + fIF)'],[-1,'low-side (fLO = fs − fIF)']],value:1}],
+ draw(g,p){ const fs=p.fs, IF=p.IF, LO=fs+p.inj*IF, im=fs+2*p.inj*IF; const v=g.panel(0,2,{pad:{b:10}}).view(0,3600,0,1.35); v.axes({xl:'kHz',xstep:400,ystep:.5,nox:false});
+  const H=f=>{ if(f<=0) return 0; const r=f/fs-fs/f; return 1/Math.sqrt(1+(p.Q*r)**2); }; v.fn(H,'blue',2,null,700); v.fill(H,null,'blue',.15,700);
+  v.arrow(fs,0,fs,1.15,'green',2.8,10); v.text(fs,1.25,'station','green','center',11); if(LO>0){ v.arrow(LO,0,LO,1.15,'orange',2.8,10); v.text(LO,1.25,'LO','orange','center',11); } if(im>0){ v.arrow(im,0,im,Math.max(.08,H(im)),'red',2.8,10); v.text(im,Math.max(.08,H(im))+.1,'image','red','center',11); }
+  v.text(fs,-.0,'','fg'); const u=g.panel(1,2).view(0,3600,0,1); u.axes({noy:true,xl:'kHz',xstep:400}); const mix=[[Math.abs(LO-fs),'IF: wanted AND image both land here','red'],[LO+fs,'LO + fs (filtered out)','mute']]; mix.forEach(q=>{ if(q[0]<3600){ u.arrow(q[0],0,q[0],.7,q[2],2.6,9); u.text(q[0],.82,q[1],q[2],'center',11); } }); u.title('mixer output products: both land on f_IF = '+Math.abs(LO-fs)+' kHz','mute');
+  const a=1/H(im), band=(LO<=0?'LO would be at a negative frequency!':(LO/Math.min(fs,1600)>0?'LO tuning range for this IF: '+Math.round(540+p.inj*IF)+'–'+Math.round(1600+p.inj*IF)+' kHz':'')); const ratio=(1600+p.inj*IF)/(540+p.inj*IF); return 'image at <b>'+Math.round(im)+' kHz</b>, rejected by <b>'+(20*Math.log10(a)).toFixed(1)+' dB</b> · '+band+' (capacitance ratio '+(ratio>0?(ratio*ratio).toFixed(1):'∞')+':1)'; }});
+
+/* ---------- SNR curves ---------- */
+GB.widget('w-snr',{title:'Output SNR vs channel SNR',h:340,hm:360,controls:[{k:'b',label:'FM modulation index β',min:1,max:12,step:.5,value:5},{k:'mu',label:'AM modulation index μ (tone)',min:.2,max:1,step:.05,value:1}],
+ draw(g,p){ const v=g.full({l:46,b:28}).view(0,50,-10,90); v.axes({xl:'channel SNR γ (dB)',ystep:20}); const bb=x=>x, ssb=x=>x, am=x=>x+10*Math.log10((p.mu**2/2)/(1+p.mu**2/2)); const fmg=10*Math.log10(1.5*p.b**2), th=10*Math.log10(20*(p.b+1)); const fm=x=>x>=th?x+fmg:(x+fmg-3*(th-x)*1.6);
+  v.fn(bb,'mute',1.8,[5,4]); v.fn(am,'green',2); v.fn(fm,'yellow',2.6); v.vline(th,'yellow'); v.text(th+.5,4,'FM threshold','yellow','left',11);
+  v.text(46,46,'SSB / DSB-SC / baseband','mute','right',11); v.text(46,am(46)-5,'AM','green','right',11); v.text(40,fm(40)+6,'FM','yellow','center',12);
+  return 'FM gain over baseband: <b>'+fmg.toFixed(1)+' dB</b> (=10 log 1.5β²) · AM penalty: <b>'+(am(0)).toFixed(1)+' dB</b> · FM threshold ≈ <b>'+th.toFixed(1)+' dB</b> · FM bandwidth = '+(2*(p.b+1)).toFixed(0)+'·W'; }});
+
+/* ---------- pre-emphasis ---------- */
+GB.widget('w-preemph',{title:'Shaping the FM noise with de-emphasis',h:300,hm:320,controls:[{k:'f0',label:'de-emphasis corner f₀ (kHz)',min:.5,max:8,step:.1,value:2.12,fmt:v=>v.toFixed(2)+' kHz'}],
+ draw(g,p){ const W=15; const v=g.full({b:26}).view(0,W,0,1.1); v.axes({xl:'f (kHz)',ystep:.25}); const raw=f=>(f/W)**2, sh=f=>(f/W)**2/(1+(f/p.f0)**2); v.fn(raw,'mute',2); v.fill(raw,null,'mute',.18); v.fn(sh,'green',2.4); v.fill(sh,null,'green',.3); v.fn(f=>1/(1+(f/p.f0)**2),'yellow',1.6,[4,3]);
+  g.legend([['discriminator noise PSD ∝ f²','mute'],['after de-emphasis','green'],['|H_de|²','yellow']],g.w-330,14); const r=W/p.f0, I=r**3/(3*(r-Math.atan(r))); return 'W/f₀ = '+r.toFixed(2)+' → noise power improvement I = <b>'+I.toFixed(1)+'</b> = <b>'+(10*Math.log10(I)).toFixed(1)+' dB</b>'; }});
+</script>

@@ -1,0 +1,720 @@
+=====PAGE 1=====
+GATE 2020
+IIT Delhi
+Graduate Aptitude Test in Engineering 2020 Organising Institute
+Home Information Brochure GATE International Pre Examination Important Dates FAQs Contact Us
+EC:Electronics and Communication Engg.
+GA-GeneralAptitude
+Q1 - Q5 carry one mark each.
+Q.No.1 The untimely loss of life is a cause of serious global concern as thousands of people get
+killed accidents everyyearwhilemany other die diseaseslikecardiovascular
+disease, cancer, etc.
+in, of
+(A)
+from,of
+(B)
+during,from
+(C)
+from,from
+(a)
+Q.No.2 Hewasnotonly accusedof theft of conspiracy.
+(A) rather
+(B) but also
+but even
+(C)
+rather than
+(D)
+Select the word that fits the analogy:
+Q.No.3
+Explicit:Implicit :Express:
+(A) Impress
+(B) Repress
+(C) Compress
+(D) Suppress
+Q.No.4 TheCanadianconstitutionrequiresthatequalimportancebegiventoEnglishandFrench.
+Lastyear,AirCanada lost a lawsuit,andhad topay a six-figurefine toaFrench-speaking
+coupleafter theyfiled complaints about formal in-flight announcementsinEnglishlasting
+15seconds,as opposed toinformal5 second messages inFrench.
+TheFrench-speakingcouplewere upset at
+thein-flight announcementsbeingmadeinEnglish.
+(A)
+(B) theEnglish announcementsbeing clearer than theFrench ones.
+the English announcementsbeing longer than theFrench ones.
+(C)
+equal importance being given toEnglish and French.
+(D)
+A superadditivefunctionf（)satisfiesthefollowingproperty
+Q.No.5
+f（x+x2)≥f（x)+f（x2)
+Which of thefollowingfunctionsis a superadditivefunctionforx>1?
+ex
+(A)
+Vx
+(B)
+1/x
+(C)
+(D) e-x
+=====PAGE 2=====
+Q6-Q10carrytwomarkseach.
+Q.No.6 Theglobalfinancialcrisisin 2008isconsideredtobe themost seriousworld-wide
+financial crisis,which startedwith the sub-primelending crisisinUSAin2007.The sub-
+primelendingcrisisledtothebankingcrisisin2008with thecollapse of LehmanBrothers
+in20o8.Thesub-primelendingreferstotheprovisionof loanstothoseborrowerswho
+mayhave difficultiesinrepayingloans,andit arisesbecause ofexcess liquidityfollowing
+theEastAsiancrisis.
+Which one of the following sequences shows the correct precedence as per the given
+passage?
+East Asian crisis→subprime lending crisis→banking crisis→global financial crisis.
+(A)
+Subprimelendingcrisis→global financialcrisis→bankingcrisis→EastAsiancrisis.
+(B)
+Banking crisis→ subprime lending crisis→global financial crisis →East Asian crisis.
+(C)
+Global financial crisis→EastAsian crisis→banking crisis→subprime lending
+(D)
+crisis.
+It is quarter past threeinyourwatch.The anglebetween the hour hand and theminute hand
+Q.No.7
+is
+(A) 。0
+(B) 7.5°
+(C) 15°
+(D) 22.5°
+A circlewith centre Ois shown in thefigure.ArectanglePQRSof maximum possible area
+Q.No.8
+isinscribedin thecircle.If theradius of thecircleis a,then the areaof the shadedportion
+is
+D
+S R
+(A) πa²-a²
+(B) πa²-√2a²
+(C) na²-2a²
+(D) na²-3a²
+Q.No. 9 a,b,c arereal numbers.The quadratic equation ax²-bx+c=0has equal roots,which
+isβ,then
+β=b/a
+(A)
+β²=ac
+(B)
+(C) β3=bc/(2a²)
+(D) b²≠4ac
+Q.No.10
+=====PAGE 3=====
+Thefollowingfigureshowsthedataofstudents enrolledin5years(2014to2018)fortwoschools
+PandQ.During thisperiod,theratio of theaveragenumber of thestudents enrolledinschoolP to
+theaverageofthedifferenceof thenumberofstudentsenrolledinschoolsPandQis
+6 SchoolP
+8
+SchoolQ
+7
+6
+3
+2
+2014 2015 2016 2017 2018
+Year
+(A) 8:23
+(B) 23:8
+23:31
+(C)
+31 :23
+(D)
+EC: Electronics and Communication Engg.
+Q1 - Q25 carry one mark each.
+Q.No.1 If V,V2...,V are six vectors in R4,which one of the following statements is
+FALSE?
+(A) It is not necessary that these vectors span R4.
+(B) These vectors are not linearly independent.
+(C) Any four of these vectors form a basis for R4.
+(D) If V1, V3,Vs, Vo} spans Rt, then it forms a basis for R.
+Q.No.2 Fora vectorfieldA,which cne of thefollowing isFALSE?
+(A) Ais solenoidal if V·A = 0.
+(B) V×Ais another vector field.
+A is irrotational if V2 A = 0.
+(C)
+(D) -(·)=(x)x
+Q.No.3 Thepartialderivative of thefunction
+f(x,y,z) = e1-xcosy + xze-1/(1+y2)
+with respect to x at the point (1,0,e) is
+(A) -1
+(B) 0
+(C) 1
+(D) 1
+e
+d²-6+9y= 0 is
+Q.No.4 The general solution of
+dx2
+(A) y= Ce3x+ C2e-3x
+(B) y=(C+C2x)e-3x
+=====PAGE 4=====
+(C) y=(C + C2x)e3x
+(D) y=Ce3x
+Q.No.5 Theoutput y[n]ofa discrete-time systemfor aninputx[n]is
+y[n]= max |x[k]].
+The unit impulse response of the system is
+(A) O for all n.
+(B) 1 for all n.
+(C) unit step signal u[n].
+(D) unit impulse signal 8[n].
+Q.No.6 A singlecrystalintrinsicsemiconductorisatatemperatureof300Kwitheffective
+density of states for holes twice that of electrons.The thermalvoltageis 26mV.
+TheintrinsicFermi levelisshiftedfrommid-bandgapenergylevelby
+(A) 18.02 meV.
+(B) 9.01 meV.
+(C) 13.45 meV.
+(D) 26.90 meV.
+Q.No.7 Consider the recombination process via bulk traps ina forward biased
+pnhomojunction diode.ThemaximumrecombinationrateisUmax.If the electron
+and thehole capture cross-sections are equal,which one ofthefollowingisFALSE?
+(A) With all other parameters unchanged,Umax decreasesif theintrinsic carrier density
+is reduced.
+(B) Umax occurs at the edges of the depletion region in the device.
+(C) Umaxdependsexponentially ontheappliedbias.
+(D) With all otherparameters unchanged,Umaxincreasesif thethermalvelocity of the
+carriers increases.
+Q.No.8 The components in the circuit shown below are ideal.If the op-ampis in positive
+feedbackandtheinputvoltageVisasinewaveofamplitude1V,theoutputvoltage
+Vois
+1kQ
+W
++5V
+1V 1kQ
+v
+0
+-1V
+-5V
+(A) anon-invertedsinewaveof2Vamplitude.
+(B) aninvertedsinewaveof1Vamplitude.
+(C) a squarewaveof5Vamplitude.
+(D) a constant ofeither+5Vor-5V.
+Q.No.9
+=====PAGE 5=====
+Inthecircuit shownbelow,theTheveninvoltageVTHis
+2V 20 4
+W W o+
+VTH
+1A 10 2A 20
+(A) 2.4 V
+2.8 V
+(B)
+(C) 3.6V
+(D) 4.5 V
+Thefigurebelow showsamultiplexer where SiandSoare the selectlines,
+Q.No.10
+IotoI3 are theinput data lines,ENis the enable line,andF(P,Q,R)is the output.
+Fis
+0 EN
+R Io
+MUX
+0 I1
+R I2
+1 I3 S1 So
+P Q
+(A) PQ+QR.
+(B) P+QR.
+(C) PQR+PQ.
+Q+PR.
+(D)
+Q.No.11 Thepole-zeromapof arationalfunctionG(s)is shownbelow.When the closed
+contouris mappedinto the G(s)-plane,then themapping encircles
+Im
+s-planc
+X
+Re
+X
+(A) the origin of the G(s)-plane once in the counter-clockwise direction.
+(B) the origin of the G(s)-plane once in the clockwise direction.
+(C) thepoint-1+j0of the G(s)-plane oncein the counter-clockwise direction.
+(D) the point -1+ j0 of the G(s)-plane once in the clockwise direction.
+=====PAGE 6=====
+Q.No.12A digital communication system transmits a block of N bits.The probability of
+errorindecoding abit is α.The errorevent of eachbit isindependentof theerror
+events of the otherbits.Thereceivedblockisdeclarederroneousif atleastone of
+itsbitsisdecodedwrongly.Theprobability that thereceived blockis erroneousis
+(A) N(1-α)
+(B) aN
+(C) 1-aN
+(D) 1-(1-α)
+Q.No.13 Theimpedances Z=jX,forallxintherange（-o，co)，map to theSmith chart
+as
+(A) a circle of radius 1 with centre at (0, 0).
+(B) a point at the centre of the chart.
+(C) a linepassing through the centre of the chart.
+(D) a circle of radius 0.5with centre at (0.5, 0).
+Q.No.14 Whichoneofthefollowingpole-zeroplotscorrespondstothetransferfunctionof
+anLTI systemcharacterizedby theinput-output difference equationgivenbelow?
+（-1)kx[n-k]
+y[n]
+k=0
+(A) Im
+3"dorderpole
+[m
+(B)
+3dorderpole
+→Re
+(C)
+=====PAGE 7=====
+Im
+orderpole
+Re
+(D)
+orderpole
+Q.No.15Inthegivencircuit,the two-port networkhas theimpedance matrix
+[40 601
+[2] = ThevalueofZforwhichmaximumpoweristransferredtothe
+60 120
+load is Ω.
+I
+10Q
+W
++
+120 V [Z]
+Q.No.16The current in theRL-circuit shown below is i(t)=10 cos(5t-π/4)A.
+Thevalueoftheinductor(roundedoff totwodecimal places)is H.
+R it)
+200cos(5t)V
+Q.No.17
+=====PAGE 8=====
+In thecircuit shownbelow,all the components are ideal and the inputvoltage is
+sinusoidal.Themagnitude ofthe steady-stateoutput V。(roundedoff to two decimal
+places)is
+V.
+C=0.1μF
+D2
+K
+230V（rms) C2=0.1μF Vo
+Q.No.18In the circuit shown below,all the components are ideal.If Vis +2V,the current lo
+sourced by the op-amp is
+mA.
+1kQ
+w
+5V
+1kQ
+W
+Q.No.19 In an 8085 microprocessor, the number of address lines required to access
+a16Kbytememorybankis
+Q.No.20 A 10-bit D/Aconverteris calibratedover thefullrangefrom0 to10V.Iftheinput
+to theD/A converteris13A(inhex),the output(rounded off to three decimal
+places)is
+V.
+Q.No.21 A transmission line of length31/4andhaving a characteristicimpedanceof50Qis
+terminatedwith aload of 400Q.Theimpedance (rounded off to two decimal
+places)seen attheinput endof thetransmissionlineis Ω.
+Q.No.22AbinaryrandomvariableXtakesthe value +2or -2.Theprobability
+P(X=+2)=α.The value of α(rounded off to one decimal place),for which
+theentropyofXismaximum,is
+Q.No.23Theloop transferfunction ofa negativefeedback system is
+K(s+11)
+G(s)H(s)=-
+s(s+2)(s+8)
+The value of K，for which the system is marginally stable,is
+Q.No. 24
+=====PAGE 9=====
+Therandomvariable
+Y = JW(t)Φ(t)dt, where Φ(t) = (0;otherwise
+and W(t)is a real white Gaussian noise process with two-sided power spectral
+density Sw（f)=3W/Hz,for allf.Thevariance of Yis
+Q.No.25The two sides of afair coin are labelled as O and 1.The coin is tossed two times
+independently.LetMandNdenotethelabelscorrespondingtotheoutcomesof
+those tosses.For a random variable X,defined as X =min(M,N), the expected
+valueE(x)(rounded off to two decimal places)is
+Q26-Q55carrytwomarkseach.
+Q.No.26Considerthefollowingsystem oflinearequations.
+x+2x=b；2x+4x=b2；3x+7x=b；3x+9x=b4
+Whichone ofthefollowingconditions ensuresthatasolutionexistsforthe above
+system?
+(A) b=2band6b,-3b+b=0
+(B) b;=2b and 16b-3b+b=0
+(C) b=2b, and 3b,-6b+b=0
+(a) b;=2b and3b-6b,+b=0
+Q.No.27 Whichone of thefollowing options contains two solutionsof the differential
+&=(y-1)x?
+equation
+dx
+(A) lnly-1|=0.5x²+Candy=1
+(B) lnly-1|=2x²+Candy=1
+(C) Inly-1|=0.5x²+Candy=-1
+(D) lnly-1|=2x²+Candy=-1
+Q.No.28 The currentIin thegiven networkis
+120-90°
+Z
+Z=(80-j35)Ω
+120-30°
+Z
+(A) 0A.
+(B) 2.38-96.37°A.
+(C) 2.38143.63°A.
+(D) 2.38-23.63°A.
+=====PAGE 10=====
+Q.No.29A finite duration discrete-time signalx[n]is obtained by sampling the
+continuous-time signal x(t)=cos(200πt) at sampling instants t =n/400,
+n = 0,1,,7. The 8-point discrete Fourier transform (DFT) of x[n] is defined
+as
+πkn
+x[k]= x[n]e-1 k=0,1.··.,7.
+n=0
+Whichone ofthefollowingstatements isTRUE?
+(A) All x[k] are non-zero.
+(B) Only X[4] is non-zero.
+Only X[2] and X[6] are non-zero.
+(C)
+OnlyX[3] andX[5] arenon-zero.
+(D)
+Q.No.30 Forthegiven circuit,which one of thefollowingisthe correct state equation？
+0.5H
+00
+&]=[ 4]+[ ]
+(A)
+(B) %]=[ 4]+[ ]
+%[]=[2 二]]+[ 制[均]
+(C)
+(D) %]=[二 二]]+[ []
+Q.No.31 A one-sided abrupt pnjunction diodehasa depletioncapacitance Cpof50pF at
+a reversebias of 0.2V.Theplot of1/C2versus the appliedvoltageVfor this
+diode is a straight line as shown in the figure below.The slope of the plot
+is ×1020 F-2v-1.
+1/Cb2
+0
+(A) 5.7
+(B) 3.8
+-1.2
+(C)
+0.4
+(D)
+=====PAGE 11=====
+Q.No.32Theband diagram of a p-type semiconductor with a band-gap of 1eV is shown.
+Using this semiconductor, a MOS capacitor having VrH of -0.16V, Cox of
+100nF/cm² and a metalwork functionof 3.87eVis fabricated.There is no
+charge within the oxide.If the voltage across the capacitorisVrh,the magnitude
+of depletion charge per unit area(in C/cm²） is
+Vacuumlevel
+4eV
+? Ec
+0.5eV
+Ei
+0.2eV EFs
+Ev
+(A) 1.70 × 10-8
+0.52×10-8
+(B)
+(C) 1.41 × 10-8
+(D) 0.93×10-8
+Q.No.33 The base of an npn BJT T1 has a linear doping profile Ns(x) as shown below.
+Thebaseof another npnBJT T2 has a uniform doping Neof1017cm-3.Allother
+parameters are identical for both the devices.Assuming that the hole density
+profileis thesame as that of doping,the common-emitter currentgain ofT2is
+NB(x)
+1014(cm-3
+Emitter Base Collector
+0 W
+(A) approximately 2.0 times that of T1.
+(B) approximately 0.3 times that of T1.
+approximately 2.5 times that of T1.
+(C)
+(D) approximately 0.7times that ofT1.
+Q.No.34 A pn junction solar cell of area 1.0 cm²,illuminated uniformly with
+100 mW cm-2,has the following parameters:Efficiency=15%,open circuit
+voltage = 0.7V,fill factor = 0.8, and thickness =200 μm.The charge of an
+electron is 1.6 x 10-19 C.The average optical generation rate (in cm-3s-1) is
+0.84 × 1019.
+(A)
+5.57×1019.
+(B)
+1.04 × 1019.
+(C)
+(D)
+=====PAGE 12=====
+83.60 × 1019.
+Q.No. 35 For theBJTin the amplifier shownbelow,VBE=0.7V,kT/q=26mV.Assume
+that BJT output resistance(ro)isveryhigh and the base current is negligible.The
+capacitors arealso assumed tobeshort circuited atsignalfrequencies.Theinput
+Viisdirect coupled.ThelowfrequencyvoltagegainVo/viof the amplifieris
+Vcc=10V
+Rc
+10kQ
+C
+1 μF RL
+10kQ
+RE CE
+20kQ
+100μF
+VEE=-10V
+(A) 89.42
+-128.21
+(B)
+-178.85
+(C)
+(D) 256.42
+An enhancementMOSFETof thresholdvoltage3Visbeingusedin thesample
+Q.No.36
+andhold circuit given below.Assume that the substrate of theMOSdevice is
+connected to-10V.If theinputvoltageVliesbetween±10V,theminimum
+and the maximumvalues of VG required for proper sampling and holding
+respectively,are
+Vo oVo
+(A) 3Vand-3V.
+(B) 10Vand-10V.
+13Vand-7V.
+(C)
+10Vand-13V.
+(D)
+Q.No.37
+=====PAGE 13=====
+Usingtheincremental lowfrequencysmall-signalmodeloftheMOSdevice,the
+Nortonequivalentresistanceofthefollowingcircuitis
+gm,rds
+(A) ras+R+gmrasR
+(B) ras+R
+1+gmrds
+(C) 1
+rds+—+R
+gm
+(a) rds+R
+Q.No.38P, Q, and R are the decimal integers corresponding to the 4-bit binary number
+1100 considered in signed magnitude,1's complement, and 2's complement
+representations,respectively.The 6-bit 2's complement representation of
+(P +Q+R)is
+110101
+(A)
+110010
+(B)
+(C) 111101
+(D) 111001
+Thestatediagram of a sequencedetectoris shownbelow.StateSoistheinitial
+Q.No.39
+stateof the sequence detector.If theoutputis1,then
+0/0
+0/0
+1/0
+So S1 S2 S3
+0/0
+0/0 1/0
+1/0
+S4
+1/0
+0/1
+1/0
+thesequence 01010isdetected.
+(A)
+the sequence01011is detected.
+(B)
+thesequence01110isdetected.
+(C)
+thesequence 01001isdetected.
+(D)
+Q.No.40
+=====PAGE 14=====
+Thecharacteristicequationofasystemis
+s²+3s²+(K+2)s+3K=0.
+In the root locus plot for the given system, as K varies from 0 to oo,the
+break-awayorbreak-inpoint(s)liewithin
+(A) (-1, 0).
+(B) (-2,-1).
+(C) (-3，-2).
+(D) (-00，-3).
+Q.No.41 The componentsin the circuit given below are ideal.If R=2kQ and C=1μF,
+the-3dBcut-off frequency of thecircuit inHzis
+R
+V;(jo) R
+Vo(jo)
+14.92
+(A)
+(B) 34.46
+(C) 59.68
+(D) 79.58
+Q.No.42 For the modulated signal x(t)=m(t)cos(2πft),the message signal
+m(t)=4cos(1000πt)and thecarrierfrequencyfis1 MHz.The signal x(t)is
+passed through a demodulator, as shown in the figure below.The output y(t) of
+thedemodulatoris
+x(t) IdealLPFwithcut-off510Hz y(t)
+f(Hz)
+-510 510
+cos(2π(fc+40)t)
+cos(460πt).
+(A)
+(B) cos(920πt).
+(C) cos(1000πt).
+(D) cos(540πt).
+Q.No. 43
+=====PAGE 15=====
+For an infinitesimally small dipole infree space,the electricfield Ein the far
+field is proportional to(e-jkr/r)sin0，where k=2πt/入.A vertical
+infinitesimally small electric dipole (8l《^)is placed at a distance h(h >0)
+above an infinite ideal conducting plane,as shown in the figure.The minimum
+value ofh,forwhichoneof themaximainthefarfieldradiationpatternoccurs
+atθ=60°,is
+N
+181
+Infiniteconductingplane
+(A) 入
+0.5
+(B)
+0.25
+(C)
+(a) 0.75
+Q.No.44 In thevoltageregulator shown below,V/is theunregulated input at15V.Assume
+VBE=O.7V and thebase current is negligible forboth theBJTs.If theregulated
+outputVois9V,thevalueofRis Q.
+V=15V Vo=9V
+R=1kΩ
+R=1kQ
+3.3V
+Q.No.45The magnetic field ofa uniform plane wave in vacuum is given by
+H(x,y,z,t)=(ax+2ay+baz)cos(wt +3x-y-z).
+Thevalueofbis
+=====PAGE 16=====
+Q.No.46Fora 2-port network consisting ofanideallossless transformer,the parameterS21
+(rounded off to two decimalplaces)for a referenceimpedance of 10 Q,
+is
+2PortNetwork
+2:1
+Port1 Port2
+Q.No.47 SpM(t)and Srm(t)as defined below,are the phase modulated and the frequency
+modulated waveforms,respectively,corresponding tothe message signal m(t)
+shown in thefigure.
+Spm(t) = cos(1000nπt + Kpm(t)
+and SFM(t) = cos(1000nπt + Kg Sm(t)dt)
+where Kpis the phase deviation constant inradians/volt andK is thefrequency
+deviation constant inradians/second/volt.If the highestinstantaneousfrequencies
+ofSpm(t)andSFm(t)are same,then the value of the ratio
+Kis
+seconds.
+Kf
+m(t)
+10
+1 3 67t(sec)
+Q.No.48In a digital communication system, a symbol Srandomly chosen from the set
+{S1,S2,S3,S4} is transmitted.It is given that S=-3,S2 =-1,S3=+1 and
+S4 =+2. The received symbol is Y =S+W.W is a zero-mean unit-variance
+Gaussianrandomvariable and isindependent of S.Pis the conditional probability
+of symbol errorforthemaximum likelihood(ML) decodingwhenthetransmitted
+symbol S = Si. The index i for which the conditional symbol error probability
+P is thehighest is
+Q.No. 49
+=====PAGE 17=====
+Asystemwith transferfunctionG(s)= a>0 is subjected to an
+(s+1)(s+a)
+input5cos3t.The steady state output of the systemis cos(31-1.892).The
+√10
+value ofais
+Q.No.50 For the components inthe sequential circuit shownbelow,tpdis the propagation
+delay,tsetup is the setup time, and thold is the hold time.The maximum clock
+frequency (rounded off tothe nearestinteger),atwhich the given circuit can
+MHz.
+operate reliably,is
+Flip Flop1
+pd=2ns pd=2ns
+pd-3ns
+1setup=5ns
+hold-1ns
+CIk
+IN
+Flip Flop2
+pd-8ns
+setup-4ns
+1hold=3ns
+Q.No.51 For the solidSshown below,thevalue of fxdxdydz(roundedoff totwo
+decimal places)is
+Q.No.52
+=====PAGE 18=====
+X(w）istheFourier transform ofx(t)shownbelow.The valueof
+|X(@)² dw (rounded off to two decimal places) is
+x(1)
+-3-2-1
+Q.No.53 K(z-α)
+The transfer function of a stable discrete-time LTI system is H(z) =
+2+0.5
+whereKandαarerealnumbers.Thevalueofa(roundedoff toonedecimal
+place)with |al>1,for which the magnitude response of the system isconstant
+over all frequencies,is
+Q.No.54Xis arandomvariablewith uniformprobabilitydensityfunctionin theinterval
+[-2,10].For Y=2x-6,the conditional probability P(Y≤7|X≥5)(rounded
+off tothreedecimal places)is
+Q.No.55 Consider thefollowingclosedloopcontrol system
+R(s C(s) G(s) Y(s)
+where G(s)= 1 and C(s)= k +1 If thesteadystate errorforaunit
+s(s+1) S+3
+rampinput is 0.1,then thevalue of Kis
+Copyright : GATE 2020, IT Delhi
+=====PAGE 19=====
+GATE 2020 IIT Delhi
+GraduateAptitudeTestinEngineering2020 OrganisingInstitute
+Home InformationBrochure GATEInternational Pre Examination Important Dates FAQs Contact Us
+AnswerKey-EC:Electronics and Communication Engg.
+Q.No. Session Que.Type Sec.Name Marks
+Key
+GA A
+4 1
+2 4 MCQ GA B 1
+3 4 MCQ GA B 1
+4 MCQ GA C 1
+5 4 MCQ GA A 1
+6 4 MCQ GA A 2
+7 4 MCQ GA B 2
+8 4 MCQ GA C 2
+MCQ 2
+6 4 GA C
+10 4 MCQ GA B 2
+1 4 MCQ EC C 1
+2 4 MCQ EC 1
+3 4 MCQ EC B 1
+4 4 MCQ EC C 1
+5 4 MCQ EC C 1
+6 4 MCQ EC B 1
+7 4 MCQ EC B 1
+8 4 MCQ EC D 1
+6 4 MCQ EC C 1
+10 MCQ EC A
+4 1
+11 4 MCQ EC B 1
+12 4 MCQ EC D 1
+13 4 MCQ EC A 1
+14 4 MCQ EC A 1
+15 4 NAT EC 48 to 48 1
+16 4 NAT EC 2.80 to 2.85 1
+17 4 NAT EC 644 to 657 1
+18 4 NAT EC 6to 6 1
+19 4 NAT EC 1
+14 to 14
+20  4 NAT EC 3.050 to 3.080 1
+21 4 NAT EC 6.25 to 6.25 1
+22 4 NAT EC 0.5 to 0.5 1
+23 4 NAT EC 160 to 160 1
+24 4 NAT EC 6 to 6 1
+25 4 NAT EC 0.25 to 0.25 1
+26 4 MCQ EC A 2
+MCQ
+27 4 EC A 2
+28 4 MCQ EC C 2
+29 4 MCQ EC C 2
+30 4 MCQ EC 2
+A
+31 4 MCQ EC MTA 2
+32 4 MCQ EC A 2
+33 4 MCQ EC MTA 2
+=====PAGE 20=====
+34 4 MCQ EC A [2
+35 4 MCQ EC A 2
+36 4 MCQ EC C 2
+2
+37 4 MCQ EC B
+38 4 MCQ EC A 2
+39 4 MCQ EC A 2
+40 4 MCQ EC A 2
+41 4 MCQ EC
+42 4 MCQ EC B 2
+43 4 MCQ EC A 2
+44 4 NAT EC 800 to 800
+45 4 NAT EC 1 to 1 2
+46 NAT EC 0.8 to 0.8 2
+4
+47 NAT EC
+2 to 2
+48 4 NAT EC 3 to 3 2
+49 4 NAT EC 3.95 to 4.05 2
+50  4 NAT EC 76 to 77
+51 4 NAT EC 2.25 to 2.25 2
+52 4 NAT EC 58.50 to 58.80 2
+53 4 NAT EC -2 to -2 2
+54 4 NAT EC 0.299 to 0.301 2
+55 4 NAT EC 30 to 30 2
+Copyright : GATE 2020, IIT Delhi

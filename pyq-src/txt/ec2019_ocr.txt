@@ -1,0 +1,743 @@
+=====PAGE 1=====
+GATE2019GeneralAptitude(GA)Set-1
+Q.1-Q.5 carry one mark each.
+house-to-house
+Q.1 The strategies that the company to sell itsproducts
+marketing.
+(A) use, includes (B)uses,include
+(C)used, includes (D)uses, including
+dawn.
+Q.2 The boat arrived
+(A) in (B) at (C) on (D)under
+Q.3 It would take one machine 4 hours to complete a production order and another machine 2
+hours to complete the same order. If both machines work simultaneously at their respective
+constant rates,the time taken to complete the same order is hours.
+(A) 2/3 (B) 3/4 (C) 4/3 (D) 7/3
+Five different books (P, Q, R, S, T) are to be airanged on a shelf. The books R and S are to
+be arrangedfirstand second,respectivelyfrom therightside of the shelf.Thenumber of
+different orders in which P, Q and T may be arranged is
+(A)2 (B)6 (C) 12 (D) 120
+Q.5 When he did not come home, she him lying dead on the roadside somewhere.
+(A) concluded (B) looked
+(C) notice (D) pictured
+GA 1/5
+=====PAGE 2=====
+GATE2019GeneralAptitude(GA)Set-1
+Q.6-Q.10 carry two marks each.
+Q.6 Four people are standing in a line facing you.They are Rahul,Mathew,Seema and Lohit.
+Oneis anengineer,oneisadoctor,ne a teacherandanotheradancer.ouare told that:
+1.Mathewisnot standingnext toSeema
+There are twopeople standingbetween Lohit and the engineer
+2.
+3. Rahul isnot a doctor
+Theteacherand thedancerarestandingnexttoeachother
+5.Seema is turning to her right to speak to the doctor standing next to her
+Who among them is an engineer?
+(A) Seema (B) Lohit
+(C) Rahul
+(D) Mathew
+GA 2/5
+=====PAGE 3=====
+GATE2019GeneralAptitude(GA)Set-1
+The bar graphinPanel (a) shows the proportionof male andfemaleilliteratesin 2001 and
+2011. The proportions of males and females in 2001 and 2011 are given in Panel (b) and
+(),respectively.The total population did not change during this period.
+Thepercentageincreaseinthe totalnumberofliteratesfrom2001to2011is
+Proportionofilliterates(%)
+100
+80
+60
+60 40 50 40
+40
+20
+0
+Female Male
+■20012011
+Panel (a)
+2001 2011
+Female
+40% Male Female
+Male 50% 50%
+60%
+Panel (b) Panel (c)
+(A) 30.43 (B)33.43 (C) 34.43 (D)35.43
+GA 3/5
+=====PAGE 4=====
+GATE2019GeneralAptitude(GA)Set-1
+Q.8
+researched,butnot always impartial.History had to serveitspurpose:Everythingwas
+made subservient to the glory of the Union Jack.Latter-day Indian scholars presented a
+contrarypicture."
+From the text above,we can infer that:
+Indian historywrittenbyBritish historians
+(A)waswelldocumented andnotresearchedbutwas alwaysbiased
+(B) was not well documented and researched and was always biased
+(C) was well documented and researched but was sometimes biased
+(D) was not well documented and researched and was sometimes biased
+Q.9 Two design consultants, P and Q, started working from 8 AM for a client. The client
+budgeted a total of USD 3000 for the consultants. P stopped working when the hour hand
+moved by 210 degrees on the clock. Q stopped working when the hour hand moved by 240
+degrees. P took two tea breaks of 15 minutes each during her shift, but took no lunch break.
+Q took only one lunch break for 20 minutes, but no tea breaks. The market rate for
+consultants is USD 200 per hour and breaks are not paid. After paying the consultants, the
+client shall have USD remaining in the budget.
+(A) 000.00 (B) 166.67 (C) 300.00 (D) 433.33
+GA 4/5
+=====PAGE 5=====
+GATE2019GeneralAptitude(GA)Set-1
+Q.10Fivepeople P,Q,R,S and Twork in a bank.Pand Qdon’t like each otherbut have to
+share an office till T gets a promotion and moves to the big office next to the garden. R,
+whoiscurentlysharinganofficewithTwants tomove totheadjacentofficewithS,the
+handsome new intern. Given the floor plan,what is the current location of Q, R and T?
+(O =Office, WR =Washroom)
+(A) (C)
+WR 10 02 03 04 WR 01 02 03 04
+P,Q R s P,Q R,T S
+Manager Teller Teller Manager Teller
+Teller
+2 1 2
+Entry Entry
+Garden
+Garden
+(B) (D)
+WR 01 02 03 04 WR 01 02 03 04
+R, S Q
+P,Q T P R S
+Manager Teller Teller Manager Teller Teller
+一 2
+Entry Entry
+Garden Garden
+END OF THEQUESTIONPAPER
+GA 5/5
+=====PAGE 6=====
+GATE2019 EC-1
+Q.1-Q.25carry ONE mark each.
+Q.1 Which one of the followingfunctions is analytic over the entire complex plane?
+(A) In(z) (B)e1/z (C)1-z 1 (D) cos(z)
+Thefamiliesofcurvesrepresentedby thesolution of the equation
+Q.2
+dy
+dx
+for n = -1 and n = +1, respectively, are
+(A) Parabolas and Circles (B) Circles and Hyperbolas
+(C) Hyperbolas and Circles (D) Hyperbolas and Parabolas
+Q.3 Let H(z) be the z-transform of a real-valued discrete-time signal h[n]. If
+P(z) =H(z)H( , and P(z) has a total of four zeros, which one
+has azero atz=
+of the following plots represents all the zeros correctly? 2
+(A) (B)
+z-plane Imaginary z-plane Imaginary]
+axis axis
+0.5 0.5
+o o
+S'0 2 Real axis -0.5 0.5 2  Real axis
+-0.5+
+-2
+(C) (D)
+z-plane Imaginary Z-plane Imaginary]
+axis axis
+0.5 0.5
+o
+-0.5 0.5 Real axis 0.5 2Real axis
+-0.5 -0.5
+o o
+EC-1 1/27
+=====PAGE 7=====
+GATE2019 EC-1
+Q.4 Considerthetwo-port resistivenetwork shownin thefigure.Whenan excitation of
+5Vis appliedacrossPort1,andPort2is shorted,the curent through the short circuit at
+Port 2 is measured tobe 1 A (see (a) in the figure).
+Now,ifanexcitationof5Vis applied acrossPort 2,andPort1isshorted(see(b）inthe
+figure), what is the current through the short circuit at Port 1?
+1Q 2Ω
+W WW
+Port 1 Port 2
+RΩ
+1 Q 2Ω 1Ω 2Ω
+W
+WW WW WW
+1A
+RΩ
+(a) (b)
+(A) 0.5 A (B) 1A (C) 2A (D) 2.5 A
+Q.5 LetY(s)be theunit-stepresponseofa causal system havinga transferfunction
+3-s
+G(s) =
+(s +1)(s + 3)
+that is, Y(s) = G(s) The forced response of the system is
+(4)ne-+(4)n-7-(4)n(V) (B) 2u(t)-2e-tu(t) +e-3tu(t)
+(C) 2u(t) (D)u(t)
+EC-1 2/27
+=====PAGE 8=====
+GATE2019 EC-1
+Q.6 For anLTI system,theBodeplotforitsgainisasillustratedin thefigure shown.The
+number of system polesNand thenumber of systemzerosNin thefrequencyrange
+1Hz≤f≤10Hzis
+Gain(dB)
+100 -20dB/dec.
+105 106 107
+0 101 102 103 (in Hz)
+40dB/dec.
+7 = "N' =dN (Φ) ="N'L=dN() ε="N'9 = dN() 7 ="N'S=dN(v)
+A linear Hamming code is used to map 4-bit messages to 7-bit codewords. The encoder
+Q.7
+mapping is linear. If the message 0001 is mapped to the codeword 0000111, and the
+message 0011 is mapped to the codeword 1100110, then the message 0010 is mapped to
+(A) 0010011 (B) 1100001 (C) 1111000 (D) 1111111
+EC-1
+3/27
+=====PAGE 9=====
+GATE2019 EC-1
+Q.8 Which one of thefollowingoptionsdescribescorrectlythe equilibriumbanddiagram at
+T=300KofaSiliconpnnp ++configuration shown in the figure?
+p n n+ p
+(A) (B)
+Ec
+E
+EF
+E
+(C) (D)
+Ec
+EF
+EF
+Ev
+Ev
+EC-1 4/27
+=====PAGE 10=====
+GATE2019 EC-1
+Q.9 The correctcircuit representation of the structure showninthefigure is
+E
+n+
+n +
+n
+n'
+(A) (B)
+B
+(C) (D)
+B
+B
+EC-1 5/27
+=====PAGE 11=====
+GATE2019 EC-1
+Q.10The figure shows the high-frequency C-V curve of a MOS capacitor (at T = 300 K) with
+①ms=OVandnooxidecharges.Theflat-band,inversion,and accumulation conditionsare
+represented,respectively,bythepoints
+R
+(A) P,Q,R
+(B) Q, R, P
+(C) R,P,Q
+(D) Q,P,R
+What is the electric flux (f E · da) through a quarter-cylinder of height H (as shown in the
+Q.111
+figure) due to an infinitely long line charge along the axis of the cylinder with a charge
+density of Q?
+E0
+HQ HQ
+(A) (B) 40
+80
+Hε0 4H
+(C) (D)
+4Q Q&0
+EC-1 6/27
+=====PAGE 12=====
+GATE2019 EC-1
+Q.12In the table shown, List I and List II, respectively, contain terms appearing on the left-hand
+sideand theright-handsideof Maxwell'sequations(intheirstandardform).Matchthe
+left-hand side with the corresponding right-hand side.
+List I List II
+P 0
+1 V·D
+2 VxE Q
+P
+3 R 0B
+at
+HX△ S DD
+4 J+
+dt
+(A)1-P,2-R,3-Q,4-S (B)1-Q,2-R,3-P,4-S
+(C) 1-Q,2 -S,3 -P,4 -R (D) 1 -R,2 -Q,3 - S,4-P
+Q.13 A standard CMOS inverter is designed with equal rise and fall times (βn = Bp). If the
+width of the pMOS transistor in the inverter is increased, what would be the effect on the
+LOW noise margin (NM) and the HIGH noise margin NMH?
+(A) NM, increases and NMg decreases.
+(B) NM, decreases and NMy increases.
+(C) Both NM, and NMh increase.
+(D) No change in the noise margins.
+Q.14 In the circuit shown, what are the values of F for EN = 0 and EN = 1, respectively?
+Vdd
+EN
+D
+(A) O and D
+(B)Hi-Z and D
+(C) 0 and 1
+(D) Hi-Z and D
+EC-1 7/27
+=====PAGE 13=====
+GATE2019 EC-1
+Q.15In the circuit shown,A andBare theinputs andFis the output.What is the functionality of
+the circuit?
+PPA
+(A) Latch
+(B) XNOR
+(C)SRAMCell
+(D) XOR
+Q.16The value of the contour integral
+2j(z+)
+dz
+evaluatedovertheunitcircle|z|=1is
+Q.17Thenumber of distinct eigenvaluesof thematrix
+2 2 3 3
+0 1 1
+0 0 3
+0 0
+is equal to
+EC-1 8/27
+=====PAGE 14=====
+GATE2019 EC-1
+Q.18If X and Y are random variables such that E[2X+Y]=0 and E[X+2Y]=33,then
+E[X] +E[Y]=
+Q.19  The value of th integral J J7 inx dx dy is equal to
+Q.20Let Zbe an exponential random variablewith mean 1.That is,the cumulative distribution
+functionof Zisgivenby
+ifx≥0
+Fz(x)={
+ifx<0
+Then Pr(Z > 2 |Z > 1), rounded off to two decimal places, is equal to
+Q.21
+seconds.Itsfundamental time period,in seconds,is
+Q.22Thebaseband signalm(t)shown in thefigure isphase-modulated togeneratethePM
+signal p(t)=cos(2πf.t+km(t)).The time t on the x-axis in thefigureis in
+milliseconds.If thecarrierfrequencyisf=50kHzand k=10π,then theratio of the
+minimum instantaneous frequency (inkHz) to themaximum instantaneousfrequency(in
+kHz) is
+(roundedoffto2decimalplaces).
+m(t)
+(in ms)
+EC-1 9/27
+=====PAGE 15=====
+GATE2019 EC-1
+Q.23Radiationresistance ofasmall dipole current element of length/at a frequency of3GHzis
+3 ohms.If the length is changed by 1%, then the percentage change in the radiation
+resistance,roundedofftotwodecimalplaces,is %.
+Q.24Inthecircuit shown,Vis asquarewave ofperiodTwithmaximum andminimumvalues
+of 8V and -10 V, respectively.Assume that the diode is ideal and R =R2 =50 Ω.
+The average value of V is volts(rounded offto1 decimal place).
+R1
+10
+In the circuit shown, the clock frequency, i.e., the frequency of the Clk signal, is 12 kHz.
+Q.25
+Thefrequency of the signal atQ2is kHz.
+D Q D2 Q2
+CIk Q2
+Clk Q
+12kHz
+EC-1 10/27
+=====PAGE 16=====
+GATE2019 EC-1
+Q.26-Q.55carryTWOmarkseach.
+Q.26Consider a differentiable function f(x) on the set of real numbers such that f(-1)=0
+and|f'（x)|≤2.Given these conditions,which one of the following inequalitiesis
+necessarily truefor all x E[-2,2]?
+(B)f(x)≤ 2|x+1|
+(A)f(x)≤ |x+11
+(C)f(x) ≤lxl (D) f(x)≤ 2|xl
+Q.27Consider the line integral
+(xdy-ydx)
+the integral being taken in a counterclockwise direction over the closed curve C that forms
+the boundary of the region R shown in the figure below.The region R is the area enclosed
+by the union of a 2 × 3 rectangle and a semi-circle of radius 1. The line integral evaluates
+to
+yA
+3
+R
+(A)6 +π/2 (B) 8+π (C) 12+π (D) 16 + 2π
+EC-1
+11/27
+=====PAGE 17=====
+GATE2019 EC-1
+Q.28 Consider a six-point decimation-in-timeFastFourierTransform(FFT)algorithm,for
+whichthesignal-flowgraphcorrespondingtoX[1]isshowninthefigure.Let
+W = exp (- i2). In the figure, what should be the values of the coefficients a, a2, as in
+terms of W so that X[1] is obtained correctly?
+x[0]0 OX[0]
+ox[1]
+x[3]0
+-1
+x[1]O OX[2]
+x[4]O OX[3]
+-1
+x[2] OX[4]
+O
+OX[5]
+x[5]○
+-1
+(A) a1 = -1,a2 = W6,a3 = W2 (B)a1 = 1,a2 = W2,a3 = W6
+(C) a = 1,a2 = W6,a3 = W2 (D) a1 = -1,a2 = W2,a3 = W6
+Q.29It is desired to find a three-tap causal filter which gives zero signal as an output to an input
+of the form
+jn
+x[n] = C1 exp + C2exp
+where Ci and c2 are arbitrary real numbers. The desired three-tap filter is given by
+h[0] = 1, h[1] = α， h[2] =b
+and
+h[n] = 0 for n < 0 or n > 2.
+What are the values of the filter taps a and b if the output is y[n] = 0 for all n, when x[n]
+is as given above?
+x[n] n=0 y[n]=0
+h[n]={1,a,b}
+(A)a = 1,b = 1 I =q'0= (@) I=q'-= () I-=q'0=(g)
+EC-1 12/27
+=====PAGE 18=====
+GATE2019 EC-1
+Q.301 In the circuit shown,if v(t) = 2 sin(1000 t) volts, R =1 kQ and C =1 μF, then the
+steady-state curent i(t),in milliamperes (mA), is
+i(0)
+R
+(A)sin(1000 t) + cos(1000 t) (B)2 sin(1000 t)+ 2 cos(1000 t)
+(C) 3 sin(1000 t) + cos(1000 t) (4 0001)s0  + (4 0001)us (a)
+Q.31Consider a causal second-order system with the transfer function
+1
+G(s) =
+1 + 2s + s2
+with a unit-step R(s) =  as an input. Let C(s) be the corresponding output. The time
+taken by the system output c(t) to reach 94% of its steady-state value lim c(t), rounded
+t-→∞o
+off to two decimal places, is
+(A) 5.25 (B) 4.50 (C) 3.89 (D) 2.81
+Q.32The block diagram of a system is illustrated in the figure shown, where X(s) is the input
+and Y(s) is the output. The transfer function H(s) = Y(s)
+x(s) is
+XCs
+s²+1
+(A) H(s)
+s²+s2+s+1
+s²+1
+(B) H(s) =
+s3+2s2+s+1
+(C) H(s) = S+1
+s2+s+1
+s²+1
+(D) H(s) :
+2s2+1
+EC-1 13/27
+=====PAGE 19=====
+GATE2019 EC-1
+Q.33Let the state-space representation of an LTI system be x(t)=A x(t)+Bu(t),
+y(t) = C x(t) + d u(t) where A,B,C are matrices, d is a scalar, u(t) is the input to the
+system, and y(t) is its output. Let B = [0 0 1]T and d = 0. Which one of the following
+optionsforAandCwill ensure that the transferfunctionof thisLTI systemis
+1
+H(s) =
+s3+3s²+2s+1
+0 1 0
+andC=[100]
+(A)A 0 0 1
+-2 3
+0 0
+(B)A =
+二 0 0 1 and C = [1 0
+-3
+0 1 0
+(C) A : 0 0 1 and C = [0
+3
+0 1 0
+(D)A 0 0 1 andC=[o01]
+3 2
+Q.34A single bit, equally likely to be 0 and 1, is to be sent across an additive white Gaussian
+noise (AWGN) channel with power spectral density No/2. Binary signaling, with
+0 H→ p(t) and 1 => q(t), is used for the transmission, along with an optimal receiver that
+minimizes the bit-error probability.
+Let (Φ1(t), Φ2(t) form an orthonormal signal set.
+If we choose p(t) = Φ1(t) and q(t) = -Φ1(t), we would obtain a certain bit-error
+probability P,.
+If we keep p(t) = Φ1(t), but take q(t) = √E Φ2(t), for what value of E would we
+obtain the same bit-error probability P,?
+(A) 0 (B) 1 (C) 2 (D) 3
+Q.35The quantum efficiency (m) and responsivity (R) at a wavelength  (in μum) in a p-i-n
+photodetector are related by
+入 1.24×A 1.24
+(A)R = 2× (B) R = (C) R = (D) R =
+1.24 1X1.24 x
+EC-1 14/27
+=====PAGE 20=====
+GATE2019 EC-1
+Q.36Two identical copper wires W1 and W2,placed in parallel as shown in the figure, carry
+currentsand2l,respectively,inoppositedirections.Ifthetwowiresareseparatedbya
+distance of 4r,then the magnitude of the magnetic field Bbetween thewires at a distance r
+from W1 is
+W1
+W2
+μol 6μol
+(A) 6πr (B) 5πr
+5μol M212
+(C) (D)
+6Tr 2πr2
+Q.37The dispersion equation of a waveguide,which relates the wavenumberk to the frequency
+m, is
+k(w) = (1/c)√∞2 - w2
+where the speed of light c = 3 × 10° m/s, and @。 is a constant. If the group velocity is
+2 ×108m/s, then the phase velocity is
+(A) 1.5× 10° m/s (B)2×10m/s (C) 3 × 10% m/s (D) 4.5 × 10% m/s
+Q.38In the circuit shown, the breakdown voltage and the maximum current of the Zener diode
+are 20 V and 60 mA, respectively. The values of R1 and R, are 200 Q and 1 kQ,
+respectively. What is the range of V; that will maintain the Zener diode in the ^on’ state?
+R1
+(A) 22 V to 34 V
+(B) 24 V to 36 V
+(C) 18 V to 24 V
+(D) 20 Vto 28 V
+EC-1 15/27
+=====PAGE 21=====
+GATE2019 EC-1
+Q.39The state transition diagramfor the circuit shown is
+D Q
+0
+CLK
+Q =0 Q=
+A = 1
+(B)
+A =0
+=
+I=0
+Q=0
+A = 1
+(C)
+A =0
+A =
+Q=0 Q=
+A=1
+D
+0
+A
+Q=0
+EC-1 16/27
+=====PAGE 22=====
+GATE2019 EC-1
+Q.40In the circuits shown, the threshold voltage of each nMOS transistor is 0.6 V. Ignoring the
+effectof channellengthmodulation andbodybias,thevaluesofVout1 andVout2,
+respectively,involts,are
+3V 3V 3V
+Vout2
+(A) 1.8 and 1.2 (B)2.4 and 2.4 (C) 1.8 and 2.4 (D) 2.4 and 1.2
+Q.41 TheRC circuit shownbelow has a variable resistance R(t)given by the following
+expression:
+R(t)= >100
+where R=1 Q, and C=1 F.We are also given that T =3 RC and the source voltage is
+V=1V. If the current at time t =0 is 1 A,then the current I(t),in amperes,at time
+t=T/2is (roundedoffto2decimalplaces).
+I(t) R(t)
+WW
+EC-1 17/27
+=====PAGE 23=====
+GATE2019 EC-1
+Q.42 Considera unityfeedbacksystem,asinthefigure shown,with anintegralcompensator K
+andopen-loop transferfunction
+1
+whereK>O.The positivevalue of Kforwhich there are exactly two poles of the unity
+feedbacksystemonthejwaxis isequal to (rounded off totwo decimalplaces).
+X(s)
+Y(s)
+Q.43Consider the homogeneous ordinary differential equation
+dy
+3x + 3y = 0, x>0
+dx2 dx
+with y(x) as a general solution. Given that
+y(1)=1 and 1y(2)=14
+the value of y(1.5), rounded off to two decimal places, is
+Q.44Let h[n] be a length-7 discrete-time finite impulse response filter, given by
+h[0] = 4,  h[1] = 3, h[2]=2, h[3]=1,
+h[-1]=-3,h[-2]=-2,h[-3]=-1,
+h[n] has to be obtained such that
+E(h,g) = [ H(ei) - G(ei)|²do
+ is minimized, where H(ei?) and G(ei?) are the discrete-time Fourier transforms of h[n]
+and g[n], respectively. For the filter that minimizes E(h, g), the value of 10g[-1] + g[1],
+rounded off to 2 decimal places, is
+EC-1
+18/27
+=====PAGE 24=====
+GATE2019 EC-1
+Q.45 Let a random process Y(t) be described as Y(t) = h(t) * X(t) + Z(t), where X(t) is a
+white noise process with power spectral density Sx(f)=5W/Hz.The filter h(t)has a
+stationary random process, uncorrelated with X(t), with power spectral density as shown in
+the figure.The power in Y(t),in watts,is equal to W(roundedofftotwo
+decimalplaces).
+Sz(f)(W/Hz)
+5 f(Hz)
+Q.46A voice signal m(t) is in the frequency range 5 kHz to 15 kHz. The signal is amplitude-
+modulated to generate an AM signal f(t) = A(1 + m(t)) cos 2πf.t, where fc = 600 kHz.
+The AM signal f(t) is to be digitized and archived. This is done by first sampling f(t) at
+1.2 times the Nyquist frequency, and then quantizing each sample using a 256-level
+quantizer.Finally, each quantized sample is binary coded using K bits, where K is the
+minimum number of bits required for the encoding.The rate, in Megabits per second
+(rounded off to2 decimal places),of the resulting stream of coded bits is Mbps.
+Q.47A random variable X takes values -1 and +1 with probabilities 0.2 and 0.8, respectively.
+It is transmitted across a channel which adds noise N, so that the random variable at the
+channel output is Y = X + N. The noise N is independent of X, and is uniformly
+distributed over the interval [2 ,2]. The receiver makes a decision
+(+1,if Y> θ
+where the threshold θ E [-1,1] is chosen so as to minimize the probability of error
+Pr[X ≠ X]. The minimum probability of error, rounded off to 1 decimal place, is
+EC-1 19/27
+=====PAGE 25=====
+GATE2019 EC-1
+Q.48A Germaniumsampleof dimensions1 cmx1 cmis illuminatedwith a20mW,
+600nmlaserlightsourceasshowninthefigure.Theilluminatedsamplesurfacehasa
+100nm ofloss-lessSilicon dioxide layer that reflects one-fourth of the incident light.From
+theremaininglight,one-thirdof thepowerisreflectedfrom theSilicon dioxide-
+Germaniuminterface,one-thirdisabsorbedintheGermaniumlayer,andone-thirdis
+transmitted through the other side of the sample. If the absorption coefficient of
+Germanium at 600nm is 3×104 cmand the bandgap is 0.66eV, the thickness of the
+Germanium layer,rounded off to3decimal places,is pm.
+20 mW, 600 nm
+1 cm
+cm
+Silicondioxide 100nm
+Germanium
+Q.49In an ideal pn junction with an ideality factor of 1 at T=300K, the magnitude of the
+reverse-bias voltage required to reach 75% of its reverse saturation current, rounded off to
+2 decimal places, is mV.
+[k = 1.38 × 10-23 JK-1, h = 6.625 × 10-34 J-s, q = 1.602 × 10-19C]
+Q.50 Consider a long-channel MOSFET with a channel length 1 μm and width 10 μm. The
+device parameters are acceptor concentration NA= 5 × 1016 cm-3, electron mobility
+μn=800 cm2/V-s, oxide capacitance/area Cox= 3.45 × 10-7 F/cm2, threshold voltage
+Vr=0.7 V. The drain saturation current (IDsat) for a gate voltage of 5 V is
+mA
+(rounded off to two decimal places). [&o = 8.854 × 10-14F/cm, &si = 11.9]
+Q.51Arectangularwaveguideofwidthwandheighthhascut-offfrequenciesforTEoand
+TEmodesin theratio1:2.The aspectratiow/h,roundedoffto twodecimal places,is
+EC-1 20/27
+=====PAGE 26=====
+GATE2019 EC-1
+Q.52In the circuit shown,Vis a10V square wave ofperiod,T=4mswithR=500Qand
+C=10 pF.The capacitor is initially uncharged at t=0,and the diode is assumed to be ideal.
+The voltage across the capacitor (V) at 3 ms is equal to volts(rounded off to one
+decimal place).
+R
++10
+-10
+t=0
+Q.53A CMOS inverter, designed to have a mid-point voltage Vi equal to half of Vad, as shown
+in the figure, has the following parameters:
+Vdd = 3 V
+μn Cox = 100 μA/V2 ; Vtn = 0.7 V for nMOS
+Hp Cox = 40 μA/V2; IVtpl = 0.9 V for pMOS
+The ratio of (),to (), is equal to (rounded off to 3 decimal places).
+Vout
+Vdd
+Vdd
+Vi=Vdd Vdd Vin
+EC-1 21/27
+=====PAGE 27=====
+GATE2019 EC-1
+Q.54 In the circuit shown, the threshold voltages of the pMOS (IVtpl)and nMOS (Vtm)
+transistors areboth equal to1V.All the transistorshave the same output resistancerasof
+6MQ.Theotherparameters arelistedbelow:
+μnCox= 60 μA/V2 ; () =5
+nMOS
+Hp Cox = 30 μA/V2; () = 10
+pMOs
+Un and μp are the carrier mobilities, and Cox is the oxide capacitance per unit area. Ignoring
+the effect of channel length modulation and body bias, the gain of the circuit is
+(rounded off to I decimal place).
+Vdd=4V
+Vout
+Vin
+EC-1
+22/27
+=====PAGE 28=====
+GATE2019 EC-1
+Q.55In the circuit shown,V=0 andV=Vaa.The otherrelevant parameters arementionedin
+thefigure.Ignoring the effectof channellengthmodulation and thebodyeffect,thevalue
+of Iout is mA(roundedoffto1 decimalplace).
+PPA
+W/L=10
+W/L=10 W/L=40
+out
+PPA
+W/L=5 W/L=5
+mA
+W/L=2 W/L=3
+EC-1 23/27
+=====PAGE 29=====
+Q.No. Type Section Key Marks
+1 MCQ GA B 1
+MCQ GA
+2 B 1
+3 MCQ C 1
+4 MCQ GA B 1
+5 MCQ GA D 1
+9 MCQ GA D 2
+7 MCQ GA A 2
+¥8 MCQ GA C 2
+MCQ GA
+9 B 2
+10 MCQ GA C 2
+1 MCQ EC D 1
+MCQ EC
+2 c 1
+3 MCQ EC D 1
+4 MCQ EC B 1
+5 MCQ EC D OR A 1
+9 MCQ EC B 1
+7 MCQ EC B 1
+¥8 MCQ EC A 1
+9 MCQ EC A 1
+10 MCQ EC B 1
+11 MCQ EC B 1
+12 MCQ EC
+B 1
+13 MCQ EC A 1
+=====PAGE 30=====
+Q.No. Type Section Key Marks
+14  MCQ EC B 1
+15  MCQ EC
+B 1
+16 NAT EC 0.0001 to 0.0001 1
+17 NAT EC 3 to 3 1
+18 EC
+NAT 11 to 11 1
+19 NAT EC 1.99 to 2.01 1
+20  NAT EC 0.36 to 0.38 1
+21 NAT EC 11.99 to 12.01 1
+22  NAT EC 0.74 to 0.76 1
+23  NAT EC 1.98 to 2.02 1
+24  NAT EC -3.1 to -2.9 1
+25  NAT EC 4 to 4
+1
+26  MCQ EC B 2
+27 MCQ EC C 2
+28  MCQ EC c 2
+29  MCQ EC D 2
+30  MCQ EC C 2
+31 MCQ EC B 2
+32  MCQ EC B 2
+33 MCQ EC A 2
+34  MCQ EC D 2
+35  MCQ EC
+A 2
+36 MCQ EC c 2
+=====PAGE 31=====
+Q.No. Type Section Key Marks
+37 MCQ EC D 2
+38 MCQ EC
+B 2
+39 MCQ EC C 2
+40 MCQ EC c 2
+41 EC
+NAT 0.23 to 0.27 2
+42  NAT EC 5.99 to 6.01 2
+43 NAT EC 5.24 to 5.26 2
+44 NAT EC -27.01 to -26.99 2
+45 NAT EC 17.40 to 17.60
+2
+46 NAT EC 11.80 to 11.82 2
+47 NAT EC 0.1 to 0.1 2
+48 EC
+0.230 to 0.232 2
+49 NAT EC 34.00 to 38.00 2
+50 NAT EC 25.40 to 25.60 2
+51 NAT EC 1.71 to 1.75 2
+52  NAT EC 3.2 to 3.4 2
+53 NAT EC 0.210 to 0.230 2
+54  NAT EC -905.0 to -895.0 OR 895.0 to 905.0 2
+55  NAT EC 5.9 to 6.1 2

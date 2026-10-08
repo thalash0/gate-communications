@@ -1,0 +1,96 @@
+GATE2021AnswerKeyforElectronics andCommunicationEngineering(EC)
+GraduateAptitudeTestinEngineering(GATE2021)
+Subject/Paper:Electronicsand CommunicationEngineering(EC)
+Question Type | Section | Answer | Negative
+Marks
+Q.No. | Session | Name | Key/Range | Marks
+MCQ/MSQ/NAT
+1 | 4 | MCQ | GA | 1 | 1/3
+2 | 4 | MCQ | GA | B | 1 | 1/3
+3 | 4 | MCQ | GA | c | 1 | 1/3
+4 | 4 | MCQ | c | 1 | 1/3
+５ | 4 | MCQ | B | 1 | 1/3
+MCQ | c | 2 | 2/3
+9 | 4
+2/3
+7 | 4 | MCQ | D | 2
+8 | 4 | MCQ | GA | A | 2 | 2/3
+6 | 4 | MCQ | GA | C | 2 | 2/3
+10 | 4 | MCQ | GA | A | 2 | 2/3
+1 | 4 | MCQ | EC  | A | 1 | 1/3
+MCQ | EC  | B | 1 | 1/3
+2 | 4
+MCQ | EC | B | 1 | 1/3
+3 | 4
+MCQ | 1/3
+4 | 4 | EC | B | 1
+5 | 4 | MCQ | EC | c | 1 | 1/3
+9 | 4 | MCQ | EC | D | 1 | 1/3
+7 | 4 | MCQ | EC | A | 1 | 1/3
+8 | 4 | MCQ | EC | D | 1 | 1/3
+9 | 4 | MCQ | EC | MTA | 1 | 1/3
+10 | 4 | MCQ | EC | A | 1 | 1/3
+GATE2021AnswerKeyforElectronics andCommunicationEngineering(EC)
+QuestionType | Section | Answer | Negative
+Q. No. | Session | Marks
+MCQ/MSQ/NAT | Name | Key/Range | Marks
+11 | 4 | MCQ | EC | B | 1 | 1/3
+12 | 4 | MCQ | EC | C | 1 | 1/3
+13 | 4 | MCQ | EC | c | 1 | 1/3
+14 | 4 | MCQ | EC | D | 1 | 1/3
+15 | 4 | MCQ | EC | A | 1 | 1/3
+16 | 4 | NAT | EC | 8.0 to 8.0 | 1 | 0
+17 | 4 | NAT | EC | Oto 0 | 1
+18 | NAT | EC | 0.5 to 0.5
+4 | 1
+19 | 4 | NAT | EC | 1.0 to 1.0 | 1
+20 | 4 | NAT | EC  | 4.5 to 4.5 | 1 | 0
+21 | 4 | NAT | EC  | 2.0 to 2.0 | 1 | 0
+22 | 4 | NAT | EC  | 94.2to94.6 | 1 | 0
+23 | 4 | NAT | EC | 9.24 to 9.28 | 1
+24 | 4 | NAT | EC | 2.80to3.20 | 1 | 0
+25 | 4 | NAT | EC | 9.30 to 9.44 | 1
+26 | MCQ | EC | MTA | 2 | 2/3
+4
+2/3
+27 | 4 | MCQ | EC | B | 2
+28 | 4 | MCQ | EC | c | 2 | 2/3
+29 | 4 | MCQ | EC | c | 2 | 2/3
+30 | 4 | MCQ | EC | A | 2 | 2/3
+31 | 4 | MCQ | EC | C | 2 | 2/3
+32 | 4 | MCQ | EC | A | 2 | 2/3
+33 | 4 | MCQ | EC | D | 2 | 2/3
+GATE2021AnswerKeyforElectronicsandCommunicationEngineering(EC)
+Question Type | Section | Answer | Negative
+Q. No. | Session | Marks
+MCQ/MSQ/NAT | Name | Key/Range | Marks
+MCQ
+34 | 4 | EC | C | 2 | 2/3
+35 | 4 | MCQ | EC | A | 2 | 2/3
+36 | 4 | NAT | EC | 10.0 to 10.0 | 2 | 0
+37 | 4 | NAT | EC | 56.50 to 56.60 | 2 | 0
+38 | 4 | NAT | EC | 0.132to0.146 | 2 | 0
+39 | 4 | NAT | EC | 31.9 to 32.1 | 2 | 0
+40 | 4 | NAT | EC  | 0.0 to 0.0 | ２ | 0
+41 | NAT | EC | 7.9 to 8.1
+4 | 2 | 0
+42
+4 | NAT | EC  | 8.1 to 8.4 | 2 | 0
+43 | 4 | NAT | EC | 10 to 10 | 2 | 0
+44 | 4 | NAT | EC  | 0.5 to 0.5 | 2 | 0
+45 | 4 | NAT | EC | -12 to -12 | 2 | 0
+46 | 4 | NAT | EC | 5 to 5 | 2 | 0
+47 | 4 | NAT | EC | 1.40 to 1.50 | 2 | 0
+48 | NAT | EC | 3.125 to 3.125
+4 | 2 | 0
+1011310.0 to
+49 | NAT | EC | 2 | 0
+4
+1011320.0
+50 | 4 | NAT | EC | 1400 to 1400 | 2 | 0
+51 | 4 | NAT | EC | 3.320to3.325 | 2 | 0
+52 | 4 | NAT | EC | 30.00to34.00 | 2 | 0
+53 | 4 | NAT | EC | 0.03 to 0.05 | 2 | 0
+54 | 4 | NAT | EC | 1.15 to 1.25 | 2 | 0
+55 | 4 | NAT | EC | 0.224 to 0.264 | 2 | 0
+MTAmeansMarkstoAll

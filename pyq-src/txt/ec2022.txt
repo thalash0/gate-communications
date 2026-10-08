@@ -1,0 +1,1913 @@
+
+
+=====PAGE 1=====
+ 
+ 
+                                                                                                                                         Page 1 
+ 
+GATE 2022 General Aptitude (GA) 
+Q.1 – Q.5  Carry ONE mark each. 
+ 
+Q.1 
+Mr. X speaks _________ Japanese _________ Chinese. 
+(A)
+neither / or 
+(B)
+either / nor 
+(C)
+neither / nor  
+(D)
+also / but 
+ 
+ 
+Q.2 
+A sum of money is to be distributed among P, Q, R, and S in the              
+proportion 5 : 2 : 4 : 3, respectively. 
+If R gets  ₹ 1000 more than S, what is the share of Q (in ₹)? 
+(A)
+500 
+(B)
+1000 
+(C)
+1500 
+(D)
+2000 
+ 
+ 
+
+
+=====PAGE 2=====
+ 
+ 
+                                                                                                                                         Page 2 
+ 
+Q.3 
+A trapezium has vertices marked as P, Q, R and S (in that order anticlockwise). 
+The side PQ is parallel to side SR.  
+Further, it is given that, PQ = 11 cm, QR = 4 cm, RS = 6 cm and SP = 3 cm.  
+What is the shortest distance between PQ and SR (in cm)? 
+(A)
+1.80 
+(B)
+2.40 
+(C)
+4.20 
+(D)
+5.76 
+ 
+ 
+
+
+=====PAGE 3=====
+ 
+ 
+                                                                                                                                         Page 3 
+ 
+ 
+ 
+Q.4 
+The figure shows a grid formed by a collection of unit squares. The unshaded 
+unit square in the grid represents a hole. 
+ 
+What is the maximum number of squares without a “hole in the interior” that 
+can be formed within the 4 × 4 grid using the unit squares as building blocks? 
+(A)
+15 
+(B)
+20 
+(C)
+21 
+(D)
+26 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 4=====
+ 
+ 
+                                                                                                                                         Page 4 
+ 
+Q.5 
+An art gallery engages a security guard to ensure that the items displayed are 
+protected. The diagram below represents the plan of the gallery where the 
+boundary walls are opaque. The location the security guard posted is identified 
+such that all the inner space (shaded region in the plan) of the gallery is within 
+the line of sight of the security guard.  
+If the security guard does not move around the posted location and has a 360o 
+view, which one of the following correctly represents the set of ALL possible 
+locations among the locations P, Q, R and S, where the security guard can be 
+posted to watch over the entire inner space of the gallery.  
+ 
+(A)
+P and Q  
+(B)
+Q 
+(C)
+Q and S 
+(D)
+R and S  
+ 
+ 
+ 
+
+
+=====PAGE 5=====
+ 
+ 
+                                                                                                                                         Page 5 
+ 
+ 
+Q. 6 – Q. 10  Carry TWO marks each. 
+ 
+ 
+ 
+Q.6 
+Mosquitoes pose a threat to human health. Controlling mosquitoes using 
+chemicals may have undesired consequences. In Florida, authorities have used 
+genetically modified mosquitoes to control the overall mosquito population. It 
+remains to be seen if this novel approach has unforeseen consequences.  
+Which one of the following is the correct logical inference based on the 
+information in the above passage? 
+(A)
+Using chemicals to kill mosquitoes is better than using genetically modified 
+mosquitoes because genetic engineering is dangerous 
+(B)
+Using genetically modified mosquitoes is better than using chemicals to kill 
+mosquitoes because they do not have any side effects 
+(C)
+Both using genetically modified mosquitoes and chemicals have undesired 
+consequences and can be dangerous 
+(D)
+Using chemicals to kill mosquitoes may have undesired consequences but it is 
+not clear if using genetically modified mosquitoes has any negative 
+consequence 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 6=====
+ 
+ 
+                                                                                                                                         Page 6 
+ 
+ 
+ 
+ 
+Q.7 
+Consider the following inequalities.  
+(i) 
+2𝑥−1 > 7 
+(ii) 
+2𝑥−9 < 1            
+Which one of the following expressions below satisfies the above two 
+inequalities? 
+(A)
+𝑥≤−4 
+(B)
+−4 < 𝑥≤4 
+(C)
+4 < 𝑥< 5 
+(D)
+𝑥≥5 
+ 
+ 
+ 
+ 
+Q.8 
+Four points P(0, 1), Q(0, −3), R(−2, −1),  and S(2, −1) represent the vertices 
+of a quadrilateral.  
+What is the area enclosed by the quadrilateral?    
+(A)
+4 
+(B)
+4ඥ2 
+(C)
+8 
+(D)
+8√2 
+
+
+=====PAGE 7=====
+ 
+ 
+                                                                                                                                         Page 7 
+ 
+ 
+ 
+ 
+ 
+Q.9 
+ 
+In a class of five students P, Q, R, S and T, only one student is known to have 
+copied in the exam. The disciplinary committee has investigated the situation 
+and recorded the statements from the students as given below.  
+Statement of P: R has copied in the exam. 
+Statement of Q: S has copied in the exam. 
+Statement of R: P did not copy in the exam. 
+Statement of S: Only one of us is telling the truth. 
+Statement of T: R is telling the truth. 
+The investigating team had authentic information that S never lies.  
+Based on the information given above, the person who has copied in the exam is
+(A)
+R 
+(B)
+P 
+(C)
+Q 
+(D)
+T 
+ 
+ 
+ 
+
+
+=====PAGE 8=====
+ 
+ 
+                                                                                                                                         Page 8 
+ 
+ 
+ 
+Q.10 
+Consider the following square with the four corners and the 
+center marked as P, Q, R, S and T respectively. 
+Let X, Y and Z represent the following operations: 
+X: rotation of the square by 180 degree with respect to the 
+S-Q axis.  
+Y: rotation of the square by 180 degree with respect to the P-R axis.  
+Z: rotation of the square by 90 degree clockwise with respect to the axis 
+perpendicular, going into the screen and passing through the point T. 
+Consider the following three distinct sequences of operation (which are applied 
+in the left to right order). 
+(1) XYZZ 
+(2) XY 
+(3) ZZZZ 
+Which one of the following statements is correct as per the information 
+provided above?  
+(A)
+The sequence of operations (1) and (2) are equivalent 
+(B)
+The sequence of operations (1) and (3) are equivalent 
+(C)
+The sequence of operations (2) and (3) are equivalent 
+(D)
+The sequence of operations (1), (2) and (3) are equivalent 
+ 
+
+
+=====PAGE 9=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 9 
+ 
+ 
+Q.11 – Q.35 Carry ONE mark Each 
+Q.11 
+Consider the two-dimensional vector field  𝐹⃗(𝑥, 𝑦) = 𝑥𝚤⃗+ 𝑦𝚥⃗, where 𝚤⃗ and 𝚥⃗ denote 
+the unit vectors along the 𝑥-axis and the 𝑦-axis, respectively. A contour 𝐶 in the 𝑥-
+𝑦 plane, as shown in the figure, is composed of two horizontal lines connected at the 
+two ends by two semicircular arcs of unit radius. The contour is traversed in the 
+counter-clockwise 
+sense. 
+The 
+value 
+of 
+the 
+closed 
+path 
+integral
+ර𝐹⃗(𝑥, 𝑦) ⋅(𝑑𝑥 𝚤⃗+ 𝑑𝑦 𝚥⃗ )
+ 
+஼
+ 
+is _________. 
+ 
+ 
+(A) 
+0 
+(B) 
+1 
+(C) 
+8 + 2𝜋 
+(D) 
+−1 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 10=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 10 
+ 
+Q.12 
+Consider a system of linear equations 𝐴𝑥= 𝑏, where  
+𝐴= ൤   1
+−√2
+   3
+−1
+   √2
+−3
+൨,    𝑏= ቂ1
+3ቃ. 
+This system of equations admits _________. 
+ 
+ 
+(A) 
+a unique solution for 𝑥 
+(B) 
+infinitely many solutions for 𝑥 
+(C) 
+no solutions for 𝑥 
+(D) 
+exactly two solutions for 𝑥 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 11=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 11 
+ 
+Q.13 
+The current 𝐼 in the circuit shown is ________. 
+ 
+ 
+(A) 
+1.25 × 10ିଷA 
+(B) 
+0.75 × 10ିଷA 
+(C) 
+−0.5 × 10ିଷA 
+(D) 
+1.16 × 10ିଷA 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 12=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 12 
+ 
+Q.14 
+Consider the circuit shown in the figure. The current 𝐼 flowing through the 10 Ω 
+resistor is _________. 
+ 
+ 
+(A) 
+1 A 
+(B) 
+0 A 
+(C) 
+0.1 A 
+(D) 
+-0.1 A 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 13=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 13 
+ 
+Q.15 
+The Fourier transform 𝑋(𝑗𝜔) of the signal 
+𝑥(𝑡) =
+𝑡
+(1 + 𝑡ଶ)ଶ 
+is _________. 
+ 
+ 
+(A) 
+𝜋
+2𝑗𝜔𝑒ି
+|ఠ| 
+(B) 
+𝜋
+2 𝜔𝑒ି
+|ఠ| 
+(C) 
+𝜋
+2𝑗𝑒ି
+|ఠ| 
+(D) 
+𝜋
+2 𝑒ି
+|ఠ| 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 14=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 14 
+ 
+Q.16 
+Consider a long rectangular bar of direct bandgap p-type semiconductor. The 
+equilibrium hole density is 10ଵ଻ cm3 and the intrinsic carrier concentration is 
+10ଵ଴ cm3. Electron and hole diffusion lengths are 2 𝜇m and 1 𝜇m, respectively.  
+The left side of the bar (𝑥= 0) is uniformly illuminated with a laser having photon 
+energy greater than the bandgap of the semiconductor. Excess electron-hole pairs 
+are generated ONLY at 𝑥= 0 because of the laser. The steady state electron density 
+at 𝑥= 0 is 10ଵସ cm3 due to laser illumination. Under these conditions and ignoring 
+electric field, the closest approximation (among the given options) of the steady state 
+electron density at 𝑥= 2 𝜇m, is ___________ . 
+ 
+ 
+(A) 
+0.37 × 10ଵସcm3 
+(B) 
+0.63 × 10ଵଷcm3 
+(C) 
+3.7 × 10ଵସcm3 
+(D) 
+10ଷcm3 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 15=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 15 
+ 
+Q.17 
+In a non-degenerate bulk semiconductor with electron density 𝑛= 10ଵ଺cm3, the 
+value of 𝐸஼−𝐸ி௡= 200 meV, where  𝐸஼ and 𝐸ி௡ denote the bottom of the 
+conduction band energy and electron Fermi level energy, respectively. Assume 
+thermal voltage as 26 meV and the intrinsic carrier concentration is 10ଵ଴ cm3. For 
+𝑛= 0.5 × 10ଵ଺cm3, the closest approximation of the value of (𝐸஼−𝐸ி௡), among 
+the given options, is __________. 
+ 
+ 
+(A) 
+226 meV 
+(B) 
+174 meV 
+(C) 
+218 meV 
+(D) 
+182 meV 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 16=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 16 
+ 
+Q.18 
+Consider the CMOS circuit shown in the figure (substrates are connected to their 
+respective sources). The gate width (𝑊) to gate length (𝐿) ratios ቀ
+ௐ
+௅ቁ of the 
+transistors are as shown. Both the transistors have the same gate oxide capacitance 
+per unit area. For the pMOSFET, the threshold voltage is 1 V and the mobility of 
+holes is 40 
+cm2
+V.s . For the nMOSFET, the threshold voltage is 1 V and the mobility 
+of electrons is 300
+cm2
+V.s . The steady state output voltage 𝑉ை is ________. 
+ 
+ 
+(A) 
+equal to 0 V 
+(B) 
+more than 2 V 
+(C) 
+less than 2 V 
+(D) 
+equal to 2 V 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 17=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 17 
+ 
+Q.19 
+Consider the 2-bit multiplexer (MUX) shown in the figure. For OUTPUT to be the 
+XOR of C and D, the values for 𝐴଴, 𝐴ଵ, 𝐴ଶ, and 𝐴ଷ are ____________. 
+ 
+ 
+(A) 
+𝐴଴= 0, 𝐴ଵ= 0, 𝐴ଶ= 1, 𝐴ଷ= 1 
+(B) 
+𝐴଴= 1, 𝐴ଵ= 0, 𝐴ଶ= 1, 𝐴ଷ= 0 
+(C) 
+𝐴଴= 0, 𝐴ଵ= 1, 𝐴ଶ= 1, 𝐴ଷ= 0 
+(D) 
+𝐴଴= 1, 𝐴ଵ= 1, 𝐴ଶ= 0, 𝐴ଷ= 0 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 18=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 18 
+ 
+Q.20 
+The ideal long channel nMOSFET and pMOSFET devices shown in the circuits 
+have threshold voltages of 1 V and −1 V, respectively. The MOSFET substrates are 
+connected to their respective sources. Ignore leakage currents and assume that the 
+capacitors are initially discharged. For the applied voltages as shown, the steady 
+state voltages are _________________. 
+ 
+ 
+(A) 
+𝑉ଵ= 5 V,       𝑉ଶ= 5 V 
+(B) 
+𝑉ଵ= 5 V,       𝑉ଶ= 4 V 
+(C) 
+𝑉ଵ= 4 V,         𝑉ଶ= 5 V 
+(D) 
+𝑉ଵ= 4 V,         𝑉ଶ= −5 V 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 19=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 19 
+ 
+Q.21 
+Consider a closed-loop control system with unity negative feedback and 𝐾𝐺(𝑠) in 
+the forward path, where the gain 𝐾= 2. The complete Nyquist plot of the transfer 
+function 𝐺(𝑠) is shown in the figure. Note that the Nyquist contour has been chosen 
+to have the clockwise sense. Assume 𝐺(𝑠) has no poles on the closed right-half of 
+the complex plane. The number of poles of the closed-loop transfer function in the 
+closed right-half of the complex plane is ___________. 
+ 
+ 
+(A) 
+0 
+(B) 
+1 
+(C) 
+2 
+(D) 
+3 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 20=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 20 
+ 
+Q.22 
+The root-locus plot of a closed-loop system with unity negative feedback and 
+transfer function 𝐾𝐺(𝑠) in the forward path is shown in the figure. Note that 𝐾 is 
+varied from 0 to ∞.  
+Select the transfer function 𝐺(𝑠) that results in the root-locus plot of the closed-loop 
+system as shown in the figure. 
+ 
+ 
+(A) 
+𝐺(𝑠) =
+1
+(𝑠+ 1)ହ 
+(B) 
+𝐺(𝑠) =
+1
+𝑠ହ+ 1 
+(C) 
+𝐺(𝑠) =
+𝑠−1
+(𝑠+ 1)଺ 
+(D) 
+𝐺(𝑠) = 𝑠+ 1
+𝑠଺+ 1 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 21=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 21 
+ 
+Q.23 
+The frequency response 𝐻(𝑓) of a linear time-invariant system has magnitude as 
+shown in the figure. 
+Statement I: The system is necessarily a pure delay system for inputs which are 
+bandlimited to −𝛼≤𝑓≤𝛼. 
+Statement II: For any wide-sense stationary input process with power spectral 
+density 𝑆௑(𝑓), the output power spectral density 𝑆௒(𝑓) obeys 𝑆௒(𝑓) = 𝑆௑(𝑓) for 
+−𝛼≤𝑓≤𝛼. 
+Which one of the following combinations is true? 
+ 
+ 
+(A) 
+Statement I is correct, Statement II is correct 
+(B) 
+Statement I is correct, Statement II is incorrect 
+(C) 
+Statement I is incorrect, Statement II is correct 
+(D) 
+Statement I is incorrect, Statement II is incorrect 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 22=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 22 
+ 
+Q.24 
+In a circuit, there is a series connection of an ideal resistor and an ideal capacitor. 
+The conduction current (in Amperes) through the resistor is 2sin(𝑡+ 𝜋/2). 
+The displacement current (in Amperes) through the capacitor is _________. 
+ 
+ 
+(A) 
+2sin(𝑡)  
+(B) 
+2sin(𝑡+ 𝜋)  
+(C) 
+2sin(𝑡+ 𝜋/2)  
+(D) 
+0  
+ 
+ 
+ 
+ 
+
+
+=====PAGE 23=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 23 
+ 
+Q.25 
+Consider the following partial differential equation (PDE) 
+𝑎𝜕ଶ𝑓(𝑥, 𝑦)
+𝜕𝑥ଶ
++ 𝑏𝜕ଶ𝑓(𝑥, 𝑦)
+𝜕𝑦ଶ
+= 𝑓(𝑥, 𝑦), 
+where 𝑎 and 𝑏 are distinct positive real numbers. Select the combination(s) of values 
+of the real parameters 𝜉 and 𝜂 such that 𝑓(𝑥, 𝑦) = 𝑒(క௫ା
+) is a solution of the 
+given PDE. 
+ 
+ 
+(A) 
+𝜉=
+1
+√2𝑎
+, 𝜂=
+1
+√2𝑏
+ 
+(B) 
+𝜉= 1
+√𝑎, 𝜂= 0 
+(C) 
+𝜉= 0 , 𝜂= 0 
+(D) 
+𝜉= 1
+√𝑎, 𝜂= 1
+√𝑏
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 24=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 24 
+ 
+Q.26 
+An ideal OPAMP circuit with a sinusoidal input is shown in the figure. The 3 dB 
+frequency is the frequency at which the magnitude of the voltage gain decreases by 
+3 dB from the maximum value. Which of the options is/are correct? 
+ 
+ 
+(A) 
+The circuit is a low pass filter. 
+(B) 
+The circuit is a high pass filter. 
+(C) 
+The 3 dB frequency is 1000 rad/s. 
+(D) 
+The 3 dB frequency is  
+ଵ଴଴଴
+ଷ rad/s. 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 25=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 25 
+ 
+Q.27 
+Select the Boolean function(s) equivalent to 𝑥+ 𝑦𝑧, where 𝑥, 𝑦, and 𝑧 are Boolean 
+variables, and + denotes logical OR operation. 
+ 
+ 
+(A) 
+𝑥+ 𝑧+ 𝑥𝑦 
+(B) 
+(𝑥+ 𝑦)(𝑥+ 𝑧) 
+(C) 
+𝑥+ 𝑥𝑦+ 𝑦𝑧 
+(D) 
+𝑥+ 𝑥𝑧+ 𝑥𝑦 
+ 
+ 
+Q.28 
+Select the correct statement(s) regarding CMOS implementation of NOT gates. 
+ 
+ 
+(A) 
+Noise Margin High (𝑁𝑀ு) is always equal to the Noise Margin Low (𝑁𝑀௅), 
+irrespective of the sizing of transistors. 
+(B) 
+Dynamic power consumption during switching is zero.  
+(C) 
+For a logical high input under steady state, the nMOSFET is in the linear regime of 
+operation. 
+(D) 
+Mobility of electrons never influences the switching speed of the NOT gate. 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 26=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 26 
+ 
+Q.29 
+Let 𝐻(𝑋) denote the entropy of a discrete random variable 𝑋 taking 𝐾 possible 
+distinct real values. Which of the following statements is/are necessarily true?  
+ 
+ 
+(A) 
+𝐻(𝑋) ≤logଶ𝐾  bits 
+(B) 
+𝐻(𝑋) ≤𝐻(2𝑋) 
+(C) 
+𝐻(𝑋) ≤𝐻(𝑋ଶ) 
+(D) 
+𝐻(𝑋) ≤𝐻(2௑) 
+ 
+ 
+Q.30 
+Consider the following wave equation,  
+𝜕ଶ𝑓(𝑥, 𝑡)
+𝜕𝑡ଶ
+= 10000 𝜕ଶ𝑓(𝑥, 𝑡)
+𝜕𝑥ଶ
+ 
+Which of the given options is/are solution(s) to the given wave equation? 
+ 
+ 
+(A) 
+𝑓(𝑥, 𝑡) = 𝑒ି
+(௫ିଵ଴଴௧)మ+ 𝑒ି
+(௫ାଵ଴଴௧)మ 
+(B) 
+𝑓(𝑥, 𝑡) = 𝑒ି
+(௫ିଵ଴଴௧) + 0.5𝑒ି
+(௫ାଵ଴଴଴௧) 
+(C) 
+𝑓(𝑥, 𝑡) = 𝑒ି
+(௫ିଵ଴଴௧) + sin(𝑥+ 100𝑡) 
+(D) 
+𝑓(𝑥, 𝑡) = 𝑒௝ଵ଴଴గ(ିଵ଴଴௫ା௧) + 𝑒௝ଵ଴଴గ(ଵ଴଴௫ା௧) 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 27=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 27 
+ 
+Q.31 
+The bar graph shows the frequency of the number of wickets taken in a match by a 
+bowler in her career. For example, in 17 of her matches, the bowler has taken 5 
+wickets each. The median number of wickets taken by the bowler in a match 
+is __________ (rounded off to one decimal place).  
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 28=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 28 
+ 
+Q.32 
+A simple closed path 𝐶 in the complex plane is shown in the figure. If 
+ර
+2௭
+𝑧ଶ−1 𝑑𝑧= −𝑖𝜋𝐴,
+஼
+ 
+where 𝑖= √−1, then the value of 𝐴 is ______ (rounded off to two decimal places).
+ 
+ 
+ 
+ 
+Q.33 
+Let 𝑥ଵ(𝑡) = 𝑒ି
+௧𝑢(𝑡) and 𝑥ଶ(𝑡) = 𝑢(𝑡) −𝑢(𝑡−2), where 𝑢(⋅) denotes the unit step 
+function.  
+If 𝑦(𝑡) denotes the convolution of 𝑥ଵ(𝑡) and 𝑥ଶ(𝑡), then lim
+௧→ஶ𝑦(𝑡) = _________ 
+(rounded off to one decimal place). 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 29=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 29 
+ 
+Q.34 
+An ideal MOS capacitor (p-type semiconductor) is shown in the figure. The MOS 
+capacitor is under strong inversion with 𝑉ீ= 2 V. The corresponding inversion 
+charge density (𝑄ூே) is 2.2 𝜇C/cm2. Assume oxide capacitance per unit area as 
+𝐶ை௑= 1.7 𝜇F/cm2. For 𝑉ீ= 4 V, the value of 𝑄ூே is ______ 𝜇C/cm2 (rounded off 
+to one decimal place). 
+ 
+ 
+ 
+ 
+Q.35 
+A symbol stream contains alternate QPSK and 16-QAM symbols. If symbols from 
+this stream are transmitted at the rate of 1 mega-symbols per second, the raw 
+(uncoded) data rate is _______ mega-bits per second (rounded off to one decimal 
+place).   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 30=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 30 
+ 
+Q.36 – Q.65 Carry TWO marks Each 
+Q.36 The function 𝑓(𝑥) = 8 logୣ𝑥−𝑥ଶ+ 3 attains its minimum over the interval 
+[1, 𝑒] at 𝑥= _________.  
+(Here logୣ𝑥is the natural logarithm of 𝑥.)  
+ 
+ 
+(A) 
+2 
+(B) 
+1 
+(C) 
+𝑒 
+(D) 
+1 + 𝑒
+2
+ 
+ 
+ 
+Q.37 Let 𝛼, 𝛽 be two non-zero real numbers and 𝑣ଵ, 𝑣ଶ be two non-zero real vectors of 
+size 3 × 1. Suppose that 𝑣ଵ and 𝑣ଶ satisfy 𝑣ଵ்𝑣ଶ= 0, 𝑣ଵ்𝑣ଵ= 1, and 
+𝑣ଶ்𝑣ଶ= 1. Let 𝐴 be the 3 × 3 matrix given by: 
+𝐴= 𝛼𝑣ଵ𝑣ଵ்+ 𝛽𝑣ଶ𝑣ଶ் 
+The eigenvalues of 𝐴 are __________. 
+ 
+ 
+(A) 
+0, 𝛼, 𝛽 
+(B) 
+0, 𝛼+ 𝛽, 𝛼−𝛽 
+(C) 
+0,
+𝛼+ 𝛽
+2
+, ඥ𝛼𝛽 
+(D) 
+0, 0, ඥ𝛼ଶ+ 𝛽ଶ 
+
+
+=====PAGE 31=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 31 
+ 
+ 
+ 
+Q.38 For the circuit shown, the locus of the impedance 𝑍(𝑗𝜔) is plotted as 𝜔 increases 
+from zero to infinity. The values of 𝑅ଵ and 𝑅ଶ are: 
+ 
+ 
+(A) 
+𝑅ଵ= 2 kΩ, 𝑅ଶ= 3 kΩ 
+(B) 
+𝑅ଵ= 5 kΩ, 𝑅ଶ= 2 kΩ 
+(C) 
+𝑅ଵ= 5 kΩ, 𝑅ଶ= 2.5 kΩ 
+(D) 
+𝑅ଵ= 2 kΩ, 𝑅ଶ= 5 kΩ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 32=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 32 
+ 
+Q.39 Consider the circuit shown in the figure with input 𝑉(𝑡) in volts. The sinusoidal 
+steady state current 𝐼(𝑡) flowing through the circuit is shown graphically (where 𝑡 is 
+in seconds). The circuit element 𝑍 can be ________. 
+ 
+ 
+(A) 
+a capacitor of 1 F 
+(B) 
+an inductor of 1 H 
+(C) 
+a capacitor of √3 F 
+(D) 
+an inductor of √3 H 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 33=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 33 
+ 
+Q.40 Consider an ideal long channel nMOSFET (enhancement-mode) with gate length 
+10 µm and width 100 µm. The product of electron mobility (µ௡) and oxide 
+capacitance per unit area (𝐶ை௑) is µ௡𝐶ை௑= 1 mA/V2. The threshold voltage of the 
+transistor is 1 V. For a gate-to-source voltage 𝑉ீௌ= [2 −sin(2𝑡)] V and drain-to-
+source voltage 𝑉஽ௌ= 1 V (substrate connected to the source), the maximum value 
+of the drain-to-source current is ________. 
+ 
+ 
+(A) 
+40 mA 
+(B) 
+20 mA 
+(C) 
+15 mA 
+(D) 
+5 mA 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 34=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 34 
+ 
+Q.41 For the following circuit with an ideal OPAMP, the difference between the maximum 
+and the minimum values of the capacitor voltage (𝑉௖) is __________. 
+ 
+(A) 
+15 V 
+(B) 
+27 V 
+(C) 
+13 V 
+(D) 
+14 V 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 35=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 35 
+ 
+Q.42 A circuit with an ideal OPAMP is shown. The Bode plot for the magnitude (in dB) 
+of the gain transfer function (𝐴௏(𝑗𝜔) = 𝑉௢௨௧(𝑗𝜔)/𝑉௜௡(𝑗𝜔)) of the circuit is also 
+provided (here, 𝜔  is the angular frequency in rad/s). The values of 𝑅 and 𝐶 are 
+____________. 
+ 
+ 
+(A) 
+𝑅= 3 kΩ, 𝐶= 1 𝜇F 
+(B) 
+𝑅= 1 kΩ, 𝐶= 3 𝜇F 
+(C) 
+𝑅= 4 kΩ, 𝐶= 1 𝜇F 
+(D) 
+𝑅= 3 kΩ, 𝐶= 2 𝜇F 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 36=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 36 
+ 
+Q.43 For the circuit shown, the clock frequency is 𝑓଴ and the duty cycle is 25%. For the 
+signal at the Q output of the Flip-Flop, _______. 
+ 
+ 
+(A) 
+frequency is 𝑓଴/4 and duty cycle is 50% 
+(B) 
+frequency is 𝑓଴/4 and duty cycle is 25% 
+(C) 
+frequency is 𝑓଴/2 and duty cycle is 50% 
+(D) 
+frequency is 𝑓଴ and duty cycle is 25% 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 37=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 37 
+ 
+Q.44 Consider an even polynomial 𝑝(𝑠) given by 
+𝑝(𝑠) = 𝑠ସ+ 5𝑠ଶ+ 4 + 𝐾 , 
+where 𝐾 is an unknown real parameter. The complete range of 𝐾 for which 𝑝(𝑠) has 
+all its roots on the imaginary axis is ________.  
+ 
+ 
+(A) 
+−4 ≤𝐾≤9
+4 
+(B) 
+−3 ≤𝐾≤9
+2 
+(C) 
+−6 ≤𝐾≤5
+4 
+(D) 
+−5 ≤𝐾≤0 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 38=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 38 
+ 
+Q.45 Consider the following series: 
+෍𝑛ௗ
+𝑐௡
+ஶ
+௡ୀଵ
+ 
+For which of the following combinations of  𝑐, 𝑑 values does this series converge? 
+ 
+ 
+(A) 
+𝑐= 1,  𝑑= −1  
+(B) 
+𝑐= 2, 𝑑= 1 
+(C) 
+𝑐= 0.5, 𝑑= −10 
+(D) 
+𝑐= 1,  𝑑= −2 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 39=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 39 
+ 
+Q.46 The outputs of four systems (𝑆ଵ, 𝑆ଶ, 𝑆ଷ, and 𝑆ସ) corresponding to the input signal 
+sin(𝑡), for all time 𝑡, are shown in the figure. 
+Based on the given information, which of the four systems is/are definitely NOT 
+LTI (linear and time-invariant)? 
+ 
+ 
+(A) 
+𝑆ଵ 
+(B) 
+𝑆ଶ 
+(C) 
+𝑆ଷ 
+(D) 
+𝑆ସ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 40=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 40 
+ 
+Q.47 Select the CORRECT statement(s) regarding semiconductor devices. 
+(A) 
+Electrons and holes are of equal density in an intrinsic semiconductor at equilibrium.
+(B) 
+Collector region is generally more heavily doped than Base region in a BJT. 
+(C) 
+Total current is spatially constant in a two terminal electronic device in dark under 
+steady state condition. 
+(D) 
+Mobility of electrons always increases with temperature in Silicon beyond 300 K. 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 41=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 41 
+ 
+Q.48 A state transition diagram with states 𝐴, 𝐵, and 𝐶, and transition probabilities 
+𝑝ଵ, 𝑝ଶ, … , 𝑝଻ is shown in the figure (e.g., 𝑝ଵ denotes the probability of transition from 
+state 𝐴 to 𝐵). For this state diagram, select the statement(s) which is/are universally 
+true. 
+ 
+ 
+(A) 
+𝑝ଶ+ 𝑝ଷ= 𝑝ହ+ 𝑝଺ 
+(B) 
+𝑝ଵ+ 𝑝ଷ= 𝑝ସ+ 𝑝଺ 
+(C) 
+𝑝ଵ+ 𝑝ସ+ 𝑝଻= 1 
+/(D) 
+𝑝ଶ+ 𝑝ହ+ 𝑝଻= 1 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 42=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 42 
+ 
+Q.49 Consider a Boolean gate (D) where the output 𝑌 is related to the inputs 𝐴 and 𝐵 as, 
+𝑌= 𝐴+ 𝐵ത, where + denotes logical OR operation. The Boolean inputs ‘0’ and ‘1’ 
+are also available separately. Using instances of only D gates and inputs ‘0’ and ‘1’, 
+__________ (select the correct option(s)). 
+(A) 
+NAND logic can be implemented  
+(B) 
+OR logic cannot be implemented 
+(C) 
+NOR logic can be implemented 
+(D) 
+AND logic cannot be implemented 
+ 
+ 
+Q.50 Two linear time-invariant systems with transfer functions 
+𝐺ଵ(𝑠) = 
+10
+𝑠ଶ+ 𝑠+ 1   and   𝐺ଶ(𝑠) = 
+10
+𝑠ଶ+ 𝑠√10 + 10
+ 
+have unit step responses 𝑦ଵ(𝑡) and 𝑦ଶ(𝑡), respectively. Which of the following 
+statements is/are true? 
+ 
+ 
+(A) 
+𝑦ଵ(𝑡) and 𝑦ଶ(𝑡) have the same percentage peak overshoot. 
+(B) 
+𝑦ଵ(𝑡) and 𝑦ଶ(𝑡) have the same steady-state value. 
+(C) 
+𝑦ଵ(𝑡) and 𝑦ଶ(𝑡) have the same damped frequency of oscillation. 
+(D) 
+𝑦ଵ(𝑡) and 𝑦ଶ(𝑡) have the same 2% settling time. 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 43=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 43 
+ 
+Q.51 Consider an FM broadcast that employs the pre-emphasis filter with frequency 
+response 
+𝐻௣௘(𝜔) = 1 +
+௝ఠ  
+ఠబ , 
+where 𝜔଴= 10ସ rad/sec.  
+For the network shown in the figure to act as a corresponding de-emphasis filter, the 
+appropriate pair(s) of (𝑅, 𝐶) values is/are ________. 
+ 
+ 
+(A) 
+𝑅= 1 𝑘Ω,  𝐶= 0.1 𝜇𝐹 
+(B) 
+𝑅= 2 𝑘Ω,  𝐶= 1 𝜇𝐹 
+(C) 
+𝑅= 1 𝑘Ω,  𝐶= 2 𝜇𝐹 
+(D) 
+𝑅= 2 𝑘Ω,  𝐶= 0.5 𝜇𝐹 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 44=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 44 
+ 
+Q.52 A waveguide consists of two infinite parallel plates (perfect conductors) at a 
+separation of 10ିସcm, with air as the dielectric. Assume the speed of light in air to 
+be 3 × 10଼m/s. The frequency/frequencies of TM waves which can propagate in 
+this waveguide is/are _______. 
+ 
+ 
+(A) 
+6 × 10ଵହHz 
+(B) 
+0.5 × 10ଵଶHz 
+(C) 
+8 × 10ଵସHz 
+(D) 
+1 × 10ଵଷHz 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 45=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 45 
+ 
+Q.53 The value of the integral 
+ඵ3(𝑥ଶ+ 𝑦ଶ)𝑑𝑥𝑑𝑦
+஽
+, 
+ 
+where 𝐷 is the shaded triangular region shown in the diagram, is _____ (rounded off 
+to the nearest integer). 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 46=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 46 
+ 
+Q.54 A linear 2-port network is shown in Fig. (a). An ideal DC voltage source of 10 V is 
+connected across Port 1. A variable resistance 𝑅 is connected across Port 2. As 𝑅 is 
+varied, the measured voltage and current at Port 2 is shown in Fig. (b) as a 𝑉ଶ versus 
+−𝐼ଶ plot. Note that for 𝑉ଶ= 5 V, 𝐼ଶ= 0 mA, and for 𝑉ଶ= 4 V, 𝐼ଶ= −4 mA. 
+When the variable resistance 𝑅 at Port 2 is replaced by the load shown in Fig. (c), 
+the current 𝐼ଶ is _______ mA (rounded off to one decimal place). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(a)
+(b) 
+(c) 
+
+
+=====PAGE 47=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 47 
+ 
+Q.55 For a vector 𝒙ഥ=ൣ𝑥[0], 𝑥[1], … , 𝑥[7]൧, the 8-point discrete Fourier transform (DFT) 
+is denoted by 𝑿ഥ= 𝐷𝐹𝑇(𝒙ഥ) =ൣ𝑋[0], 𝑋[1], … , 𝑋[7]൧, where  
+𝑋[𝑘] = ෍𝑥[𝑛] exp ൬−𝑗2𝜋
+8 𝑛𝑘൰
+଻
+௡ୀ଴
+. 
+Here, 𝑗= √−1. If 𝒙ഥ= [1, 0, 0, 0, 2, 0, 0, 0] and 𝒚ഥ= 𝐷𝐹𝑇൫𝐷𝐹𝑇(𝒙ഥ)൯, then the value 
+of 𝑦[0] is _________ (rounded off to one decimal place). 
+ 
+ 
+Q.56 A p-type semiconductor with zero electric field is under illumination (low level 
+injection) in steady state condition. Excess minority carrier density is zero at
+𝑥= ±2𝑙௡, where 𝑙௡= 10ିସ cm is the diffusion length of electrons. Assume 
+electronic charge, 𝑞= −1.6 × 10ିଵଽ C. The profiles of photo-generation rate of 
+carriers and the recombination rate of excess minority carriers (𝑅) are shown. Under 
+these conditions, the magnitude of the current density due to the photo-generated 
+electrons at 𝑥= +2𝑙௡  is _________ mA/cm2 (rounded off to two decimal places).
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 48=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 48 
+ 
+Q.57 A circuit and the characteristics of the diode (D) in it are shown. The ratio of the 
+minimum to the maximum small signal voltage gain 
+డ௏೚ೠ೟
+డ௏೔೙  is ________   (rounded 
+off to two decimal places).  
+ 
+ 
+ 
+Q.58 Consider the circuit shown with an ideal OPAMP. The output voltage 𝑉଴is 
+__________V (rounded off to two decimal places). 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 49=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 49 
+ 
+Q.59 Consider the circuit shown with an ideal long channel nMOSFET (enhancement-
+mode, substrate is connected to the source). The transistor is appropriately biased in 
+the saturation region with 𝑉ீீ
+ and 𝑉஽஽ such that it acts as a linear amplifier. 𝑣௜ is the 
+small-signal ac input voltage. 𝑣஺ and 𝑣஻ represent the small-signal voltages at the 
+nodes A and B, respectively. The value of  
+௩ಲ
+௩ಳ  is ________ (rounded off to one 
+decimal place). 
+ 
+ 
+ 
+ 
+Q.60 The block diagram of a closed-loop control system is shown in the figure. 𝑅(𝑠), 𝑌(𝑠), 
+and 𝐷(𝑠) are the Laplace transforms of the time-domain signals 𝑟(𝑡), 𝑦(𝑡), and 𝑑(𝑡), 
+respectively. Let the error signal be defined as 𝑒(𝑡) = 𝑟(𝑡) −𝑦(𝑡). Assuming the 
+reference input 𝑟(𝑡) = 0 for all 𝑡, the steady-state error 𝑒(∞), due to a unit step 
+disturbance 𝑑(𝑡), is  _________ (rounded off to two decimal places).  
+ 
+ 
+ 
+
+
+=====PAGE 50=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 50 
+ 
+Q.61 The transition diagram of a discrete memoryless channel with three input symbols 
+and three output symbols is shown in the figure. The transition probabilities are as 
+marked. 
+The parameter 𝛼 lies in the interval [0.25, 1]. The value of 𝛼 for which the capacity 
+of this channel is maximized, is ________ (rounded off to two decimal places). 
+ 
+ 
+ 
+ 
+Q.62 Consider communication over a memoryless binary symmetric channel using a 
+(7, 4) Hamming code. Each transmitted bit is received correctly with probability
+(1 −𝜖), and flipped with probability 𝜖. For each codeword transmission, the receiver 
+performs minimum Hamming distance decoding, and correctly decodes the message 
+bits if and only if the channel introduces at most one bit error. 
+For 𝜖= 0.1, the probability that a transmitted codeword is decoded correctly is 
+_________ (rounded off to two decimal places). 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 51=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 51 
+ 
+Q.63 Consider a channel over which either symbol 𝑥஺ or symbol 𝑥஻ is transmitted. Let the 
+output of the channel 𝑌 be the input to a maximum likelihood (ML) detector at the 
+receiver. The conditional probability density functions for 𝑌 given 𝑥஺ and 𝑥஻ are: 
+𝑓௒|௫ಲ(𝑦) = 𝑒ି
+(௬ାଵ)𝑢(𝑦+ 1), 
+𝑓௒|௫ಳ(𝑦) = 𝑒(௬ିଵ)൫1 −𝑢(𝑦−1)൯, 
+where 𝑢(⋅) is the standard unit step function. The probability of symbol error for this 
+system is _________ (rounded off to two decimal places). 
+ 
+ 
+ 
+ 
+Q.64 Consider a real valued source whose samples are independent and identically 
+distributed random variables with the probability density function, 𝑓(𝑥), as shown in 
+the figure. 
+ 
+Consider a 1 bit quantizer that maps positive samples to value 𝛼 and others to value 
+𝛽. If 𝛼∗ and 𝛽∗ are the respective choices for 𝛼 and 𝛽 that minimize the mean square 
+quantization error, then (𝛼∗−𝛽∗) = _________ (rounded off to two decimal places).
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 52=====
+GATE 2022 Electronics and Communications Engineering (EC) 
+Page 52 
+ 
+Q.65 In an electrostatic field, the electric displacement density vector, 𝐷ሬ⃗, is given by 
+𝐷ሬ⃗(𝑥, 𝑦, 𝑧) = (𝑥ଷ 𝚤⃗+ 𝑦ଷ 𝚥⃗+ 𝑥𝑦ଶ 𝑘ሬ⃗ )  C/m2, 
+where 𝚤⃗, 𝚥⃗, 𝑘ሬ⃗ are the unit vectors along 𝑥-axis, 𝑦-axis, and 𝑧-axis, respectively. 
+Consider a cubical region 𝑅 centered at the origin with each side of length 1 m, and 
+vertices at (±0.5 m, ±0.5 m, ±0.5 m). The electric charge enclosed within 𝑅 is 
+_________ C (rounded off to two decimal places). 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 53=====
+ 
+Q. No. 
+Session
+Question 
+Type 
+Subject 
+Name 
+Key/Range 
+Mark 
+1 
+3 
+MCQ 
+GA 
+C 
+1 
+2 
+3 
+MCQ 
+GA 
+D 
+1 
+3 
+3 
+MCQ 
+GA 
+B 
+1 
+4 
+3 
+MCQ 
+GA 
+B 
+1 
+5 
+3 
+MCQ 
+GA 
+C 
+1 
+6 
+3 
+MCQ 
+GA 
+D 
+2 
+7 
+3 
+MCQ 
+GA 
+C 
+2 
+8 
+3 
+MCQ 
+GA 
+C 
+2 
+9 
+3 
+MCQ 
+GA 
+B 
+2 
+10 
+3 
+MCQ 
+GA 
+B 
+2 
+11 
+3 
+MCQ 
+EC 
+A 
+1 
+12 
+3 
+MCQ 
+EC 
+C 
+1 
+13 
+3 
+MCQ 
+EC 
+B 
+1 
+14 
+3 
+MCQ 
+EC 
+B 
+1 
+15 
+3 
+MCQ 
+EC 
+A 
+1 
+16 
+3 
+MCQ 
+EC 
+A 
+1 
+17 
+3 
+MCQ 
+EC 
+C 
+1 
+18 
+3 
+MCQ 
+EC 
+C 
+1 
+19 
+3 
+MCQ 
+EC 
+C 
+1 
+20 
+3 
+MCQ 
+EC 
+C 
+1 
+21 
+3 
+MCQ 
+EC 
+C 
+1 
+22 
+3 
+MCQ 
+EC 
+A 
+1 
+23 
+3 
+MCQ 
+EC 
+C 
+1 
+24 
+3 
+MCQ 
+EC 
+C 
+1 
+25 
+3 
+MSQ 
+EC 
+A,B 
+1 
+26 
+3 
+MSQ 
+EC 
+B,C 
+1 
+27 
+3 
+MSQ 
+EC 
+B,C 
+1 
+28 
+3 
+MSQ 
+EC 
+C 
+1 
+29 
+3 
+MSQ 
+EC 
+A,B,D 
+1 
+30 
+3 
+MSQ 
+EC 
+A,C 
+1 
+31 
+3 
+NAT 
+EC 
+4.0 to 4.0 
+1 
+32 
+3 
+NAT 
+EC 
+0.50 to 0.50 
+1 
+33 
+3 
+NAT 
+EC 
+0.0 to 0.0 
+1 
+34 
+3 
+NAT 
+EC 
+5.5 to 5.7 
+1 
+35 
+3 
+NAT 
+EC 
+2.99 to 3.01 
+1 
+36 
+3 
+MCQ 
+EC 
+B 
+2 
+37 
+3 
+MCQ 
+EC 
+A 
+2 
+38 
+3 
+MCQ 
+EC 
+A 
+2 
+39 
+3 
+MCQ 
+EC 
+B 
+2 
+40 
+3 
+MCQ 
+EC 
+C 
+2 
+41 
+3 
+MCQ 
+EC 
+C 
+2 
+42 
+3 
+MCQ 
+EC 
+A 
+2 
+43 
+3 
+MCQ 
+EC 
+A 
+2 
+44 
+3 
+MCQ 
+EC 
+A 
+2 
+
+
+=====PAGE 54=====
+ 
+45 
+3 
+MSQ 
+EC 
+B,D 
+2 
+46 
+3 
+MSQ 
+EC 
+C,D 
+2 
+47 
+3 
+MSQ 
+EC 
+A,C 
+2 
+48 
+3 
+MSQ 
+EC 
+A,C 
+2 
+49 
+3 
+MSQ 
+EC 
+A,C 
+2 
+50 
+3 
+MSQ 
+EC 
+A 
+2 
+51 
+3 
+MSQ 
+EC 
+A 
+2 
+52 
+3 
+MSQ 
+EC 
+MTA 
+2 
+53 
+3 
+NAT 
+EC 
+512 to 512 
+2 
+54 
+3 
+NAT 
+EC 
+3.9 to 4.1 
+2 
+55 
+3 
+NAT 
+EC 
+7.9 to 8.1 
+2 
+56 
+3 
+NAT 
+EC 
+0.57 to 0.61 
+2 
+57 
+3 
+NAT 
+EC 
+0.70 to 0.80 
+2 
+58 
+3 
+NAT 
+EC 
+-0.55 to -0.45 
+2 
+59 
+3 
+NAT 
+EC 
+-2.1 to -1.9 
+2 
+60 
+3 
+NAT 
+EC 
+-0.11 to -0.09 
+2 
+61 
+3 
+NAT 
+EC 
+1.00 to 1.00 
+2 
+62 
+3 
+NAT 
+EC 
+0.84 to 0.86 
+2 
+63 
+3 
+NAT 
+EC 
+0.22 to 0.25 
+2 
+64 
+3 
+NAT 
+EC 
+1.15 to 1.18 
+2 
+65 
+3 
+NAT 
+EC 
+0.48 to 0.52 
+2 
+ 

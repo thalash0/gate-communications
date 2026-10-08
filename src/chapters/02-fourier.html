@@ -1,0 +1,217 @@
+<!--meta {"id":"ch02","num":"2","part":"Part I · The Mathematical Toolkit","title":"Signals as Spinning Arrows","lede":"Every signal is a chord. Fourier gave us the ears to hear the notes, and communication engineers spend their lives moving those notes up and down the dial."} -->
+
+<div class="box story"><span class="tag">History · a scandal about heat</span>
+<p>In December 1807 Joseph Fourier read a paper to the Paris Academy claiming that <em>any</em> temperature profile along a metal rod, however jagged, could be written as a sum of sines. Lagrange, one of the greatest mathematicians alive, thought this was nonsense. The paper was not published for fifteen years. Fourier, who had earlier gone to Egypt with Napoleon's army and come home convinced that desert heat was good for the health, turned out to be right (with a few technical conditions that Dirichlet cleaned up in 1829).</p>
+<p>Seventy years later, Alexander Graham Bell was trying to send <em>several</em> telegraph messages down one wire by giving each a different pitch, which is "frequency-division multiplexing" long before anyone had the words. Bell's "harmonic telegraph" failed as a telegraph, but while working on it he and Watson accidentally built the telephone. Every radio, every Wi-Fi router and every mobile tower is a descendant of the idea that <strong>a wire (or the sky) can carry many conversations at once, because different conversations occupy different frequencies</strong>. That idea needs Fourier.</p></div>
+
+<h2>Spinning arrows</h2>
+<p>Forget formulas for a minute. A pure musical note is a sine wave. A sine wave is the shadow of an arrow spinning in a circle: if an arrow of length $A$ rotates at $f$ turns per second, the height of its tip is $A\sin(2\pi f t)$. Euler's formula packages this into one line:
+$$e^{j\theta}=\cos\theta+j\sin\theta,\qquad \cos\theta=\frac{e^{j\theta}+e^{-j\theta}}2 .$$
+A real cosine is therefore <strong>two arrows spinning in opposite directions</strong>, one at $+f$ and one at $-f$, whose imaginary parts cancel. That is the entire reason spectra of real signals are symmetric and have "negative frequencies": they are bookkeeping for the second arrow.</p>
+
+<p>Now the Fourier transform has a one-sentence meaning: <strong>"How much of the arrow spinning at frequency $f$ is hiding in my signal?"</strong> The way to find out is the most beautiful trick in signal processing. Take your signal $g(t)$ and <em>wind it around the origin</em> at $f$ turns per second: at time $t$ plot the point $g(t)\,e^{-j2\pi ft}$. If $g$ contains a component that spins at exactly $f$, the winding cancels its spin: that component now sits still, always pulling the same way, and the whole curve gets lopsided. Take the centre of mass of the wound-up curve: <em>that is the Fourier transform at $f$</em>. For every other $f$ the curve is balanced around the origin and the centre of mass stays near zero.</p>
+
+<div class="widget" id="w-wind">The signal is $g(t)=\cos(2\pi\cdot3t)+0.6\cos(2\pi\cdot5t)$ for $0\le t\le4\,\mathrm{s}$. Slide the winding frequency. When it passes <b>3</b> or <b>5</b>, the wound curve suddenly swings off-centre and the yellow centre-of-mass dot jumps out. The bottom-left plot is the length of that dot versus $f$: the spectrum. (There is no peak at $-3,-5$ in the plot only because we show positive $f$.)</div>
+
+<div class="box def"><span class="tag">Definition · the Fourier transform</span>
+$$X(f)=\int_{-\infty}^{\infty}x(t)\,e^{-j2\pi ft}\,dt,\qquad x(t)=\int_{-\infty}^{\infty}X(f)\,e^{+j2\pi ft}\,df .$$
+<p>$|X(f)|$ is the amplitude, $\angle X(f)$ the phase. For real $x(t)$: $X(-f)=X^*(f)$, so $|X|$ is even and the phase is odd. We use $f$ in Hz (not $\omega$), so no stray $2\pi$'s appear in the inverse transform.</p></div>
+
+<h2>The pairs worth memorising</h2>
+<table>
+<tr><th>Time $x(t)$</th><th>Frequency $X(f)$</th><th>Say it in words</th></tr>
+<tr><td>$\delta(t)$</td><td>$1$</td><td>A spike contains every frequency equally.</td></tr>
+<tr><td>$1$ (DC)</td><td>$\delta(f)$</td><td>A constant is a single spike at zero.</td></tr>
+<tr><td>$e^{j2\pi f_0t}$</td><td>$\delta(f-f_0)$</td><td>One arrow = one spike.</td></tr>
+<tr><td>$\cos(2\pi f_0t)$</td><td>$\tfrac12[\delta(f-f_0)+\delta(f+f_0)]$</td><td>Two arrows, half each.</td></tr>
+<tr><td>$\rect(t/T)$ (width $T$, height 1)</td><td>$T\,\sinc(fT)$</td><td>Sharp edges ⇒ slowly decaying ripples.</td></tr>
+<tr><td>$\sinc(2Wt)$</td><td>$\frac1{2W}\rect\!\big(\frac f{2W}\big)$</td><td>Duality: a sinc in time is a brick in frequency.</td></tr>
+<tr><td>$\tri(t/T)$ (base $2T$)</td><td>$T\,\sinc^2(fT)$</td><td>Rect*rect ⇒ sinc·sinc.</td></tr>
+<tr><td>$e^{-at}u(t),\ a>0$</td><td>$\dfrac1{a+j2\pi f}$</td><td>One-pole low-pass filter response.</td></tr>
+<tr><td>$e^{-a|t|}$</td><td>$\dfrac{2a}{a^2+4\pi^2f^2}$</td><td>Two-sided exponential: real, even, positive.</td></tr>
+<tr><td>$e^{-\pi t^2}$</td><td>$e^{-\pi f^2}$</td><td>The Gaussian is its own transform.</td></tr>
+<tr><td>$\sum_n\delta(t-nT)$</td><td>$\frac1T\sum_k\delta(f-\frac kT)$</td><td>Impulse train ⇒ impulse train (sampling lives here).</td></tr>
+<tr><td>$\sgn(t)$ ; $u(t)$</td><td>$\frac1{j\pi f}$ ; $\tfrac12\delta(f)+\frac1{j2\pi f}$</td><td>Step has a DC part plus a $1/f$ tail.</td></tr>
+</table>
+<p>Here $\sinc(x)=\dfrac{\sin\pi x}{\pi x}$ (zeros at nonzero integers, value 1 at 0), which is the convention GATE uses.</p>
+
+<h3>Squeeze in time, spread in frequency</h3>
+<p>Look at the rect pair. A narrow rectangle in time gives a wide, low sinc in frequency; a wide rectangle gives a tall, narrow sinc. You cannot be short in time <em>and</em> narrow in frequency: $\Delta t\cdot\Delta f\gtrsim$ const. This is not a technology limit, it is mathematics (the same mathematics as Heisenberg's uncertainty principle). It is why <strong>fast data needs wide bandwidth</strong>, the single most important sentence in digital communication.</p>
+<div class="widget" id="w-ftpair">Pick a pulse and drag its width $T$. Watch the spectrum do the opposite. The area of the time pulse equals the height of the spectrum at $f=0$, and the height of the pulse at $t=0$ equals the area of the spectrum.</div>
+
+<h2>The property toolbox</h2>
+<table>
+<tr><th>Property</th><th>Time domain</th><th>Frequency domain</th></tr>
+<tr><td>Linearity</td><td>$ax+by$</td><td>$aX+bY$</td></tr>
+<tr><td>Time shift</td><td>$x(t-t_0)$</td><td>$X(f)e^{-j2\pi ft_0}$ (magnitude unchanged, phase tilts)</td></tr>
+<tr><td><b>Frequency shift (modulation)</b></td><td>$x(t)e^{j2\pi f_0t}$</td><td>$X(f-f_0)$</td></tr>
+<tr><td><b>Multiply by a cosine</b></td><td>$x(t)\cos 2\pi f_ct$</td><td>$\tfrac12[X(f-f_c)+X(f+f_c)]$</td></tr>
+<tr><td>Scaling</td><td>$x(at)$</td><td>$\frac1{|a|}X(f/a)$</td></tr>
+<tr><td>Differentiation</td><td>$\dot x(t)$</td><td>$j2\pi f\,X(f)$</td></tr>
+<tr><td><b>Convolution</b></td><td>$x*h$</td><td>$X(f)H(f)$</td></tr>
+<tr><td>Multiplication</td><td>$x(t)\,y(t)$</td><td>$X*Y$</td></tr>
+<tr><td>Duality</td><td>$X(t)$</td><td>$x(-f)$</td></tr>
+<tr><td>Parseval / Rayleigh</td><td>$\int|x|^2dt$</td><td>$\int|X|^2df$</td></tr>
+</table>
+<div class="box key"><span class="tag">The one row that runs the entire analog half of this book</span>
+<p>Multiplying by $\cos 2\pi f_ct$ <strong>copies the spectrum up to $\pm f_c$, at half height</strong>. That is amplitude modulation. Everything in Chapter 4 is a variation on this one line.</p></div>
+
+<h2>Convolution: flip, slide, multiply, add up</h2>
+<p>A linear time-invariant system (a filter, a cable, a radio channel) responds to every instant of the input with a scaled, delayed copy of its impulse response $h(t)$. The output at time $t$ is the total of all those overlapping copies:
+$$y(t)=(x*h)(t)=\int_{-\infty}^{\infty}x(\tau)\,h(t-\tau)\,d\tau .$$
+Visually: flip $h$ left-right, slide it so that its origin sits at $t$, multiply with $x$ point by point, and take the area. Slide a different distance, get a different number: that is $y(t)$. In the frequency domain this laborious operation turns into plain multiplication: $Y(f)=X(f)H(f)$. That is why we love Fourier.</p>
+<div class="widget" id="w-conv">The shaded area under the product $x(\tau)h(t-\tau)$ is the output value at the current $t$ (yellow dot, lower plot). Drag $t$ or press play. Two rectangles give a triangle; a rectangle through an RC filter gives a charging-then-discharging curve.</div>
+
+<h2>Energy, power and "bandwidth"</h2>
+<p>A signal with finite $E=\int|x(t)|^2dt<\infty$ is an <strong>energy signal</strong> (a single pulse). A signal that never dies but has finite average power $P=\lim\frac1{2T}\int_{-T}^{T}|x|^2dt$ is a <strong>power signal</strong> (a sine, a random bit stream). Parseval says energy can be counted in either domain: $E=\int|X(f)|^2df$, so $|X(f)|^2$ is the <em>energy spectral density</em>. For a periodic signal with Fourier-series coefficients $c_n$, the power is $P=\sum_n|c_n|^2$; a pure $A\cos(2\pi f_0t)$ has $P=A^2/2$.</p>
+<p><strong>Bandwidth</strong> has no unique meaning: null-to-null (main lobe), 3-dB (half power), or "contains 99% of the energy". Always read which one the question wants.</p>
+<div class="box ex"><span class="tag">Worked example · 99% energy bandwidth (GATE 2026 Q.46)</span>
+<p>$x(t)=e^{-2t}$, $t\ge0$. Then $X(f)=\dfrac1{2+j2\pi f}$ and $|X|^2=\dfrac1{4+4\pi^2f^2}$. Total energy (time domain): $\int_0^\infty e^{-4t}dt=\tfrac14$. Energy within $|f|<B$:
+$$\int_{-B}^{B}\frac{df}{4+4\pi^2f^2}=\frac1{2\pi}\arctan(\pi B).$$
+At $B\to\infty$ this gives $\frac1{2\pi}\cdot\frac\pi2=\frac14$ ✓. Setting it to $0.99\cdot\tfrac14$: $\arctan(\pi B)=0.99\cdot\frac\pi2\Rightarrow\pi B=\tan(0.99\tfrac\pi2)=63.66$, so $B=\dfrac{63.66}{\pi}\approx20.3\ \mathrm{Hz}$. This is option (B) "$63/\pi<B<64/\pi$". Note how a mere exponential, whose spectrum decays only like $1/f^2$, needs huge bandwidth to get the last 1%.</p></div>
+
+<h2>Sampling: the bridge from analog to digital</h2>
+<p>To sample is to multiply by an impulse train. Multiplication in time is convolution in frequency, and the transform of an impulse train is an impulse train, so <strong>sampling at rate $f_s$ makes copies of the spectrum every $f_s$ Hz</strong>:
+$$X_s(f)=f_s\sum_{k=-\infty}^{\infty}X(f-kf_s).$$
+If the copies do not overlap, a low-pass filter picks out the original and the continuous signal is perfectly recovered. They do not overlap when $f_s>2W$ where $W$ is the highest frequency: this is the <strong>Nyquist–Shannon sampling theorem</strong> ($f_s=2W$ is the "Nyquist rate"). Violate it and the tails of neighbouring copies fold onto the baseband: <strong>aliasing</strong>. A tone at $f$ sampled at $f_s$ masquerades as a tone at $|f-nf_s|$ with $n$ chosen to land inside $[0,f_s/2]$.</p>
+<div class="widget" id="w-alias">Sample a sinusoid at $f_s=10$ Hz. Increase the tone frequency past 5 Hz (half of $f_s$): the red dots are <em>also</em> the samples of a slower, dashed sinusoid. Once sampled, the two are indistinguishable. This is the wagon-wheel effect in movies.</div>
+<div class="box story"><span class="tag">History · Nyquist, Shannon and a lot of people in between</span>
+<p>Harry Nyquist (Bell Labs, 1928) showed that a telegraph channel of bandwidth $B$ can carry at most $2B$ distinct pulses per second. Vladimir Kotelnikov proved the sampling theorem in 1933 in the Soviet Union, and Claude Shannon gave it its modern form in 1949 (E. T. Whittaker had a version in 1915). Every GATE sampling question is a footnote to these pages.</p></div>
+<div class="box trap"><span class="tag">Traps that cost marks</span>
+<ul>
+<li><b>Products widen spectra.</b> If $m(t)$ has bandwidth $W$, then $m^2(t)$ has bandwidth $2W$ (convolution of two width-$2W$ spectra gives width $4W$ total span, i.e. one-sided $2W$), so its Nyquist rate is $4W$, not $2W$. For $x_1x_2$: bandwidths add. For $x_1*x_2$: bandwidth is the <em>smaller</em> one.</li>
+<li><b>Modulated signals.</b> If $y(t)=m(t)\cos2\pi f_ct$, the highest frequency is $f_c+W$, but you may not need to sample that fast if the question only asks to recover $m(t)$ (see Problem 2 below).</li>
+<li>Sinusoids sampled exactly at $2f$ can vanish (samples at zero crossings), hence "strictly greater than".</li>
+</ul></div>
+
+<h2>The Hilbert transform and the analytic signal</h2>
+<p>The Hilbert transform $\hat x(t)$ of a signal is what you get when you <strong>delay every frequency component by a quarter of a cycle ($-90^\circ$)</strong> without changing its amplitude. Its transfer function is $H(f)=-j\,\sgn(f)$. Thus
+$$\widehat{\cos 2\pi f_0t}=\sin2\pi f_0t,\qquad \widehat{\sin2\pi f_0t}=-\cos2\pi f_0t .$$
+Why do we care? Because a real signal wastes half its spectrum on negative frequencies. Cut them off and double the positive ones and you get the <strong>analytic signal</strong>
+$$x_+(t)=x(t)+j\hat x(t)\quad\longleftrightarrow\quad X_+(f)=2X(f)\,u(f).$$
+For a cosine, $x_+(t)=e^{j2\pi f_0t}$: a point spinning on a circle, i.e. a helix when you draw it against time. The real signal is its shadow on the real axis, and the Hilbert transform is its shadow on the imaginary axis. If the amplitude of the cosine wobbles (AM), the helix's radius wobbles: <strong>the instantaneous amplitude is the radius</strong>, $|x_+(t)|$, which is the envelope. If its frequency wobbles (FM), the helix tightens and loosens. This one picture is the soul of the next three chapters.</p>
+<div class="widget" id="w-hilb">The analytic signal $x_+(t)$ as a corkscrew in (Re, Im, time). Its shadow on the red–time wall is $x(t)$; its shadow on the blue–time wall is $\hat x(t)$. Choose a tone, an AM tone, or an FM tone, and drag to rotate.</div>
+<p>Single-sideband (SSB) modulation is produced by keeping only $X_+(f)$ (or its conjugate) and shifting it: $s_{\rm SSB}(t)=m(t)\cos2\pi f_ct\mp\hat m(t)\sin2\pi f_ct$. Memorise that formula; Chapter 4 uses it.</p>
+
+<h2>Bandpass signals and the complex envelope</h2>
+<p>A transmitted signal lives near a carrier frequency $f_c$: it is "narrowband" if its bandwidth is much smaller than $f_c$. Any such signal can be written
+$$x(t)=a(t)\cos\!\big(2\pi f_ct+\phi(t)\big)=x_I(t)\cos2\pi f_ct-x_Q(t)\sin2\pi f_ct,$$
+with $x_I=a\cos\phi$ ("in-phase") and $x_Q=a\sin\phi$ ("quadrature"). Packing the two into one complex number gives the <strong>complex envelope</strong> $\tilde x(t)=x_I+jx_Q=a(t)e^{j\phi(t)}$, and then $x(t)=\mathrm{Re}\{\tilde x(t)\,e^{j2\pi f_ct}\}$. The complex envelope is the baseband "movie" of the signal; the carrier is just the projector's spinning light bulb.</p>
+<ul>
+<li><strong>AM</strong>: $\phi=0$, $a(t)=A_c[1+\mu m(t)]$: the tip moves along a radial line.</li>
+<li><strong>PM/FM</strong>: $a$ constant, $\phi(t)$ varies: the tip moves on a circle.</li>
+<li><strong>QPSK/QAM</strong>: the tip jumps between a few points of the plane: the "constellation".</li>
+</ul>
+<div class="widget" id="w-iq">Left: the passband waveform. Right: the tip of $\tilde x(t)$ in the I–Q plane (with its trail). Increasing $\mu$ makes the tip stretch radially; increasing $\beta$ makes it swing in angle. Same carrier, two ways to hide information.</div>
+<div class="box trap"><span class="tag">Power of a bandpass signal</span>
+<p>$\overline{x^2(t)}=\tfrac12\,\overline{|\tilde x(t)|^2}$. The carrier cosine contributes a factor $\tfrac12$. So $A\cos(2\pi f_ct)$ has power $A^2/2$ though its complex envelope has $|\tilde x|^2=A^2$. Forget this and every power in Chapters 4, 5 and 10 will be off by 2.</p></div>
+
+<h2>Practice</h2>
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="GATE 2026 · EC · Q.46">
+Consider a real baseband signal $x(t)=e^{-2t}$ for $t\ge0$ (and 0 otherwise), $t$ in seconds. If 99% of the energy of $x(t)$ lies within $B$ Hz, then which is TRUE?
+<ol class="opts"><li>$B>1\ \mathrm{kHz}$</li><li>$63/\pi\ \mathrm{Hz}<B<64/\pi\ \mathrm{Hz}$</li><li>$126/\pi\ \mathrm{Hz}<B<128/\pi\ \mathrm{Hz}$</li><li>$B<1\ \mathrm{Hz}$</li></ol>
+<div class="sol"><p>Derived above: $B=\tan(0.99\pi/2)/\pi=63.66/\pi$ Hz. Official key: <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="10" data-tol="0.5" data-marks="1" data-src="GATE 2014 · Set 3 · Q.19">
+A modulated signal is $y(t)=m(t)\cos(40000\pi t)$, where the baseband signal $m(t)$ has frequency components less than 5 kHz only. The minimum required rate (in kHz) at which $y(t)$ should be sampled to recover $m(t)$ is ______.
+<div class="sol"><p>The carrier is $20$ kHz; the signal occupies $15$–$25$ kHz. If we sample at $f_s=10$ kHz, $t=n/10^4$ s and $\cos(40000\pi n/10^4)=\cos(4\pi n)=1$ for every $n$, so $y[n]=m(nT_s)$: the samples <em>are</em> samples of $m$ at 10 kHz $=2\times5$ kHz, which is the Nyquist rate of $m$. Answer <b>10</b> (key 9.5–10.5). Contrast: to reconstruct $y(t)$ itself by bandpass sampling you would need a minimum of 25 kHz. The question says "to recover $m(t)$".</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="1" data-src="Original">
+$x(t)=\rect(t)$ (unit width, unit height) is multiplied by $\cos(2\pi\cdot10\,t)$. The peak magnitude of the resulting spectrum $|Y(f)|$ is ______.
+<div class="sol"><p>$X(f)=\sinc f$, $Y(f)=\tfrac12[\sinc(f-10)+\sinc(f+10)]$. The peak is at $f=\pm10$: $\tfrac12\cdot1=0.5$ (the other lobe is $\sinc(20)=0$ at that point).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="Original">
+A 7 kHz sinusoid is sampled at 10 kHz and reconstructed with an ideal low-pass filter of cut-off 5 kHz. The frequency (in kHz) of the reconstructed sinusoid is ______.
+<div class="sol"><p>Alias: $|7-10|=3$ kHz.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A signal $m(t)$ is bandlimited to 4 kHz. The minimum sampling rate that allows $m^2(t)$ to be recovered from its samples is
+<ol class="opts"><li>4 kHz</li><li>8 kHz</li><li>16 kHz</li><li>32 kHz</li></ol>
+<div class="sol"><p>Squaring doubles the bandwidth: $m^2$ has components up to 8 kHz, so Nyquist rate = 16 kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="12.5" data-tol="0.05" data-marks="1" data-src="Original">
+$x(t)=5\cos(2\pi\cdot1000t+\pi/4)$ volts across $1\,\Omega$. Its complex envelope is $\tilde x=5e^{j\pi/4}$. The average power of $x(t)$ in watts is ______.
+<div class="sol"><p>$\tfrac12|\tilde x|^2=\tfrac12\cdot25=12.5$ W.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+The Hilbert transform of $x(t)=\cos(\omega t)+\sin(3\omega t)$ is
+<ol class="opts"><li>$\sin(\omega t)-\cos(3\omega t)$</li><li>$\sin(\omega t)+\cos(3\omega t)$</li><li>$-\sin(\omega t)-\cos(3\omega t)$</li><li>$\cos(\omega t)-\sin(3\omega t)$</li></ol>
+<div class="sol"><p>$\widehat{\cos}=\sin$, $\widehat{\sin}=-\cos$. So $\sin\omega t-\cos3\omega t$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="2" data-src="Original">
+$x(t)=e^{-t}u(t)$. Using Parseval, $\int_{-\infty}^{\infty}\dfrac{df}{1+4\pi^2f^2}=$ ______.
+<div class="sol"><p>$X(f)=\frac1{1+j2\pi f}$, $|X|^2=\frac1{1+4\pi^2f^2}$. Energy $=\int_0^\infty e^{-2t}dt=\tfrac12$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="8" data-tol="0.05" data-marks="2" data-src="GATE 2018 · EC (PYQ book)">
+The signal $4\,\sinc(2t)$ is applied to a Hilbert transformer, giving $y(t)$. Here $\sinc(x)=\sin(\pi x)/(\pi x)$. The value of $\int_{-\infty}^{\infty}y^2(t)\,dt$ is ______.
+<div class="sol"><p>The Hilbert transformer has $|H(f)|=1$ for all $f\ne0$: it changes phases but not magnitudes, so <b>it preserves energy</b>. $x(t)=4\sinc(2t)\leftrightarrow X(f)=2\rect(f/2)$, energy $=\int_{-1}^{1}2^2df=\mathbf8$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2015 · EC (PYQ book)">
+Let $m(t)$ have bandwidth much smaller than $f_c$ and let $\hat m(t)$ be its Hilbert transform. The signal $s(t)=m(t)\cos2\pi f_ct+\hat m(t)\sin2\pi f_ct$ is a
+<ol class="opts"><li>high-pass signal</li><li>low-pass signal</li><li>band-pass signal</li><li>notch (band-stop) signal</li></ol><div class="sol"><p>$m\cos\omega_ct+\hat m\sin\omega_ct$ is exactly the lower-sideband SSB signal of Chapter 4: all its energy lies in a band just below $f_c$. A signal concentrated around $f_c\gg W$ is a band-pass signal. <b>(C)</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 2 in one breath</h3>
+<ul>
+<li>A real cosine = two counter-rotating arrows; the Fourier transform measures how much of each spin rate a signal contains (wind it, take the centre of mass).</li>
+<li>Know the pairs: rect↔sinc, tri↔sinc², exp↔1/(a+j2πf), Gaussian↔Gaussian, comb↔comb. Short in time ⇒ wide in frequency.</li>
+<li>Multiply by $\cos2\pi f_ct$ ⇒ spectrum shifts to $\pm f_c$ at half height. Convolution ⇔ multiplication.</li>
+<li>Sampling at $f_s$ replicates the spectrum every $f_s$; need $f_s>2W$. Product widens (adds bandwidths); alias at $|f-nf_s|$.</li>
+<li>Hilbert transform = $-90^\circ$ phase shift; $x+j\hat x$ is a one-sided spectrum (helix); gives SSB.</li>
+<li>Bandpass signal $=\mathrm{Re}\{\tilde x e^{j2\pi f_ct}\}$; AM wiggles the radius, PM/FM wiggle the angle; power is $\tfrac12\overline{|\tilde x|^2}$.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+/* ---------- Fourier winding machine ---------- */
+(function(){ const T=4, N=800, g_=t=>Math.cos(TAU*3*t)+0.6*Math.cos(TAU*5*t);
+ const com=f=>{ let re=0,im=0; for(let i=0;i<N;i++){ const t=T*i/N, v=g_(t); re+=v*Math.cos(TAU*f*t); im-=v*Math.sin(TAU*f*t); } return [re/N,im/N]; };
+ const F=m.linspace(0,8,161), mag=F.map(f=>{ const c=com(f); return Math.hypot(c[0],c[1]); });
+ GB.widget('w-wind',{title:'Winding a signal around the origin',h:330,hm:420,controls:[{k:'f',label:'winding frequency f (turns per second)',min:0,max:8,step:.02,value:3.0,fmt:v=>v.toFixed(2)+' Hz'}],
+  draw(g,p){ const narrow=g.w<520; const lw=narrow?g.w:g.w*0.47, A=new GB.V(g,40,24,lw-52,narrow?g.h*0.2:g.h*0.38), B=new GB.V(g,40,narrow?g.h*0.5:g.h*0.62,lw-52,narrow?g.h*0.38:g.h*0.28);
+   const px=narrow?36:lw+8, py=narrow?g.h*0.5:20, pw=narrow?g.w-60:g.w-lw-20, ph=narrow?g.h*0.45:g.h-40; const W=narrow?null:new GB.V(g,px,py,pw,ph);
+   A.view(0,T,-1.8,1.8); A.axes({xl:'t',ystep:1}); A.fn(g_,'blue',1.8,null,400); A.title('signal g(t)');
+   B.view(0,8,0,0.62); B.axes({xl:'f',ystep:.25}); B.line(F,mag,'green',2); B.title('|centre of mass| vs winding frequency','green'); const c=com(p.f), M=Math.hypot(c[0],c[1]); B.vline(p.f,'yellow'); B.dot(p.f,M,'yellow',5);
+   const Wv=W||new GB.V(g,36,g.h*0.58-14,g.w-60,g.h*0.4); Wv.view(-1.9,1.9,-1.9,1.9,{equal:true}); Wv.axes({ystep:1,xstep:1}); const xs=[],ys=[]; for(let i=0;i<=N;i++){ const t=T*i/N, v=g_(t); xs.push(v*Math.cos(TAU*p.f*t)); ys.push(-v*Math.sin(TAU*p.f*t)); }
+   Wv.line(xs,ys,'blue',1.1); Wv.dot(c[0]*3,c[1]*3,'yellow',6); Wv.text(c[0]*3,c[1]*3,'  centre of mass ×3','yellow','left',11); return 'f = <b>'+p.f.toFixed(2)+'</b> Hz → |X| = <b>'+M.toFixed(3)+'</b>'; }}); })();
+
+/* ---------- transform pairs ---------- */
+GB.widget('w-ftpair',{title:'Time width vs bandwidth',h:320,hm:340,controls:[{k:'k',type:'select',label:'pulse',options:[[0,'rect  ↔  sinc'],[1,'triangle  ↔  sinc²'],[2,'Gaussian  ↔  Gaussian'],[3,'one-sided exponential  ↔  1/(1+j2πfT)']],value:0},
+  {k:'T',label:'width parameter T',min:.25,max:2.5,step:.05,value:1,fmt:v=>v.toFixed(2)}],
+ draw(g,p){ const T=p.T, S=m.sinc; const tf=[t=>Math.abs(t/T)<=.5?1:0,t=>Math.max(0,1-Math.abs(t/T)),t=>Math.exp(-Math.PI*(t/T)**2),t=>t>=0?Math.exp(-t/T):0][p.k];
+  const ff=[f=>T*Math.abs(S(f*T)),f=>T*S(f*T)**2,f=>T*Math.exp(-Math.PI*(f*T)**2),f=>T/Math.hypot(1,TAU*f*T)][p.k];
+  const a=g.panel(0,2).view(-4,4,-.2,1.25); a.axes({xl:'t'}); a.fn(tf,'blue',2.4,null,600); a.fill(tf,null,'blue',.2,600); a.title('x(t)');
+  const b=g.panel(1,2).view(-4,4,0,Math.max(1.3,2.6*Math.max(T,1)/2)); b.axes({xl:'f'}); b.fn(ff,'yellow',2.4,null,600); b.fill(ff,null,'yellow',.18,600); b.title('|X(f)|','yellow');
+  return 'area of x(t) = X(0) = <b>'+ff(0).toFixed(3)+'</b>'; }});
+
+/* ---------- convolution ---------- */
+(function(){ const hs=[t=>Math.abs(t)<=.5?1:0,t=>t>=0?Math.exp(-2*t):0,t=>Math.max(0,1-Math.abs(t))]; const x_=t=>Math.abs(t)<=.5?1:0; const taus=m.linspace(-3.5,3.5,500), dt=taus[1]-taus[0];
+ const cache={}; const yfun=k=>{ if(cache[k]) return cache[k]; const T=m.linspace(-2.5,3.5,180); const Y=T.map(t=>{ let s=0; for(const tau of taus) s+=x_(tau)*hs[k](t-tau); return s*dt; }); return cache[k]={T,Y}; };
+ GB.widget('w-conv',{title:'Convolution: flip, slide, multiply, integrate',h:340,hm:360,anim:true,speed:.5,controls:[{k:'h',type:'select',label:'system impulse response h(t)',options:[[0,'rectangle'],[1,'RC low-pass  e^(−2t)u(t)'],[2,'triangle']],value:0},{k:'t',label:'position t (pause to drag)',min:-2.5,max:3.5,step:.02,value:0,fmt:v=>v.toFixed(2)}],
+  draw(g,p,tt,w){ if(w.playing){ p.t=-2.5+((tt*0.6)%6); const s=w.root.querySelector('input[type=range]'); if(s) { s.value=p.t; s.dispatchEvent(new Event('input')); } }
+   const h=hs[p.h], t0=p.t; const a=g.panel(0,2).view(-2.5,3.5,-.1,1.3); a.axes({xl:'τ'}); a.fn(x_,'blue',2,null,500); a.fn(tau=>h(t0-tau),'orange',2,null,500); a.fill(tau=>x_(tau)*h(t0-tau),null,'yellow',.5,500); a.title('x(τ) (blue) and h(t−τ) (orange); product shaded','mute');
+   const Y=yfun(p.h), yy=Y.Y.map(v=>v); const ymax=Math.max(1.05,...yy)*1.1; const b=g.panel(1,2).view(-2.5,3.5,-.1,ymax); b.axes({xl:'t'}); b.line(Y.T,Y.Y,'green',2.2); let s=0; taus.forEach(tau=>{ s+=x_(tau)*h(t0-tau)*dt; }); b.dot(t0,s,'yellow',6); b.title('y(t) = (x∗h)(t)','green'); return 'y('+t0.toFixed(2)+') = <b>'+s.toFixed(3)+'</b>'; }}); })();
+
+/* ---------- aliasing ---------- */
+GB.widget('w-alias',{title:'Aliasing: two tones, same samples',h:330,hm:350,controls:[{k:'f',label:'tone frequency f (Hz)',min:.5,max:19,step:.1,value:3},{k:'fs',label:'sampling rate fs (Hz)',min:6,max:14,step:1,value:10}],
+ draw(g,p){ const fs=p.fs, f=p.f; const fa=Math.abs(f-Math.round(f/fs)*fs); const v=g.panel(0,2).view(0,2,-1.3,1.3); v.axes({xl:'t (s)',xstep:.25});
+  v.fn(t=>Math.cos(TAU*f*t),'blue',1.6,null,800); if(Math.abs(fa-f)>.05) v.fn(t=>Math.cos(TAU*fa*t),'red',1.6,[6,4],800); for(let n=0;n<=2*fs;n++){ const t=n/fs; v.dot(t,Math.cos(TAU*f*t),'yellow',4); }
+  g.legend([['tone f','blue'],['alias','red']],g.w-170,14);
+  const u=g.panel(1,2).view(-2*fs,2*fs,0,1.4); u.axes({xl:'f (Hz)',noy:true,xstep:fs/2,xticks:[-2,-1,0,1,2].map(k=>[k*fs,String(k*fs)])}); u.rect(-fs/2,0,fs/2,1.4,'green',.12); u.text(0,1.28,'baseband  |f| < fs/2','green','center',11);
+  for(let k=-2;k<=2;k++){ [f,-f].forEach(s=>{ const x=s+k*fs; if(Math.abs(x)<=2*fs) u.stem([x],[k===0?1:.55],k===0?'blue':'mute',2,3); }); }
+  return f<=fs/2?'No aliasing: f = '+f.toFixed(1)+' Hz is below fs/2 = '+(fs/2)+' Hz.':'Aliasing! A '+f.toFixed(1)+' Hz tone looks like <b>'+fa.toFixed(1)+' Hz</b> (|f − n·fs|).'; }});
+
+/* ---------- analytic signal helix ---------- */
+GB.three('w-hilb',{title:'The analytic signal: a corkscrew',h:360,cam:{r:9,theta:.9,phi:.35},spin:.6,anim:true,speed:1,controls:[{k:'t',type:'select',label:'signal',options:[[0,'pure tone'],[1,'AM tone (envelope wobbles)'],[2,'FM tone (frequency wobbles)']],value:1},{k:'a',label:'modulation depth',min:0,max:.9,step:.05,value:.5}],
+ setup(o){ const {THREE,scene,C,G3}=o; scene.add(G3.axes(1.8,['Re','time','Im'],C)); const grp=new THREE.Group(); scene.add(grp); return {THREE,G3,C,grp,key:''}; },
+ update(s,p,t){ const key=p.t+'_'+p.a; if(s.key===key) return; s.key=key; const {THREE,G3,C}=s; while(s.grp.children.length){ const c=s.grp.children.pop(); c.geometry&&c.geometry.dispose(); }
+  const N=420, pts=[], re=[], im=[]; for(let i=0;i<=N;i++){ const u=i/N*6; let A=1, th=TAU*u; if(p.t===1) A=1+p.a*Math.cos(TAU*u*.2); if(p.t===2) th=TAU*u+9*p.a*Math.sin(TAU*u*.2); const x=A*Math.cos(th), y_=A*Math.sin(th), tt=u-3; pts.push([x,tt*0.6,y_]); re.push([x,tt*0.6,-1.9]); im.push([-1.9,tt*0.6,y_]); }
+  s.grp.add(G3.tube(pts,0xffd866,.025)); s.grp.add(G3.line(re,0xfc6255)); s.grp.add(G3.line(im,0x58c4dd)); return 'height = time, radius = envelope, turning rate = frequency'; }});
+
+/* ---------- IQ plane ---------- */
+GB.widget('w-iq',{title:'Same carrier, two ways to carry a message',h:300,hm:420,anim:true,speed:1,controls:[{k:'mu',label:'AM depth μ',min:0,max:.9,step:.05,value:.5},{k:'beta',label:'phase swing β (rad)',min:0,max:2.5,step:.1,value:0}],
+ draw(g,p,t){ const fm=1, fc=14, env=u=>1+p.mu*Math.cos(TAU*fm*u), ph=u=>p.beta*Math.sin(TAU*fm*u); const narrow=g.w<520;
+  const a=narrow?new GB.V(g,36,22,g.w-50,g.h*0.34):new GB.V(g,40,22,g.w*0.58-50,g.h-50), b=narrow?new GB.V(g,40,g.h*0.46,g.w-80,g.h*0.46):new GB.V(g,g.w*0.58+8,20,g.w*0.42-24,g.h-44);
+  const t0=(t*0.25)%1; a.view(0,2,-2.1,2.1); a.axes({xl:'t',ystep:1}); a.fn(u=>env(u)*Math.cos(TAU*fc*u+ph(u)),'blue',1.3,null,1400); a.fn(env,'yellow',1.2,[4,3],300); a.fn(u=>-env(u),'yellow',1.2,[4,3],300); a.vline(2*t0,'green'); a.title('x(t) = a(t) cos(2π fc t + φ(t))');
+  b.view(-2.2,2.2,-2.2,2.2,{equal:true}); b.axes({xstep:1,ystep:1,xl:'I',yl:'Q'}); const xs=[],ys=[]; for(let i=0;i<=200;i++){ const u=i/200; xs.push(env(u)*Math.cos(ph(u))); ys.push(env(u)*Math.sin(ph(u))); } b.line(xs,ys,'mute',1.2,[3,3]);
+  const e=env(t0), q=ph(t0); b.arrow(0,0,e*Math.cos(q),e*Math.sin(q),'yellow',2.2,10); b.dot(e*Math.cos(q),e*Math.sin(q),'green',5); b.title('complex envelope  a(t)e^{jφ(t)}','yellow'); return 'a(t) = '+e.toFixed(2)+', φ(t) = '+q.toFixed(2)+' rad'; }});
+</script>

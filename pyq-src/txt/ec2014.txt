@@ -1,0 +1,5865 @@
+
+
+=====PAGE 1=====
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+SESSION - 1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 2=====
+GATE 2014: General Instructions during Examination 
+1. Total duration of the GATE examination is 180 minutes. 
+2. The clock will be set at the server. The countdown timer at the top right corner of 
+screen will display the remaining time available for you to complete the examination. 
+When the timer reaches zero, the examination will end by itself. You need not 
+terminate the examination or submit your paper.   
+3. Any useful data required for your paper can be viewed by clicking on the Useful 
+Common Data button that appears on the screen. 
+4. Use the scribble pad provided to you for any rough work. Submit the scribble pad at 
+the end of the examination. 
+5. You are allowed to use a non-programmable type calculator, however, sharing of 
+calculators is not allowed. 
+6. The Question Palette displayed on the right side of screen will show the status of 
+each question using one of the following symbols:  
+ 
+ 
+The Marked for Review status for a question simply indicates that you would like to look at 
+that question again. If a question is answered, but marked for review, then the answer will 
+be considered for evaluation unless the status is modified by the candidate. 
+Navigating to a Question : 
+7. To answer a question, do the following:  
+a. Click on the question number in the Question Palette to go to that question 
+directly. 
+b. Select an answer for a multiple choice type question by clicking on the bubble 
+placed before the 4 choices, namely A, B, C and D. Use the virtual numeric 
+keypad to enter a number as answer for a numerical type question. 
+c. Click on Save & Next to save your answer for the current question and then go 
+to the next question. 
+d. Click on Mark for Review & Next to save your answer for the current question 
+and also mark it for review, and then go to the next question. 
+
+
+=====PAGE 3=====
+Caution: Note that your answer for the current question will not be saved, if you navigate 
+to another question directly by clicking on a question number without saving the answer to 
+the previous question. 
+You can view all the questions by clicking on the Question Paper button. This feature is 
+provided, so that if you want you can just see the entire question paper at a glance. 
+Answering a Question : 
+8. Procedure for answering a multiple choice (MCQ) type question:  
+a. Choose one answer from the 4 options (A,B,C,D) given below the question, 
+click on the bubble placed before the chosen option.  
+b. To deselect your chosen answer, click on the bubble of the chosen option again 
+or click on the Clear Response button. 
+c. To change your chosen answer, click on the bubble of another option. 
+d. To save your answer, you MUST click on the Save & Next button. 
+9. Procedure for answering a numerical answer type question:  
+a. To enter a number as your answer, use the virtual numerical keypad. 
+b. A fraction (e.g. -0.3 or -.3) can be entered as an answer with or without '0' 
+before the decimal point. As many as four decimal points, e.g. 12.5435 or 
+0.003 or -932.6711 or 12.82 can be entered.  
+c. To clear your answer, click on the Clear Response button. 
+d. To save your answer, you MUST click on the Save & Next button 
+10. To mark a question for review, click on the Mark for Review & Next button. If an 
+answer is selected (for MCQ) or entered (for numerical answer type) for a question 
+that is Marked for Review, that answer will be considered in the evaluation unless 
+the status is modified by the candidate. 
+11. To change your answer to a question that has already been answered, first select 
+that question for answering and then follow the procedure for answering that type of 
+question. 
+12. Note that ONLY Questions for which answers are saved or marked for review after 
+answering will be considered for evaluation. 
+ 
+Choosing a Section :  
+13. Sections in this question paper are displayed on the top bar of the screen. Questions 
+in a Section can be viewed by clicking on the name of that Section. The Section you 
+are currently viewing will be highlighted. 
+14. A checkbox is displayed for every optional Section, if any, in the Question Paper. To 
+select the optional Section for answering, click on the checkbox for that Section. 
+15. If the checkbox for an optional Section is not selected, the Save & Next button and 
+the Mark for Review & Next button will NOT be enabled for that Section. You will 
+
+
+=====PAGE 4=====
+only be able to see questions in this Section, but you will not be able to answer 
+questions in the Section. 
+16. After clicking the Save & Next button for the last question in a Section, you will 
+automatically be taken to the first question of the next Section in sequence. 
+17. You can move the mouse cursor over the name of a Section to view the answering 
+status for that Section. 
+ 
+Changing the Optional Section : 
+ 
+18. After answering the chosen optional Section, partially or completely, you can change 
+the optional Section by selecting the checkbox for a new Section that you want to 
+attempt. A warning message will appear along with a table showing the number of 
+questions answered in each of the previously chosen optional Sections and a 
+checkbox against each of these Sections. Click on a checkbox against a Section that 
+you want to reset and then click on the RESET button. Note that RESETTING a Section 
+will DELETE all the answers for questions in that Section. Hence, if you think that you 
+may want to select this Section again later, you will have to note down your answers 
+for questions in that Section. If you do not want to reset the Section and want to 
+continue answering the previously chosen optional Section, then click on the BACK 
+button. 
+ 
+19. If you deselect the checkbox for an optional Section in the top bar, the following 
+warning message will appear: "Deselecting the checkbox will DELETE all the answers 
+for questions in this Section. Do you want to deselect this Section?” If you want to 
+deselect, click on the RESET button. If you do not want to deselect, click on the BACK 
+button. 
+ 
+20. You can shuffle between different Sections or change the optional Sections any 
+number of times. 
+ 
+
+
+=====PAGE 5=====
+GATE 2014 Examination  
+EC: Electronics & Communications Engineering 
+Duration: 180 minutes 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Maximum Marks: 100 
+Read the following instructions carefully. 
+ 
+1. To login, enter your Registration Number and password provided to you. Kindly go through the various 
+symbols used in the test and understand their meaning before you start the examination.  
+2. Once you login and after the start of the examination, you can view all the questions in the question 
+paper, by clicking on the View All Questions button in the screen. 
+3. This question paper consists of 2 sections, General Aptitude (GA) for 15 marks and the subject 
+specific GATE paper for 85 marks. Both these sections are compulsory. 
+The GA section consists of 10 questions. Question numbers 1 to 5 are of 1-mark each, while question 
+numbers 6 to 10 are of 2-mark each.  
+The subject specific GATE paper section consists of 55 questions, out of which question numbers 1 to 
+25 are of 1-mark each, while question numbers 26 to 55 are of 2-mark each. 
+4. Depending upon the GATE paper, there may be useful common data that may be required for 
+answering the questions. If the paper has such useful data, the same can be viewed by clicking on the 
+Useful Common Data button that appears at the top, right hand side of the screen.  
+ 
+5. The computer allotted to you at the examination center runs specialized software that permits only one 
+answer to be selected for multiple-choice questions using a mouse and to enter a suitable number for 
+the numerical answer type questions using the virtual keyboard and mouse. 
+6. Your answers shall be updated and saved on a server periodically and also at the end of the 
+examination. The examination will stop automatically at the end of 180 minutes. 
+7. In each paper a candidate can answer a total of 65 questions carrying 100 marks.  
+8. The question paper may consist of questions of multiple choice type (MCQ) and numerical answer 
+type.  
+9. Multiple choice type questions will have four choices against A, B, C, D, out of which only ONE is the 
+correct answer. The candidate has to choose the correct answer by clicking on the bubble (⃝) placed 
+before the choice. 
+10. For numerical answer type questions, each question will have a numerical answer and there will not be 
+any choices. For these questions, the answer should be enteredby using the virtual keyboard that 
+appears on the monitor and the mouse. 
+11. All questions that are not attempted will result in zero marks. However, wrong answers for multiple 
+choice type questions (MCQ) will result in NEGATIVE marks. For all MCQ questions a wrong 
+answer will result in deduction of⅓ marks for a 1-mark question and ⅔ marks for a 2-mark question. 
+12. There is NO NEGATIVE MARKING for questions of NUMERICAL ANSWER TYPE. 
+ 
+13. Non-programmable type Calculator is allowed. Charts, graph sheets, and mathematical tables are NOT 
+allowed in the Examination Hall. You must use the Scribble pad provided to you at the examination 
+centre for all your rough work. The Scribble Pad has to be returned at the end of the examination. 
+ 
+Declaration by the candidate: 
+ 
+“I have read and understood all the above instructions. I have also read and understood clearly the 
+instructions given on the admit card and shall follow the same. I also understand that in case I am found to 
+violate any of these instructions, my candidature is liable to be cancelled. I also confirm that at the start of 
+the examination all the computer hardware allotted to me are in proper working condition”. 
+ 
+
+
+=====PAGE 6=====
+GATE 2014              SET- 3                                                                              General Aptitude -GA  
+GA 
+1/2
+Q. 1 – Q. 5 carry one mark each. 
+Q.1 
+Choose the most appropriate phrase from the options given below to complete the following 
+sentence. 
+ 
+The aircraft                             take off as soon as its flight plan was filed. 
+(A) is allowed to 
+(B) will be allowed to 
+(C) was allowed to 
+(D) has been allowed to 
+ 
+Q.2 
+Read the statements: 
+ 
+All women are entrepreneurs.  
+Some women are doctors.   
+ 
+Which of the following conclusions can be logically inferred from the above statements? 
+(A) All women are doctors 
+(B) All doctors are entrepreneurs 
+(C) All entrepreneurs are women 
+(D) Some entrepreneurs are doctors 
+ 
+Q.3 
+Choose the most appropriate word from the options given below to complete the following 
+sentence. 
+ 
+Many ancient cultures attributed disease to supernatural causes. However, modern science has 
+largely helped _________ such notions. 
+(A) impel  
+(B) dispel 
+(C)  propel 
+(D)  repel 
+ 
+Q.4 
+The statistics of runs scored in a series by four batsmen are provided in the following table. Who is 
+the most consistent batsman of these four? 
+ 
+Batsman 
+Average 
+Standard deviation 
+K 
+31.2 
+5.21 
+L 
+46.0 
+6.35 
+M 
+54.4 
+6.22 
+N 
+17.9 
+5.90 
+ 
+(A) K 
+(B) L 
+(C)  M 
+(D)  N 
+ 
+Q.5 
+What is the next number in the series? 
+ 
+12          35          81          173          357          ____ 
+ 
+ 
+Q. 6 – Q. 10 carry two marks each. 
+ 
+ 
+Q.6 
+Find the odd one from the following group:  
+ 
+W,E,K,O          I,Q,W,A          F,N,T,X          N,V,B,D 
+(A) W,E,K,O 
+(B) I,Q,W,A 
+(C)  F,N,T,X 
+(D)  N,V,B,D 
+ 
+GA03 (GATE 2014)
+
+
+=====PAGE 7=====
+GATE 2014              SET- 3                                                                              General Aptitude -GA  
+GA 
+2/2
+Q.7 
+For submitting tax returns, all resident males with annual income below Rs 10 lakh should fill up 
+Form P and all resident females with income below Rs 8 lakh should fill up Form Q.  All people 
+with incomes above Rs 10 lakh should fill up Form R, except non residents with income above Rs 
+15 lakhs, who should fill up Form S.  All others should fill Form T.  An example of a person who 
+should fill Form T is 
+(A) a resident male with annual income Rs 9 lakh 
+(B) a resident female with annual income Rs 9 lakh 
+(C) a non-resident male with annual income Rs 16 lakh 
+(D) a non-resident female with annual income Rs 16 lakh 
+ 
+Q.8 
+A train that is 280 metres long, travelling at a uniform speed, crosses a platform in 60 seconds and 
+passes a man standing on the platform in 20 seconds. What is the length of the platform in metres? 
+ 
+Q.9 
+The exports and imports (in crores of Rs.) of a country from 2000 to 2007 are given in the 
+following bar chart. If the trade deficit is defined as excess of imports over exports, in which year is 
+the trade deficit 1/5th of the exports? 
+ 
+(A) 2005 
+(B) 2004 
+(C)  2007 
+(D)  2006 
+ 
+Q.10 
+You are given three coins: one has heads on both faces, the second has tails on both faces, and the 
+third has a head on one face and a tail on the other. You choose a coin at random and toss it, and it 
+comes up heads.  The probability that the other face is tails is 
+(A) 1/4 
+(B) 1/3 
+(C)  1/2 
+(D) 2/3   
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+110
+120
+2000
+2001
+2002
+2003
+2004
+2005
+2006
+2007
+Exports
+Imports
+GA03 (GATE 2014)
+
+
+=====PAGE 8=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+1/11
+Q. 1 – Q. 25 carry one mark each. 
+Q.1 
+For matrices of same dimension M, N and scalar c, which one of these properties DOES NOT 
+ALWAYS hold? 
+(A)(𝑀𝑀𝑇𝑇)𝑇𝑇= 𝑀𝑀 
+ 
+ 
+ 
+(B) (𝑐𝑐𝑐𝑐)𝑇𝑇= 𝑐𝑐(𝑀𝑀)𝑇𝑇 
+(C) (𝑀𝑀+ 𝑁𝑁)𝑇𝑇= 𝑀𝑀𝑇𝑇+ 𝑁𝑁𝑇𝑇 
+(D) 𝑀𝑀𝑀𝑀= 𝑁𝑁𝑁𝑁 
+ 
+Q.2 
+In a housing society, half of the families have a single child per family, while the remaining half 
+have two children per family. The probability that a child picked at random, has a sibling is _____ 
+ 
+Q.3 
+𝐶𝐶 is a closed path in the 𝑧𝑧-plane given by |𝑧𝑧| = 3. The value of the integral ∮
+ቀ
+𝑧𝑧2−𝑧𝑧+4𝑗𝑗
+𝑧𝑧+2𝑗𝑗ቁ𝑑𝑑𝑑𝑑
+𝐶𝐶
+ is 
+(A) −4𝜋𝜋(1 + 𝑗𝑗2) 
+(B) 4𝜋𝜋(3 −𝑗𝑗2) 
+(C) −4𝜋𝜋(3 + 𝑗𝑗2)  
+(D) 4𝜋𝜋(1 −𝑗𝑗2)  
+ 
+Q.4 
+A real (4 × 4) matrix 𝐴𝐴 satisfies the equation 𝐴𝐴2 = 𝐼𝐼, where 𝐼𝐼 is the (4 × 4) identity matrix. The 
+positive eigen value of 𝐴𝐴 is _________. 
+ 
+Q.5 
+Let X1, X2, and X3 be independent and identically distributed random variables with the uniform 
+distribution on [0, 1]. The probability P{X1 is the largest} is ________ 
+ 
+Q.6 
+For maximum power transfer between two cascaded sections of an electrical network, the 
+relationship between the output impedance Z1 of the first section to the input impedance Z2 of the 
+second section is 
+(A) 𝑍𝑍2 = 𝑍𝑍1 
+(B) 𝑍𝑍2 = −𝑍𝑍1 
+(C)  𝑍𝑍2 = 𝑍𝑍1
+∗ 
+(D)  𝑍𝑍2 = −𝑍𝑍1
+∗ 
+ 
+Q.7 
+Consider the configuration shown in the figure which is a portion of a larger electrical network 
+ 
+For  R = 1 Ω and currents 𝑖𝑖1 = 2 A, 𝑖𝑖4 = −1 A, 𝑖𝑖5 = −4 A, which one of the following is TRUE? 
+(A) 𝑖𝑖6 = 5 𝐴𝐴 
+ 
+ 
+ 
+(B) 𝑖𝑖3 = −4 𝐴𝐴 
+(C) Data is sufficient to conclude that the supposed currents are impossible 
+(D) Data is insufficient to identify the currents 𝑖𝑖2, 𝑖𝑖3, and 𝑖𝑖6 
+ 
+Q.8 
+When the optical power incident on a photodiode is 10µW and the responsivity is 0.8 A/W, the 
+photocurrent generated (in µA) is ________. 
+ 
+i1
+i4
+i2
+i5
+i3
+i6
+R
+R
+R
+EC01 (GATE 2014)
+
+
+=====PAGE 9=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+2/11
+Q.9 
+In the figure, assume that the forward voltage drops of the PN diode D1 and Schottky diode D2 are 
+0.7 V and 0.3 V, respectively. If ON denotes conducting state of the diode and OFF denotes non-
+conducting state of the diode, then in the circuit,  
+D1  
+D2  
+10 V  
+1 kΩ 
+20 Ω 
+(A)  both D1 and D2 are ON 
+(B)  D1 is ON and D2 is OFF 
+(C)  both D1 and D2 are OFF 
+(D)  D1 is OFF and D2 is ON  
+ 
+Q.10 
+If fixed positive charges are present in the gate oxide of an n-channel enhancement type MOSFET, 
+it will lead to 
+(A) a decrease in the threshold voltage 
+(B) channel length modulation 
+(C) an increase in substrate leakage current 
+(D) an increase in accumulation capacitance 
+ 
+Q.11 
+A good current buffer has 
+(A)  low input impedance and low output impedance 
+(B)  low input impedance and high output impedance 
+(C)  high input impedance and low output impedance 
+(D)  high input impedance and high output impedance 
+ 
+Q.12 
+In the ac equivalent circuit shown in the figure, if 𝑖𝑖𝑖𝑖𝑖𝑖 is the input current and 𝑅𝑅𝐹𝐹 is very large, the 
+type of feedback is 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(A) voltage-voltage feedback 
+(B) voltage-current feedback 
+(C) current-voltage feedback 
+(D) current-current feedback 
+ 
+RF 
+vout 
+M1 
+RD 
+RD 
+M2 
+ 
+ 
+small signal 
+input 
+iin 
+ 
+EC01 (GATE 2014)
+
+
+=====PAGE 10=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+3/11
+Q.13 
+In the low-pass filter shown in the figure, for a cut-off frequency of 5 kHz , the value of R2 (in kΩ) 
+is _____________. 
+ 
+Q.14 
+In the following circuit employing pass transistor logic, all NMOS transistors are identical with a 
+threshold voltage of 1 V.  Ignoring the body-effect, the output voltages at P, Q and R are, 
+ 
+(A)  4 V, 3 V, 2 V 
+(B)  5 V, 5 V, 5 V 
+(C)  4 V, 4 V, 4 V 
+(D)  5 V, 4 V, 3 V 
+ 
+Q.15 
+The Boolean expression (X + Y) (X + Yഥ) +  (X Yഥ) + Xഥ
+തതതതതതതതതതത simplifies to 
+(A)  X 
+(B)  Y 
+(C)  XY 
+(D)  X+Y 
+ 
+Q.16 
+Five JK flip-flops are cascaded to form the circuit shown in Figure. Clock pulses at a frequency of 
+1 MHz are applied as shown. The frequency (in kHz) of the waveform at Q3 is __________ . 
+ 
+ 
+J4
+K4
+Q4
+K3
+Q3
+J3
+J2
+K2
+Q2
+K1
+Q1
+J1
+K0
+Q0
+J0
+clk
+clk
+clk
+clk
+clk
+clock
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+ 
+Q.17 
+A discrete-time signal 𝑥𝑥[𝑛𝑛] = sin(𝜋𝜋2𝑛𝑛) , 𝑛𝑛 being an integer, is 
+(A) periodic with period 𝜋𝜋. 
+(B) periodic with period 𝜋𝜋2. 
+(C) periodic with period 𝜋𝜋/2. 
+(D) not periodic. 
+ 
+Q.18 
+Consider two real valued signals, 𝑥𝑥(𝑡𝑡) band-limited to [− 500 Hz, 500 Hz] and 𝑦𝑦(𝑡𝑡) band-limited 
+to [−1 kHz, 1 kHz]. For  𝑧𝑧(𝑡𝑡) = 𝑥𝑥(𝑡𝑡) ∙𝑦𝑦(𝑡𝑡), the Nyquist sampling frequency (in kHz)  is ______. 
+ 
+ 
+5 V
+5 V
+5 V
+5 V
+P
+Q
+R
+EC01 (GATE 2014)
+
+
+=====PAGE 11=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+4/11
+Q.19 
+A continuous, linear time-invariant filter has an impulse response ℎ(𝑡𝑡) described by  
+  
+ ℎ(𝑡𝑡) = ቄ 3   for  0 ≤𝑡𝑡 ≤3
+0   otherwise         
+ 
+ 
+When a constant input of value 5 is applied to this filter, the steady state output is _____. 
+ 
+Q.20 
+The forward path transfer function of a unity negative feedback system is given by  
+ 
+𝐺𝐺(𝑠𝑠) =
+𝐾𝐾
+(𝑠𝑠+ 2)(𝑠𝑠−1) 
+ 
+The value of 𝐾𝐾 which will place both the poles of the closed-loop system at the same location,       
+is ______ . 
+ 
+Q.21 
+Consider the feedback system shown in the figure. The Nyquist plot of 𝐺𝐺(𝑠𝑠) is also shown. Which 
+one of the following conclusions is correct? 
+  
+        
+                       
+ 
+ 
+(A)  𝐺𝐺(𝑠𝑠) is an all-pass filter 
+(B)  𝐺𝐺(𝑠𝑠) is a strictly proper transfer function   
+(C)  𝐺𝐺(𝑠𝑠) is a stable and minimum-phase transfer function 
+(D)  The closed-loop system is unstable for sufficiently large and positive 𝑘𝑘  
+ 
+Q.22 
+In a code-division multiple access (CDMA) system with N = 8 chips, the maximum number of 
+users who can be assigned mutually orthogonal signature sequences is ________ 
+ 
+Q.23 
+The capacity of a Binary Symmetric Channel (BSC) with cross-over probability 0.5 is ________ 
+ 
+Q.24 
+A two-port network has scattering parameters given by[ ]
+11
+12
+21
+22
+s
+s
+S
+s
+s
+
+
+= 
+
+
+
+. If the port-2 of the two-
+port is short circuited, the 
+11
+s
+parameter for the resultant one-port network is 
+(A)  
+11
+11 22
+12 21
+22
+1
+s
+s s
+s s
+s
+−
++
++
+ 
+(B)  
+11
+11 22
+12 21
+22
+1
+s
+s s
+s s
+s
++
+−
++
+ 
+(C)  
+11
+11 22
+12 21
+22
+1
+s
+s s
+s s
+s
++
++
+−
+ 
+(D)  
+11
+11 22
+12 21
+22
+1
+s
+s s
+s s
+s
+−
++
+−
+ 
+ 
+Q.25 
+The force on a point charge +𝑞𝑞 kept at a distance 𝑑𝑑 from the surface of an infinite grounded metal 
+plate in a medium of permittivity 𝜖𝜖  is 
+(A) 0 
+(B) 
+𝑞𝑞2
+16𝜋𝜋𝜋𝜋𝑑𝑑2 away from the plate 
+ 
+(C) 
+𝑞𝑞2
+16𝜋𝜋𝜋𝜋𝑑𝑑2 towards the plate 
+(D) 
+𝑞𝑞2
+4𝜋𝜋𝜋𝜋𝑑𝑑2 towards the plate 
+ 
+ 
+ 
+EC01 (GATE 2014)
+
+
+=====PAGE 12=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+5/11
+Q. 26 – Q. 55 carry two marks each. 
+ 
+Q.26 
+The Taylor series expansion of  3 sin 𝑥𝑥 + 2 cos 𝑥𝑥 is 
+(A) 2 + 3𝑥𝑥  −𝑥𝑥2 − 
+𝑥𝑥3
+2 + . . . .. 
+ 
+(B) 2 − 3𝑥𝑥 + 𝑥𝑥2 − 
+𝑥𝑥3
+2 + … .. 
+ 
+(C) 2 + 3𝑥𝑥 + 𝑥𝑥2 + 
+𝑥𝑥3
+2 + . . . . . 
+ 
+(D) 2 − 3𝑥𝑥  −𝑥𝑥2 + 
+𝑥𝑥3
+2 + . . . . . 
+ 
+ 
+Q.27 
+For a function 𝑔𝑔(𝑡𝑡), it is given that  ∫
+𝑔𝑔(𝑡𝑡)𝑒𝑒−𝑗𝑗𝑗𝑗𝑗𝑗𝑑𝑑𝑑𝑑= 𝜔𝜔𝑒𝑒−2𝜔𝜔2
++∞
+−∞
+ for any real value 𝜔𝜔.  
+If 𝑦𝑦(𝑡𝑡) = ∫
+ 𝑔𝑔(𝜏𝜏)
+𝑡𝑡
+−∞
+𝑑𝑑𝑑𝑑, then ∫
+𝑦𝑦(𝑡𝑡)𝑑𝑑𝑑𝑑
++∞
+−∞
+ is 
+(A)  0 
+(B)  −𝑗𝑗 
+(C)  −
+𝑗𝑗
+2 
+(D)   
+𝑗𝑗
+2 
+ 
+Q.28 
+The volume under the surface 𝑧𝑧(𝑥𝑥, 𝑦𝑦) = 𝑥𝑥+ 𝑦𝑦 and above the triangle in the x-y plane defined by 
+{0 ≤ 𝑦𝑦≤𝑥𝑥 and 0 ≤ 𝑥𝑥 ≤12} is _________. 
+ 
+Q.29 
+Consider the matrix 
+𝐽𝐽6 =
+⎣
+⎢
+⎢
+⎢
+⎢
+⎡0   0   0   0   0   1
+0   0   0   0   1   0
+0   0   0   1   0   0
+0   0   1   0   0   0
+0   1   0   0   0   0
+1   0   0   0   0   0⎦
+⎥
+⎥
+⎥
+⎥
+⎤
+ 
+ 
+which is obtained by reversing the order of the columns of the identity matrix 𝐼𝐼6. 
+Let 𝑃𝑃= 𝐼𝐼6 + 𝛼𝛼 𝐽𝐽6, where 𝛼𝛼 is a non-negative real number. The value of 𝛼𝛼 for which det(𝑃𝑃) = 0    
+is ________. 
+ 
+ 
+Q.30 
+A Y-network has resistances of 10Ω each in two of its arms, while the third arm has a resistance of 
+11Ω. In the equivalent ∆-network, the lowest value (in Ω) among the three resistances is ________. 
+ 
+ 
+ 
+ 
+ 
+ 
+Q.31 
+A 230 V rms source supplies power to two loads connected in parallel. The first load draws 10 kW 
+at 0.8 leading power factor and the second one draws 10 kVA at 0.8 lagging power factor. The 
+complex power delivered by the source is 
+(A)  (18 + j 1.5) kVA 
+(B)  (18 – j 1.5) kVA  
+(C)  (20 + j 1.5) kVA 
+(D)  (20 – j 1.5) kVA 
+ 
+ 
+ 
+EC01 (GATE 2014)
+
+
+=====PAGE 13=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+6/11
+Q.32 
+A periodic variable x is shown in the figure as a function of time. The root-mean-square (rms) value 
+of x is _________. 
+ 
+ 
+ 
+Q.33 
+In the circuit shown in the figure, the value of capacitor C (in mF) needed to have critically damped 
+response i(t) is________. 
+ 
+40 Ω
+4 H
+C
+V
++
+-
+o
+i(t)
+ 
+Q.34 
+A BJT is biased in forward active mode. Assume VBE = 0.7 V, kT/q = 25 mV and reverse saturation 
+current IS = 10-13 A. The transconductance of the BJT (in mA/V)  is __________. 
+ 
+Q.35 
+The doping concentrations on the p-side and n-side of a silicon diode are 1 × 1016 cm-3 and              
+1  ×  1017 cm-3, respectively.   A forward bias of 0.3 V is applied to the diode.  At T = 300 K, the 
+intrinsic carrier concentration of silicon ni = 1.5  ×  1010 cm-3  and  
+𝑘𝑘𝑘𝑘
+𝑞𝑞  = 26 mV. The electron 
+concentration at the edge of the depletion region on the p-side is 
+(A) 2.3  ×  109 cm-3 
+(B) 1  × 1016 cm-3 
+(C) 1  × 1017 cm-3 
+(D) 2.25  ×  106 cm-3 
+ 
+ 
+ 
+ 
+Q.36 
+A depletion type N-channel MOSFET is biased in its linear region for use as a voltage controlled 
+resistor. Assume threshold voltage   VTH = -0.5 V,   VGS = 2.0 V,   VDS = 5 V, W/L = 100,                  
+Cox = 10-8 F/cm2 and µn = 800 cm2/V-s. The value of the resistance of the voltage controlled resistor 
+(in Ω)  is __________. 
+ 
+EC01 (GATE 2014)
+
+
+=====PAGE 14=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+7/11
+Q.37 
+In the voltage regulator circuit shown in the figure, the op-amp is ideal. The BJT has VBE = 0.7 V 
+and β  = 100, and the zener voltage is 4.7 V. For a regulated output of 9 V, the value of R (in Ω)    
+is _______. 
+ 
+ 
+1 kΩ 
+1 kΩ 
+R 
+VO = 9 V 
+VI = 12 V 
+VZ = 4.7 V 
++ 
+– 
+ 
+Q.38 
+In the circuit shown, the op-amp has finite input impedance, infinite voltage gain and zero input 
+offset voltage.  The output voltage Vout is 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(A−𝐼𝐼2(𝑅𝑅1 + 𝑅𝑅2)     
+(B) 𝐼𝐼2𝑅𝑅2 
+(C)) 𝐼𝐼1𝑅𝑅2 
+(D) −𝐼𝐼1(𝑅𝑅1 + 𝑅𝑅2) 
+ 
+Vout 
+I2 
+I1 
+R2 
+R1 
+EC01 (GATE 2014)
+
+
+=====PAGE 15=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+8/11
+Q.39 
+For the amplifier shown in the figure, the BJT parameters are VBE = 0.7 V, β  = 200, and thermal 
+voltage VT = 25 mV. The voltage gain (vo/vi) of the amplifier is _______ . 
+ 
+vi 
+RE 
+1 kΩ 
+VCC = +12 V 
+R1 
+33 kΩ 
+• 
+RC 
+5 kΩ 
+vo 
+CE 
+1 mF 
+R2 
+11 kΩ 
+RS 
+10 Ω 
+1 µF 
+1 µF 
+ 
+ 
+ 
+Q.40 
+The output 𝐹𝐹 in the digital logic circuit shown in the figure is  
+ 
+ 
+ 
+(A)  𝐹𝐹= 𝑋𝑋ത𝑌𝑌𝑌𝑌+ 𝑋𝑋𝑌𝑌ത𝑍𝑍 
+(B)  𝐹𝐹= 𝑋𝑋ത𝑌𝑌𝑍𝑍̅ + 𝑋𝑋𝑌𝑌ത𝑍𝑍̅ 
+(C)  𝐹𝐹= 𝑋𝑋ത𝑌𝑌ത𝑍𝑍+ 𝑋𝑋𝑋𝑋𝑋𝑋 
+(D) 𝐹𝐹= 𝑋𝑋ത𝑌𝑌ത𝑍𝑍̅ + 𝑋𝑋𝑋𝑋𝑋𝑋 
+ 
+ 
+Q.41 
+Consider the Boolean function, 𝐹𝐹(𝑤𝑤, 𝑥𝑥, 𝑦𝑦, 𝑧𝑧) = 𝑤𝑤𝑤𝑤+ 𝑥𝑥𝑥𝑥+ 𝑤𝑤ഥ𝑥𝑥𝑥𝑥𝑥𝑥+ 𝑤𝑤ഥ𝑥𝑥̅𝑦𝑦+ 𝑥𝑥𝑥𝑥+ 𝑥𝑥̅𝑦𝑦ത𝑧𝑧̅.  Which 
+one of the following is the complete set of essential prime implicants? 
+(A)  𝑤𝑤, 𝑦𝑦, 𝑥𝑥𝑥𝑥, 𝑥𝑥̅𝑧𝑧̅ 
+(B)  𝑤𝑤, 𝑦𝑦, 𝑥𝑥𝑥𝑥 
+(C)  𝑦𝑦, 𝑥𝑥̅𝑦𝑦ത𝑧𝑧̅ 
+(D)  𝑦𝑦, 𝑥𝑥𝑥𝑥, 𝑥𝑥̅𝑧𝑧̅ 
+ 
+X
+Y
+Z
+F
+XOR
+XNOR
+AND
+EC01 (GATE 2014)
+
+
+=====PAGE 16=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+9/11
+Q.42 
+The digital logic shown in the figure satisfies the given state diagram when Q1 is connected to 
+input A of the XOR gate. 
+ 
+ 
+ 
+Suppose the XOR gate is replaced by an XNOR gate. Which one of the following options preserves 
+the state diagram? 
+(A) Input A is connected to 𝑄𝑄2
+തതതത 
+(B) Input A is connected to 𝑄𝑄2 
+(C) Input A is connected to 𝑄𝑄1
+തതതത   and S is complemented 
+(D) Input A is connected to 𝑄𝑄1
+തതതത 
+ 
+ 
+Q.43 
+Let 𝑥𝑥[𝑛𝑛] = ቀ−
+1
+9ቁ
+𝑛𝑛
+𝑢𝑢(𝑛𝑛) − ቀ−
+1
+3ቁ
+𝑛𝑛
+𝑢𝑢(−𝑛𝑛−1). The Region of Convergence (ROC) of the z-
+transform of 𝑥𝑥[𝑛𝑛] 
+(A) is |𝑧𝑧| >
+1
+9 . 
+(B) is |𝑧𝑧| <
+1
+3 . 
+(C) is 
+1
+3 > |𝑧𝑧| >
+1
+9 . 
+(D) does not exist. 
+ 
+Q.44 
+Consider a discrete time periodic signal 𝑥𝑥[𝑛𝑛] = 𝑠𝑠𝑠𝑠𝑠𝑠ቀ
+𝜋𝜋𝜋𝜋
+5 ቁ. Let 𝑎𝑎𝑘𝑘 be the complex Fourier series 
+coefficients of 𝑥𝑥[𝑛𝑛]. The coefficients  {𝑎𝑎𝑘𝑘} are non-zero when  𝑘𝑘= 𝐵𝐵𝐵𝐵± 1, where 𝑚𝑚 is any 
+integer. The value of 𝐵𝐵 is______. 
+ 
+Q.45 
+A system is described by the following differential equation, where 𝑢𝑢(𝑡𝑡) is the input to the system 
+and 𝑦𝑦(𝑡𝑡) is the output of the system. 
+𝑦𝑦̇(𝑡𝑡) + 5𝑦𝑦(𝑡𝑡) = 𝑢𝑢(𝑡𝑡) 
+ 
+When 𝑦𝑦(0) = 1 and 𝑢𝑢(𝑡𝑡) is a unit step function, 𝑦𝑦(𝑡𝑡) is 
+(A) 0.2 + 0.8𝑒𝑒−5𝑡𝑡 
+(B) 0.2 −0.2𝑒𝑒−5𝑡𝑡 
+(C)  0.8 + 0.2𝑒𝑒−5𝑡𝑡 
+(D)  0.8 −0.8𝑒𝑒−5𝑡𝑡 
+ 
+Q.46 Consider the state space model of a system, as given below 
+ 
+൥
+𝑥𝑥̇1
+𝑥𝑥̇2
+𝑥𝑥̇3
+൩= ൥
+−1
+1
+0
+0
+−1
+0
+0
+0
+−2
+൩൥
+𝑥𝑥1
+𝑥𝑥2
+𝑥𝑥3
+൩+ ൥
+0
+4
+0
+൩𝑢𝑢;  𝑦𝑦= [1
+1
+1] ൥
+𝑥𝑥1
+𝑥𝑥2
+𝑥𝑥3
+൩. 
+ 
+The system is 
+(A) controllable and observable  
+(B) uncontrollable and observable 
+(C) uncontrollable and unobservable 
+(D) controllable and unobservable 
+ 
+CLK
+D2 Q2
+Q2
+A
+S
+D1 Q1
+Q1
+00
+01
+11
+10
+S=0
+S=0
+S=0
+S=0
+S=1
+S=1
+S=1
+S=1
+EC01 (GATE 2014)
+
+
+=====PAGE 17=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+10/11
+Q.47 
+The phase margin in degrees of 𝐺𝐺(𝑠𝑠) =  
+10
+(𝑠𝑠+0.1)(𝑠𝑠+1)(𝑠𝑠+10) calculated using the asymptotic Bode 
+plot  is  ________. 
+ 
+Q.48 
+For the following feedback system  𝐺𝐺(𝑠𝑠) =
+1
+(𝑠𝑠+1)(𝑠𝑠+2). The 2%-settling time of the step response is 
+required to be less than 2 seconds.  
+ 
+ 
+ 
+ 
+ 
+Which one of the following compensators 𝐶𝐶(𝑠𝑠) achieves this? 
+(A 3ቀ1
+𝑠𝑠+5ቁ 
+(B)  5(0.03
+𝑠𝑠+ 1) 
+ 
+(C)  2(𝑠𝑠+ 4) 
+(D)  4ቀ 𝑠𝑠+8
+𝑠𝑠+3ቁ  
+ 
+Q.49 
+Let  𝑋𝑋 be a real-valued random variable with 𝐸𝐸[𝑋𝑋] and 𝐸𝐸[𝑋𝑋2] denoting the mean values of 𝑋𝑋 and  
+ 𝑋𝑋2, respectively. The relation which always holds true is 
+ 
+(A) (𝐸𝐸[𝑋𝑋])2 > 𝐸𝐸[𝑋𝑋2] 
+(B)  𝐸𝐸[𝑋𝑋2] ≥(𝐸𝐸[𝑋𝑋])2 
+(C)  𝐸𝐸[𝑋𝑋2] = (𝐸𝐸[𝑋𝑋])2 
+(D)  𝐸𝐸[𝑋𝑋2] > (𝐸𝐸[𝑋𝑋])2 
+ 
+ 
+Q.50 
+Consider a random process 𝑋𝑋(𝑡𝑡) = √2sin(2𝜋𝜋𝜋𝜋+ 𝜑𝜑), where the random phase 𝜑𝜑  is uniformly 
+distributed in the interval [0,2𝜋𝜋]. The auto-correlation  𝐸𝐸[𝑋𝑋(𝑡𝑡1)𝑋𝑋(𝑡𝑡2)] is 
+ 
+(A) cos൫2𝜋𝜋(𝑡𝑡1 + 𝑡𝑡2)൯ 
+ 
+(B) sin൫2𝜋𝜋(𝑡𝑡1 −𝑡𝑡2)൯ 
+ 
+(C) sin൫2𝜋𝜋(𝑡𝑡1 + 𝑡𝑡2)൯ 
+ 
+(D)  cos൫2𝜋𝜋(𝑡𝑡1 −𝑡𝑡2)൯ 
+ 
+ 
+EC01 (GATE 2014)
+
+
+=====PAGE 18=====
+GATE 2014         SET1            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+11/11
+Q.51 
+Let 𝑄𝑄(√𝛾𝛾) be the BER of a BPSK system over an AWGN channel with two-sided noise power 
+spectral density  𝑁𝑁0 2
+⁄ . The parameter  𝛾𝛾 is a function of bit energy and noise power spectral 
+density.  
+ 
+A system with two independent and identical AWGN channels with noise power spectral density 
+𝑁𝑁0 2
+⁄ is shown in the figure. The BPSK demodulator receives the sum of outputs of both the 
+channels. 
+ 
+BPSK
+Modulator
+AWGN
+Channel 1
+AWGN
+Channel 2
+0 /1
+0 /1
+BPSK
+Demodulator
+ 
+ 
+If the BER of this system is 𝑄𝑄(𝑏𝑏√𝛾𝛾), then the value of 𝑏𝑏 is _____. 
+ 
+Q.52 
+A fair coin is tossed repeatedly until a ‘Head’ appears for the first time. Let L be the number of 
+tosses to get this first ‘Head’. The entropy H(L) in bits is ________. 
+ 
+Q.53 
+In spherical coordinates, let 𝑎𝑎ො𝜃𝜃, 𝑎𝑎ො𝜙𝜙 denote unit vectors along the 𝜃𝜃, 𝜙𝜙 directions. 
+ 
+𝑬𝑬= 100
+𝑟𝑟sin𝜃𝜃cos(𝜔𝜔𝜔𝜔−𝛽𝛽𝛽𝛽) 𝑎𝑎ො𝜃𝜃𝑉𝑉/𝑚𝑚 
+and  
+𝑯𝑯= 0.265
+𝑟𝑟
+sin 𝜃𝜃cos(𝜔𝜔𝜔𝜔−𝛽𝛽𝛽𝛽) 𝑎𝑎ො𝜙𝜙𝐴𝐴/𝑚𝑚 
+ 
+represent the electric and magnetic field components of the EM  wave at large distances 𝑟𝑟 from a 
+dipole antenna, in free space. The average power (W) crossing the hemispherical shell located at  
+𝑟𝑟= 1𝑘𝑘𝑘𝑘, 0 ≤𝜃𝜃≤𝜋𝜋/2 is ________ 
+ 
+ 
+Q.54 
+For a parallel plate transmission line, let 𝑣𝑣 be the speed of propagation and 𝑍𝑍 be the characteristic 
+impedance. Neglecting fringe effects, a reduction of the spacing between the plates by a factor of 
+two results in 
+(A)  halving of 𝑣𝑣 and no change in 𝑍𝑍 
+(B)  no changes in 𝑣𝑣 and halving of 𝑍𝑍 
+(C)  no change in both 𝑣𝑣 and 𝑍𝑍 
+(D)  halving of both 𝑣𝑣 and 𝑍𝑍 
+ 
+Q.55 
+The input impedance of a 8
+λ section of a lossless transmission line of characteristic impedance 
+50 Ωis found to be real when the other end is terminated by a load
+(
+)
+L
+Z
+R
+jX
+=
++
+Ω. If X is 
+30Ω, the value of R ( in Ω ) is _______  
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+EC01 (GATE 2014)
+
+
+=====PAGE 19=====
+Key / Range
+Marks
+Key / Range
+Marks
+GA
+1
+C
+1
+EC
+24
+B
+1
+GA
+2
+D
+1
+EC
+25
+C
+1
+GA
+3
+B
+1
+EC
+26
+A
+2
+GA
+4
+A
+1
+EC
+27
+B
+2
+GA
+5
+725 to 725
+1
+EC
+28
+862 to 866
+2
+GA
+6
+D
+2
+EC
+29
+0.99 to 1.01
+2
+GA
+7
+B
+2
+EC
+30
+29.08 to 29.10
+2
+GA
+8
+560 to 560
+2
+EC
+31
+B
+2
+GA
+9
+D
+2
+EC
+32
+0.39 to 0.42
+2
+GA
+10
+B
+2
+EC
+33
+9.99 to 10.01
+2
+EC
+1
+D
+1
+EC
+34
+5.7 to 5.9
+2
+EC
+2
+0.65 to 0.68
+1
+EC
+35
+A
+2
+EC
+3
+C
+1
+EC
+36
+499 to 501
+2
+EC
+4
+0.99 to 1.01
+1
+EC
+37
+1092 to 1094
+2
+EC
+5
+0.32 to 0.34
+1
+EC
+38
+C
+2
+EC
+6
+C
+1
+EC
+39
+‐240 to ‐230
+2
+EC
+7
+A
+1
+EC
+40
+A
+2
+EC
+8
+7.99 to 8.01
+1
+EC
+41
+D
+2
+EC
+9
+D
+1
+EC
+42
+D
+2
+EC
+10
+A
+1
+EC
+43
+C
+2
+EC
+11
+B
+1
+EC
+44
+9.99 to 10.01
+2
+EC
+12
+B
+1
+EC
+45
+A
+2
+EC
+13
+3.1 to 3.26
+1
+EC
+46
+B
+2
+EC
+14
+C
+1
+EC
+47
+42 to 48
+2
+EC
+15
+A
+1
+EC
+48
+C
+2
+EC
+16
+62.4 to 62.6
+1
+EC
+49
+B
+2
+EC
+17
+D
+1
+EC
+50
+D
+2
+EC
+18
+2.99 to 3.01
+1
+EC
+51
+1.4 to 1.42
+2
+EC
+19
+44 to 46
+1
+EC
+52
+1.99 to 2.01
+2
+EC
+20
+2.24 to 2.26
+1
+EC
+53
+55.4 to 55.6
+2
+EC
+21
+D
+1
+EC
+54
+B
+2
+EC
+22
+7.99 to 8.01
+1
+EC
+55
+39 to 41
+2
+EC
+23
+‐0.01 to 0.01
+1
+GATE 2014
+ Answer Keys for EC ‐ Electronics and Communication Engineering
+Section Q. No.
+SESSION ‐ 1
+Section Q. No.
+SESSION ‐ 1
+
+
+=====PAGE 20=====
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+SESSION - 2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 21=====
+GATE 2014: General Instructions during Examination 
+1. Total duration of the GATE examination is 180 minutes. 
+2. The clock will be set at the server. The countdown timer at the top right corner of 
+screen will display the remaining time available for you to complete the examination. 
+When the timer reaches zero, the examination will end by itself. You need not 
+terminate the examination or submit your paper.   
+3. Any useful data required for your paper can be viewed by clicking on the Useful 
+Common Data button that appears on the screen. 
+4. Use the scribble pad provided to you for any rough work. Submit the scribble pad at 
+the end of the examination. 
+5. You are allowed to use a non-programmable type calculator, however, sharing of 
+calculators is not allowed. 
+6. The Question Palette displayed on the right side of screen will show the status of 
+each question using one of the following symbols:  
+ 
+ 
+The Marked for Review status for a question simply indicates that you would like to look at 
+that question again. If a question is answered, but marked for review, then the answer will 
+be considered for evaluation unless the status is modified by the candidate. 
+Navigating to a Question : 
+7. To answer a question, do the following:  
+a. Click on the question number in the Question Palette to go to that question 
+directly. 
+b. Select an answer for a multiple choice type question by clicking on the bubble 
+placed before the 4 choices, namely A, B, C and D. Use the virtual numeric 
+keypad to enter a number as answer for a numerical type question. 
+c. Click on Save & Next to save your answer for the current question and then go 
+to the next question. 
+d. Click on Mark for Review & Next to save your answer for the current question 
+and also mark it for review, and then go to the next question. 
+
+
+=====PAGE 22=====
+Caution: Note that your answer for the current question will not be saved, if you navigate 
+to another question directly by clicking on a question number without saving the answer to 
+the previous question. 
+You can view all the questions by clicking on the Question Paper button. This feature is 
+provided, so that if you want you can just see the entire question paper at a glance. 
+Answering a Question : 
+8. Procedure for answering a multiple choice (MCQ) type question:  
+a. Choose one answer from the 4 options (A,B,C,D) given below the question, 
+click on the bubble placed before the chosen option.  
+b. To deselect your chosen answer, click on the bubble of the chosen option again 
+or click on the Clear Response button. 
+c. To change your chosen answer, click on the bubble of another option. 
+d. To save your answer, you MUST click on the Save & Next button. 
+9. Procedure for answering a numerical answer type question:  
+a. To enter a number as your answer, use the virtual numerical keypad. 
+b. A fraction (e.g. -0.3 or -.3) can be entered as an answer with or without '0' 
+before the decimal point. As many as four decimal points, e.g. 12.5435 or 
+0.003 or -932.6711 or 12.82 can be entered.  
+c. To clear your answer, click on the Clear Response button. 
+d. To save your answer, you MUST click on the Save & Next button 
+10. To mark a question for review, click on the Mark for Review & Next button. If an 
+answer is selected (for MCQ) or entered (for numerical answer type) for a question 
+that is Marked for Review, that answer will be considered in the evaluation unless 
+the status is modified by the candidate. 
+11. To change your answer to a question that has already been answered, first select 
+that question for answering and then follow the procedure for answering that type of 
+question. 
+12. Note that ONLY Questions for which answers are saved or marked for review after 
+answering will be considered for evaluation. 
+ 
+Choosing a Section :  
+13. Sections in this question paper are displayed on the top bar of the screen. Questions 
+in a Section can be viewed by clicking on the name of that Section. The Section you 
+are currently viewing will be highlighted. 
+14. A checkbox is displayed for every optional Section, if any, in the Question Paper. To 
+select the optional Section for answering, click on the checkbox for that Section. 
+15. If the checkbox for an optional Section is not selected, the Save & Next button and 
+the Mark for Review & Next button will NOT be enabled for that Section. You will 
+
+
+=====PAGE 23=====
+only be able to see questions in this Section, but you will not be able to answer 
+questions in the Section. 
+16. After clicking the Save & Next button for the last question in a Section, you will 
+automatically be taken to the first question of the next Section in sequence. 
+17. You can move the mouse cursor over the name of a Section to view the answering 
+status for that Section. 
+ 
+Changing the Optional Section : 
+ 
+18. After answering the chosen optional Section, partially or completely, you can change 
+the optional Section by selecting the checkbox for a new Section that you want to 
+attempt. A warning message will appear along with a table showing the number of 
+questions answered in each of the previously chosen optional Sections and a 
+checkbox against each of these Sections. Click on a checkbox against a Section that 
+you want to reset and then click on the RESET button. Note that RESETTING a Section 
+will DELETE all the answers for questions in that Section. Hence, if you think that you 
+may want to select this Section again later, you will have to note down your answers 
+for questions in that Section. If you do not want to reset the Section and want to 
+continue answering the previously chosen optional Section, then click on the BACK 
+button. 
+ 
+19. If you deselect the checkbox for an optional Section in the top bar, the following 
+warning message will appear: "Deselecting the checkbox will DELETE all the answers 
+for questions in this Section. Do you want to deselect this Section?” If you want to 
+deselect, click on the RESET button. If you do not want to deselect, click on the BACK 
+button. 
+ 
+20. You can shuffle between different Sections or change the optional Sections any 
+number of times. 
+ 
+
+
+=====PAGE 24=====
+GATE 2014 Examination  
+EC: Electronics & Communications Engineering 
+Duration: 180 minutes 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Maximum Marks: 100 
+Read the following instructions carefully. 
+ 
+1. To login, enter your Registration Number and password provided to you. Kindly go through the various 
+symbols used in the test and understand their meaning before you start the examination.  
+2. Once you login and after the start of the examination, you can view all the questions in the question 
+paper, by clicking on the View All Questions button in the screen. 
+3. This question paper consists of 2 sections, General Aptitude (GA) for 15 marks and the subject 
+specific GATE paper for 85 marks. Both these sections are compulsory. 
+The GA section consists of 10 questions. Question numbers 1 to 5 are of 1-mark each, while question 
+numbers 6 to 10 are of 2-mark each.  
+The subject specific GATE paper section consists of 55 questions, out of which question numbers 1 to 
+25 are of 1-mark each, while question numbers 26 to 55 are of 2-mark each. 
+4. Depending upon the GATE paper, there may be useful common data that may be required for 
+answering the questions. If the paper has such useful data, the same can be viewed by clicking on the 
+Useful Common Data button that appears at the top, right hand side of the screen.  
+ 
+5. The computer allotted to you at the examination center runs specialized software that permits only one 
+answer to be selected for multiple-choice questions using a mouse and to enter a suitable number for 
+the numerical answer type questions using the virtual keyboard and mouse. 
+6. Your answers shall be updated and saved on a server periodically and also at the end of the 
+examination. The examination will stop automatically at the end of 180 minutes. 
+7. In each paper a candidate can answer a total of 65 questions carrying 100 marks.  
+8. The question paper may consist of questions of multiple choice type (MCQ) and numerical answer 
+type.  
+9. Multiple choice type questions will have four choices against A, B, C, D, out of which only ONE is the 
+correct answer. The candidate has to choose the correct answer by clicking on the bubble (⃝) placed 
+before the choice. 
+10. For numerical answer type questions, each question will have a numerical answer and there will not be 
+any choices. For these questions, the answer should be enteredby using the virtual keyboard that 
+appears on the monitor and the mouse. 
+11. All questions that are not attempted will result in zero marks. However, wrong answers for multiple 
+choice type questions (MCQ) will result in NEGATIVE marks. For all MCQ questions a wrong 
+answer will result in deduction of⅓ marks for a 1-mark question and ⅔ marks for a 2-mark question. 
+12. There is NO NEGATIVE MARKING for questions of NUMERICAL ANSWER TYPE. 
+ 
+13. Non-programmable type Calculator is allowed. Charts, graph sheets, and mathematical tables are NOT 
+allowed in the Examination Hall. You must use the Scribble pad provided to you at the examination 
+centre for all your rough work. The Scribble Pad has to be returned at the end of the examination. 
+ 
+Declaration by the candidate: 
+ 
+“I have read and understood all the above instructions. I have also read and understood clearly the 
+instructions given on the admit card and shall follow the same. I also understand that in case I am found to 
+violate any of these instructions, my candidature is liable to be cancelled. I also confirm that at the start of 
+the examination all the computer hardware allotted to me are in proper working condition”. 
+ 
+
+
+=====PAGE 25=====
+GATE 2014              SET- 4                                                                              General Aptitude -GA  
+GA 
+1/2
+Q. 1 – Q. 5 carry one mark each. 
+Q.1 
+Choose the most appropriate word from the options given below to complete the following 
+sentence. 
+ 
+Communication and interpersonal skills are                   important in their own ways. 
+(A) each 
+(B) both 
+(C)  all 
+(D)  either 
+ 
+Q.2 
+Which of the options given below best completes the following sentence? 
+ 
+She will feel much better if she ________________. 
+(A) will get some rest 
+(B) gets some rest 
+(C) will be getting some rest 
+(D) is getting some rest 
+ 
+Q.3 
+Choose the most appropriate pair of words from the options given below to complete the following 
+sentence.  
+ 
+She could not _____ the thought of _________ the election to her bitter rival. 
+(A) bear, loosing 
+(B) bare, loosing 
+(C)  bear, losing 
+(D)  bare, losing 
+ 
+Q.4 
+A regular die has six sides with numbers 1 to 6 marked on its sides. If a very large number of 
+throws show the following frequencies of occurrence: 1 → 0.167; 2 → 0.167; 3 → 0.152; 4 → 
+0.166; 5 → 0.168; 6 → 0.180. We call this die 
+(A) irregular 
+(B) biased 
+(C)  Gaussian 
+(D)  insufficient 
+ 
+Q.5 
+Fill in the missing number in the series. 
+ 
+2          3          6          15                   157.5          630 
+ 
+ 
+Q. 6 – Q. 10 carry two marks each. 
+ 
+ 
+Q.6 
+Find the odd one in the following group 
+ 
+Q,W,Z,B          B,H,K,M          W,C,G,J          M,S,V,X 
+(A) Q,W,Z,B 
+ 
+(B) B,H,K,M 
+(C)  W,C,G,J 
+(D)  M,S,V,X 
+ 
+Q.7 
+Lights of four colors (red, blue, green, yellow) are hung on a ladder. On every step of the ladder 
+there are two lights. If one of the lights is red, the other light on that step will always be blue. If one 
+of the lights on a step is green, the other light on that step will always be yellow. Which of the 
+following statements is not necessarily correct? 
+(A) The number of red lights is equal to the number of blue lights 
+(B) The number of green lights is equal to the number of yellow lights 
+(C) The sum of the red and green lights is equal to the sum of the yellow and blue lights 
+(D) The sum of the red and blue lights is equal to the sum of the green and yellow lights 
+ 
+Q.8 
+The sum of eight consecutive odd numbers is 656. The average of four consecutive even numbers is 
+87. What is the sum of the smallest odd number and second largest even number? 
+GA04 (GATE 2014)
+
+
+=====PAGE 26=====
+GATE 2014              SET- 4                                                                              General Aptitude -GA  
+GA 
+2/2
+Q.9 
+The total exports and revenues from the exports of a country are given in the two charts shown 
+below. The pie chart for exports shows the quantity of each item exported as a percentage of the 
+total quantity of exports. The pie chart for the revenues shows the percentage of the total revenue 
+generated through export of each item. The total quantity of exports of all the items is 500 thousand 
+tonnes and the total revenues are 250 crore rupees. Which item among the following has generated 
+the maximum revenue per kg? 
+ 
+ 
+(A) Item 2 
+(B) Item 3 
+(C) Item 6  
+(D)  Item 5 
+ 
+Q.10 
+It takes 30 minutes to empty a half-full tank by draining it at a constant rate. It is decided to 
+simultaneously pump water into the half-full tank while draining it. What is the rate at which water 
+has to be pumped in so that it gets fully filled in 10 minutes? 
+(A) 4 times the draining rate 
+(B) 3 times the draining rate 
+(C) 2.5 times the draining rate 
+(D) 2 times the draining rate 
+ 
+ 
+END OF THE QUESTION PAPER 
+ 
+Item 1
+11%
+Item 2
+20%
+Item 3
+19%
+Item 4
+22%
+Item 5
+12%
+Item 6
+16%
+Exports
+Item 1
+12%
+Item 2
+20%
+Item 3
+23%
+Item 4
+6%
+Item 5
+20%
+Item 6
+19%
+Revenues
+GA04 (GATE 2014)
+
+
+=====PAGE 27=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q. 1 – Q. 25 carry one mark each. 
+Q.1 
+The determinant of matrix 𝐴 is 5 and the determinant of matrix 𝐵 is 40. The determinant of matrix 
+𝐴𝐵 is ________. 
+ 
+Q.2 
+Let X be a random variable which is uniformly chosen from the set of positive odd numbers less 
+than 100. The expectation, 𝐸[𝑋], is __________. 
+Q.3 
+For 0 ≤𝑡< ∞, the maximum value of the function 𝑓(𝑡) = 𝑒−𝑡−2 𝑒−2𝑡 occurs at 
+ 
+(A) 𝑡= log𝑒4   
+(B)  𝑡= log𝑒2 
+(C)  𝑡= 0 
+(D)  𝑡= log𝑒8 
+ 
+Q.4 
+The value of  
+lim
+𝑥→∞൬1 + 1
+𝑥൰
+𝑥
+ 
+is  
+ 
+(A) 𝑙𝑛2 
+ 
+(B) 1.0    
+(C)  𝑒    
+(D)  ∞ 
+ 
+ 
+ 
+ 
+ 
+ 
+Q.5 
+If the characteristic equation of the differential equation  
+  
+𝑑2𝑦
+𝑑𝑥2 + 2 𝛼𝑑𝑦
+𝑑𝑥+ 𝑦= 0 
+ 
+has two equal roots, then the values of α are 
+ 
+ 
+(A) ±1 
+(B) 0,0 
+(C)  ±j 
+(D)  ±1/2 
+ 
+ 
+Q.6 
+Norton’s theorem states that a complex network connected to a load can be replaced with an 
+equivalent impedance 
+(A) in series with a current source 
+(B) in parallel with a voltage source 
+(C) in series with a voltage source 
+(D) in parallel with a current source 
+ 
+Q.7 
+In the figure shown, the ideal switch has been open for a long time. If it is closed at 𝑡= 0, then the 
+magnitude of the current (in mA) through the 4 kΩ resistor at 𝑡= 0+ is _______. 
+ 
+ 
+ 
+Q.8 
+A silicon bar is doped with donor impurities ND = 2.25 x 1015 atoms / cm3. Given the intrinsic 
+carrier concentration of silicon at T = 300 K is ni = 1.5 x 1010 cm-3. Assuming complete impurity 
+ionization,  the equilibrium electron and hole concentrations are 
+(A)  n0 = 1.5 x 1016 cm-3, p0 = 1.5 x 105 cm-3 
+(B)  n0 = 1.5 x 1010 cm-3, p0= 1.5  x 1015 cm-3 
+(C)  n0 = 2.25 x 1015 cm-3, p0 = 1.5 x 1010 cm-3   
+(D)  n0 = 2.25 x 1015 cm-3, p0 = 1 x 105 cm-3 
+EC 
+1/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 28=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+ 
+Q.9 
+An increase in the base recombination of a BJT will increase   
+(A) the common emitter dc current gain β 
+(B) the breakdown voltage BVCEO 
+(C) the unity-gain cut-off frequency fT 
+(D) the transconductance gm 
+ 
+Q.10 
+In CMOS technology, shallow P-well or N-well regions can be formed using 
+(A) low pressure chemical vapour deposition 
+(B) low energy sputtering 
+(C) low temperature dry oxidation  
+(D) low energy ion-implantation 
+ 
+Q.11 
+The feedback topology in the amplifier circuit ( the base bias circuit is not shown for simplicity) in 
+the figure is  
+ 
+ 
+ 
+(A) Voltage shunt feedback 
+(B) Current series feedback 
+(C) Current shunt feedback 
+(D) Voltage series feedback 
+ 
+ 
+ 
+EC 
+2/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 29=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.12 
+In the differential amplifier shown in the figure, the magnitudes of the common-mode and 
+differential-mode gains are 𝐴𝑐𝑚 and 𝐴𝑑, respectively. If the resistance RE is increased, then  
+ 
+(A)  𝐴𝑐𝑚 increases  
+(B)  common-mode rejection ratio increases 
+(C)  𝐴𝑑 increases 
+(D)  common-mode rejection ratio decreases 
+ 
+Q.13 
+A cascade connection of two voltage amplifiers A1 and A2 is shown in the figure. The open-loop 
+gain Av0, input resistance Rin, and output resistance Ro for A1 and A2 are as follows: 
+  
+A1:  Av0 = 10, Rin = 10 kΩ, Ro = 1 kΩ. 
+A2:  Av0 = 5,   Rin = 5 kΩ,    Ro = 200 Ω. 
+  
+The approximate overall voltage gain vout/vin is __________. 
+  
+ 
+Q.14 
+For an n-variable Boolean function, the maximum number of prime implicants  is  
+(A)  2(n-1) 
+(B)  n/2 
+(C)  2n 
+(D) 2(n-1)  
+ 
+Q.15 
+The number of bytes required to represent the decimal number 1856357 in packed BCD (Binary 
+Coded Decimal) form is __________ . 
+ 
+Q.16 
+In a half-subtractor circuit with X and Y as inputs, the Borrow (M) and  Difference (N = X - Y)  are 
+given by 
+(A)  𝑀= 𝑋⊕𝑌, 𝑁= 𝑋𝑌 
+(B)  𝑀= 𝑋𝑌,         𝑁= 𝑋⊕𝑌 
+(C)  𝑀= 𝑋ത𝑌,        𝑁= 𝑋⊕𝑌  
+(D) 𝑀= 𝑋𝑌 ഥ,         𝑁= 𝑋⊕𝑌
+തതതതതതതത 
+ 
+Q.17 
+An FIR system is described by the system function 
+ 
+𝐻(𝑧) = 1 + 7
+2 z−1 + 3
+2 z−2 
+The system is 
+(A)  maximum phase 
+(B)  minimum phase 
+(C)  mixed phase  
+(D) zero phase 
+ 
+ 
+EC 
+3/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 30=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.18 
+Let 𝑥[𝑛] = 𝑥[−𝑛]. Let 𝑋(𝑧) be the 𝑧-transform of 𝑥[𝑛]. If 0.5 + 𝑗 0.25 is a zero of 𝑋(𝑧), which 
+one of the following must also be a zero of 𝑋(𝑧). 
+(A) 0.5 −𝑗 0.25 
+(B) 1/(0.5 + 𝑗 0.25) 
+(C)  1/(0.5 −𝑗 0.25) (D)  2+𝑗 4 
+ 
+ 
+Q.19 
+Consider the periodic square wave in the figure shown. 
+  
+ 
+  
+The ratio of the power in the 7th harmonic to the power in the 5th harmonic for this waveform is 
+closest in value to _______. 
+ 
+Q.20 The natural frequency of an undamped second-order system is 40 rad/s. If the system is 
+damped with a damping ratio 0.3, the damped natural frequency in rad/s is ________. 
+ 
+Q.21 
+For the following system, 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+when 𝑋1(𝑠) = 0, the transfer function 
+𝑌(𝑠)
+𝑋2(𝑠) is 
+(A) 
+𝑠+1
+𝑠2 
+(B) 
+1
+𝑠+1 
+(C) 
+𝑠+2
+𝑠(𝑠+1)   
+(D) 
+𝑠+1
+𝑠(𝑠+2) 
+ 
+Q.22 
+The capacity of a band-limited additive white Gaussian noise (AWGN) channel is given by 
+𝐶= 𝑊 log2 ቀ1 + 
+𝑃
+𝜎2 𝑊ቁ  bits per second (bps), where 𝑊 is the channel bandwidth, 𝑃 is the 
+average power received and 𝜎2 is the one-sided power spectral density of the AWGN.  
+ 
+For a fixed 
+𝑃
+𝜎2 = 1000, the channel capacity (in kbps) with infinite bandwidth (𝑊 → ∞) is 
+approximately 
+(A) 1.44  
+(B) 1.08   
+(C)  0.72  
+(D)  0.36  
+ 
+Q.23 
+Consider sinusoidal modulation in an AM system. Assuming no overmodulation, the modulation 
+index (𝜇) when the maximum and minimum values of the envelope, respectively, are 3 V and 1 V, 
+is ________. 
+ 
+Y(s) 
+X1(s) 
+s
+s+1 
+1
+s 
++ 
++  
+- 
++  
+X2(s) 
+EC 
+4/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 31=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.24 
+To maximize power transfer, a lossless transmission line is to be matched to a resistive load 
+impedance via a λ/4 transformer as shown.  
+ 
+ 
+ 
+ 
+The characteristic impedance (in Ω) of the λ/4 transformer is _________. 
+ 
+Q.25 
+Which one of the following field patterns represents a TEM wave travelling in the positive 𝑥 
+direction? 
+(A)  𝐸= +8𝑦ො, 𝐻= −4𝑧̂ 
+(B)  𝐸= −2𝑦ො, 𝐻= −3𝑧̂ 
+(C)  𝐸= +2𝑧̂, 𝐻= +2𝑦ො 
+(D)  𝐸= −3𝑦ො, 𝐻= +4𝑧̂ 
+ 
+Q. 26 – Q. 55 carry two marks each. 
+ 
+Q.26 
+The system of linear equations 
+ 
+൭
+2
+1
+3
+3
+0
+1
+1
+2
+5
+൱ቆ
+𝑎
+𝑏
+𝑐
+ቇ= ൭
+5
+−4
+14
+൱ has  
+ 
+(A) a unique solution 
+ 
+(B) infinitely many solutions 
+(C) no solution 
+(D) exactly two solutions 
+ 
+Q.27 
+The real part of an analytic function 𝑓(𝑧) where 𝑧= 𝑥+ 𝑗𝑦 is given by 𝑒−𝑦cos(𝑥). The imaginary 
+part of 𝑓(𝑧) is 
+(A) 𝑒𝑦cos(𝑥) 
+(B) 𝑒−𝑦sin(𝑥) 
+(C) −𝑒𝑦sin(𝑥)  
+(D) −𝑒−𝑦sin(𝑥)  
+ 
+Q.28 
+The maximum value of the determinant among all 2 × 2 real symmetric matrices with trace 14 is 
+________. 
+Q.29 
+If 
+ˆ
+ˆ
+ˆ
+x
+y
+z
+r
+xa
+ya
+za
+=
++
++
+
+and 
+,
+r
+r
+=
+
+ then div൫𝑟2∇(ln𝑟)൯=  ______ . 
+ 
+ 
+ 
+Q.30 
+A series LCR circuit is operated at a frequency different from its resonant frequency. The operating 
+frequency is such that the current leads the supply voltage. The magnitude of current is half the 
+value at resonance. If the values of L, C and R are 1 H, 1 F and 1 Ω, respectively, the operating 
+angular frequency (in rad/s) is ________.         
+ZL = 100 Ω 
+λ/4 transformer 
+Zin =50 Ω 
+lossless transmission line 
+EC 
+5/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 32=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.31 
+In the h-parameter model of the 2-port network given in the figure shown, the value of ℎ22 (in S) is 
+______ . 
+ 
+3 Ω
+3 Ω
+3 Ω
+2 Ω
+2 Ω
+2 Ω
+1
+2
+1'
+2'
+ 
+Q.32 
+In the figure shown, the capacitor is initially uncharged. Which one of the following expressions 
+describes the current I(t)  (in mA) for 𝑡 > 0? 
+ 
+(A) I(𝑡) = 
+5
+3 ൫1 −𝑒−𝑡/𝜏൯,   𝜏= 
+2
+3 msec 
+(B) I(𝑡) = 
+5
+2 ൫1 −𝑒−𝑡/𝜏൯, 𝜏= 
+2
+3 msec 
+(C) I(𝑡) = 
+5
+3 ൫1 −𝑒−𝑡/𝜏൯,   𝜏= 3 msec 
+(D) I(𝑡) = 
+5
+2 ൫1 −𝑒−𝑡/𝜏൯, 𝜏= 3 msec 
+ 
+Q.33 
+In the magnetically coupled circuit shown in the figure, 56 % of the total flux emanating from one 
+coil links the other coil. The value of the mutual inductance  (in H) is  ______ . 
+ 
+V
+M
+(1/16) F
+5 H
+4 H
+10 Ω
+0
+60cos(4
+30 )
++
+t
+Q.34 
+Assume electronic charge q =  1.6×10-19 C, kT/q = 25 mV and electron mobility µn = 1000 cm2/V-s. 
+If the concentration gradient of electrons injected into a P-type silicon sample is 1×1021/cm4, the 
+magnitude of electron diffusion current density (in A/cm2) is  _________. 
+Q.35 
+Consider an abrupt PN junction (at T = 300 K) shown in the figure. The depletion region width Xn 
+on the N-side of the junction is 0.2 µm and the permittivity of silicon (εsi) is 1.044×10-12 F/cm. At 
+the junction, the approximate value of the peak electric field (in kV/cm) is _________. 
+ 
+ 
+ 
+EC 
+6/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 33=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+ 
+Q.36 
+When a silicon diode having a doping concentration of NA = 9  ×  1016 cm-3 on p-side and             
+ND = 1  ×  1016 cm-3 on n-side is reverse biased, the total depletion width is found to be 3 µm.  
+Given that the permittivity of silicon is 1.04  ×  10–12  F/cm, the depletion width on the p-side and 
+the maximum electric field in the depletion region, respectively,  are 
+(A)  2.7 µm  and 2.3  ×  105 V/cm 
+(B)  0.3 µm  and 4.15  ×  105 V/cm 
+(C)  0.3 µm  and 0.42  ×  105 V/cm 
+(D)  2.1 µm  and 0.42  ×  105 V/cm 
+ 
+ 
+Q.37 
+The diode in the circuit shown has Von = 0.7 Volts but is ideal otherwise.  
+If Vi = 5 sin(𝜔𝑡)Volts, the minimum and maximum values of Vo (in Volts) are, respectively, 
+ 
+(A)  −5 and 2.7 
+(B)  2.7 and 5 
+(C)  −5 and 3.85 
+(D)  1.3 and 5 
+ 
+Q.38 
+For the n-channel MOS transistor shown in the figure, the threshold voltage VTh is 0.8 V. Neglect 
+channel length modulation effects. When the drain voltage VD = 1.6 V, the drain current ID was 
+found to be 0.5 mA. If  VD is adjusted to be 2 V by changing the values of R and VDD, the new value 
+of ID (in mA) is  
+ 
+ 
+(A)  0.625  
+(B)  0.75  
+(C)  1.125  
+(D)  1.5  
+ 
+EC 
+7/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 34=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.39 
+For the MOSFETs shown in the figure, the threshold voltage |Vt| = 2 V and  
+1
+2
+ox
+W
+K
+C
+L
+µ
+
+
+=
+
+
+
+
+= 0.1 mA/V2. The value of ID (in mA) is _______ . 
+ 
+ 
+VDD = +12 V 
+R1  
+10 kΩ 
+R2  
+10 kΩ 
+VSS = –5 V 
+↓ ID 
+ 
+Q.40 
+In the circuit shown, choose the correct timing diagram of the output (y) from the given waveforms 
+W1, W2, W3 and W4.  
+(A) W1 
+(B) W2 
+(C)  W3 
+(D)  W4 
+EC 
+8/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 35=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+ 
+ 
+Q.41 
+The outputs of the two flip-flops Q1, Q2 in the figure shown are initialized to 0, 0. The sequence 
+generated at Q1 upon application of clock signal is  
+ 
+ 
+ 
+ 
+(A)   01110… 
+(B)   01010… 
+(C)   00110… 
+(D)   01100… 
+ 
+Q.42 
+For the 8085 microprocessor, the interfacing circuit to input 8-bit digital data (DI0 – DI7) from an 
+external device is shown in the figure. The instruction for correct data transfer is  
+ 
+A0 
+A1 
+A2 
+IO/M 
+RD 
+A6 
+A5 
+A4 
+A7 
+Data Bus 
+(D0– D7) 
+Digital 
+Inputs 
+I/O Device 
+1
+DS 
+DS2 
+DI0– DI7 
+DO0– DO7 
+7 
+6 
+5 
+4 
+3 
+2 
+1 
+0 
+2B
+G
+ 
+2A
+G
+ 
+G1 
+A 
+B 
+C 
+3-to-8 
+Decoder 
+A3 
+A11 
+A10 
+A9 
+A8 
+A12 
+A13 
+A14 
+A15 
+(A)  MVI A, F8H 
+(B)  IN F8H 
+(C)  OUT F8H 
+(D)  LDA F8F8H 
+ 
+Q.43 
+Consider a discrete-time signal  
+ 
+𝑥[𝑛] = ቄ𝑛   for   0 ≤𝑛≤10
+0     otherwise         . 
+ 
+If 𝑦[𝑛] is the convolution of 𝑥[𝑛] with itself, the value of 𝑦[4] is _________. 
+ 
+Q.44 
+The input-output relationship of a causal stable LTI system is given as  
+ 
+𝑦[𝑛] = 𝛼 𝑦[𝑛−1] + 𝛽 𝑥[𝑛] 
+ 
+If the impulse response ℎ[𝑛] of this system satisfies the condition ∑
+ℎ[𝑛]
+∞
+𝑛=0
+= 2, the relationship 
+between α and β is 
+(A)  𝛼= 1 −𝛽/2 
+(B) 𝛼= 1 + 𝛽/2 
+(C)  𝛼= 2𝛽 
+(D)  𝛼= −2𝛽 
+CLK
+J1 Q1
+Q1
+K1
+J2 Q2
+Q2
+K2
+Q1
+EC 
+9/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 36=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+ 
+Q.45 
+The value of the integral ∫
+sinc2(5𝑡) 𝑑𝑡
+∞
+−∞
+  is ________. 
+ 
+Q.46 
+An unforced linear time invariant (LTI) system is represented by 
+ 
+൤𝑥1̇
+𝑥̇2൨= ቂ−1
+0
+0
+−2ቃቂ𝑥1
+𝑥2ቃ 
+ 
+If the initial conditions are 𝑥1(0) = 1 and 𝑥2(0) = −1, the solution of the state equation is 
+(A) 𝑥1(𝑡) = −1, 𝑥2(𝑡) = 2 
+(B) 𝑥1(𝑡) = −𝑒−𝑡, 𝑥2(𝑡) = 2𝑒−𝑡 
+(C) 𝑥1(𝑡) = 𝑒−𝑡, 𝑥2(𝑡) = −𝑒−2𝑡 
+(D) 𝑥1(𝑡) = −𝑒−𝑡, 𝑥2(𝑡) = −2𝑒−𝑡 
+ 
+ 
+Q.47 
+The Bode asymptotic magnitude plot of a minimum phase system is shown in the figure.  
+ 
+ 
+ 
+If the system is connected in a unity negative feedback configuration, the steady state error of the 
+closed loop system, to a unit ramp input, is_________. 
+ 
+Q.48 
+Consider the state space system expressed by the signal flow diagram shown in the figure.  
+ 
+ 
+ 
+The corresponding system is 
+ 
+(A)  always controllable 
+(B)  always observable 
+(C)  always stable 
+(D)  always unstable 
+ 
+ 
+ 
+ 
+ 
+EC 
+10/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 37=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.49 
+The input to a 1-bit quantizer is a random variable 𝑋 with pdf 𝑓𝑋(𝑥) = 2𝑒−2𝑥 for 𝑥≥0 and 
+𝑓𝑋(𝑥) = 0 for 𝑥< 0. For outputs to be of equal probability, the quantizer threshold should be 
+_____. 
+ 
+ 
+Q.50 
+Coherent orthogonal binary FSK modulation is used to transmit two equiprobable symbol 
+waveforms 𝑠1(𝑡) = 𝛼 cos 2𝜋𝑓1𝑡 and 𝑠2(𝑡) = 𝛼 cos 2𝜋𝑓2𝑡, where 𝛼= 4 mV. Assume an AWGN 
+channel with two-sided noise power spectral density 
+𝑁0
+2 = 0.5 × 10−12 W/Hz. Using an optimal 
+receiver and the relation 𝑄(𝑣) =
+1
+√2𝜋∫
+𝑒−𝑢2 2
+⁄
+∞
+𝑣
+𝑑𝑢, the bit error probability for a data rate of 
+500 kbps is 
+(A)  𝑄(2)  
+(B)  𝑄൫2√2൯  
+(C)  𝑄(4) 
+(D)  𝑄൫4√2൯  
+ 
+ 
+Q.51 
+The power spectral density of a real stationary random process 𝑋(𝑡) is given by 
+ 
+𝑆𝑋(𝑓) =  ቊ
+1
+𝑊,        | 𝑓| ≤𝑊
+0,         |𝑓| > 𝑊
+. 
+ 
+The value of the expectation  𝐸ቂπ 𝑋(𝑡) 𝑋ቀ𝑡− 
+1
+4𝑊ቁቃ is_________. 
+ 
+Q.52 
+In the figure, 𝑀(𝑓) is the Fourier transform of the message signal 𝑚(𝑡) where A = 100 Hz and  
+B = 40 Hz. Given  𝑣(𝑡) = cos (2𝜋𝑓𝑐𝑡) and 𝑤(𝑡) = cos (2𝜋(𝑓𝑐+ 𝐴)𝑡), where 𝑓𝑐> 𝐴. The cutoff 
+frequencies of both the filters are 𝑓𝑐. 
+ 
+m(t)
+High Pass
+Filter
+v(t)
+w(t)
+Low Pass
+Filter
+s(t)
+1
+-A
+-B
+B
+A
+M(f)
+f
+ 
+ 
+The bandwidth of the signal at the output of the modulator (in Hz) is _____. 
+ 
+ 
+Q.53 
+If the electric field of a plane wave is  
+ 
+𝐸ሬ⃗(𝑧, 𝑡) = 𝑥ො3cos(𝜔𝑡−𝑘𝑧+ 30°) −𝑦ො4sin(𝜔𝑡−𝑘𝑧+ 45°) (mV/m), 
+ 
+the polarization state of the plane wave is 
+(A) left elliptical 
+(B) left circular 
+(C) right elliptical 
+(D) right circular  
+ 
+ 
+EC 
+11/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 38=====
+GATE 2014         SET2            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.54 
+In the transmission line shown, the impedance Zin (in ohms) between node A and the ground is 
+_________. 
+ 
+ 
+ 
+ 
+ 
+Q.55 
+For a rectangular waveguide of internal dimensions 𝑎 × 𝑏 (𝑎> 𝑏), the cut-off frequency for the 
+11
+TE mode is the arithmetic mean of the cut-off frequencies for 
+10
+TE mode and 
+20
+TE
+ mode. If 
+𝑎= √5 cm, the value of 𝑏 (in cm) is  _____. 
+ 
+ 
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+EC 
+12/12 
+EC02 (GATE 2014)
+
+
+=====PAGE 39=====
+Key / Range
+Marks
+Key / Range
+Marks
+GA
+1
+B
+1
+EC
+24
+70 to 72
+1
+GA
+2
+B
+1
+EC
+25
+B
+1
+GA
+3
+C
+1
+EC
+26
+B
+2
+GA
+4
+B
+1
+EC
+27
+B
+2
+GA
+5
+45 to 45
+1
+EC
+28
+48.9 to 49.1
+2
+GA
+6
+C
+2
+EC
+29
+2.9 to 3.1
+2
+GA
+7
+D
+2
+EC
+30
+0.45 to 0.47
+2
+GA
+8
+163 to 163
+2
+EC
+31
+1.24 to 1.26
+2
+GA
+9
+D
+2
+EC
+32
+A
+2
+GA
+10
+A
+2
+EC
+33
+2.49 to 2.52
+2
+EC
+1
+199 to 201
+1
+EC
+34
+3990 to 4010
+2
+EC
+2
+49.9 to 50.1
+1
+EC
+35
+30 to 32
+2
+EC
+3
+A
+1
+EC
+36
+B
+2
+EC
+4
+C
+1
+EC
+37
+C
+2
+EC
+5
+A
+1
+EC
+38
+C
+2
+EC
+6
+D
+1
+EC
+39
+0.88 to 0.92
+2
+EC
+7
+1.2 to 1.3
+1
+EC
+40
+C
+2
+EC
+8
+D
+1
+EC
+41
+D
+2
+EC
+9
+B
+1
+EC
+42
+D
+2
+EC
+10
+D
+1
+EC
+43
+9.9 to 10.1
+2
+EC
+11
+B
+1
+EC
+44
+A
+2
+EC
+12
+B
+1
+EC
+45
+0.19 to 0.21
+2
+EC
+13
+34.0 to 35.3
+1
+EC
+46
+C
+2
+EC
+14
+D
+1
+EC
+47
+0.49 to 0.51
+2
+EC
+15
+3.9 to 4.1
+1
+EC
+48
+A
+2
+EC
+16
+C
+1
+EC
+49
+0.34 to 0.36
+2
+EC
+17
+C
+1
+EC
+50
+C
+2
+EC
+18
+B
+1
+EC
+51
+3.9 to 4.1
+2
+EC
+19
+0.50 to 0.52
+1
+EC
+52
+59.9 to 60.1
+2
+EC
+20
+38.13 to 38.19
+1
+EC
+53
+A
+2
+EC
+21
+D
+1
+EC
+54
+32.99 to 34.01
+2
+EC
+22
+A
+1
+EC
+55
+1.9 to 2.1
+2
+EC
+23
+0.45 to 0.55
+1
+GATE 2014
+ Answer Keys for EC ‐ Electronics and Communication Engineering
+Section Q. No.
+SESSION ‐ Ϯ
+Section Q. No.
+SESSION ‐ Ϯ
+
+
+=====PAGE 40=====
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+SESSION - 3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 41=====
+GATE 2014: General Instructions during Examination 
+1. Total duration of the GATE examination is 180 minutes. 
+2. The clock will be set at the server. The countdown timer at the top right corner of 
+screen will display the remaining time available for you to complete the examination. 
+When the timer reaches zero, the examination will end by itself. You need not 
+terminate the examination or submit your paper.   
+3. Any useful data required for your paper can be viewed by clicking on the Useful 
+Common Data button that appears on the screen. 
+4. Use the scribble pad provided to you for any rough work. Submit the scribble pad at 
+the end of the examination. 
+5. You are allowed to use a non-programmable type calculator, however, sharing of 
+calculators is not allowed. 
+6. The Question Palette displayed on the right side of screen will show the status of 
+each question using one of the following symbols:  
+ 
+ 
+The Marked for Review status for a question simply indicates that you would like to look at 
+that question again. If a question is answered, but marked for review, then the answer will 
+be considered for evaluation unless the status is modified by the candidate. 
+Navigating to a Question : 
+7. To answer a question, do the following:  
+a. Click on the question number in the Question Palette to go to that question 
+directly. 
+b. Select an answer for a multiple choice type question by clicking on the bubble 
+placed before the 4 choices, namely A, B, C and D. Use the virtual numeric 
+keypad to enter a number as answer for a numerical type question. 
+c. Click on Save & Next to save your answer for the current question and then go 
+to the next question. 
+d. Click on Mark for Review & Next to save your answer for the current question 
+and also mark it for review, and then go to the next question. 
+
+
+=====PAGE 42=====
+Caution: Note that your answer for the current question will not be saved, if you navigate 
+to another question directly by clicking on a question number without saving the answer to 
+the previous question. 
+You can view all the questions by clicking on the Question Paper button. This feature is 
+provided, so that if you want you can just see the entire question paper at a glance. 
+Answering a Question : 
+8. Procedure for answering a multiple choice (MCQ) type question:  
+a. Choose one answer from the 4 options (A,B,C,D) given below the question, 
+click on the bubble placed before the chosen option.  
+b. To deselect your chosen answer, click on the bubble of the chosen option again 
+or click on the Clear Response button. 
+c. To change your chosen answer, click on the bubble of another option. 
+d. To save your answer, you MUST click on the Save & Next button. 
+9. Procedure for answering a numerical answer type question:  
+a. To enter a number as your answer, use the virtual numerical keypad. 
+b. A fraction (e.g. -0.3 or -.3) can be entered as an answer with or without '0' 
+before the decimal point. As many as four decimal points, e.g. 12.5435 or 
+0.003 or -932.6711 or 12.82 can be entered.  
+c. To clear your answer, click on the Clear Response button. 
+d. To save your answer, you MUST click on the Save & Next button 
+10. To mark a question for review, click on the Mark for Review & Next button. If an 
+answer is selected (for MCQ) or entered (for numerical answer type) for a question 
+that is Marked for Review, that answer will be considered in the evaluation unless 
+the status is modified by the candidate. 
+11. To change your answer to a question that has already been answered, first select 
+that question for answering and then follow the procedure for answering that type of 
+question. 
+12. Note that ONLY Questions for which answers are saved or marked for review after 
+answering will be considered for evaluation. 
+ 
+Choosing a Section :  
+13. Sections in this question paper are displayed on the top bar of the screen. Questions 
+in a Section can be viewed by clicking on the name of that Section. The Section you 
+are currently viewing will be highlighted. 
+14. A checkbox is displayed for every optional Section, if any, in the Question Paper. To 
+select the optional Section for answering, click on the checkbox for that Section. 
+15. If the checkbox for an optional Section is not selected, the Save & Next button and 
+the Mark for Review & Next button will NOT be enabled for that Section. You will 
+
+
+=====PAGE 43=====
+only be able to see questions in this Section, but you will not be able to answer 
+questions in the Section. 
+16. After clicking the Save & Next button for the last question in a Section, you will 
+automatically be taken to the first question of the next Section in sequence. 
+17. You can move the mouse cursor over the name of a Section to view the answering 
+status for that Section. 
+ 
+Changing the Optional Section : 
+ 
+18. After answering the chosen optional Section, partially or completely, you can change 
+the optional Section by selecting the checkbox for a new Section that you want to 
+attempt. A warning message will appear along with a table showing the number of 
+questions answered in each of the previously chosen optional Sections and a 
+checkbox against each of these Sections. Click on a checkbox against a Section that 
+you want to reset and then click on the RESET button. Note that RESETTING a Section 
+will DELETE all the answers for questions in that Section. Hence, if you think that you 
+may want to select this Section again later, you will have to note down your answers 
+for questions in that Section. If you do not want to reset the Section and want to 
+continue answering the previously chosen optional Section, then click on the BACK 
+button. 
+ 
+19. If you deselect the checkbox for an optional Section in the top bar, the following 
+warning message will appear: "Deselecting the checkbox will DELETE all the answers 
+for questions in this Section. Do you want to deselect this Section?” If you want to 
+deselect, click on the RESET button. If you do not want to deselect, click on the BACK 
+button. 
+ 
+20. You can shuffle between different Sections or change the optional Sections any 
+number of times. 
+ 
+
+
+=====PAGE 44=====
+GATE 2014 Examination  
+EC: Electronics & Communications Engineering 
+Duration: 180 minutes 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Maximum Marks: 100 
+Read the following instructions carefully. 
+ 
+1. To login, enter your Registration Number and password provided to you. Kindly go through the various 
+symbols used in the test and understand their meaning before you start the examination.  
+2. Once you login and after the start of the examination, you can view all the questions in the question 
+paper, by clicking on the View All Questions button in the screen. 
+3. This question paper consists of 2 sections, General Aptitude (GA) for 15 marks and the subject 
+specific GATE paper for 85 marks. Both these sections are compulsory. 
+The GA section consists of 10 questions. Question numbers 1 to 5 are of 1-mark each, while question 
+numbers 6 to 10 are of 2-mark each.  
+The subject specific GATE paper section consists of 55 questions, out of which question numbers 1 to 
+25 are of 1-mark each, while question numbers 26 to 55 are of 2-mark each. 
+4. Depending upon the GATE paper, there may be useful common data that may be required for 
+answering the questions. If the paper has such useful data, the same can be viewed by clicking on the 
+Useful Common Data button that appears at the top, right hand side of the screen.  
+ 
+5. The computer allotted to you at the examination center runs specialized software that permits only one 
+answer to be selected for multiple-choice questions using a mouse and to enter a suitable number for 
+the numerical answer type questions using the virtual keyboard and mouse. 
+6. Your answers shall be updated and saved on a server periodically and also at the end of the 
+examination. The examination will stop automatically at the end of 180 minutes. 
+7. In each paper a candidate can answer a total of 65 questions carrying 100 marks.  
+8. The question paper may consist of questions of multiple choice type (MCQ) and numerical answer 
+type.  
+9. Multiple choice type questions will have four choices against A, B, C, D, out of which only ONE is the 
+correct answer. The candidate has to choose the correct answer by clicking on the bubble (⃝) placed 
+before the choice. 
+10. For numerical answer type questions, each question will have a numerical answer and there will not be 
+any choices. For these questions, the answer should be enteredby using the virtual keyboard that 
+appears on the monitor and the mouse. 
+11. All questions that are not attempted will result in zero marks. However, wrong answers for multiple 
+choice type questions (MCQ) will result in NEGATIVE marks. For all MCQ questions a wrong 
+answer will result in deduction of⅓ marks for a 1-mark question and ⅔ marks for a 2-mark question. 
+12. There is NO NEGATIVE MARKING for questions of NUMERICAL ANSWER TYPE. 
+ 
+13. Non-programmable type Calculator is allowed. Charts, graph sheets, and mathematical tables are NOT 
+allowed in the Examination Hall. You must use the Scribble pad provided to you at the examination 
+centre for all your rough work. The Scribble Pad has to be returned at the end of the examination. 
+ 
+Declaration by the candidate: 
+ 
+“I have read and understood all the above instructions. I have also read and understood clearly the 
+instructions given on the admit card and shall follow the same. I also understand that in case I am found to 
+violate any of these instructions, my candidature is liable to be cancelled. I also confirm that at the start of 
+the examination all the computer hardware allotted to me are in proper working condition”. 
+ 
+
+
+=====PAGE 45=====
+GATE 2014              SET- 5                                                                              General Aptitude -GA  
+GA 
+1/3
+Q. 1 – Q. 5 carry one mark each. 
+Q.1 
+“India is a country of rich heritage and cultural diversity.” 
+ 
+Which one of the following facts best supports the claim made in the above sentence? 
+(A) India is a union of 28 states and 7 union territories. 
+(B) India has a population of over 1.1 billion. 
+(C) India is home to 22 official languages and thousands of dialects. 
+(D) The Indian cricket team draws players from over ten states. 
+ 
+Q.2 
+The value of one U.S. dollar is 65 Indian Rupees today, compared to 60 last year. The Indian Rupee 
+has ____________. 
+(A) depressed 
+(B) depreciated 
+(C)  appreciated 
+(D)  stabilized 
+ 
+Q.3 
+'Advice' is ________________. 
+(A) a verb 
+(B) a noun 
+(C) an adjective 
+(D)  both a verb and a noun 
+ 
+Q.4 
+The next term in the series 81, 54, 36, 24, … is ________ 
+ 
+Q.5 
+In which of the following options will the expression P < M be definitely true? 
+ 
+(A) M < R > P > S 
+(B) M > S < P < F 
+(C)  Q < M < F = P 
+(D)  P = A < R < M 
+ 
+Q. 6 – Q. 10 carry two marks each. 
+ 
+Q.6 
+Find the next term in the sequence: 7G, 11K, 13M, ___ 
+(A) 15Q  
+(B) 17Q 
+(C)  15P 
+(D)  17P 
+ 
+GA05 (GATE 2014)
+
+
+=====PAGE 46=====
+GATE 2014              SET- 5                                                                              General Aptitude -GA  
+GA 
+2/3
+Q.7 
+The multi-level hierarchical pie chart shows the population of animals in a reserve forest. The 
+correct conclusions from this information are: 
+ 
+ 
+ 
+(i) Butterflies are birds 
+(ii) There are more tigers in this forest than red ants 
+(iii) All reptiles in this forest are either snakes or crocodiles 
+(iv) Elephants are the largest mammals in this forest 
+(A) (i) and (ii) only 
+(B) (i), (ii), (iii) and (iv) 
+(C) (i), (iii) and (iv) only 
+(D) (i), (ii) and (iii) only 
+ 
+Q.8 
+A man can row at 8 km per hour in still water. If it takes him thrice as long to row upstream, as to 
+row downstream, then find the stream velocity in km per hour.  
+ 
+GA05 (GATE 2014)
+
+
+=====PAGE 47=====
+GATE 2014              SET- 5                                                                              General Aptitude -GA  
+GA 
+3/3
+Q.9 
+A firm producing air purifiers sold 200 units in 2012. The following pie chart presents the share of 
+raw material, labour, energy, plant & machinery, and transportation costs in the total manufacturing 
+cost of the firm in 2012. The expenditure on labour in 2012 is Rs. 4,50,000. In 2013, the raw 
+material expenses increased by 30% and all other expenses increased by 20%.  If the company 
+registered a profit of Rs. 10 lakhs in 2012, at what price (in Rs.) was each air purifier sold? 
+ 
+ 
+ 
+Q.10 
+A batch of one hundred bulbs is inspected by testing four randomly chosen bulbs. The batch is 
+rejected if even one of the bulbs is defective. A batch typically has five defective bulbs. The 
+probability that the current batch is accepted is   
+ 
+ 
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+GA05 (GATE 2014)
+
+
+=====PAGE 48=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q. 1 – Q. 25 carry one mark each. 
+Q.1  The maximum value of the function 𝑓𝑓(𝑥𝑥) = 𝑙𝑙𝑙𝑙(1 + 𝑥𝑥) −𝑥𝑥 (where 𝑥𝑥> −1) occurs at 𝑥𝑥=______. 
+ 
+ 
+Q.2  Which ONE of the following is a linear non-homogeneous differential equation, where x and y are 
+the independent and dependent variables respectively? 
+ 
+(A)  
+𝑑𝑑𝑑𝑑
+𝑑𝑑𝑑𝑑+ 𝑥𝑥𝑥𝑥= 𝑒𝑒−𝑥𝑥 
+(B)  
+𝑑𝑑𝑑𝑑
+𝑑𝑑𝑑𝑑+ 𝑥𝑥𝑥𝑥= 0 
+(C)  
+𝑑𝑑𝑑𝑑
+𝑑𝑑𝑑𝑑+ 𝑥𝑥𝑥𝑥= 𝑒𝑒−𝑦𝑦 
+(D)  
+𝑑𝑑𝑑𝑑
+𝑑𝑑𝑑𝑑+ 𝑒𝑒−𝑦𝑦= 0 
+ 
+ 
+Q.3  Match the application to appropriate numerical method. 
+ 
+Application 
+ 
+Numerical |Method  
+P1:  Numerical integration 
+M1:  Newton-Raphson Method 
+P2:  Solution to a transcendental equation 
+M2:  Runge-Kutta Method 
+P3:  Solution to a system of linear equations 
+M3:  Simpson’s 1/3-rule 
+P4:  Solution to a differential equation 
+ 
+M4:  Gauss Elimination Method 
+(A) P1—M3, P2—M2, P3—M4, P4—M1  
+(B) P1—M3, P2—M1, P3—M4, P4—M2 
+(C) P1—M4, P2—M1, P3—M3, P4—M2  
+(D) P1—M2, P2—M1, P3—M3, P4—M4 
+ 
+ 
+ 
+Q.4  An unbiased coin is tossed an infinite number of times. The probability that the fourth head appears 
+at the tenth toss is 
+ 
+(A) 0.067 
+(B) 0.073  
+(C) 0.082   
+(D) 0.091   
+ 
+Q.5  If 
+ln(
+),
+z
+xy
+xy
+=
+then 
+(A) 
+0
+z
+z
+x
+y
+x
+y
+∂
+∂
++
+=
+∂
+∂
+ 
+(B) 
+z
+z
+y
+x
+x
+y
+∂
+∂
+=
+∂
+∂
+ 
+(C) 
+z
+z
+x
+y
+x
+y
+∂
+∂
+=
+∂
+∂
+ 
+(D) 
+0
+z
+z
+y
+x
+x
+y
+∂
+∂
++
+=
+∂
+∂
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+EC 
+1/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 49=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.6  A series RC circuit is connected to a DC voltage source at time t = 0. The relation between the 
+source voltage VS, the resistance R, the capacitance C, and the current i(t) is given below: 
+ 
+𝑉𝑉𝑠𝑠= 𝑅𝑅 𝑖𝑖(𝑡𝑡) +
+1
+𝐶𝐶∫𝑖𝑖(𝑢𝑢)𝑑𝑑𝑑𝑑
+𝑡𝑡
+𝑜𝑜
+. 
+ 
+Which one of the following represents the current i(t)? 
+(A)
+(B)
+(C)
+(D)
+ 
+ 
+ 
+Q.7  In the figure shown, the value of the current I (in Amperes) is __________. 
+ 
+ 
+ 
+ 
+Q.8  In MOSFET fabrication, the channel length is defined during the process of 
+ 
+ 
+ 
+ 
+(A) isolation oxide growth 
+(B) channel stop implantation  
+(C) poly-silicon gate patterning 
+(D) lithography step leading to the contact pads 
+ 
+i(t)
+t
+0
+i(t)
+t
+0
+i(t)
+t
+0
+i(t)
+t
+0
+EC 
+2/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 50=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.9  A thin P-type silicon sample is uniformly illuminated with light which generates excess carriers. 
+The recombination rate is directly proportional to 
+(A) the minority carrier mobility 
+(B) the minority carrier recombination lifetime 
+(C) the majority carrier concentration 
+(D) the excess minority carrier concentration 
+ 
+ 
+Q.10  At T = 300 K, the hole mobility of a semiconductor 𝜇𝜇𝑝𝑝= 500 cm2/V-s and  
+𝑘𝑘𝑘𝑘
+𝑞𝑞  = 26 mV. The 
+hole diffusion constant 𝐷𝐷𝑝𝑝 in cm2/s is ________ 
+ 
+ 
+ 
+ 
+Q.11  The desirable characteristics of a transconductance amplifier are 
+(A)  high input resistance and high output resistance 
+(B)  high input resistance and low output resistance 
+(C)  low input resistance and high output resistance 
+(D)  low input resistance and low output resistance 
+ 
+ 
+Q.12  In the circuit shown, the PNP transistor has |𝑉𝑉𝐵𝐵𝐵𝐵| = 0.7 Vand β = 50.  Assume that 𝑅𝑅𝐵𝐵= 100 𝑘𝑘Ω.  
+For V0  to be 5 V, the value of 𝑅𝑅𝐶𝐶 (in 𝑘𝑘Ω) is _______ 
+ 
+ 
+ 
+Q.13  The figure shows a half-wave rectifier. The diode D is ideal. The average steady-state current (in 
+Amperes) through the diode is approximately ____________. 
+ 
+ 
+ 
+ 
+ 
+Q.14  An analog voltage in the range 0 to 8 V is divided in 16 equal intervals for conversion to 4-bit 
+digital output. The maximum quantization error (in V) is _________ 
+ 
+R C
+R B 
+V EE = 10 V
+V0
+EC 
+3/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 51=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.15  The circuit shown in the figure is a 
+ 
+ 
+(A) Toggle Flip Flop 
+(B) JK Flip Flop 
+(C) SR Latch 
+(D) Master-Slave D Flip Flop  
+ 
+ 
+Q.16  Consider the multiplexer based logic circuit shown in the figure. 
+ 
+ 
+ 
+Which one of the following Boolean functions is realized by the circuit? 
+(A) 𝐹𝐹= 𝑊𝑊𝑆𝑆1ഥ𝑆𝑆2
+തതത 
+(B) 𝐹𝐹= 𝑊𝑊𝑆𝑆1 + 𝑊𝑊𝑆𝑆2 + 𝑆𝑆1𝑆𝑆2 
+(C) 𝐹𝐹= 𝑊𝑊ഥ+ 𝑆𝑆1 + 𝑆𝑆2 
+(D) 𝐹𝐹= 𝑊𝑊⊕𝑆𝑆1 ⊕𝑆𝑆2 
+ 
+ 
+Q.17  Let 𝑥𝑥(𝑡𝑡) = cos(10𝜋𝜋𝜋𝜋) + cos(30𝜋𝜋𝜋𝜋) be sampled at 20 Hz and reconstructed using an ideal low-pass 
+filter with cut-off frequency of 20 Hz. The frequency/frequencies present in the reconstructed signal 
+is/are 
+(A) 5 Hz and 15 Hz only 
+(B) 10 Hz and 15 Hz only 
+(C) 5 Hz, 10 Hz and 15 Hz only 
+(D) 5 Hz only 
+ 
+ 
+ 
+ 
+Q.18  For an all-pass system 𝐻𝐻(𝑧𝑧) = 
+(𝑧𝑧−1 −𝑏𝑏 )
+(1− 𝑎𝑎𝑧𝑧−1 )  , where ห𝐻𝐻൫𝑒𝑒−𝑗𝑗𝑗𝑗 ൯ห= 1, for all 𝜔𝜔.   
+If Re(𝑎𝑎) ≠0,  Im(𝑎𝑎) ≠0,  then b equals 
+(A) 𝑎𝑎 
+(B) 𝑎𝑎∗ 
+(C)  1/𝑎𝑎∗ 
+(D)  1/𝑎𝑎 
+ 
+ 
+ 
+ 
+ 
+W
+S 1
+S 2
+F
+0
+1
+0
+1
+MUX
+MUX
+D Latch 
+D Latch 
+En 
+En 
+Clk 
+D 
+Q 
+Q 
+Q 
+Q 
+EC 
+4/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 52=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.19  A modulated signal is 𝑦𝑦(𝑡𝑡) = 𝑚𝑚(𝑡𝑡) cos(40000𝜋𝜋𝜋𝜋), where the baseband signal 𝑚𝑚(𝑡𝑡) has frequency 
+components less than 5 kHz only. The minimum required rate (in kHz) at which 𝑦𝑦(𝑡𝑡) should be 
+sampled to recover 𝑚𝑚(𝑡𝑡) is _______. 
+ 
+ 
+ 
+Q.20  Consider the following block diagram in the figure. 
+ 
+ 
+ 
+The transfer function 
+𝐶𝐶(𝑠𝑠)
+𝑅𝑅(𝑠𝑠) is 
+(A)
+𝐺𝐺1𝐺𝐺2
+1+𝐺𝐺1𝐺𝐺2 
+(B)𝐺𝐺1𝐺𝐺2 + 𝐺𝐺1 + 1 
+(C)𝐺𝐺1𝐺𝐺2 + 𝐺𝐺2 + 1 
+(D)
+𝐺𝐺1
+1+𝐺𝐺1𝐺𝐺2 
+ 
+ 
+Q.21  The input  −3e2𝑡𝑡𝑢𝑢(𝑡𝑡), where  𝑢𝑢(𝑡𝑡) is the unit step function, is applied to a system with transfer 
+function 
+𝑠𝑠−2
+𝑠𝑠+3. If the initial value of the output is −2, then the value of the output at steady state is 
+_______. 
+ 
+ 
+ 
+ 
+Q.22  The phase response of a passband waveform at the receiver is given by 
+   
+𝜑𝜑(𝑓𝑓) = −2𝜋𝜋𝜋𝜋(𝑓𝑓−𝑓𝑓𝑐𝑐) −2𝜋𝜋𝜋𝜋𝑓𝑓𝑐𝑐 
+   
+where 𝑓𝑓𝑐𝑐 is the centre frequency, and 𝛼𝛼 and 𝛽𝛽 are positive constants. The actual signal propagation 
+delay from the transmitter to receiver is 
+(A) 
+𝛼𝛼−𝛽𝛽
+𝛼𝛼+𝛽𝛽 
+(B)  
+𝛼𝛼𝛼𝛼
+𝛼𝛼+𝛽𝛽 
+(C)  𝛼𝛼 
+(D)  𝛽𝛽 
+ 
+Q.23  Consider an FM signal 𝑓𝑓(𝑡𝑡) = cos[2𝜋𝜋𝑓𝑓𝑐𝑐𝑡𝑡+ 𝛽𝛽1 sin2𝜋𝜋𝑓𝑓1𝑡𝑡+ 𝛽𝛽2 sin2𝜋𝜋𝑓𝑓2𝑡𝑡 ]. The maximum deviation 
+of the instantaneous frequency from the carrier frequency 𝑓𝑓𝑐𝑐 is 
+(A) 𝛽𝛽1𝑓𝑓1 + 𝛽𝛽2𝑓𝑓2 
+(B) 𝛽𝛽1𝑓𝑓2 + 𝛽𝛽2𝑓𝑓1 
+(C) 𝛽𝛽1 + 𝛽𝛽2 
+(D) 𝑓𝑓1 + 𝑓𝑓2 
+ 
+Q.24  Consider an air filled rectangular waveguide with a cross-section of 5 cm × 3 cm. For this 
+waveguide, the cut-off frequency (in MHz) of TE21 mode is _________. 
+ 
+EC 
+5/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 53=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.25  In the following figure, the transmitter Tx sends a wideband modulated RF signal via a coaxial 
+cable to the receiver Rx. The output impedance ZT of Tx, the characteristic impedance Z0 of the 
+cable and the input impedance ZR of Rx are all real.  
+ 
+ 
+ 
+  
+ 
+Which one of the following statements is TRUE about the distortion of the received signal due to 
+impedance mismatch? 
+(A)  The signal gets distorted if ZR ≠ Z0, irrespective of the value of ZT 
+(B)  The signal gets distorted if ZT ≠ Z0, irrespective of the value of ZR 
+(C)  Signal distortion implies impedance mismatch at both ends: ZT ≠ Z0 and ZR ≠ Z0 
+(D)  Impedance mismatches do NOT result in signal distortion but reduce power transfer efficiency 
+ 
+Q. 26 – Q. 55 carry two marks each. 
+ 
+Q.26  The maximum value of 𝑓𝑓(𝑥𝑥) = 2𝑥𝑥3 − 9𝑥𝑥2 + 12𝑥𝑥−3 in the interval 0 ≤𝑥𝑥≤3 is _______. 
+ 
+Q.27  Which one of the following statements is NOT true for a square matrix 𝐴𝐴? 
+(A) If 𝐴𝐴 is upper triangular, the eigenvalues of 𝐴𝐴 are the diagonal elements of it 
+(B) If 𝐴𝐴 is real symmetric, the eigenvalues of 𝐴𝐴 are always real and positive 
+(C) If 𝐴𝐴 is real, the eigenvalues of 𝐴𝐴 and 𝐴𝐴𝑇𝑇 are always the same 
+(D) If all the principal minors of 𝐴𝐴 are positive, all the eigenvalues of 𝐴𝐴 are also positive 
+ 
+Q.28  A fair coin is tossed repeatedly till both head and tail appear at least once. The average number of 
+tosses required is ______ . 
+ 
+Q.29  Let X1, X2, and X3 be independent and identically distributed random variables with the uniform 
+distribution on [0, 1]. The probability P{X1+ X2≤ X3} is ________. 
+ 
+EC 
+6/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 54=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.30     Consider the building block called ‘Network N’ shown in the figure.  
+Let C = 100 µF and R = 10 kΩ. 
+ 
+Two such blocks are connected in cascade, as shown in the figure. 
+ 
+The transfer function 
+𝑉𝑉3(𝑠𝑠)
+𝑉𝑉1(𝑠𝑠) of the cascaded network is      
+(A) 
+𝑠𝑠
+1+𝑠𝑠 
+(B) 
+𝑠𝑠2
+1+3𝑠𝑠+𝑠𝑠2 
+(C)  ቀ
+𝑠𝑠
+1+𝑠𝑠ቁ
+2
+ 
+(D)  
+𝑠𝑠
+2+𝑠𝑠 
+ 
+Q.31  In the circuit shown in the figure, the value of node voltage 𝑉𝑉2 is 
+(A)  22 + j 2 V 
+ 
+(B)  2 + j 22 V 
+(C)  22 – j 2 V 
+(D)  2 – j 22 V 
+ 
+Q.32  In the circuit shown in the figure, the angular frequency ω (in rad/s), at which the Norton equivalent 
+impedance as seen from terminals  b-b′ is purely resistive, is _________. 
+ 
+ 
+ 
+ 
+ 
+Network N
+C
+R
++
+-
++
+-
+V1(s)
+V2(s)
+C
+R
++
+-
+V3(s)
+Network N
++
+-
++
+-
+V1(s)
+Network N
+EC 
+7/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 55=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.33  For the Y-network shown in the figure, the value of R1 (in Ω) in the equivalent ∆-network is ____. 
+ 
+5 Ω
+7.5 Ω
+3 Ω
+R1
+ 
+Q.34  The donor and accepter impurities in an abrupt junction silicon diode are 1 x 1016 cm-3 and 5 x 1018 
+cm-3, respectively. Assume that the intrinsic carrier concentration in silicon  ni = 1.5 x 1010 cm-3 at 
+300 K, 
+𝑘𝑘𝑘𝑘
+𝑞𝑞  = 26 mV and the permittivity of silicon 𝜖𝜖𝑠𝑠𝑠𝑠= 1.04 × 10−12F/cm. The built-in potential 
+and the depletion width of the diode under thermal equilibrium conditions, respectively, are 
+ 
+(A)  0.7 V  and 1 x 10-4 cm  
+(B)  0.86 V  and 1 x 10-4 cm 
+(C)  0.7 V  and 3.3 x 10-5 cm 
+(D)  0.86 V  and 3.3 x 10-5 cm 
+ 
+ 
+Q.35  The slope of the 𝐼𝐼𝐷𝐷 vs. 𝑉𝑉𝐺𝐺𝐺𝐺 curve of an n-channel MOSFET in linear regime is 10−3Ω−1 at 
+𝑉𝑉𝐷𝐷𝐷𝐷= 0.1 V. For the same device, neglecting channel length modulation, the slope of the ඥ𝐼𝐼𝐷𝐷 vs. 
+𝑉𝑉𝐺𝐺𝐺𝐺 curve (in √A/V) under saturation regime is approximately  _________. 
+ 
+Q.36  An ideal MOS capacitor has boron doping-concentration of 1015 cm-3 in the substrate. When a gate 
+voltage is applied, a depletion region of width 0.5 µm is formed with a surface (channel) potential 
+of 0.2 V. Given that ε0 = 8.854 × 10-14 F/cm and the relative permittivities of silicon and silicon 
+dioxide are 12 and 4, respectively, the peak electric field (in V/µm) in the oxide region is 
+_____________. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+EC 
+8/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 56=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.37  In the circuit shown, the silicon BJT has β = 50. Assume VBE = 0.7 V and VCE(sat) =  0.2 V. Which 
+one of the following statements is correct? 
+ 
+ 
+(A)  For RC = 1 kΩ, the BJT operates in the saturation region 
+(B)  For RC = 3 kΩ, the BJT operates in the saturation region 
+(C)  For RC =20 kΩ, the BJT operates in the cut-off region 
+(D)  For RC =20 kΩ, the BJT operates in the linear region 
+ 
+ 
+ 
+Q.38  Assuming that the Op-amp in the circuit shown is ideal, Vo is given by 
+ 
+ 
+(A)  
+5
+2 V1 −3V2 
+ 
+(B)  2V1 −
+5
+2 V2   
+(C)  −
+3
+2 V1 +
+7
+2 V2 
+(D)  −3V1 +
+11
+2 V2 
+ 
+Q.39  For the MOSFET M1
+ shown in the figure, assume W/L = 2, VDD = 2.0 V, 𝜇𝜇𝑛𝑛𝐶𝐶𝑜𝑜𝑜𝑜= 100 μA/V2  and 
+VTH = 0.5 V. The transistor M1 switches from saturation region to linear region when Vin (in Volts) 
+is__________. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+M1 
+VDD 
+Vin 
+Vout 
+R= 10 kΩ 
+EC 
+9/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 57=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.40  If WL is the Word Line and BL the Bit Line, an SRAM cell is shown in 
+ 
+(A) 
+ 
+(B) 
+ 
+(C)  
+(D) 
+ 
+ 
+ 
+Q.41  In the circuit shown, 𝑊𝑊  and 𝑌𝑌  are MSBs of the control inputs. The output 𝐹𝐹  is given by 
+ 
+ 
+ 
+(A)  𝐹𝐹= 𝑊𝑊𝑋𝑋ത+ 𝑊𝑊ഥ𝑋𝑋+ 𝑌𝑌ത𝑍𝑍̅ 
+(B)  𝐹𝐹= 𝑊𝑊𝑋𝑋ത+ 𝑊𝑊ഥ𝑋𝑋+ 𝑌𝑌ത𝑍𝑍 
+(C)  𝐹𝐹= 𝑊𝑊𝑋𝑋ത𝑌𝑌ത+ 𝑊𝑊ഥ𝑋𝑋𝑌𝑌ത 
+(D)  𝐹𝐹= (𝑊𝑊ഥ+ 𝑋𝑋ത)𝑌𝑌ത𝑍𝑍̅ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+F
+VCC
+4:1 MUX
+4:1 MUX
+W
+X
+Y
+Z
+I 0
+I 1
+I 2
+I 3
+I 0
+I 1
+I 2
+I 3
+Q
+Q
+EC 
+10/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 58=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+ 
+Q.42  If X and Y are inputs and the Difference (D = X – Y) and the Borrow (B) are the outputs, which 
+one of the following diagrams implements a half-subtractor? 
+ 
+(A)  
+2:1 
+MUX
+2:1 
+MUX
+I0
+Y
+D
+I1
+I0
+I1
+Y
+X
+B
+S
+S
+(B) 
+2:1 
+MUX
+2:1 
+MUX
+I0
+X
+D
+I1
+I0
+I1
+X
+Y
+B
+S
+S
+(C) 
+2:1 
+MUX
+2:1 
+MUX
+I0
+Y
+B
+I1
+I0
+I1
+Y
+X
+D
+S
+S
+(D) 
+2:1 
+MUX
+2:1 
+MUX
+I0
+X
+B
+I1
+I0
+I1
+X
+Y
+D
+S
+S
+ 
+ 
+Q.43  Let 𝐻𝐻1(𝑧𝑧) = (1 −𝑝𝑝𝑧𝑧−1)−1, 𝐻𝐻2(𝑧𝑧) = (1 −𝑞𝑞𝑧𝑧−1)−1, 𝐻𝐻(𝑧𝑧) = 𝐻𝐻1(𝑧𝑧) + 𝑟𝑟 𝐻𝐻2(𝑧𝑧). The quantities 𝑝𝑝, 𝑞𝑞, 
+𝑟𝑟 are real numbers. Consider 𝑝𝑝=
+1
+2 , 𝑞𝑞= −
+1
+4 , |𝑟𝑟| < 1. If the zero of 𝐻𝐻(𝑧𝑧) lies on the unit circle, 
+then 𝑟𝑟= ________ 
+ 
+ 
+Q.44   
+Let ℎ(𝑡𝑡) denote the impulse response of a causal system with transfer function 
+1
+𝑠𝑠+1. Consider the 
+following three statements. 
+   
+S1: The system is stable. 
+S2:  
+ℎ (𝑡𝑡+1)
+ℎ(𝑡𝑡) is independent of 𝑡𝑡 for 𝑡𝑡> 0. 
+S3: A non-causal system with the same transfer function is stable. 
+   
+For the above system, 
+(A)  only S1 and S2 are true 
+(B)  only S2 and S3 are true 
+(C)  only S1 and S3 are true 
+(D)  S1, S2 and S3 are true 
+ 
+ 
+ 
+Q.45  The z-transform of the sequence 𝑥𝑥[𝑛𝑛] is given by X(𝑧𝑧) =
+1
+(1−2 𝑧𝑧−1 )2 , with the region of 
+convergence |𝑧𝑧| > 2. Then, 𝑥𝑥[2] is ________. 
+ 
+ 
+EC 
+11/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 59=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.46  The steady state error of the system shown in the figure for a unit step input is _______. 
+ 
+ 
+ 
+ 
+Q.47  The state equation of a second-order linear system is given by  
+ 
+𝒙𝒙̇(𝑡𝑡) = 𝐴𝐴𝒙𝒙(𝑡𝑡),       𝒙𝒙(0) = 𝒙𝒙0 
+ 
+For 𝒙𝒙0 = ቂ1
+−1ቃ,    𝒙𝒙(𝑡𝑡) = ቂ𝑒𝑒−𝑡𝑡
+−𝑒𝑒−𝑡𝑡ቃ   and   for  𝒙𝒙0 = ቂ0
+1ቃ,    𝒙𝒙(𝑡𝑡) = ൤𝑒𝑒−𝑡𝑡−𝑒𝑒−2𝑡𝑡
+−𝑒𝑒−𝑡𝑡+ 2𝑒𝑒−2𝑡𝑡൨.  
+ 
+When 𝒙𝒙0 = ቂ3
+5ቃ,   𝒙𝒙(𝑡𝑡) is 
+(A)  ൤−8𝑒𝑒−𝑡𝑡+ 11𝑒𝑒−2𝑡𝑡
+8𝑒𝑒−𝑡𝑡−22𝑒𝑒−2𝑡𝑡൨ 
+(B) ൤11𝑒𝑒−𝑡𝑡−8𝑒𝑒−2𝑡𝑡
+−11𝑒𝑒−𝑡𝑡+ 16𝑒𝑒−2𝑡𝑡൨ 
+(C)  ൤3𝑒𝑒−𝑡𝑡−5𝑒𝑒−2𝑡𝑡
+−3𝑒𝑒−𝑡𝑡+ 10𝑒𝑒−2𝑡𝑡൨ 
+(D)  ൤5𝑒𝑒−𝑡𝑡−3𝑒𝑒−2𝑡𝑡
+−5𝑒𝑒−𝑡𝑡+ 6𝑒𝑒−2𝑡𝑡൨ 
+ 
+ 
+ 
+Q.48  In the root locus plot  shown in the figure, the pole/zero marks and the arrows have been removed. 
+Which one of the following transfer functions has this root locus? 
+ 
+(A)    
+𝑠𝑠+1
+(𝑠𝑠+2)(𝑠𝑠+4)(𝑠𝑠+7) 
+(B)   
+𝑠𝑠+4
+(𝑠𝑠+1)(𝑠𝑠+2)(𝑠𝑠+7) 
+(C)     
+𝑠𝑠+7
+(𝑠𝑠+1)(𝑠𝑠+2)(𝑠𝑠+4) 
+(D)   (𝑠𝑠+1)(𝑠𝑠+2)
+ (𝑠𝑠+7)(𝑠𝑠+4) 
+ 
+Q.49  Let 𝑋𝑋(𝑡𝑡) be a wide sense stationary (WSS) random process with power spectral density 𝑆𝑆𝑋𝑋(𝑓𝑓). If 
+𝑌𝑌(𝑡𝑡) is the process defined as 𝑌𝑌(𝑡𝑡) = 𝑋𝑋(2𝑡𝑡−1), the power spectral density 𝑆𝑆𝑌𝑌(𝑓𝑓) is 
+(A)   𝑆𝑆𝑌𝑌(𝑓𝑓) = 1
+2 𝑆𝑆𝑋𝑋ቀ
+𝑓𝑓
+2ቁ𝑒𝑒−𝑗𝑗𝑗𝑗𝑗𝑗 
+(B)     𝑆𝑆𝑌𝑌(𝑓𝑓) = 1
+2 𝑆𝑆𝑋𝑋ቀ
+𝑓𝑓
+2ቁ𝑒𝑒−𝑗𝑗𝑗𝑗𝑗𝑗/2 
+(C)   𝑆𝑆𝑌𝑌(𝑓𝑓) = 1
+2 𝑆𝑆𝑋𝑋ቀ
+𝑓𝑓
+2ቁ 
+(D)     𝑆𝑆𝑌𝑌(𝑓𝑓) = 1
+2 𝑆𝑆𝑋𝑋ቀ
+𝑓𝑓
+2ቁ𝑒𝑒−𝑗𝑗2𝜋𝜋𝜋𝜋 
+ 
+ 
+EC 
+12/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 60=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.50  A real band-limited random process 𝑋𝑋(𝑡𝑡) has two-sided power spectral density 
+ 
+ 𝑆𝑆𝑋𝑋(𝑓𝑓) = ൜ 10−6 (3000 −|𝑓𝑓|) Watts/Hz    for |𝑓𝑓| ≤3 kHz 
+0                                                      otherwise        
+ 
+     
+where 𝑓𝑓 is the frequency expressed in Hz. The signal 𝑋𝑋(𝑡𝑡) modulates a carrier cos 16000 𝜋𝜋𝜋𝜋 and 
+the resultant signal is passed through an ideal band-pass filter of unity gain with centre frequency of 
+8 kHz and band-width of 2 kHz. The output power (in Watts) is _______. 
+ 
+ 
+Q.51  In a PCM system, the signal 𝑚𝑚(𝑡𝑡) = {sin(100𝜋𝜋𝜋𝜋) + cos(100𝜋𝜋𝜋𝜋)} V is sampled at the Nyquist rate. 
+The samples are processed by a uniform quantizer with step size 0.75 V. The minimum data rate of 
+the PCM system in bits per second is _____. 
+ 
+ 
+Q.52  A binary random variable 𝑋𝑋 takes the value of 1 with probability 1 3
+⁄ .  𝑋𝑋 is input to a cascade of 2 
+independent identical binary symmetric channels (BSCs) each with crossover probability 1 2
+⁄ . The 
+output of BSCs are the random variables 𝑌𝑌1 and 𝑌𝑌2 as shown in the figure. 
+ 
+BSC
+BSC
+X
+1Y
+2
+Y
+ 
+The value of 𝐻𝐻(𝑌𝑌1) + 𝐻𝐻(𝑌𝑌2) in bits is _____. 
+ 
+Q.53  Given the vector 𝑨𝑨= (cos 𝑥𝑥)(sin 𝑦𝑦)𝑎𝑎ො𝑥𝑥+ (sin 𝑥𝑥)(cos 𝑦𝑦)𝑎𝑎ො𝑦𝑦, where𝑎𝑎ො𝑥𝑥 , 𝑎𝑎ො𝑦𝑦denote unit vectors along 
+x,y directions, respectively. The magnitude of curl of 𝑨𝑨 is ________ 
+ 
+ 
+ 
+Q.54  A region shown below contains a perfect conducting half-space and air. The surface current 𝐾𝐾𝑠𝑠
+ሬሬሬሬ⃗ on 
+the surface of the perfect conductor is 𝐾𝐾𝑠𝑠
+ሬሬሬሬ⃗= 𝑥𝑥ො2 amperes per meter. The tangential 𝐻𝐻ሬ⃗ field in the air 
+just above the perfect conductor is 
+(A) (𝑥𝑥ො+ 𝑧𝑧̂)2 amperes per meter  
+(B) 𝑥𝑥ො2 amperes per meter 
+(C) −𝑧𝑧̂2 amperes per meter 
+(D) 𝑧𝑧̂2 amperes per meter 
+ 
+ 
+Air 
+Perfect conductor 
+y 
+x 
+𝐾𝐾𝑠𝑠
+ሬሬሬሬ⃗ 
+EC 
+13/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 61=====
+GATE 2014         SET3            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+Q.55  Assume that a plane wave in air with an electric field 
+(
+) ˆ
+10cos
+3
+3
+y
+E
+t
+x
+z a
+ω
+=
+−
+−
+
+ V/m is 
+incident on a non-magnetic dielectric slab of relative permittivity 3 which covers the region
+0
+z >
+. 
+The angle of transmission in the dielectric slab is ________ degrees. 
+ 
+ 
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+EC 
+14/14 
+EC03 (GATE 2014)
+
+
+=====PAGE 62=====
+Key / Range
+Marks
+Key / Range
+Marks
+GA
+1
+C
+1
+EC
+24
+7750 to 7850
+1
+GA
+2
+B
+1
+EC
+25
+C
+1
+GA
+3
+B
+1
+EC
+26
+5.9 to 6.1
+2
+GA
+4
+16 to 16
+1
+EC
+27
+B
+2
+GA
+5
+D
+1
+EC
+28
+2.9 to 3.1
+2
+GA
+6
+B
+2
+EC
+29
+0.15 to 0.18
+2
+GA
+7
+D
+2
+EC
+30
+B
+2
+GA
+8
+4 to 4
+2
+EC
+31
+D
+2
+GA
+9
+20000 to 20000
+2
+EC
+32
+1.9 to 2.1
+2
+GA
+10
+0.80 to 0.82
+2
+EC
+33
+9 to 11
+2
+EC
+1
+‐0.01 to 0.01
+1
+EC
+34
+D
+2
+EC
+2
+A
+1
+EC
+35
+0.06 to 0.08
+2
+EC
+3
+B
+1
+EC
+36
+2.3 to 2.5
+2
+EC
+4
+C
+1
+EC
+37
+B
+2
+EC
+5
+C
+1
+EC
+38
+D
+2
+EC
+6
+A
+1
+EC
+39
+1.4 to 1.6
+2
+EC
+7
+0.49 to 0.51
+1
+EC
+40
+B
+2
+EC
+8
+C
+1
+EC
+41
+C
+2
+EC
+9
+D
+1
+EC
+42
+A
+2
+EC
+10
+12.9 to 13.1
+1
+EC
+43
+‐0.6 to ‐0.4
+2
+EC
+11
+A
+1
+EC
+44
+A
+2
+EC
+12
+1.04 to 1.12
+1
+EC
+45
+11.9 to 12.1
+2
+EC
+13
+0.08 to 0.12
+1
+EC
+46
+0.49 to 0.51
+2
+EC
+14
+0.24 to 0.26
+1
+EC
+47
+B
+2
+EC
+15
+D
+1
+EC
+48
+B
+2
+EC
+16
+D
+1
+EC
+49
+C
+2
+EC
+17
+A
+1
+EC
+50
+2.4 to 2.6
+2
+EC
+18
+B
+1
+EC
+51
+199 to 201
+2
+EC
+19
+9.5 to 10.5
+1
+EC
+52
+1.9 to 2.1
+2
+EC
+20
+C
+1
+EC
+53
+‐0.01 to 0.01
+2
+EC
+21
+‐0.01 to 0.01
+1
+EC
+54
+D
+2
+EC
+22
+C
+1
+EC
+55
+29 to 31
+2
+EC
+23
+A
+1
+GATE 2014
+ Answer Keys for EC ‐ Electronics and Communication Engineering
+Section Q. No.
+SESSION ‐ ϯ
+Section Q. No.
+SESSION ‐ ϯ
+
+
+=====PAGE 63=====
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+SESSION - 4 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+=====PAGE 64=====
+GATE 2014: General Instructions during Examination 
+1. Total duration of the GATE examination is 180 minutes. 
+2. The clock will be set at the server. The countdown timer at the top right corner of 
+screen will display the remaining time available for you to complete the examination. 
+When the timer reaches zero, the examination will end by itself. You need not 
+terminate the examination or submit your paper.   
+3. Any useful data required for your paper can be viewed by clicking on the Useful 
+Common Data button that appears on the screen. 
+4. Use the scribble pad provided to you for any rough work. Submit the scribble pad at 
+the end of the examination. 
+5. You are allowed to use a non-programmable type calculator, however, sharing of 
+calculators is not allowed. 
+6. The Question Palette displayed on the right side of screen will show the status of 
+each question using one of the following symbols:  
+ 
+ 
+The Marked for Review status for a question simply indicates that you would like to look at 
+that question again. If a question is answered, but marked for review, then the answer will 
+be considered for evaluation unless the status is modified by the candidate. 
+Navigating to a Question : 
+7. To answer a question, do the following:  
+a. Click on the question number in the Question Palette to go to that question 
+directly. 
+b. Select an answer for a multiple choice type question by clicking on the bubble 
+placed before the 4 choices, namely A, B, C and D. Use the virtual numeric 
+keypad to enter a number as answer for a numerical type question. 
+c. Click on Save & Next to save your answer for the current question and then go 
+to the next question. 
+d. Click on Mark for Review & Next to save your answer for the current question 
+and also mark it for review, and then go to the next question. 
+
+
+=====PAGE 65=====
+Caution: Note that your answer for the current question will not be saved, if you navigate 
+to another question directly by clicking on a question number without saving the answer to 
+the previous question. 
+You can view all the questions by clicking on the Question Paper button. This feature is 
+provided, so that if you want you can just see the entire question paper at a glance. 
+Answering a Question : 
+8. Procedure for answering a multiple choice (MCQ) type question:  
+a. Choose one answer from the 4 options (A,B,C,D) given below the question, 
+click on the bubble placed before the chosen option.  
+b. To deselect your chosen answer, click on the bubble of the chosen option again 
+or click on the Clear Response button. 
+c. To change your chosen answer, click on the bubble of another option. 
+d. To save your answer, you MUST click on the Save & Next button. 
+9. Procedure for answering a numerical answer type question:  
+a. To enter a number as your answer, use the virtual numerical keypad. 
+b. A fraction (e.g. -0.3 or -.3) can be entered as an answer with or without '0' 
+before the decimal point. As many as four decimal points, e.g. 12.5435 or 
+0.003 or -932.6711 or 12.82 can be entered.  
+c. To clear your answer, click on the Clear Response button. 
+d. To save your answer, you MUST click on the Save & Next button 
+10. To mark a question for review, click on the Mark for Review & Next button. If an 
+answer is selected (for MCQ) or entered (for numerical answer type) for a question 
+that is Marked for Review, that answer will be considered in the evaluation unless 
+the status is modified by the candidate. 
+11. To change your answer to a question that has already been answered, first select 
+that question for answering and then follow the procedure for answering that type of 
+question. 
+12. Note that ONLY Questions for which answers are saved or marked for review after 
+answering will be considered for evaluation. 
+ 
+Choosing a Section :  
+13. Sections in this question paper are displayed on the top bar of the screen. Questions 
+in a Section can be viewed by clicking on the name of that Section. The Section you 
+are currently viewing will be highlighted. 
+14. A checkbox is displayed for every optional Section, if any, in the Question Paper. To 
+select the optional Section for answering, click on the checkbox for that Section. 
+15. If the checkbox for an optional Section is not selected, the Save & Next button and 
+the Mark for Review & Next button will NOT be enabled for that Section. You will 
+
+
+=====PAGE 66=====
+only be able to see questions in this Section, but you will not be able to answer 
+questions in the Section. 
+16. After clicking the Save & Next button for the last question in a Section, you will 
+automatically be taken to the first question of the next Section in sequence. 
+17. You can move the mouse cursor over the name of a Section to view the answering 
+status for that Section. 
+ 
+Changing the Optional Section : 
+ 
+18. After answering the chosen optional Section, partially or completely, you can change 
+the optional Section by selecting the checkbox for a new Section that you want to 
+attempt. A warning message will appear along with a table showing the number of 
+questions answered in each of the previously chosen optional Sections and a 
+checkbox against each of these Sections. Click on a checkbox against a Section that 
+you want to reset and then click on the RESET button. Note that RESETTING a Section 
+will DELETE all the answers for questions in that Section. Hence, if you think that you 
+may want to select this Section again later, you will have to note down your answers 
+for questions in that Section. If you do not want to reset the Section and want to 
+continue answering the previously chosen optional Section, then click on the BACK 
+button. 
+ 
+19. If you deselect the checkbox for an optional Section in the top bar, the following 
+warning message will appear: "Deselecting the checkbox will DELETE all the answers 
+for questions in this Section. Do you want to deselect this Section?” If you want to 
+deselect, click on the RESET button. If you do not want to deselect, click on the BACK 
+button. 
+ 
+20. You can shuffle between different Sections or change the optional Sections any 
+number of times. 
+ 
+
+
+=====PAGE 67=====
+GATE 2014 Examination  
+EC: Electronics & Communications Engineering 
+Duration: 180 minutes 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Maximum Marks: 100 
+Read the following instructions carefully. 
+ 
+1. To login, enter your Registration Number and password provided to you. Kindly go through the various 
+symbols used in the test and understand their meaning before you start the examination.  
+2. Once you login and after the start of the examination, you can view all the questions in the question 
+paper, by clicking on the View All Questions button in the screen. 
+3. This question paper consists of 2 sections, General Aptitude (GA) for 15 marks and the subject 
+specific GATE paper for 85 marks. Both these sections are compulsory. 
+The GA section consists of 10 questions. Question numbers 1 to 5 are of 1-mark each, while question 
+numbers 6 to 10 are of 2-mark each.  
+The subject specific GATE paper section consists of 55 questions, out of which question numbers 1 to 
+25 are of 1-mark each, while question numbers 26 to 55 are of 2-mark each. 
+4. Depending upon the GATE paper, there may be useful common data that may be required for 
+answering the questions. If the paper has such useful data, the same can be viewed by clicking on the 
+Useful Common Data button that appears at the top, right hand side of the screen.  
+ 
+5. The computer allotted to you at the examination center runs specialized software that permits only one 
+answer to be selected for multiple-choice questions using a mouse and to enter a suitable number for 
+the numerical answer type questions using the virtual keyboard and mouse. 
+6. Your answers shall be updated and saved on a server periodically and also at the end of the 
+examination. The examination will stop automatically at the end of 180 minutes. 
+7. In each paper a candidate can answer a total of 65 questions carrying 100 marks.  
+8. The question paper may consist of questions of multiple choice type (MCQ) and numerical answer 
+type.  
+9. Multiple choice type questions will have four choices against A, B, C, D, out of which only ONE is the 
+correct answer. The candidate has to choose the correct answer by clicking on the bubble (⃝) placed 
+before the choice. 
+10. For numerical answer type questions, each question will have a numerical answer and there will not be 
+any choices. For these questions, the answer should be enteredby using the virtual keyboard that 
+appears on the monitor and the mouse. 
+11. All questions that are not attempted will result in zero marks. However, wrong answers for multiple 
+choice type questions (MCQ) will result in NEGATIVE marks. For all MCQ questions a wrong 
+answer will result in deduction of⅓ marks for a 1-mark question and ⅔ marks for a 2-mark question. 
+12. There is NO NEGATIVE MARKING for questions of NUMERICAL ANSWER TYPE. 
+ 
+13. Non-programmable type Calculator is allowed. Charts, graph sheets, and mathematical tables are NOT 
+allowed in the Examination Hall. You must use the Scribble pad provided to you at the examination 
+centre for all your rough work. The Scribble Pad has to be returned at the end of the examination. 
+ 
+Declaration by the candidate: 
+ 
+“I have read and understood all the above instructions. I have also read and understood clearly the 
+instructions given on the admit card and shall follow the same. I also understand that in case I am found to 
+violate any of these instructions, my candidature is liable to be cancelled. I also confirm that at the start of 
+the examination all the computer hardware allotted to me are in proper working condition”. 
+ 
+
+
+=====PAGE 68=====
+GATE 2014              SET- 6                                                                              General Aptitude -GA  
+GA 
+1/2
+Q. 1 – Q. 5 carry one mark each. 
+Q.1 
+Which of the following options is the closest in meaning to the word underlined in the sentence 
+below? 
+ 
+In a democracy, everybody has the freedom to disagree with the government. 
+(A) dissent 
+(B) descent 
+(C)  decent 
+(D)  decadent 
+ 
+Q.2 
+After the discussion, Tom said to me, 'Please revert!'.  He expects me to _________.            
+(A) retract 
+(B) get back to him 
+(C)  move in reverse  
+(D)  retreat 
+ 
+Q.3 
+While receiving the award, the scientist said, "I feel vindicated". Which of the following is closest 
+in meaning to the word ‘vindicated’? 
+(A) punished 
+(B) substantiated 
+(C)  appreciated 
+(D)  chastened 
+ 
+Q.4 
+Let  𝑓𝑓(𝑥𝑥, 𝑦𝑦) =  𝑥𝑥𝑛𝑛 𝑦𝑦𝑚𝑚 = 𝑃𝑃. If x is doubled and y is halved, the new value of f  is 
+(A) 2𝑛𝑛−𝑚𝑚𝑃𝑃 
+(B) 2𝑚𝑚−𝑛𝑛𝑃𝑃 
+(C)  2(𝑛𝑛−𝑚𝑚)𝑃𝑃 
+(D)  2(𝑚𝑚−𝑛𝑛)𝑃𝑃 
+ 
+Q.5 
+In a sequence of 12 consecutive odd numbers, the sum of the first 5 numbers is 425. What is the 
+sum of the last 5 numbers in the sequence?  
+ 
+ 
+Q. 6 – Q. 10 carry two marks each. 
+ 
+ 
+Q.6 
+Find the next term in the sequence: 13M, 17Q, 19S, ___ 
+(A) 21W 
+(B) 21V 
+(C)  23W 
+(D)  23V 
+ 
+Q.7 
+If ‘KCLFTSB’ stands for ‘best of luck’ and ‘SHSWDG’ stands for ‘good wishes’, which of the 
+following indicates ‘ace the exam’? 
+(A) MCHTX 
+(B) MXHTC 
+(C) XMHCT 
+(D) XMHTC 
+ 
+Q.8 
+Industrial consumption of power doubled from 2000-2001 to 2010-2011. Find the annual rate of 
+increase in percent assuming it to be uniform over the years. 
+ 
+(A) 5.6 
+(B) 7.2 
+(C) 10.0  
+(D)  12.2 
+ 
+GA06 (GATE 2014)
+
+
+=====PAGE 69=====
+GATE 2014              SET- 6                                                                              General Aptitude -GA  
+GA 
+2/2
+Q.9 
+A firm producing air purifiers sold 200 units in 2012. The following pie chart presents the share of 
+raw material, labour, energy, plant & machinery, and transportation costs in the total manufacturing 
+cost of the firm in 2012. The expenditure on labour in 2012 is Rs. 4,50,000. In 2013, the raw 
+material expenses increased by 30% and all other expenses increased by 20%.  What is the 
+percentage increase in total cost for the company in 2013? 
+ 
+ 
+ 
+ 
+Q.10 
+A five digit number is formed using the digits 1,3,5,7 and 9 without repeating any of them. What is 
+the sum of all such possible five digit numbers? 
+(A) 6666660 
+(B) 6666600 
+(C)  6666666 
+(D)  6666606 
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+GA06 (GATE 2014)
+
+
+=====PAGE 70=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+1/13
+Q. 1 – Q. 25 carry one mark each. 
+Q.1 
+The series ∑
+1
+𝑛𝑛!
+∞
+𝑛𝑛=0
+  converges to 
+(A) 2 ln 2 
+(B) √2 
+(C)  2 
+(D)  𝑒𝑒 
+ 
+Q.2 
+The magnitude of the gradient for the function 𝑓𝑓(𝑥𝑥, 𝑦𝑦, 𝑧𝑧) =  𝑥𝑥2 + 3𝑦𝑦2 + 𝑧𝑧3   at the point (1,1,1)    
+is _________. 
+ 
+Q.3 
+Let 𝑋𝑋 be a zero mean unit variance Gaussian random variable. 𝐸𝐸[|𝑋𝑋|] is equal to _____ 
+ 
+Q.4 
+If 𝑎𝑎 and 𝑏𝑏 are constants, the most general solution of the differential equation 
+𝑑𝑑2𝑥𝑥
+𝑑𝑑𝑡𝑡2 + 2 𝑑𝑑𝑑𝑑
+𝑑𝑑𝑑𝑑+ 𝑥𝑥= 0    is 
+(A) 𝑎𝑎𝑒𝑒−𝑡𝑡 
+(B) 𝑎𝑎𝑒𝑒−𝑡𝑡+ 𝑏𝑏𝑏𝑏𝑒𝑒−𝑡𝑡 
+(C) 𝑎𝑎𝑎𝑎𝑡𝑡+ 𝑏𝑏𝑏𝑏𝑏𝑏−𝑡𝑡   
+(D) 𝑎𝑎𝑎𝑎−2𝑡𝑡   
+ 
+Q.5 
+The directional derivative of  
+(
+)
+( , )
+2
+xy
+f x y
+x
+y
+=
++
+ at (1, 1) in the direction of the unit vector at an 
+angle of 4
+π with y-axis, is given by ______ . 
+ 
+Q.6 
+The circuit shown in the figure represents a 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(A) voltage controlled voltage source 
+(B) voltage controlled current source 
+(C) current controlled current source 
+(D) current controlled voltage source 
+ 
+Q.7 
+The magnitude of current (in mA) through the resistor R2 in the figure shown is_______. 
+ 
+ 
+Ii 
+R
+AIIi 
+EC04 (GATE 2014)
+
+
+=====PAGE 71=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+2/13
+Q.8 
+At T = 300 K, the band gap and the intrinsic carrier concentration of GaAs are 1.42 eV and           
+106  cm-3, respectively. In order to generate electron hole pairs in GaAs, which one of the 
+wavelength (λC) ranges of incident radiation, is most suitable? (Given that: Plank’s constant is  
+6.62 × 10-34 J-s, velocity of light is 3 × 1010 cm/s and charge of electron is 1.6 × 10-19 C) 
+(A) 0.42 µm < λC < 0.87 µm 
+(B) 0.87 µm < λC < 1.42 µm 
+(C) 1.42 µm < λC < 1.62 µm 
+(D) 1.62 µm < λC < 6.62 µm 
+ 
+Q.9 
+In the figure, ln (ρi) is plotted as a function of  1/T, where  ρi is the intrinsic resistivity of silicon, T 
+is the temperature, and the plot is almost linear.   
+ 
+ln (ρi)
+1 / T 
+ 
+The slope of the line can be used to estimate 
+(A) band gap energy of silicon (Eg) 
+(B) sum of electron and hole mobility in silicon (µn + µp) 
+(C) reciprocal of the sum of electron and hole mobility in silicon (µn + µp) -1 
+(D) intrinsic carrier concentration of silicon (ni) 
+ 
+Q.10 
+The cut-off wavelength (in µm) of light that can be used for intrinsic excitation of a semiconductor 
+material of bandgap Eg= 1.1 eV is ________ 
+ 
+Q.11 
+If the emitter resistance in a common-emitter voltage amplifier is not bypassed, it will 
+(A) reduce both the voltage gain and the input impedance 
+(B) reduce the voltage gain and increase the input impedance 
+(C) increase the voltage gain and reduce the input impedance 
+(D) increase both the voltage gain and the input impedance 
+ 
+Q.12 
+Two silicon diodes, with a forward voltage drop of 0.7 V, are used in the circuit shown in the 
+figure. The range of input voltage 𝑉𝑉𝑖𝑖 for which the output voltage 𝑉𝑉𝑜𝑜= 𝑉𝑉𝑖𝑖,  is 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(A) −0.3 𝑉𝑉 < 𝑉𝑉𝑖𝑖< 1.3 𝑉𝑉 
+(B) −0.3 𝑉𝑉 < 𝑉𝑉𝑖𝑖< 2 𝑉𝑉 
+(C) −1.0 𝑉𝑉 < 𝑉𝑉𝑖𝑖< 2.0 𝑉𝑉 
+(D) −1.7 𝑉𝑉 < 𝑉𝑉𝑖𝑖< 2.7 𝑉𝑉 
+ 
+VO 
+R 
+D1 
+D2 
+-1 V  
+2 V 
+Vi 
+EC04 (GATE 2014)
+
+
+=====PAGE 72=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+3/13
+Q.13 
+The circuit shown represents 
+ 
+vi 
+–12 V 
+vo 
+R2 
+C2 
+C1 
+R1 
+– 
++ 
++12 V 
+–2 V 
+(A)  a bandpass filter 
+(B)  a voltage controlled oscillator 
+(C)  an amplitude modulator 
+(D)  a monostable multivibrator 
+ 
+ 
+Q.14 
+For a given sample-and-hold circuit, if the value of the hold capacitor is increased, then 
+(A)  droop rate decreases and acquisition time decreases 
+(B)  droop rate decreases and acquisition time increases 
+(C)  droop rate increases and acquisition time decreases 
+(D)  droop rate increases and acquisition time increases 
+ 
+Q.15 
+In the circuit shown in the figure, if 𝐶𝐶= 0, the expression for 𝑌𝑌 is 
+ 
+ 
+ 
+(A)  𝑌𝑌= 𝐴𝐴 𝐵𝐵ത+ 𝐴𝐴̅ 𝐵𝐵  
+(B)  𝑌𝑌= 𝐴𝐴+ 𝐵𝐵  
+(C)  𝑌𝑌= 𝐴𝐴̅ + 𝐵𝐵ത  
+(D)  𝑌𝑌= 𝐴𝐴 𝐵𝐵  
+ 
+EC04 (GATE 2014)
+
+
+=====PAGE 73=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+4/13
+Q.16 
+The output (Y) of the circuit shown in the figure is 
+ 
+(A) 
+C
+B
+A
++
++
+ 
+(B) 
+C
+A
+C
+B
+A
+⋅
++
+⋅
++
+ 
+(C) 
+C
+B
+A
++
++
+ 
+(D) 
+C
+B
+A
+⋅
+⋅
+ 
+ 
+ 
+Q.17 
+A Fourier transform pair is given by 
+ 
+൬2
+3൰
+𝑛𝑛
+𝑢𝑢[𝑛𝑛+ 3]
+𝐹𝐹𝐹𝐹
+⇔ 
+𝐴𝐴 𝑒𝑒−𝑗𝑗6𝜋𝜋𝜋𝜋
+1 −ቀ2
+3ቁ 𝑒𝑒−𝑗𝑗2𝜋𝜋𝜋𝜋
+ 
+ 
+where 𝑢𝑢[𝑛𝑛] denotes the unit step sequence. The values of  𝐴𝐴 is _________. 
+ 
+ 
+Q.18 
+A real-valued signal 𝑥𝑥(𝑡𝑡) limited to the frequency band |𝑓𝑓| ≤
+𝑊𝑊
+2  is passed through a linear time 
+invariant system whose frequency response is 
+ 
+𝐻𝐻(𝑓𝑓) = ൞   
+𝑒𝑒−𝑗𝑗4𝜋𝜋𝜋𝜋,        |𝑓𝑓| ≤ 𝑊𝑊
+2
+   0,                |𝑓𝑓| > 𝑊𝑊
+2
+     .     
+ 
+The output of the system is 
+ 
+(A) 𝑥𝑥(𝑡𝑡+ 4) 
+(B) 𝑥𝑥(𝑡𝑡 − 4) 
+(C)  𝑥𝑥(𝑡𝑡 + 2) 
+(D)  𝑥𝑥(𝑡𝑡 − 2) 
+ 
+ 
+ 
+A 
+B 
+C 
+A 
+B 
+C
+Output (Y) 
+VDD 
+EC04 (GATE 2014)
+
+
+=====PAGE 74=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+5/13
+Q.19 
+The sequence 𝑥𝑥[𝑛𝑛] = 0.5𝑛𝑛 𝑢𝑢[𝑛𝑛] , where 𝑢𝑢[𝑛𝑛] is the unit step sequence, is convolved with itself to 
+obtain 𝑦𝑦[𝑛𝑛]. Then  ∑
+𝑦𝑦[𝑛𝑛] 
++ ∞
+𝑛𝑛= − ∞
+is _______. 
+ 
+ 
+ 
+Q.20 In a Bode magnitude plot, which one of the following slopes would be exhibited at high 
+frequencies by a 4th order all-pole system? 
+(A) – 80 dB/decade  
+(B) – 40 dB/decade 
+(C)  +40 dB/decade 
+(D)  +80 dB/decade 
+ 
+ 
+Q.21 
+For the second order closed-loop system shown in the figure, the natural frequency (in rad/s) is 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(A) 16 
+(B) 4 
+(C)  2 
+(D)  1 
+ 
+ 
+Q.22 
+If calls arrive at a telephone exchange such that the time of arrival of any call is independent of the 
+time of arrival of earlier or future calls, the probability distribution function of the total number of 
+calls in a fixed time interval will be 
+(A) Poisson  
+(B) Gaussian  
+(C) Exponential   
+(D) Gamma   
+ 
+Q.23 
+In a double side-band (DSB) full carrier AM transmission system, if the modulation index is 
+doubled, then the ratio of total sideband power to the carrier power increases by a factor of ______. 
+ 
+Q.24 
+For an antenna radiating in free space, the electric field at a distance of 1 km is found to be 12 
+mV/m. Given that intrinsic impedance of the free space is 120π Ω, the magnitude of average 
+power density due to this antenna at a distance of 2 km from the antenna (in  nW/m2 ) is ____. 
+ 
+Q.25 
+Match column A with column B. 
+ 
+Column A 
+Column B 
+1. Point electromagnetic source 
+P. Highly directional 
+2. Dish antenna 
+Q. End fire 
+3. Yagi-Uda antenna 
+R. Isotropic 
+ 
+(A)  
+1 →𝑃𝑃 
+2 →𝑄𝑄 
+3 →𝑅𝑅 
+ 
+(B)  
+1 →𝑅𝑅 
+2 →𝑃𝑃 
+3 →𝑄𝑄 
+ 
+(C)   
+1 →𝑄𝑄 
+2 →𝑃𝑃 
+3 →𝑅𝑅 
+ 
+(D)   
+1 →𝑅𝑅 
+2 →𝑄𝑄 
+3 →𝑃𝑃 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+U(s) 
+Y(s) 
+4
+s(s+4) 
+- 
++  
+EC04 (GATE 2014)
+
+
+=====PAGE 75=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+6/13
+Q. 26 – Q. 55 carry two marks each. 
+ 
+Q.26 
+With initial values 𝑦𝑦(0) = 𝑦𝑦′(0) = 1, the solution of the differential equation 
+𝑑𝑑2𝑦𝑦
+𝑑𝑑𝑥𝑥2 + 4 𝑑𝑑𝑑𝑑
+𝑑𝑑𝑑𝑑+ 4𝑦𝑦= 0 
+at 𝑥𝑥= 1 is _____. 
+ 
+ 
+Q.27 
+Parcels from sender S to receiver R pass sequentially through two post-offices. Each post-office has 
+a probability 
+1
+5 of losing an incoming parcel, independently of all other parcels. Given that a parcel 
+is lost, the probability that it was lost by the second post-office is_________. 
+ 
+Q.28 
+The unilateral Laplace transform of 𝑓𝑓(𝑡𝑡) is 
+1
+𝑠𝑠2+𝑠𝑠+1. Which one of the following is the unilateral 
+Laplace transform of 𝑔𝑔(𝑡𝑡) = 𝑡𝑡∙𝑓𝑓(𝑡𝑡)? 
+(A)
+− 𝑠𝑠
+(𝑠𝑠2+𝑠𝑠+1)2 
+(B)
+−(2𝑠𝑠+1)
+(𝑠𝑠2+𝑠𝑠+1)2 
+(C)
+𝑠𝑠
+(𝑠𝑠2+𝑠𝑠+1)2 
+(D)
+2𝑠𝑠+1
+(𝑠𝑠2+𝑠𝑠+1)2 
+ 
+Q.29 
+For a right angled triangle, if the sum of the lengths of the hypotenuse and a side is kept constant, in 
+order to have maximum area of the triangle, the angle between the hypotenuse and the side is 
+(A) 12o 
+(B) 36o 
+(C) 60o  
+(D) 45o  
+ 
+Q.30 
+The steady state output of the circuit shown in the figure is given by  
+ 𝑦𝑦(𝑡𝑡) = 𝐴𝐴(𝜔𝜔) sin(𝜔𝜔𝜔𝜔+ 𝜙𝜙(𝜔𝜔)). If the amplitude | 𝐴𝐴(𝜔𝜔)| = 0.25 , then the frequency 𝜔𝜔 is 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(A) 
+1
+√3 𝑅𝑅 𝐶𝐶 
+(B) 
+2
+√3 𝑅𝑅 𝐶𝐶 
+(C)  
+1
+𝑅𝑅 𝐶𝐶 
+(D)  
+2
+𝑅𝑅 𝐶𝐶 
+ 
+Q.31 
+In the circuit shown in the figure, the value of  v0(t) (in Volts) for t →∞ is ______. 
+ 
+5 Ω
+5 Ω
+2 H
+10 u(t)  A
+xi
++
+-
++
+-
+v (t)
+o
+2ix
+ 
+R 
+C 
+C 
+C 
+sin(ωt)
+y(t) 
+EC04 (GATE 2014)
+
+
+=====PAGE 76=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+7/13
+ 
+Q.32 
+The equivalent resistance in the infinite ladder network shown in the figure, is Re. 
+ 
+The value of Re/R is ________ 
+ 
+Q.33 
+For the two-port network shown in the figure, the impedance (Z) matrix (in Ω) is 
+ 
+ 
+ 
+(A) ቂ6
+24
+42
+9 ቃ 
+(B) ቂ9
+8
+8
+24ቃ 
+(C)  ቂ9
+6
+6
+24ቃ 
+(D)  ቂ42
+6
+6
+60ቃ   
+ 
+Q.34 
+Consider a silicon sample doped with ND = 1×1015/cm3 donor atoms. Assume that the intrinsic 
+carrier concentration ni = 1.5×1010/cm3. If the sample is additionally doped with NA = 1×1018/cm3 
+acceptor atoms, the approximate number of electrons/cm3 in the sample, at T=300 K,  
+will be ______. 
+Q.35 
+Consider two BJTs biased at the same collector current with area A1 = 0.2 µm × 0.2 µm and   
+A2  = 300 µm × 300 µm. Assuming that all other device parameters are identical, kT/q = 26 mV, 
+the intrinsic carrier concentration is  1 × 1010 cm-3, and q = 1.6 × 10-19 C, the difference between the 
+base-emitter voltages (in mV) of the two BJTs (i.e., VBE1 – VBE2) is _____.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+EC04 (GATE 2014)
+
+
+=====PAGE 77=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+8/13
+Q.36 
+An N-type semiconductor having uniform doping is biased as shown in the figure.  
+ 
+ 
+ 
+If EC is the lowest energy level of the conduction band, EV is the highest energy level of the valance 
+band and EF is the Fermi level, which one of the following represents the energy band diagram for 
+the biased N-type semiconductor? 
+(A)  
+EC
+EV
+EF
+ 
+ 
+(B)  
+EC
+EV
+EF
+ 
+ 
+(C) 
+EC
+EV
+EF
+ 
+(D) 
+EC
+EV
+EF
+ 
+ 
+Q.37 
+Consider the common-collector amplifier in the figure (bias circuitry ensures that the transistor 
+operates in forward active region, but has been omitted for simplicity). Let IC be the collector 
+current, VBE be the base-emitter voltage and VT be the thermal voltage. Also, 𝑔𝑔𝑚𝑚 and 𝑟𝑟𝑜𝑜 are the 
+small-signal transconductance and output resistance of the transistor, respectively. Which one of the 
+following conditions ensures a nearly constant small signal voltage gain for a wide range of values 
+of RE?  
+ 
+(A) 𝑔𝑔𝑚𝑚RE ≪1 
+(B) ICRE ≫VT 
+(C) 𝑔𝑔𝑚𝑚𝑟𝑟𝑜𝑜≫1  
+(D) VBE ≫VT  
+ 
+Q.38 
+A BJT in a common-base configuration is used to amplify a signal received by a 50 Ω antenna. 
+Assume kT/q = 25 mV. The value of the collector bias current (in mA) required to match the input 
+impedance of the amplifier to the impedance of the antenna is________. 
+ 
+ 
+EC04 (GATE 2014)
+
+
+=====PAGE 78=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+9/13
+Q.39 
+For the common collector amplifier shown in the figure, the BJT has high β, negligible VCE(sat), and 
+VBE = 0.7 V. The maximum undistorted peak-to-peak output voltage vo (in Volts) is _______. 
+ 
+vi 
+vo 
+RE 
+1 kΩ 
+VCC = +12 V 
+R1 
+5 kΩ 
+• 
+R2 
+10 kΩ 
+1 µF 
+1 µF 
+ 
+ 
+ 
+Q.40 
+An 8-to-1 multiplexer is used to implement a logical function 𝑌𝑌 as shown in the figure. The output 
+𝑌𝑌 is given by 
+ 
+ 
+(A)    𝑌𝑌 = 𝐴𝐴 𝐵𝐵ത 𝐶𝐶 + 𝐴𝐴 𝐶𝐶̅ 𝐷𝐷 
+(B)    𝑌𝑌 = 𝐴𝐴̅ 𝐵𝐵 𝐶𝐶 + 𝐴𝐴 𝐵𝐵ത 𝐷𝐷 
+(C)    𝑌𝑌 = 𝐴𝐴 𝐵𝐵 𝐶𝐶̅ + 𝐴𝐴̅ 𝐶𝐶 𝐷𝐷 
+(D)    𝑌𝑌 = 𝐴𝐴̅ 𝐵𝐵ത 𝐷𝐷 + 𝐴𝐴 𝐵𝐵ത 𝐶𝐶 
+ 
+Q.41 
+A 16-bit ripple carry adder is realized using 16 identical full adders (FA) as shown in the figure. 
+The carry-propagation delay of each FA is 12 ns and the sum-propagation delay of each FA is 
+15 ns. The worst case delay (in ns) of this 16-bit adder will be __________. 
+ 
+FA0
+S0
+C0
+A0
+B0
+FA1
+S1
+A1
+B1
+C1
+FA14
+S14
+C14
+A14 B14
+FA15
+S15
+A15 B15
+C15
+ 
+Q.42 
+An 8085 microprocessor executes “STA 1234H” with starting address location 1FFEH (STA copies 
+the contents of the Accumulator to the 16-bit address location). While the instruction is fetched and 
+executed, the sequence of values written at the address pins A15 −A8 is 
+(A) 1FH, 1FH, 20H, 12H 
+(B) 1FH, FEH, 1FH, FFH, 12H 
+(C) 1FH, 1FH, 12H, 12H 
+(D) 1FH, 1FH, 12H, 20H, 12H 
+ 
+EC04 (GATE 2014)
+
+
+=====PAGE 79=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+10/13
+Q.43 
+A stable linear time invariant (LTI) system has a transfer function 𝐻𝐻(𝑠𝑠) = 
+1
+𝑠𝑠2+𝑠𝑠−6. To make this 
+system causal it needs to be cascaded with another LTI system having a transfer function 𝐻𝐻1(𝑠𝑠). A 
+correct choice for  𝐻𝐻1(𝑠𝑠) among the following options is 
+(A) 𝑠𝑠+ 3  
+(B) 𝑠𝑠−2  
+(C) 𝑠𝑠−6   
+(D) 𝑠𝑠+ 1   
+ 
+ 
+Q.44 
+A causal LTI system has zero initial conditions and impulse response ℎ(𝑡𝑡).  Its input 𝑥𝑥(𝑡𝑡) and 
+output  𝑦𝑦(𝑡𝑡) are related through the linear constant-coefficient differential equation  
+ 
+𝑑𝑑2𝑦𝑦(𝑡𝑡)
+𝑑𝑑𝑡𝑡2
++ 𝛼𝛼𝑑𝑑𝑑𝑑(𝑡𝑡)
+𝑑𝑑𝑑𝑑
++ 𝛼𝛼2𝑦𝑦(𝑡𝑡) = 𝑥𝑥(𝑡𝑡). 
+ 
+Let another signal 𝑔𝑔(𝑡𝑡) be defined as 
+ 
+𝑔𝑔(𝑡𝑡) = 𝛼𝛼2 නℎ(𝜏𝜏)𝑑𝑑𝑑𝑑
+𝑡𝑡
+0
++ 𝑑𝑑ℎ(𝑡𝑡)
+𝑑𝑑𝑑𝑑
++ 𝛼𝛼ℎ(𝑡𝑡). 
+ 
+If 𝐺𝐺(𝑠𝑠) is the Laplace transform of  𝑔𝑔(𝑡𝑡), then the number of poles of  𝐺𝐺(𝑠𝑠)  is _____. 
+ 
+Q.45 
+The 𝑁𝑁-point DFT 𝑋𝑋 of a sequence 𝑥𝑥[𝑛𝑛], 0 ≤𝑛𝑛 ≤𝑁𝑁−1 is given by 
+ 
+ 
+𝑋𝑋[𝑘𝑘] = 1
+√𝑁𝑁
+෍𝑥𝑥[𝑛𝑛]𝑒𝑒−𝑗𝑗 2𝜋𝜋
+𝑁𝑁𝑛𝑛𝑛𝑛,
+0 ≤𝑘𝑘 ≤𝑁𝑁−1.
+𝑁𝑁−1
+𝑛𝑛=0
+ 
+ 
+ 
+Denote this relation as 𝑋𝑋= 𝐷𝐷𝐷𝐷𝐷𝐷(𝑥𝑥). For 𝑁𝑁= 4, which one of the following sequences satisfies 
+𝐷𝐷𝐷𝐷𝐷𝐷(𝐷𝐷𝐷𝐷𝐷𝐷(𝑥𝑥)) = 𝑥𝑥 ? 
+(A)  𝑥𝑥= [1   2   3   4] 
+(B)  𝑥𝑥= [1   2   3   2] 
+(C)  𝑥𝑥= [1   3   2   2] 
+(D)  𝑥𝑥= [1   2   2   3] 
+ 
+Q.46 
+The state transition matrix 𝜙𝜙(t) of a system ൤𝑥𝑥̇1
+𝑥𝑥̇2൨= ቂ0
+1
+0
+0ቃቂ𝑥𝑥1
+𝑥𝑥2ቃ  is 
+ 
+(A) ቂ𝑡𝑡
+1
+1
+0ቃ 
+ 
+(B) ቂ1
+0
+𝑡𝑡
+1ቃ 
+ 
+(C)  ቂ0
+1
+1
+𝑡𝑡ቃ 
+ 
+(D)  ቂ1
+𝑡𝑡
+0
+1ቃ 
+ 
+ 
+ 
+Q.47 
+Consider a transfer function 𝐺𝐺𝑝𝑝(𝑠𝑠) = 
+𝑝𝑝𝑠𝑠2+3𝑝𝑝𝑝𝑝−2
+𝑠𝑠2+(3+𝑝𝑝)𝑠𝑠+(2−𝑝𝑝)  with 𝑝𝑝 a positive real parameter. The 
+maximum value of 𝑝𝑝 until which 𝐺𝐺𝑝𝑝 remains stable is ________. 
+ 
+EC04 (GATE 2014)
+
+
+=====PAGE 80=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+11/13
+Q.48 
+The characteristic equation of a unity negative feedback system is  1 + 𝐾𝐾𝐾𝐾(𝑠𝑠) = 0. The open loop 
+transfer function 𝐺𝐺(𝑠𝑠) has one pole at 0 and two poles at -1. The root locus of the system for 
+varying K is shown in the figure. 
+ 
+O
+A
+ξ=0.5
+σ
+ω
+(0,0)
+−1
+−1/3
+j
+ 
+ 
+The constant damping ratio line, for ξ=0.5, intersects the root locus at point A. The distance from 
+the origin to point A is given as 0.5. The value of 𝐾𝐾 at point A is ________ .   
+ 
+ 
+Q.49 
+Consider a communication scheme where the binary valued signal X satisfies 𝑃𝑃{𝑋𝑋= +1} = 0.75 
+and 𝑃𝑃{𝑋𝑋= −1} = 0.25. The received signal Y = X + Z, where Z is a Gaussian random variable 
+with zero mean and variance 𝜎𝜎2. The received signal Y is fed to the threshold detector.  The output 
+of the threshold detector 𝑋𝑋෠ is: 
+ 
+𝑋𝑋෠= ቄ+1,         𝑌𝑌> 𝜏𝜏
+−1,
+𝑌𝑌≤𝜏𝜏.
+ 
+ 
+To achieve a minimum probability of error 𝑃𝑃൛𝑋𝑋෠≠𝑋𝑋ൟ, the threshold τ should be 
+(A) strictly positive 
+(B) zero 
+(C) strictly negative 
+(D) strictly positive, zero, or strictly negative depending on the nonzero value of 𝜎𝜎2 
+ 
+ 
+ 
+ 
+ 
+ 
+EC04 (GATE 2014)
+
+
+=====PAGE 81=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+12/13
+Q.50 
+Consider the Z-channel given in the figure. The input is 0 or 1 with equal probability. 
+ 
+If the output is 0, the probability that the input is also 0 equals ______________ 
+ 
+ 
+Q.51 
+An M-level PSK modulation scheme is used to transmit independent binary digits over a band-pass 
+channel with bandwidth 100 kHz. The bit rate is 200 kbps and the system characteristic is a raised-
+cosine spectrum with 100% excess bandwidth. The minimum value of M is  ________. 
+ 
+Q.52 
+Consider a discrete-time channel 𝑌𝑌 = 𝑋𝑋+ 𝑍𝑍, where the additive noise 𝑍𝑍 is signal-dependent.  
+In particular, given the transmitted symbol  𝑋𝑋∈{−𝑎𝑎, +𝑎𝑎} at any instant, the noise sample 𝑍𝑍 is 
+chosen independently from a Gaussian distribution with mean 𝛽𝛽𝑋𝑋 and unit variance. Assume a 
+threshold detector with zero threshold at the receiver.  
+ 
+When 𝛽𝛽= 0, the BER was found to be 𝑄𝑄(𝑎𝑎) = 1  × 10−8.  
+ (𝑄𝑄(𝑣𝑣) =
+1
+√2𝜋𝜋∫
+𝑒𝑒−𝑢𝑢2 2
+⁄
+∞
+𝑣𝑣
+𝑑𝑑𝑑𝑑, and for 𝑣𝑣> 1, use 𝑄𝑄(𝑣𝑣) ≈ 𝑒𝑒−𝑣𝑣2 2
+⁄ )  
+ 
+When 𝛽𝛽= −0.3, the BER is closest to 
+(A)  10−7 
+(B)  10−6 
+(C)  10−4 
+(D)  10−2 
+ 
+ 
+ 
+ 
+Q.53 
+The electric field (assumed to be one-dimensional) between two points A and B is shown. Let 𝜓𝜓𝐴𝐴 
+and 𝜓𝜓𝐵𝐵 be the electrostatic potentials at A and B, respectively. The value of  𝜓𝜓𝐵𝐵– 𝜓𝜓𝐴𝐴 in Volts is 
+________. 
+ 
+ 
+ 
+ 
+Q.54 
+Given
+ˆ
+ˆ
+ˆ
+x
+y
+z
+F
+za
+xa
+ya
+=
++
++
+
+. If S represents the portion of the sphere 
+2
+2
+2
+1
+x
+y
+z
++
++
+= for 
+0
+z ≥
+, 
+then ∫
+∇× 𝐹𝐹∙
+ሬሬሬሬ⃗
+𝑠𝑠
+ 𝑑𝑑𝑑𝑑
+ሬሬሬሬ⃗      is______________. 
+ 
+INPUT
+0
+1
+0
+1
+OUTPUT
+1.0
+0.25
+0.75
+EC04 (GATE 2014)
+
+
+=====PAGE 82=====
+GATE 2014         SET4            ELECTRONICS AND COMMUNICATION ENGINEERING  –  EC 
+EC 
+13/13
+Q.55 
+If 𝐸𝐸ሬ⃗= −(2𝑦𝑦3 −3𝑦𝑦𝑧𝑧2)𝑥𝑥ො−(6𝑥𝑥𝑥𝑥2 −3𝑥𝑥𝑧𝑧2)𝑦𝑦ො+ (6𝑥𝑥𝑥𝑥𝑥𝑥)𝑧𝑧̂  is the electric field in a source free 
+region, a valid expression for the electrostatic potential is 
+ 
+(A) 𝑥𝑥𝑦𝑦3 −𝑦𝑦𝑧𝑧2    
+(B) 2𝑥𝑥𝑦𝑦3 −𝑥𝑥𝑥𝑥𝑧𝑧2  
+(C) 𝑦𝑦3 + 𝑥𝑥𝑥𝑥𝑧𝑧2    
+(D) 2𝑥𝑥𝑦𝑦3 −3𝑥𝑥𝑥𝑥𝑧𝑧2   
+ 
+ 
+ 
+END OF THE QUESTION PAPER 
+EC04 (GATE 2014)
+
+
+=====PAGE 83=====
+Key / Range
+Marks
+Key / Range
+Marks
+GA
+1
+A
+1
+EC
+24
+47.6 to 47.8
+1
+GA
+2
+B
+1
+EC
+25
+B
+1
+GA
+3
+B
+1
+EC
+26
+0.53 to 0.55
+2
+GA
+4
+A
+1
+EC
+27
+0.43 to 0.45
+2
+GA
+5
+495 to 495
+1
+EC
+28
+D
+2
+GA
+6
+C
+2
+EC
+29
+C
+2
+GA
+7
+B
+2
+EC
+30
+B
+2
+GA
+8
+B
+2
+EC
+31
+31.24 to 31.26
+2
+GA
+9
+22 to 22
+2
+EC
+32
+2.60 to 2.64
+2
+GA
+10
+B
+2
+EC
+33
+C
+2
+EC
+1
+D
+1
+EC
+34
+224.9 to 225.1
+2
+EC
+2
+6.8 to 7.2
+1
+EC
+35
+378 to 381
+2
+EC
+3
+0.79 to 0.81
+1
+EC
+36
+D
+2
+EC
+4
+B
+1
+EC
+37
+B
+2
+EC
+5
+2.99 to 3.01
+1
+EC
+38
+0.49 to 0.51
+2
+EC
+6
+C
+1
+EC
+39
+9.39 to 9.41
+2
+EC
+7
+2.79 to 2.81
+1
+EC
+40
+C
+2
+EC
+8
+A
+1
+EC
+41
+194.9 to 195.1
+2
+EC
+9
+A
+1
+EC
+42
+A
+2
+EC
+10
+1.12 to 1.14
+1
+EC
+43
+B
+2
+EC
+11
+B
+1
+EC
+44
+0.99 to 1.01
+2
+EC
+12
+D
+1
+EC
+45
+B
+2
+EC
+13
+D
+1
+EC
+46
+D
+2
+EC
+14
+B
+1
+EC
+47
+1.9 to 2.1
+2
+EC
+15
+A
+1
+EC
+48
+0.32 to 0.41
+2
+EC
+16
+A
+1
+EC
+49
+C
+2
+EC
+17
+3.36 to 3.39
+1
+EC
+50
+0.79 to 0.81
+2
+EC
+18
+D
+1
+EC
+51
+15.9 to 16.1
+2
+EC
+19
+3.9 to 4.1
+1
+EC
+52
+C
+2
+EC
+20
+A
+1
+EC
+53
+‐15.1 to ‐14.9
+2
+EC
+21
+C
+1
+EC
+54
+3.13 to 3.15
+2
+EC
+22
+A
+1
+EC
+55
+D
+2
+EC
+23
+3.95 to 4.05
+1
+GATE 2014
+ Answer Keys for EC ‐ Electronics and Communication Engineering
+Section Q. No.
+SECTION ‐ 4
+Section Q. No.
+SECTION ‐ 4

@@ -1,0 +1,75 @@
+Q10: If fixed positive charges are present in the gate oxide of an n-channel enhancement type MOSFET, it will lead to (A) a decrease in the threshold voltage (B) channel length modulation (C) an increase in substrate leakage current (D) an increase in accumulation capacitance
+
+Q23: The capacity of a Binary Symmetric Channel (BSC) with cross-over probability 0.5 is ________
+
+Q35: The doping concentrations on the p-side and n-side of a silicon diode are 1 × 1016 cm-3 and 1 × 1017 cm-3, respectively. A forward bias of 0.3 V is applied to the diode. At T = 300 K, the intrinsic carrier concentration of silicon ni = 1.5 × 1010 cm-3 and 𝑘𝑘𝑘𝑘 𝑞𝑞 = 26 mV. The electron concentration at the edge of the depletion region on the p-side is (A) 2.3 × 109 cm-3 (B) 1 × 1016 cm-3 (C) 1 × 1017 cm-3 (D) 2.25 × 106 cm-3
+
+Q50: Consider a random process 𝑋𝑋(𝑡𝑡) = √2sin(2𝜋𝜋𝜋𝜋+ 𝜑𝜑), where the random phase 𝜑𝜑 is uniformly distributed in the interval [0,2𝜋𝜋]. The auto-correlation 𝐸𝐸[𝑋𝑋(𝑡𝑡1)𝑋𝑋(𝑡𝑡2)] is (A) cos൫2𝜋𝜋(𝑡𝑡1 + 𝑡𝑡2)൯ (B) sin൫2𝜋𝜋(𝑡𝑡1 −𝑡𝑡2)൯ (C) sin൫2𝜋𝜋(𝑡𝑡1 + 𝑡𝑡2)൯ (D) cos൫2𝜋𝜋(𝑡𝑡1 −𝑡𝑡2)൯ EC01 (GATE 2014) GATE 2014 SET1 ELECTRONICS AND COMMUNICATION ENGINEERING – EC EC 11/11
+
+Q51: Let 𝑄𝑄(√𝛾𝛾) be the BER of a BPSK system over an AWGN channel with two-sided noise power spectral density 𝑁𝑁0 2 ⁄ . The parameter 𝛾𝛾 is a function of bit energy and noise power spectral density. A system with two independent and identical AWGN channels with noise power spectral density 𝑁𝑁0 2 ⁄ is shown in the figure. The BPSK demodulator receives the sum of outputs of both the channels. BPSK Modulator AWGN Channel 1 AWGN Channel 2 0 /1 0 /1 BPSK Demodulator If the BER of this system is 𝑄𝑄(𝑏𝑏√𝛾𝛾), then the value of 𝑏𝑏 is _____.
+
+Q52: A fair coin is tossed repeatedly until a ‘Head’ appears for the first time. Let L be the number of tosses to get this first ‘Head’. The entropy H(L) in bits is ________.
+
+Q55: The input impedance of a 8 λ section of a lossless transmission line of characteristic impedance 50 Ωis found to be real when the other end is terminated by a load ( ) L Z R jX = + Ω. If X is 30Ω, the value of R ( in Ω ) is _______ END OF THE QUESTION PAPER EC01 (GATE 2014) Key / Range Marks Key / Range Marks GA 1 C 1 EC 24 B 1 GA 2 D 1 EC 25 C 1 GA 3 B 1 EC 26 A 2 GA 4 A 1 EC 27 B 2 GA 5 725 to 725 1 EC 28 862 to 866 2 GA 6 D 2 EC 29 0.99 to 1.01 2 GA 7 B 2 EC 30 29.08 to 29.10 2 GA 8 560 to 560 2 EC 31 B 2 GA 9 D 2 EC 32 0.39 to 0.42 2 GA 10 B 2 EC 33 9.99 to 10.01 2 EC 1 D 1 EC 34 5.7 to 5.9 2 EC 2 0.65 to 0.68 1 EC 35 A 2 EC 3 C 1 EC 36 499 to 501 2 EC 4 0.99 to 1.01 1 EC 37 1092 to 1094
+
+Q8: A silicon bar is doped with donor impurities ND = 2.25 x 1015 atoms / cm3. Given the intrinsic carrier concentration of silicon at T = 300 K is ni = 1.5 x 1010 cm-3. Assuming complete impurity ionization, the equilibrium electron and hole concentrations are (A) n0 = 1.5 x 1016 cm-3, p0 = 1.5 x 105 cm-3 (B) n0 = 1.5 x 1010 cm-3, p0= 1.5 x 1015 cm-3 (C) n0 = 2.25 x 1015 cm-3, p0 = 1.5 x 1010 cm-3 (D) n0 = 2.25 x 1015 cm-3, p0 = 1 x 105 cm-3 EC 1/12 EC02 (GATE 2014) GATE 2014 SET2 ELECTRONICS AND COMMUNICATION ENGINEERING – EC
+
+Q22: The capacity of a band-limited additive white Gaussian noise (AWGN) channel is given by 𝐶= 𝑊 log2 ቀ1 + 𝑃 𝜎2 𝑊ቁ bits per second (bps), where 𝑊 is the channel bandwidth, 𝑃 is the average power received and 𝜎2 is the one-sided power spectral density of the AWGN. For a fixed 𝑃 𝜎2 = 1000, the channel capacity (in kbps) with infinite bandwidth (𝑊 → ∞) is approximately (A) 1.44 (B) 1.08 (C) 0.72 (D) 0.36
+
+Q23: Consider sinusoidal modulation in an AM system. Assuming no overmodulation, the modulation index (𝜇) when the maximum and minimum values of the envelope, respectively, are 3 V and 1 V, is ________. Y(s) X1(s) s s+1 1 s + + - + X2(s) EC 4/12 EC02 (GATE 2014) GATE 2014 SET2 ELECTRONICS AND COMMUNICATION ENGINEERING – EC
+
+Q38: For the n-channel MOS transistor shown in the figure, the threshold voltage VTh is 0.8 V. Neglect channel length modulation effects. When the drain voltage VD = 1.6 V, the drain current ID was found to be 0.5 mA. If VD is adjusted to be 2 V by changing the values of R and VDD, the new value of ID (in mA) is (A) 0.625 (B) 0.75 (C) 1.125 (D) 1.5 EC 7/12 EC02 (GATE 2014) GATE 2014 SET2 ELECTRONICS AND COMMUNICATION ENGINEERING – EC
+
+Q49: The input to a 1-bit quantizer is a random variable 𝑋 with pdf 𝑓𝑋(𝑥) = 2𝑒−2𝑥 for 𝑥≥0 and 𝑓𝑋(𝑥) = 0 for 𝑥< 0. For outputs to be of equal probability, the quantizer threshold should be _____.
+
+Q50: Coherent orthogonal binary FSK modulation is used to transmit two equiprobable symbol waveforms 𝑠1(𝑡) = 𝛼 cos 2𝜋𝑓1𝑡 and 𝑠2(𝑡) = 𝛼 cos 2𝜋𝑓2𝑡, where 𝛼= 4 mV. Assume an AWGN channel with two-sided noise power spectral density 𝑁0 2 = 0.5 × 10−12 W/Hz. Using an optimal receiver and the relation 𝑄(𝑣) = 1 √2𝜋∫ 𝑒−𝑢2 2 ⁄ ∞ 𝑣 𝑑𝑢, the bit error probability for a data rate of 500 kbps is (A) 𝑄(2) (B) 𝑄൫2√2൯ (C) 𝑄(4) (D) 𝑄൫4√2൯
+
+Q51: The power spectral density of a real stationary random process 𝑋(𝑡) is given by 𝑆𝑋(𝑓) = ቊ 1 𝑊, | 𝑓| ≤𝑊 0, |𝑓| > 𝑊 . The value of the expectation 𝐸ቂπ 𝑋(𝑡) 𝑋ቀ𝑡− 1 4𝑊ቁቃ is_________.
+
+Q52: In the figure, 𝑀(𝑓) is the Fourier transform of the message signal 𝑚(𝑡) where A = 100 Hz and B = 40 Hz. Given 𝑣(𝑡) = cos (2𝜋𝑓𝑐𝑡) and 𝑤(𝑡) = cos (2𝜋(𝑓𝑐+ 𝐴)𝑡), where 𝑓𝑐> 𝐴. The cutoff frequencies of both the filters are 𝑓𝑐. m(t) High Pass Filter v(t) w(t) Low Pass Filter s(t) 1 -A -B B A M(f) f The bandwidth of the signal at the output of the modulator (in Hz) is _____.
+
+Q55: For a rectangular waveguide of internal dimensions 𝑎 × 𝑏 (𝑎> 𝑏), the cut-off frequency for the 11 TE mode is the arithmetic mean of the cut-off frequencies for 10 TE mode and 20 TE mode. If 𝑎= √5 cm, the value of 𝑏 (in cm) is _____. END OF THE QUESTION PAPER EC 12/12 EC02 (GATE 2014) Key / Range Marks Key / Range Marks GA 1 B 1 EC 24 70 to 72 1 GA 2 B 1 EC 25 B 1 GA 3 C 1 EC 26 B 2 GA 4 B 1 EC 27 B 2 GA 5 45 to 45 1 EC 28 48.9 to 49.1 2 GA 6 C 2 EC 29 2.9 to 3.1 2 GA 7 D 2 EC 30 0.45 to 0.47 2 GA 8 163 to 163 2 EC 31 1.24 to 1.26 2 GA 9 D 2 EC 32 A 2 GA 10 A 2 EC 33 2.49 to 2.52 2 EC 1 199 to 201 1 EC 34 3990 to 4010 2 EC 2 49.9 to 50.1 1 EC 35 30 to 32 2 EC 3 A 1 EC 36 B 2 EC 4 C 1 EC 37 C 
+
+Q9: A thin P-type silicon sample is uniformly illuminated with light which generates excess carriers. The recombination rate is directly proportional to (A) the minority carrier mobility (B) the minority carrier recombination lifetime (C) the majority carrier concentration (D) the excess minority carrier concentration
+
+Q14: An analog voltage in the range 0 to 8 V is divided in 16 equal intervals for conversion to 4-bit digital output. The maximum quantization error (in V) is _________ R C R B V EE = 10 V V0 EC 3/14 EC03 (GATE 2014) GATE 2014 SET3 ELECTRONICS AND COMMUNICATION ENGINEERING – EC
+
+Q19: A modulated signal is 𝑦𝑦(𝑡𝑡) = 𝑚𝑚(𝑡𝑡) cos(40000𝜋𝜋𝜋𝜋), where the baseband signal 𝑚𝑚(𝑡𝑡) has frequency components less than 5 kHz only. The minimum required rate (in kHz) at which 𝑦𝑦(𝑡𝑡) should be sampled to recover 𝑚𝑚(𝑡𝑡) is _______.
+
+Q23: Consider an FM signal 𝑓𝑓(𝑡𝑡) = cos[2𝜋𝜋𝑓𝑓𝑐𝑐𝑡𝑡+ 𝛽𝛽1 sin2𝜋𝜋𝑓𝑓1𝑡𝑡+ 𝛽𝛽2 sin2𝜋𝜋𝑓𝑓2𝑡𝑡 ]. The maximum deviation of the instantaneous frequency from the carrier frequency 𝑓𝑓𝑐𝑐 is (A) 𝛽𝛽1𝑓𝑓1 + 𝛽𝛽2𝑓𝑓2 (B) 𝛽𝛽1𝑓𝑓2 + 𝛽𝛽2𝑓𝑓1 (C) 𝛽𝛽1 + 𝛽𝛽2 (D) 𝑓𝑓1 + 𝑓𝑓2
+
+Q25: In the following figure, the transmitter Tx sends a wideband modulated RF signal via a coaxial cable to the receiver Rx. The output impedance ZT of Tx, the characteristic impedance Z0 of the cable and the input impedance ZR of Rx are all real. Which one of the following statements is TRUE about the distortion of the received signal due to impedance mismatch? (A) The signal gets distorted if ZR ≠ Z0, irrespective of the value of ZT (B) The signal gets distorted if ZT ≠ Z0, irrespective of the value of ZR (C) Signal distortion implies impedance mismatch at both ends: ZT ≠ Z0 and ZR ≠ Z0 (D) Impedance mismatches do NOT result in signal distortion but reduce power transfer efficiency
+
+Q34: The donor and accepter impurities in an abrupt junction silicon diode are 1 x 1016 cm-3 and 5 x 1018 cm-3, respectively. Assume that the intrinsic carrier concentration in silicon ni = 1.5 x 1010 cm-3 at 300 K, 𝑘𝑘𝑘𝑘 𝑞𝑞 = 26 mV and the permittivity of silicon 𝜖𝜖𝑠𝑠𝑠𝑠= 1.04 × 10−12F/cm. The built-in potential and the depletion width of the diode under thermal equilibrium conditions, respectively, are (A) 0.7 V and 1 x 10-4 cm (B) 0.86 V and 1 x 10-4 cm (C) 0.7 V and 3.3 x 10-5 cm (D) 0.86 V and 3.3 x 10-5 cm
+
+Q35: The slope of the 𝐼𝐼𝐷𝐷 vs. 𝑉𝑉𝐺𝐺𝐺𝐺 curve of an n-channel MOSFET in linear regime is 10−3Ω−1 at 𝑉𝑉𝐷𝐷𝐷𝐷= 0.1 V. For the same device, neglecting channel length modulation, the slope of the ඥ𝐼𝐼𝐷𝐷 vs. 𝑉𝑉𝐺𝐺𝐺𝐺 curve (in √A/V) under saturation regime is approximately _________.
+
+Q49: Let 𝑋𝑋(𝑡𝑡) be a wide sense stationary (WSS) random process with power spectral density 𝑆𝑆𝑋𝑋(𝑓𝑓). If 𝑌𝑌(𝑡𝑡) is the process defined as 𝑌𝑌(𝑡𝑡) = 𝑋𝑋(2𝑡𝑡−1), the power spectral density 𝑆𝑆𝑌𝑌(𝑓𝑓) is (A) 𝑆𝑆𝑌𝑌(𝑓𝑓) = 1 2 𝑆𝑆𝑋𝑋ቀ 𝑓𝑓 2ቁ𝑒𝑒−𝑗𝑗𝑗𝑗𝑗𝑗 (B) 𝑆𝑆𝑌𝑌(𝑓𝑓) = 1 2 𝑆𝑆𝑋𝑋ቀ 𝑓𝑓 2ቁ𝑒𝑒−𝑗𝑗𝑗𝑗𝑗𝑗/2 (C) 𝑆𝑆𝑌𝑌(𝑓𝑓) = 1 2 𝑆𝑆𝑋𝑋ቀ 𝑓𝑓 2ቁ (D) 𝑆𝑆𝑌𝑌(𝑓𝑓) = 1 2 𝑆𝑆𝑋𝑋ቀ 𝑓𝑓 2ቁ𝑒𝑒−𝑗𝑗2𝜋𝜋𝜋𝜋 EC 12/14 EC03 (GATE 2014) GATE 2014 SET3 ELECTRONICS AND COMMUNICATION ENGINEERING – EC
+
+Q50: A real band-limited random process 𝑋𝑋(𝑡𝑡) has two-sided power spectral density 𝑆𝑆𝑋𝑋(𝑓𝑓) = ൜ 10−6 (3000 −|𝑓𝑓|) Watts/Hz for |𝑓𝑓| ≤3 kHz 0 otherwise  where 𝑓𝑓 is the frequency expressed in Hz. The signal 𝑋𝑋(𝑡𝑡) modulates a carrier cos 16000 𝜋𝜋𝜋𝜋 and the resultant signal is passed through an ideal band-pass filter of unity gain with centre frequency of 8 kHz and band-width of 2 kHz. The output power (in Watts) is _______.
+
+Q51: In a PCM system, the signal 𝑚𝑚(𝑡𝑡) = {sin(100𝜋𝜋𝜋𝜋) + cos(100𝜋𝜋𝜋𝜋)} V is sampled at the Nyquist rate. The samples are processed by a uniform quantizer with step size 0.75 V. The minimum data rate of the PCM system in bits per second is _____.
+
+Q52: A binary random variable 𝑋𝑋 takes the value of 1 with probability 1 3 ⁄ . 𝑋𝑋 is input to a cascade of 2 independent identical binary symmetric channels (BSCs) each with crossover probability 1 2 ⁄ . The output of BSCs are the random variables 𝑌𝑌1 and 𝑌𝑌2 as shown in the figure. BSC BSC X 1Y 2 Y The value of 𝐻𝐻(𝑌𝑌1) + 𝐻𝐻(𝑌𝑌2) in bits is _____.
+
+Q55: Assume that a plane wave in air with an electric field ( ) ˆ 10cos 3 3 y E t x z a ω = − −  V/m is incident on a non-magnetic dielectric slab of relative permittivity 3 which covers the region 0 z > . The angle of transmission in the dielectric slab is ________ degrees. END OF THE QUESTION PAPER EC 14/14 EC03 (GATE 2014) Key / Range Marks Key / Range Marks GA 1 C 1 EC 24 7750 to 7850 1 GA 2 B 1 EC 25 C 1 GA 3 B 1 EC 26 5.9 to 6.1 2 GA 4 16 to 16 1 EC 27 B 2 GA 5 D 1 EC 28 2.9 to 3.1 2 GA 6 B 2 EC 29 0.15 to 0.18 2 GA 7 D 2 EC 30 B 2 GA 8 4 to 4 2 EC 31 D 2 GA 9 20000 to 20000 2 EC 32 1.9 to 2.1 2 GA 10 0.80 to 0.82 2 EC 33 9 to 11 2 EC 1 ‐0.01 to 0.01 1 EC 34 D 2 EC 2 A 1 EC 35 0.06 to 0.08
+
+Q8: At T = 300 K, the band gap and the intrinsic carrier concentration of GaAs are 1.42 eV and 106 cm-3, respectively. In order to generate electron hole pairs in GaAs, which one of the wavelength (λC) ranges of incident radiation, is most suitable? (Given that: Plank’s constant is 6.62 × 10-34 J-s, velocity of light is 3 × 1010 cm/s and charge of electron is 1.6 × 10-19 C) (A) 0.42 µm < λC < 0.87 µm (B) 0.87 µm < λC < 1.42 µm (C) 1.42 µm < λC < 1.62 µm (D) 1.62 µm < λC < 6.62 µm
+
+Q9: In the figure, ln (ρi) is plotted as a function of 1/T, where ρi is the intrinsic resistivity of silicon, T is the temperature, and the plot is almost linear. ln (ρi) 1 / T The slope of the line can be used to estimate (A) band gap energy of silicon (Eg) (B) sum of electron and hole mobility in silicon (µn + µp) (C) reciprocal of the sum of electron and hole mobility in silicon (µn + µp) -1 (D) intrinsic carrier concentration of silicon (ni)
+
+Q13: The circuit shown represents vi –12 V vo R2 C2 C1 R1 – + +12 V –2 V (A) a bandpass filter (B) a voltage controlled oscillator (C) an amplitude modulator (D) a monostable multivibrator
+
+Q22: If calls arrive at a telephone exchange such that the time of arrival of any call is independent of the time of arrival of earlier or future calls, the probability distribution function of the total number of calls in a fixed time interval will be (A) Poisson (B) Gaussian (C) Exponential (D) Gamma
+
+Q23: In a double side-band (DSB) full carrier AM transmission system, if the modulation index is doubled, then the ratio of total sideband power to the carrier power increases by a factor of ______.
+
+Q34: Consider a silicon sample doped with ND = 1×1015/cm3 donor atoms. Assume that the intrinsic carrier concentration ni = 1.5×1010/cm3. If the sample is additionally doped with NA = 1×1018/cm3 acceptor atoms, the approximate number of electrons/cm3 in the sample, at T=300 K, will be ______.
+
+Q35: Consider two BJTs biased at the same collector current with area A1 = 0.2 µm × 0.2 µm and A2 = 300 µm × 300 µm. Assuming that all other device parameters are identical, kT/q = 26 mV, the intrinsic carrier concentration is 1 × 1010 cm-3, and q = 1.6 × 10-19 C, the difference between the base-emitter voltages (in mV) of the two BJTs (i.e., VBE1 – VBE2) is _____. EC04 (GATE 2014) GATE 2014 SET4 ELECTRONICS AND COMMUNICATION ENGINEERING – EC EC 8/13
+
+Q49: Consider a communication scheme where the binary valued signal X satisfies 𝑃𝑃{𝑋𝑋= +1} = 0.75 and 𝑃𝑃{𝑋𝑋= −1} = 0.25. The received signal Y = X + Z, where Z is a Gaussian random variable with zero mean and variance 𝜎𝜎2. The received signal Y is fed to the threshold detector. The output of the threshold detector 𝑋𝑋෠ is: 𝑋𝑋෠= ቄ+1, 𝑌𝑌> 𝜏𝜏 −1, 𝑌𝑌≤𝜏𝜏.  To achieve a minimum probability of error 𝑃𝑃൛𝑋𝑋෠≠𝑋𝑋ൟ, the threshold τ should be (A) strictly positive (B) zero (C) strictly negative (D) strictly positive, zero, or strictly negative depending on the nonzero value of 𝜎𝜎2 EC04 (GATE 2014) GATE 2014 SET4 ELECTRONICS AND COMMUNICATION ENGINEERING – EC EC 12/13
+
+Q51: An M-level PSK modulation scheme is used to transmit independent binary digits over a band-pass channel with bandwidth 100 kHz. The bit rate is 200 kbps and the system characteristic is a raised- cosine spectrum with 100% excess bandwidth. The minimum value of M is ________.
+
+Q52: Consider a discrete-time channel 𝑌𝑌 = 𝑋𝑋+ 𝑍𝑍, where the additive noise 𝑍𝑍 is signal-dependent. In particular, given the transmitted symbol 𝑋𝑋∈{−𝑎𝑎, +𝑎𝑎} at any instant, the noise sample 𝑍𝑍 is chosen independently from a Gaussian distribution with mean 𝛽𝛽𝑋𝑋 and unit variance. Assume a threshold detector with zero threshold at the receiver. When 𝛽𝛽= 0, the BER was found to be 𝑄𝑄(𝑎𝑎) = 1 × 10−8. (𝑄𝑄(𝑣𝑣) = 1 √2𝜋𝜋∫ 𝑒𝑒−𝑢𝑢2 2 ⁄ ∞ 𝑣𝑣 𝑑𝑑𝑑𝑑, and for 𝑣𝑣> 1, use 𝑄𝑄(𝑣𝑣) ≈ 𝑒𝑒−𝑣𝑣2 2 ⁄ ) When 𝛽𝛽= −0.3, the BER is closest to (A) 10−7 (B) 10−6 (C) 10−4 (D) 10−2
