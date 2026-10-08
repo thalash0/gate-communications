@@ -1,0 +1,259 @@
+<!--meta {"id":"ch22","num":"22","part":"Part V · Systems","title":"Sharing the Air: Multiple Access, Random Access and Cellular Systems","lede":"Spectrum is finite and everybody wants it. This chapter is about how many users share one medium: by taking turns, by dividing frequency, by coding, by chance (ALOHA, Ethernet, Wi-Fi) and by reusing the same frequencies in distant cells, which is the idea that turned a 1970s car phone with room for a dozen users per city into a billion-subscriber industry."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Classify multiple-access schemes (FDMA, TDMA, CDMA, OFDMA, SDMA, random access) and <b>derive</b> the capacity region of the Gaussian multiple-access channel, showing when orthogonal access is optimal.</li>
+<li><b>Derive</b> the throughput of pure and slotted ALOHA, state the CSMA formulas, derive the efficiency of CSMA/CD (Ethernet) and the minimum frame size, and compute the MAC overhead of Wi-Fi.</li>
+<li><b>Derive</b> the geometry of hexagonal cells and frequency reuse: cluster size $N=i^2+ij+j^2$, reuse distance $D=R\sqrt{3N}$, the co-channel SIR and the effect of sectoring and cell splitting.</li>
+<li>Use Erlang-B for trunking, the multi-user diversity gain of scheduling, and handoff concepts; compute channels per cell for AMPS and GSM.</li>
+<li>Give the architecture and the key numbers of GSM, 3G, LTE and 5G NR and trace why each generation changed the multiple-access scheme.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 9 (FDM/TDM, Erlang-B), Chapter 11 (capacity), Chapter 19 (CDMA), Chapter 20 (OFDMA), Chapter 21 (path loss, fading, diversity).</p></div>
+
+<div class="box story"><span class="tag">History · Hawaii, New Jersey and a brick of a phone</span>
+<p>In 1970 <strong>Norman Abramson</strong> at the University of Hawaii wanted to connect terminals on four islands to the central computer in Honolulu by radio, without wiring or any central controller: the stations simply transmit whenever they have something to send and retransmit if no acknowledgement returns. <b>ALOHAnet</b> was the first packet radio network and its throughput analysis the founding paper of random access. In 1973 <strong>Robert Metcalfe</strong> at Xerox PARC added “listen before talking” and “stop if you hear a collision”, and called it Ethernet. The cellular idea is older: in 1947 <strong>D. H. Ring</strong> of Bell Labs noted that the same frequency can be reused in distant cells; it took the transistor and the microprocessor to build it. On 3 April 1973 <strong>Martin Cooper</strong> of Motorola called his Bell Labs rival Joel Engel from a Manhattan street on a 1.1 kg prototype; the commercial network (AMPS) opened in Chicago in 1983, the Japanese NTT system in 1979, and Europe’s GSM in 1991. Each of the following decades brought a new generation, and a different answer to the question of this chapter.</p></div>
+
+<div class="box real"><span class="tag">Real world</span>
+<p>Every wireless device does two jobs in sequence: <i>find</i> a channel (random access: the Wi-Fi backoff or the 5G random-access preamble) and <i>use</i> it exclusively (scheduled access: OFDMA resource blocks, TDMA slots). Your phone is in a cell of a few hundred metres to a few kilometres, which reuses the same carrier frequencies as cells two or three cells away, is handed from one base station to the next as you drive, and is told by the network to raise or lower its transmit power several times per second.</p></div>
+
+<h2>Ways of sharing: orthogonal access and the multiple-access channel</h2>
+<table>
+<tr><th>Scheme</th><th>Users separated by</th><th>Examples</th><th>Needs</th></tr>
+<tr><td>FDMA</td><td>frequency</td><td>AMPS (30 kHz), analogue radio, satellite transponders, DSL upstream/downstream</td><td>guard bands, filters</td></tr>
+<tr><td>TDMA</td><td>time slot</td><td>GSM (8 slots/200 kHz carrier), T1/E1 (Chapter 9), TDD</td><td>timing advance, synchronisation</td></tr>
+<tr><td>CDMA</td><td>spreading code</td><td>IS-95, WCDMA, GPS, CDMA2000</td><td>power control, wide band (Chapter 19)</td></tr>
+<tr><td>OFDMA</td><td>subcarrier group (+ time)</td><td>LTE/5G downlink and uplink, Wi-Fi 6, WiMAX</td><td>FFT, scheduling (Chapter 20)</td></tr>
+<tr><td>SDMA / MU-MIMO</td><td>spatial beam</td><td>5G massive MIMO, satellites with spot beams</td><td>antenna arrays, CSI (Chapter 21)</td></tr>
+<tr><td>Random access</td><td>chance</td><td>ALOHA, Ethernet, Wi-Fi, 5G RACH</td><td>nothing: no coordination</td></tr>
+</table>
+<div class="box derive"><span class="tag">Derivation · the Gaussian multiple-access channel and when orthogonal access is optimal</span>
+<p>Two transmitters send to one receiver, $y=x_1+x_2+n$ with powers $P_1,P_2$, noise power $N$ (real signals; per real dimension). Write $s_i=P_i/N$. A rate pair $(R_1,R_2)$ (bit per channel use) is achievable iff
+$$R_1\le\tfrac12\log_2(1+s_1),\qquad R_2\le\tfrac12\log_2(1+s_2),\qquad R_1+R_2\le\tfrac12\log_2(1+s_1+s_2).$$
+The first two say that each user alone cannot exceed its point-to-point capacity. The third says that, together, they cannot exceed the capacity of a single user with the sum of the powers (the receiver sees the sum of the signals, $P_1+P_2$ of signal power in the noise $N$). The three inequalities describe a <b>pentagon</b>; its two corners on the sum-rate line, $\big(\frac12\log(1+s_1),\ \frac12\log\frac{1+s_1+s_2}{1+s_1}\big)$ and the mirror image, are achieved by <b>successive interference cancellation</b>: decode user 1 treating user 2 as noise, subtract it, then decode user 2 with no interference. Time-sharing between the two corners fills the rest of the line.</p>
+<p><b>Orthogonal access leaves some of it on the table.</b> <b>TDMA</b> with time fraction $\lambda$ for user 1, each user transmitting at its peak power only in its own slot: $R_1=\lambda\tfrac12\log(1+s_1)$, $R_2=(1-\lambda)\tfrac12\log(1+s_2)$: a straight line between the single-user maxima, strictly inside the pentagon. (If the constraint is on <em>average</em> power, each user can raise its power in its slot to $P_i/\lambda_i$ and then TDMA gives exactly the FDMA curve below, with $\alpha=\lambda$.) <b>FDMA</b> with fractions $\alpha,1-\alpha$ of the bandwidth: the noise in a band fraction $\alpha$ is $\alpha N$, so $R_1=\alpha\tfrac12\log\big(1+\frac{s_1}{\alpha}\big)$, $R_2=(1-\alpha)\tfrac12\log\big(1+\frac{s_2}{1-\alpha}\big)$. Adding them and differentiating shows the sum $R_1+R_2$ is maximised, and equals the full sum capacity $\tfrac12\log(1+s_1+s_2)$, exactly at
+$$\alpha^*=\frac{s_1}{s_1+s_2}=\frac{P_1}{P_1+P_2},$$
+when the signal-to-noise <em>density</em> $P_i/(\alpha_iN)$ is equal for both users (check: $\frac{s_1}{\alpha^*}=\frac{s_2}{1-\alpha^*}=s_1+s_2$, so $R_1+R_2=\alpha^*\cdot\frac12\log(1+s_1+s_2)+(1-\alpha^*)\cdot\frac12\log(1+s_1+s_2)$ ✓). <b>So FDMA is capacity-achieving only for the one bandwidth split proportional to power</b>; for any other split it is strictly suboptimal. This is the information-theoretic content of “orthogonal multiple access is fine if resources are allocated correctly (OFDMA schedulers do it by assigning bandwidth in proportion to need), and non-orthogonal access (CDMA with SIC, NOMA) is needed to reach the other points.”</p></div>
+<div class="widget" id="w-mac">The capacity region of the two-user Gaussian multiple-access channel (shaded pentagon) for the chosen SNRs $s_1,s_2$, with the FDMA boundary (curve, bandwidth fraction $\alpha$ swept) and TDMA time-sharing (dashed line). The FDMA curve touches the sum-rate line at one point, $\alpha^*=P_1/(P_1+P_2)$ (dot). Make one user much stronger and see how little the weaker user can transmit.</div>
+
+<h2>Random access: ALOHA, CSMA and Ethernet</h2>
+<p>When traffic is bursty, giving each user a dedicated channel wastes it (a user sending 1% of the time wastes 99%), and a central scheduler may not exist. Random access trades <b>collisions</b> for simplicity.</p>
+<div class="box derive"><span class="tag">Derivation · the throughput of pure and slotted ALOHA</span>
+<p>Frames of fixed duration $T$. Let new and retransmitted frames together arrive as a Poisson process with $G$ attempts per frame time (offered load); the <b>throughput</b> $S$ (successful frames per frame time) equals $G$ times the probability that a given frame does not collide. <b>Pure ALOHA</b>: a frame starting at time $t_0$ collides with any other frame starting in $(t_0-T,\,t_0+T)$, a <b>vulnerable period</b> of $2T$. The number of other arrivals in $2T$ is Poisson with mean $2G$, so the probability that there are none is $e^{-2G}$:
+$$S_{\rm pure}=G\,e^{-2G},\qquad\frac{dS}{dG}=0\ \Rightarrow\ G=\tfrac12,\ \ S_{\max}=\frac1{2e}=0.184.$$
+<b>Slotted ALOHA</b>: stations begin transmitting only at slot boundaries, so the frames either coincide entirely or not at all; vulnerable period $T$:
+$$S_{\rm slotted}=G\,e^{-G},\qquad G=1,\ \ S_{\max}=\frac1e=0.368.$$
+Slotting doubles the maximum throughput (at the price of synchronisation). Above the peak the throughput <em>falls</em> (more collisions, more retransmissions, more load): pure ALOHA is unstable without a backoff rule that reduces $G$ when collisions happen (the <b>binary exponential backoff</b> of Ethernet and Wi-Fi). Success probability per attempt at $G=0.5$ (pure): $e^{-1}=0.368$; the channel is idle $e^{-G}=61\%$ of the time.</p></div>
+<p><b>Carrier-sense multiple access (CSMA)</b>: listen before sending. A collision then can only occur if two stations start within the <b>propagation delay</b> $\tau$ of each other (before either hears the other). With $a=\tau/T$ (propagation delay in frame times) the normalised throughput (Kleinrock–Tobagi) for non-persistent CSMA (if busy, wait a random time and sense again) and 1-persistent CSMA (if busy, transmit as soon as idle) are
+$$S_{\rm np}=\frac{Ge^{-aG}}{G(1+2a)+e^{-aG}},\qquad S_{1p}=\frac{G\big[1+G+aG\big(1+G+\tfrac{aG}2\big)\big]e^{-G(1+2a)}}{G(1+2a)-(1-e^{-aG})+(1+aG)e^{-G(1+a)}}.$$
+With $a\to0$, non-persistent CSMA approaches 100% as $G\to\infty$; for $a=0.01$ the maximum is 0.815 (np) and 0.529 (1-persistent), compared with 0.37 for slotted ALOHA; for $a=0.1$: 0.52 and 0.45. Short propagation delay relative to the frame is what makes listening effective.</p>
+<div class="widget" id="w-aloha">Throughput $S$ against offered load $G$ for pure ALOHA, slotted ALOHA, 1-persistent and non-persistent CSMA at the chosen $a=\tau/T$. The peaks are marked in the readout. Carrier sensing rescues random access when the propagation delay is small compared with the frame time (a local network), and is useless when it is large (satellite links: $a\gg1$, where slotted ALOHA is still used).</div>
+<div class="box derive"><span class="tag">Derivation · Ethernet (CSMA/CD): minimum frame size and efficiency</span>
+<p><b>Collision detection.</b> A station that detects a collision while sending stops at once and backs off. For it to detect the collision it must still be transmitting when the collision signal returns: the worst case is a collision at the far end after almost one propagation time $\tau$, and the signal needs another $\tau$ to come back. So the frame must last at least one <b>round-trip time</b>, $T_{\min}\ge2\tau$, i.e.
+$$L_{\min}\ge2\tau R=\frac{2dR}{v}\quad(\text{bits}).$$
+For 10 Mbit/s Ethernet the standard fixes the <b>slot time</b> at 51.2 µs (512 bits = 64 bytes), covering 2.5 km of cable with repeaters at $2\times10^8$ m/s with a safety margin; at 100 Mbit/s the same 64-byte frame is used and the network diameter shrinks to about 200 m; at gigabit speed half-duplex operation needed carrier extension, and in full-duplex switched Ethernet (today’s Ethernet) there is no collision at all. <b>Efficiency.</b> After a frame ends, stations contend in slots of length $2\tau$. If each of $N$ stations transmits in a slot with probability $1/N$, the probability that exactly one transmits (success) is $A=(1-1/N)^{N-1}\to1/e$. The mean number of contention slots until a success is $1/A\to e$. The channel carries a frame of duration $T_f$ per cycle of length $T_f+2\tau e$, so
+$$\eta=\frac{T_f}{T_f+2e\tau}=\frac{1}{1+2ea}=\frac1{1+5.44\,a},\qquad a=\tau/T_f.$$
+For a 1500-byte frame at 10 Mbit/s ($T_f=1.2$ ms) and $\tau=25.6$ µs ($a=0.021$): $\eta=0.90$: <b>an Ethernet segment can carry about 90% of its bit rate, in contrast to ALOHA’s 18–37%</b>, because carrier sense and collision detection shorten the wasted time from a whole frame to a slot. The efficiency falls as the speed grows (the frame becomes shorter in time), which is why 100 Mbit/s and faster Ethernet moved to switches and full duplex.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · Wi-Fi CSMA/CA and the cost of listening</span>
+<p>Radios cannot listen while transmitting (their own signal is $10^{10}$ stronger than any reception), so Wi-Fi <em>avoids</em> collisions rather than detecting them (CSMA/CA, the “distributed coordination function”). A station that senses the channel idle for DIFS (34 µs in 802.11a), draws a random backoff of $0\ldots CW$ slots (9 µs each; $CW$ starts at 15 and doubles after each failure up to 1023: binary exponential backoff) that counts down only while the channel is idle, transmits, and waits SIFS (16 µs) for an acknowledgement; no ACK means a collision or error. <b>Hidden terminals</b>: stations A and C both hear B but not each other; both transmit and collide at B: the optional <b>RTS/CTS</b> handshake lets B announce the reservation to both. <b>Overhead.</b> A 1500-byte frame at the 54 Mbit/s PHY rate: preamble and header 20 µs, data $\approx228$ µs, SIFS 16 µs, ACK (sent at 24 Mbit/s) 28 µs, DIFS 34 µs, mean backoff $7.5\times9=67.5$ µs: a cycle of about 394 µs delivering $12\,000$ bits, i.e. <b>30.5 Mbit/s of MAC throughput on a 54 Mbit/s PHY (56%)</b>. At higher PHY rates the fixed overheads dominate even more: this is why 802.11n added frame aggregation (many packets per transmission) and why 802.11ax added OFDMA, so that many small frames from different users share a single contention.</p></div>
+
+<h2>The cellular concept</h2>
+<p>Radio power falls rapidly with distance (Chapter 21). The same frequency can therefore be reused in cells far enough apart for their mutual interference to be tolerable. Divide the service area into cells, each with a base station and a share of the frequencies; the pattern of frequency sets is repeated across the map. A region is divided into hexagons for design purposes (the hexagon is the regular polygon closest to a circle that tiles the plane, with a base station in the centre: each cell has 6 equidistant neighbours).</p>
+<div class="box derive"><span class="tag">Derivation · cluster size, reuse distance and co-channel interference</span>
+<p><b>Geometry.</b> For a hexagonal cell of circumradius $R$ (centre to vertex) the distance between the centres of adjacent cells is $\sqrt3R$, and the area is $\tfrac{3\sqrt3}{2}R^2$. The nearest cell using the same channel set is found by moving $i$ cells along one of the lattice directions, then turning $60^\circ$ and moving $j$ cells. By the cosine rule (the angle between the two segments is $120^\circ$) the distance is
+$$D=\sqrt3R\sqrt{i^2+ij+j^2}=R\sqrt{3N},\qquad N=i^2+ij+j^2\in\{1,3,4,7,9,12,13,\dots\}$$
+The <b>cluster size</b> $N$ is the number of cells that together use every available channel exactly once ($N=7$: $i=2,j=1$); each cell gets $1/N$ of the channels. The <b>co-channel reuse ratio</b> is $Q=D/R=\sqrt{3N}$ (3, 3.46, 4.58, 5.20, 6.0, 6.24 for the six values above, for $N=3,4,7,9,12,13$).</p>
+<p><b>Interference.</b> A mobile at the edge of its cell, distance $R$ from its base station, receives the wanted signal at power $\propto R^{-n}$ and, in the worst case, the first tier of six co-channel cells each at distance $\approx D$, giving a signal-to-interference ratio
+$$\mathrm{SIR}\approx\frac{R^{-n}}{6D^{-n}}=\frac{(D/R)^n}{6}=\frac{(3N)^{n/2}}{6}.$$
+Examples ($n=4$): $N=3$: $81/6=13.5$ (11.3 dB); $N=4$: 24 (13.8 dB); $N=7$: $441/6=73.5$ (18.7 dB); $N=12$: 23.3 dB. (With $n=3$: $N=7$ gives 12.1 dB.) The required SIR depends on the modulation and its protection: analogue FM (AMPS) needed 18 dB, forcing $N=7$; GSM’s GMSK with coding and frequency hopping tolerates about 9–12 dB, allowing $N=3$–4 (practical plans use 4/12 or 3/9 reuse); CDMA reuses <em>every</em> frequency in every cell ($N=1$) because the processing gain (Chapter 19) absorbs the interference; LTE and 5G also run at reuse 1 and manage the cell-edge interference by scheduling and beamforming. Using the worst-case first-tier distances ($D-R$ for the nearest two interferers) lowers these numbers by 2–3 dB; the simple formula is a design starting point.</p></div>
+<div class="widget" id="w-hex">A hexagonal cell map coloured by channel set for the chosen cluster size $N$ ($i,j$ shown): the white-outlined cells use the same frequencies as the reference cell (thick outline). The readout gives the reuse ratio $D/R=\sqrt{3N}$, the first-tier SIR $(3N)^{n/2}/6$ for the chosen path-loss exponent, the SIR after 120° sectoring ($\times3$: two interferers instead of six: $+4.8$ dB), and the fraction of the spectrum available per cell, $1/N$.</div>
+<div class="box derive"><span class="tag">Capacity, trunking, splitting and sectoring</span>
+<p><b>Channels per cell.</b> With total bandwidth $B_t$, channel bandwidth $B_c$, and cluster size $N$: $M=\dfrac{B_t}{B_cN}$ channels per cell. AMPS: 12.5 MHz per operator and 30 kHz channels give 416 channels, $N=7$: 59 per cell (of which a few are control). GSM: a 25 MHz band gives 125 carriers of 200 kHz, 8 slots each: 1000 traffic channels (full rate); at $N=4$: 250 per cell. <b>Trunking.</b> The number of subscribers that a cell can support depends on the <em>blocking probability</em> rather than the number of channels. Erlang-B (Chapter 9): $M=20$ channels at 2% blocking support $A=13.2$ erlangs ($\approx$ 13 simultaneous calls on average); two separate groups of 10 channels each carry only $5.1$ each, 10.2 in total: <b>pooling</b> raises the carried traffic by 30%. This is why sectoring (which splits a cell’s channels into 3 separate pools) loses some trunking efficiency, and why large channels (a 5 MHz WCDMA carrier shared by everybody) are efficient. <b>Cell splitting.</b> Halving the cell radius multiplies the number of cells by 4 (area $\propto R^2$): capacity per area $\times4$ with the same $N$ and the same SIR; the transmit power must fall by $2^n$ ($n=4$: 12 dB) to keep the same coverage geometry. Cell splitting turned downtown cells of 10 km into microcells of 200 m. <b>Sectoring.</b> Replacing an omnidirectional antenna by three 120° sector antennas confines the interference seen by a sector to the 2 (rather than 6) co-channel cells that illuminate it: SIR $\times3$ ($+4.8$ dB); 60° sectors: one interferer, $\times6$ ($+7.8$ dB). The improved SIR allows a smaller $N$ (from 7 to 4, say): capacity $\times7/4$.</p></div>
+<h3>Mobility: handoff and power control</h3>
+<p>A call in progress must follow the user. The mobile reports the signal strength of its serving and neighbouring base stations; the network triggers a <b>handoff</b> when the neighbour exceeds the serving cell by a <b>hysteresis margin</b> $h$ (typically 3–6 dB). Without hysteresis a mobile on the cell boundary would flip back and forth (“ping-pong”); with a large margin the call would degrade or drop before the handoff. The handoff rate increases with speed and decreases with cell size (a vehicle at 100 km/h crosses a 1 km microcell in 36 s). <b>Hard handoff</b> (break before make: GSM, LTE) releases the old channel as the new one is acquired; <b>soft handoff</b> (CDMA) keeps links to both base stations and combines them. Idle mobiles register their <b>location area</b> so that an incoming call can be <b>paged</b> over a few cells instead of the whole network. <b>Power control</b> keeps each link at the lowest power that gives the target SIR, because in an interference-limited network every extra dB radiated by one user is a dB of noise for others.</p>
+<div class="box derive"><span class="tag">Derivation · multi-user diversity and the scheduler</span>
+<p>In a cell with $K$ active users whose instantaneous SNRs fade independently (Rayleigh, mean $\bar\gamma$ each), a scheduler that serves, in every slot, the user with the best channel sees the maximum of $K$ exponentials, whose mean is $\bar\gamma\sum_{k=1}^K\frac1k=\bar\gamma H_K\approx\bar\gamma(\ln K+0.577)$ (Chapter 21). For $K=10$: $H_{10}=2.93$: a $+4.7$ dB gain in the SNR of the served user, with no extra power, the more users the more gain: <b>users’ fading becomes a resource</b>, since somebody’s channel is nearly always good. Pure max-SNR scheduling is unfair (a user near the cell edge, with a low mean SNR, is almost never served), so the standard rule is <b>proportional fair</b>: in slot $t$ serve the user with the largest ratio $r_k(t)/\bar R_k(t)$ of the achievable rate to the long-term average throughput; it serves each user near the peaks of their own channel while keeping the long-run shares balanced. LTE and 5G schedule resource blocks every millisecond or less this way, with the base station using channel-quality indicators reported by the handsets.</p></div>
+
+<h2>The generations</h2>
+<p>Each generation of mobile networks changed the multiple-access scheme, the modulation and the coding, using what the chapters of this book supply in turn.</p>
+<table>
+<tr><th></th><th>1G (1980s)</th><th>2G GSM (1991)</th><th>3G WCDMA (2001)</th><th>4G LTE (2009)</th><th>5G NR (2019)</th></tr>
+<tr><th>Access</th><td>FDMA</td><td>FDMA + TDMA (200 kHz, 8 slots)</td><td>DS-CDMA, 5 MHz, 3.84 Mchip/s</td><td>OFDMA down, SC-FDMA up, up to 20 MHz</td><td>OFDMA (+ DFT-s up), up to 100 MHz (FR1) / 400 MHz (FR2), flexible numerology</td></tr>
+<tr><th>Modulation</th><td>analogue FM</td><td>GMSK (BT 0.3); 8-PSK (EDGE)</td><td>QPSK, 16/64-QAM (HSPA)</td><td>QPSK…64-QAM (256-QAM)</td><td>QPSK…256-QAM (1024-QAM)</td></tr>
+<tr><th>Channel coding</th><td>none</td><td>convolutional (rate ½, $K=5$)</td><td>convolutional, turbo</td><td>turbo; tail-biting convolutional for control</td><td>LDPC data, polar control</td></tr>
+<tr><th>Antennas</th><td>1</td><td>1 (+ diversity at base)</td><td>transmit diversity</td><td>up to 8×8 MIMO</td><td>massive MIMO, beamforming</td></tr>
+<tr><th>Reuse</th><td>$N=7$</td><td>$N=3$–12 (with hopping)</td><td>$N=1$ (power control)</td><td>$N=1$ (ICIC)</td><td>$N=1$, beams</td></tr>
+<tr><th>Peak rate (order of magnitude)</th><td>—</td><td>9.6–14.4 kbit/s (GSM), 384 kbit/s EDGE</td><td>2 Mbit/s (R99), 14 Mbit/s HSDPA</td><td>150–1000 Mbit/s</td><td>several Gbit/s</td></tr>
+</table>
+<div class="box eng"><span class="tag">Engineering practice · two worked sets of numbers</span>
+<p><b>GSM.</b> A carrier of 200 kHz carries 270.833 kbit/s (= 13 MHz/48) in GMSK. A <b>TDMA frame</b> of 8 slots lasts 4.615 ms, each slot of 577 µs holds 156.25 bit periods (including 8.25 guard bits), of which 114 are coded data bits (two bursts of 57 around the 26-bit training sequence of Chapter 16). Raw rate per user: $114/4.615$ ms $=24.7$ kbit/s; the 26-frame multiframe spends 2 frames on control, so traffic channels get $24/26$: $\mathbf{22.8}$ kbit/s, which carries the 13 kbit/s speech frame after rate-½ convolutional coding ($2\times11.4$ kbit/s, the rest being RPE-LTP speech at 13 kbit/s plus parity protection). <b>Timing advance</b>: a mobile at 35 km (maximum cell radius) has a round-trip delay of 233 µs, nearly half a slot, so the base station tells each mobile to advance its transmission by up to 63 bit periods (233 µs) so that bursts arrive in their own slots. <b>5G NR peak rate</b> (3GPP TS 38.306 formula): 100 MHz carrier, 30 kHz spacing (273 resource blocks), 4 layers, 256-QAM (8 bits), code rate 948/1024, 14% overhead: $4\times8\times0.926\times\frac{273\times12}{1\,\mathrm{ms}/28}\times(1-0.14)=2.34$ Gbit/s per carrier; the multi-Gbit/s figures quoted for 5G need several carriers or 400 MHz of mmWave spectrum.</p></div>
+<div class="box key"><span class="tag">Why the multiple-access scheme keeps changing</span>
+<p>FDMA/TDMA need planning of frequencies (GSM: $N=4$–12) because every cell uses its own subset. CDMA reduced the reuse to 1 and used interference averaging, but needs strict power control and has an orthogonality loss in multipath and a code-limited high-rate performance (HSPA moved to TDM scheduling to fix it). OFDMA, with its orthogonal narrow subcarriers and frequency-domain scheduling, gets rid of intra-cell interference, supports wide bandwidths with simple receivers (one-tap equalisation: Chapter 20), and fits MIMO beautifully (per-subcarrier flat fading). Each step is a trade between interference management and receiver complexity, with the complexity budget rising as Moore’s law allows.</p></div>
+
+<div class="box gate"><span class="tag">GATE pattern · multiple access and cellular</span>
+<ul>
+<li><b>ALOHA</b>: $S=Ge^{-2G}$, $S=Ge^{-G}$, maxima $0.184$ and $0.368$, probability of success $e^{-2G}$ or $e^{-G}$; number of slots empty/success/collision (Poisson, $G=1$: $e^{-1}=0.37$, 0.37, 0.26).</li>
+<li><b>Ethernet</b>: minimum frame size $=2\tau R$; efficiency $1/(1+5.44a)$; binary exponential backoff (the $k$-th collision: random slot in $0..2^k-1$, with limit 1023).</li>
+<li><b>Cellular</b>: $N=i^2+ij+j^2$, $D=R\sqrt{3N}$, SIR $=(3N)^{n/2}/6$, channels per cell $=B_t/(B_cN)$, area of a cell $\frac{3\sqrt3}2R^2$, cell splitting (capacity ×4 for halved radius), Erlang-B blocking, handoff margin.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+The maximum throughput of slotted ALOHA is
+<ol class="opts"><li>$1/(2e)\approx0.184$</li><li>$1/2$</li><li>$1/e\approx0.368$</li><li>$1$</li></ol>
+<div class="sol"><p>$S=Ge^{-G}$ is maximised at $G=1$: $1/e=0.368$. <b>(C)</b>. (Pure ALOHA: $1/2e$.)</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C,D" data-marks="1" data-src="Original">
+Which statements about CSMA/CD (Ethernet) are correct?
+<ol class="opts"><li>A station must still be transmitting when a collision from the far end of the cable reaches it</li><li>The minimum frame length in bits is independent of the data rate</li><li>Raising the data rate tenfold while keeping the same minimum frame size requires a network ten times shorter</li><li>The efficiency falls as $a=\tau/T_f$ grows</li></ol>
+<div class="sol"><p>(A) $T_f\ge2\tau$. (B) false: $L_{\min}=2\tau R$ grows with $R$. (C) true: with $L_{\min}$ fixed, $\tau\propto1/R$. (D) $\eta=1/(1+5.44a)$. <b>A, C, D</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+The ratio of the maximum throughput of pure ALOHA to that of slotted ALOHA is
+<ol class="opts"><li>$e$</li><li>$\tfrac12$</li><li>$\tfrac1{2e}$</li><li>2</li></ol>
+<div class="sol"><p>$(1/2e)/(1/e)=1/2$: slotting doubles the maximum throughput by halving the vulnerable period. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+Replacing omnidirectional base-station antennas by 120° sector antennas in a cellular network with six first-tier co-channel cells
+<ol class="opts"><li>decreases the signal-to-interference ratio</li><li>has no effect on the SIR</li><li>doubles the number of interferers</li><li>reduces the number of first-tier interferers seen by a sector from six to two, raising the SIR by about 4.8 dB</li></ol>
+<div class="sol"><p>$6\to2$: SIR $\times3$, $10\log3=4.8$ dB. <b>(D)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+Why does a handoff algorithm use a hysteresis margin?
+<ol class="opts"><li>to prevent repeated back-and-forth handoffs (“ping-pong”) near the cell boundary</li><li>to increase the transmit power</li><li>to speed up the handoff</li><li>to reduce the cluster size</li></ol>
+<div class="sol"><p>The neighbour must exceed the serving cell by a margin before the call moves. <b>(A)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="0.135" data-tol="0.003" data-marks="1" data-src="Original">
+Pure ALOHA with an offered load $G=1$ frame per frame time: the throughput $S=Ge^{-2G}$ is ______.
+<div class="sol"><p>$e^{-2}=0.1353$ (below the peak 0.184 at $G=0.5$: overloaded).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.271" data-tol="0.003" data-marks="1" data-src="Original">
+Slotted ALOHA at $G=2$: the throughput $S=Ge^{-G}$ is ______.
+<div class="sol"><p>$2e^{-2}=0.2707$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.549" data-tol="0.005" data-marks="2" data-src="Original">
+In pure ALOHA with offered load $G=0.3$ the probability that a given transmitted frame is received without collision is ______.
+<div class="sol"><p>$e^{-2G}=e^{-0.6}=0.549$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.368" data-tol="0.005" data-marks="2" data-src="Original">
+In slotted ALOHA with $G=1$, the probability that a slot is <em>empty</em> is ______.
+<div class="sol"><p>$P(0)=e^{-G}=0.368$ (also success 0.368; collision $1-2e^{-1}=0.264$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="250" data-tol="1" data-marks="2" data-src="Original (GATE-style)">
+A CSMA/CD network of length 2.5 km runs at 10 Mbit/s; the signal propagates at $2\times10^8$ m/s. Ignoring repeater delays, the minimum frame size is ______ bits.
+<div class="sol"><p>$\tau=2500/2\times10^8=12.5$ µs; $2\tau=25$ µs; $L_{\min}=25\ \mu\text{s}\times10^7=250$ bits. (The standard’s 512 bits allows for repeaters and electronics.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.648" data-tol="0.005" data-marks="2" data-src="Original">
+The efficiency of CSMA/CD with $a=\tau/T_f=0.1$, using $\eta=1/(1+2ea)$, is ______.
+<div class="sol"><p>$1/(1+5.44\times0.1)=1/1.544=0.648$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="1" data-src="Original">
+The cluster size for $i=2$, $j=1$ is $N=$ ______.
+<div class="sol"><p>$N=i^2+ij+j^2=4+2+1=7$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.58" data-tol="0.02" data-marks="1" data-src="Original">
+For $N=7$, the co-channel reuse ratio $D/R=\sqrt{3N}$ is ______.
+<div class="sol"><p>$\sqrt{21}=4.58$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="18.7" data-tol="0.1" data-marks="2" data-src="Original">
+A cellular system with $N=7$, path-loss exponent $n=4$ and six equidistant first-tier interferers has an SIR (using $(D/R)^n/6$) of ______ dB.
+<div class="sol"><p>$(4.583)^4/6=441/6=73.5\to18.7$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="12.1" data-tol="0.1" data-marks="2" data-src="Original">
+Same system with path-loss exponent $n=3$: SIR $=(D/R)^3/6$ in dB is ______.
+<div class="sol"><p>$21^{1.5}/6=96.2/6=16.0\to12.05$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="59" data-tol="1" data-marks="2" data-src="Original">
+An operator has 12.5 MHz of spectrum with 30 kHz channels and a 7-cell cluster. The number of channels per cell (rounded down) is ______.
+<div class="sol"><p>$12.5\times10^6/30\,000=416$; $416/7=59.4\to59$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.8" data-tol="0.05" data-marks="1" data-src="Original">
+The SIR improvement from 120° sectoring (six interferers reduced to two) is ______ dB.
+<div class="sol"><p>$10\log_{10}3=4.77$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.01" data-marks="1" data-src="Original">
+Halving the cell radius (same cluster size) multiplies the capacity per unit area by ______.
+<div class="sol"><p>Cell area $\propto R^2$: four times as many cells, each with the same channels: ×4.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.11" data-tol="0.005" data-marks="2" data-src="Original">
+A cell with 5 channels is offered 3 erlangs. The Erlang-B blocking probability is ______.
+<div class="sol"><p>$B(3,5)=\dfrac{3^5/5!}{\sum_{k=0}^53^k/k!}=\dfrac{2.025}{18.40}=0.110$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="22.8" data-tol="0.1" data-marks="2" data-src="Original">
+A GSM TDMA frame lasts 4.615 ms and each slot carries 114 coded data bits; of every 26 frames, 24 carry traffic. The traffic-channel bit rate per user is ______ kbit/s.
+<div class="sol"><p>$114\times\frac{24}{26}/4.615\ \text{ms}=22.8$ kbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="30.5" data-tol="1" data-marks="2" data-src="Original">
+Wi-Fi 802.11a at a 54 Mbit/s PHY rate: the cycle for one 1500-byte frame comprises DIFS 34 µs, mean backoff 67.5 µs, data frame 248 µs (including 20 µs preamble), SIFS 16 µs and ACK 28 µs. The MAC throughput is ______ Mbit/s.
+<div class="sol"><p>Cycle $=34+67.5+248+16+28=393.5$ µs; $12\,000/393.5\ \mu\text{s}=30.5$ Mbit/s (56% of the PHY rate).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.34" data-tol="0.05" data-marks="2" data-src="Original">
+A 5G NR carrier of 273 resource blocks at 30 kHz spacing (2000 slots/s, 14 symbols per slot) uses 4 layers, 256-QAM, code rate 0.926 and 14% overhead. The data rate is ______ Gbit/s.
+<div class="sol"><p>$273\times12\times14\times2000=91.7$ M resource elements/s; $\times8\times0.926\times4\times0.86=2.34$ Gbit/s.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="nat" data-ans="4.7" data-tol="0.1" data-marks="2" data-src="Original (GATE-style)">
+A base station schedules, in every slot, the one of $K=10$ users with the best instantaneous SNR (i.i.d. Rayleigh, equal means). The mean SNR of the selected user relative to a single user’s mean is $H_{10}=\sum_{k=1}^{10}1/k=2.93$, i.e. ______ dB.
+<div class="sol"><p>$10\log_{10}2.93=4.67$ dB: the multi-user diversity gain.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="2" data-src="Original (GATE-style)">
+In a two-user Gaussian multiple-access channel both users have power-to-noise ratio $s_1=s_2=15$ (11.8 dB). In FDMA the bandwidth is split in fractions $\alpha$ and $1-\alpha$. The value of $\alpha$ that achieves the sum capacity is ______.
+<div class="sol"><p>$\alpha^*=P_1/(P_1+P_2)=15/30=0.5$. At this split $R_1+R_2=\tfrac12\log_2(1+30)=2.48$ bit per real dimension, the sum capacity.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="Original (GATE-style)">
+A mobile needs SIR $\ge15$ dB. With a path-loss exponent of 4 and six equidistant interferers, the smallest valid cluster size (from $1,3,4,7,9,12,13$) is
+<ol class="opts"><li>3</li><li>4</li><li>7</li><li>12</li></ol>
+<div class="sol"><p>SIR (dB): $N=3$: 11.3; $N=4$: 13.8; $N=7$: 18.7. Smallest $N$ meeting 15 dB is 7. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="13.2" data-tol="0.2" data-marks="2" data-src="Original (GATE-style)">
+A cell with 20 channels must keep blocking below 2%. The maximum offered traffic (Erlang-B) is about ______ erlangs.
+<div class="sol"><p>From the Erlang-B tables $B(13.2,20)=0.02$: <b>13.2 E</b>. (Two cells of 10 channels carry only $2\times5.1=10.2$ E: the trunking-efficiency loss from splitting a pool.)</p></div></div>
+
+<div class="summary"><h3>Chapter 22 in one breath</h3>
+<ul>
+<li>Access schemes: FDMA, TDMA, CDMA, OFDMA, SDMA, random access. Gaussian MAC capacity region: $R_i\le\tfrac12\log(1+s_i)$, $R_1+R_2\le\tfrac12\log(1+s_1+s_2)$; FDMA is optimal only at $\alpha^*=P_1/(P_1+P_2)$; SIC reaches the corners.</li>
+<li>ALOHA: pure $S=Ge^{-2G}$ ($1/2e$ at $G=\tfrac12$), slotted $S=Ge^{-G}$ ($1/e$ at $G=1$). CSMA: $a=\tau/T$; Ethernet: $T_f\ge2\tau$, $\eta=1/(1+2ea)$; Wi-Fi CSMA/CA with backoff, SIFS/DIFS, RTS/CTS, overhead ($\approx$ 56% efficiency at 54 Mbit/s).</li>
+<li>Cellular: hexagon area $\tfrac{3\sqrt3}2R^2$; $N=i^2+ij+j^2$; $D=R\sqrt{3N}$; SIR $=(3N)^{n/2}/6$; sectoring ×3; splitting ×4 capacity (÷$2^n$ power); channels per cell $B_t/(B_cN)$; Erlang-B pooling gain; handoff with hysteresis; power control.</li>
+<li>Scheduling: max-SNR multi-user diversity $\bar\gamma H_K$; proportional fair.</li>
+<li>Generations: AMPS (FDMA, $N=7$) → GSM (TDMA, 22.8 kbit/s/slot) → WCDMA ($N=1$, power control) → LTE (OFDMA, MIMO, turbo) → NR (OFDM numerologies, LDPC/polar, massive MIMO, 2.34 Gbit/s per 100 MHz carrier).</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+
+/* ---------- Gaussian MAC capacity region ---------- */
+GB.widget('w-mac',{title:'Two-user Gaussian multiple-access channel',h:360,hm:380,controls:[{k:'s1',label:'user 1 SNR  s₁ = P₁/N (dB)',min:-5,max:30,step:1,value:10,fmt:v=>v+' dB'},{k:'s2',label:'user 2 SNR  s₂ = P₂/N (dB)',min:-5,max:30,step:1,value:10,fmt:v=>v+' dB'}],
+ draw(g,p){ const s1=Math.pow(10,p.s1/10), s2=Math.pow(10,p.s2/10), c=x=>.5*Math.log2(1+x), R1=c(s1), R2=c(s2), Rs=c(s1+s2); const mx=Math.max(R1,R2)*1.1+.2; const v=g.full({l:48,b:32}); v.view(0,mx,0,mx,{equal:true}); v.axes({xl:'R₁ (bit / real dim.)',ystep:Math.max(1,Math.round(mx/5)),xstep:Math.max(1,Math.round(mx/5))}); v.text(0,mx*.97,'R₂','mute','left',12,6,0);
+  const pent=[[0,0],[R1,0],[R1,Rs-R1],[Rs-R2,R2],[0,R2]]; v.poly(pent,'blue',.18); v.seg(R1,0,R1,Rs-R1,'blue',2); v.seg(R1,Rs-R1,Rs-R2,R2,'blue',2); v.seg(Rs-R2,R2,0,R2,'blue',2); v.seg(0,0,R1,0,'blue',2); v.seg(0,0,0,R2,'blue',2);
+  v.seg(R1,0,0,R2,'mute',1.8,[6,4]);
+  const xs=[],ys=[]; for(let a=.002;a<.999;a+=.002){ xs.push(a*c(s1/a)); ys.push((1-a)*c(s2/(1-a))); } v.line(xs,ys,'orange',2.6);
+  const as=s1/(s1+s2); v.dot(as*c(s1/as),(1-as)*c(s2/(1-as)),'red',6);
+  g.legend([['capacity region','blue'],['FDMA (α swept)','orange'],['TDMA, peak power','mute']],g.w-440,16);
+  return 'single-user capacities: <b>'+R1.toFixed(2)+'</b>, <b>'+R2.toFixed(2)+'</b> · sum capacity ½log₂(1+s₁+s₂) = <b>'+Rs.toFixed(2)+'</b> · FDMA reaches it only at α* = s₁/(s₁+s₂) = <b>'+as.toFixed(2)+'</b> (red dot) · TDMA at full power in its slot: at best ½(R₁+R₂) = '+(.5*(R1+R2)).toFixed(2)+' at equal time shares'; }});
+
+/* ---------- ALOHA / CSMA ---------- */
+(function(){
+ const np=(G,a)=>G*Math.exp(-a*G)/(G*(1+2*a)+Math.exp(-a*G));
+ const p1=(G,a)=>G*(1+G+a*G*(1+G+a*G/2))*Math.exp(-G*(1+2*a))/(G*(1+2*a)-(1-Math.exp(-a*G))+(1+a*G)*Math.exp(-G*(1+a)));
+ GB.widget('w-aloha',{title:'Throughput of random-access protocols',h:360,hm:380,controls:[{k:'a',label:'a = τ / T_frame',min:.001,max:.5,step:.001,value:.05,fmt:v=>v.toFixed(3)}],
+  draw(g,p){ const a=p.a, v=g.full({l:46,b:32}); v.view(0,6,0,1.02); v.axes({xl:'offered load G',ystep:.2,xstep:1}); const xs=[],A=[],B=[],C=[],D=[]; for(let G=.01;G<=6.001;G+=.03){ xs.push(G); A.push(G*Math.exp(-2*G)); B.push(G*Math.exp(-G)); C.push(p1(G,a)); D.push(np(G,a)); }
+   v.line(xs,A,'red',2.2); v.line(xs,B,'orange',2.2); v.line(xs,C,'yellow',2.4); v.line(xs,D,'green',2.4); v.hline(1/Math.E,'axis'); g.legend([['pure ALOHA','red'],['slotted ALOHA','orange'],['1-persistent CSMA','yellow'],['non-persistent CSMA','green']],60,g.h*.18,true);
+   const mx=f=>{ let best=0,bg=0; for(let G=.01;G<=60;G+=.01){ const s=f(G); if(s>best){ best=s; bg=G; } } return [best,bg]; }; const m1=mx(G=>p1(G,a)), m2=mx(G=>np(G,a));
+   return 'a = '+a.toFixed(3)+' · maxima: pure <b>0.184</b> (G = 0.5) · slotted <b>0.368</b> (G = 1) · 1-persistent <b>'+m1[0].toFixed(3)+'</b> (G = '+m1[1].toFixed(2)+') · non-persistent <b>'+m2[0].toFixed(3)+'</b> (G = '+m2[1].toFixed(1)+')'; }});
+})();
+
+/* ---------- hexagonal cell map ---------- */
+GB.widget('w-hex',{title:'Frequency reuse on a hexagonal cell grid',h:420,hm:440,controls:[{k:'ij',type:'select',label:'cluster size N  (i, j)',options:[['1,0','N = 1  (1, 0)'],['1,1','N = 3  (1, 1)'],['2,0','N = 4  (2, 0)'],['2,1','N = 7  (2, 1)'],['3,0','N = 9  (3, 0)'],['2,2','N = 12  (2, 2)'],['3,1','N = 13  (3, 1)']],value:'2,1'},{k:'n',label:'path-loss exponent n',min:2.5,max:5,step:.1,value:4,fmt:v=>v.toFixed(1)}],
+ draw(g,p){ const [i,j]=p.ij.split(',').map(Number), N=i*i+i*j+j*j; const key=(q,r)=>{ const x=(((i+j)*q+j*r)%N+N)%N, y=((-j*q+i*r)%N+N)%N; return x+','+y; };
+  const cols={}, order=[]; const RING=4, cells=[]; for(let q=-RING;q<=RING;q++) for(let r=-RING;r<=RING;r++){ if(Math.abs(q+r)>RING) continue; const k=key(q,r); if(!(k in cols)){ cols[k]=order.length; order.push(k); } cells.push([q,r,k]); }
+  const ctx=g.ctx, C=g.C, Rpx=Math.min(g.h/(2*RING*1.5+3.2),g.w/(2*RING*1.8*1.7+3)), cx=g.w/2, cy=g.h/2, ref=key(0,0);
+  const hex=(x,y,R)=>{ ctx.beginPath(); for(let k=0;k<6;k++){ const a=Math.PI/180*(60*k-30); const X=x+R*Math.cos(a), Y=y+R*Math.sin(a); k?ctx.lineTo(X,Y):ctx.moveTo(X,Y); } ctx.closePath(); };
+  const P=(q,r)=>[cx+Rpx*Math.sqrt(3)*(q+r/2), cy+Rpx*1.5*r]; const dark=getComputedStyle(document.documentElement).getPropertyValue('--bg')||'';
+  cells.forEach(([q,r,k])=>{ const [x,y]=P(q,r), idx=cols[k]; hex(x,y,Rpx*.97); ctx.fillStyle='hsl('+(idx*360/Math.max(N,1))%360+',60%,'+(k===ref?'52%':'42%')+')'; ctx.globalAlpha=.85; ctx.fill(); ctx.globalAlpha=1; ctx.lineWidth=1; ctx.strokeStyle=C.axis; ctx.stroke(); ctx.fillStyle='#fff'; ctx.font='600 '+Math.round(Rpx*.55)+'px system-ui'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String.fromCharCode(65+idx%26),x,y+1); });
+  cells.forEach(([q,r,k])=>{ if(k===ref){ const [x,y]=P(q,r); hex(x,y,Rpx*.97); ctx.lineWidth=(q===0&&r===0)?4:2.6; ctx.strokeStyle='#ffffff'; ctx.stroke(); } });
+  const D=Math.sqrt(3*N), sir=Math.pow(3*N,p.n/2)/6; return 'N = i² + ij + j² = <b>'+N+'</b> · D/R = √(3N) = <b>'+D.toFixed(2)+'</b> · first-tier SIR ≈ (3N)<sup>n/2</sup>/6 = <b>'+(10*Math.log10(sir)).toFixed(1)+' dB</b> (n = '+p.n.toFixed(1)+'); with 120° sectors <b>'+(10*Math.log10(sir*3)).toFixed(1)+' dB</b> · each cell gets 1/'+N+' of the channels · white outlines: cells reusing the reference cell’s channel set'; }});
+</script>
