@@ -1,0 +1,219 @@
+<!--meta {"id":"ch23","num":"23","part":"Part V · Systems","title":"Putting It Together: Six Systems Sized from Scratch","lede":"The previous chapters each solved one piece. Real systems are chains: a microphone, a code, a modulator, an amplifier, an antenna, a few hundred kilometres of air or glass or vacuum, and the same chain backwards. This chapter takes six working systems and designs them with nothing but the tools of the book, so that every number on the spec sheet becomes something you could have computed."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Follow a bit from microphone to loudspeaker through a GSM voice call and account for every rate (64 → 13 → 22.8 → 33.85 kbit/s) and every chapter involved.</li>
+<li>Build a complete satellite downlink budget (EIRP, free-space loss, G/T, $C/N_0$, $E_s/N_0$, rain margin) and select the modulation and code from the DVB-S2 table.</li>
+<li>Predict how a Wi-Fi link’s rate falls with distance and read a rate–range staircase.</li>
+<li>Compute the uplink coverage radius of a cellular macro cell from the maximum allowable path loss.</li>
+<li>Size a deep-space link (Voyager) and an optical fibre amplifier chain (OSNR and reach).</li>
+<li>Use the same six-step recipe for any new system: requirement → modulation/code → noise → propagation → margin → check interference and sharing.</li>
+</ul></div>
+
+<div class="box key"><span class="tag">The recipe</span>
+<ol class="steps">
+<li><b>Requirement.</b> Data rate $R_b$, quality (BER or block error), availability, coverage, power and cost limits.</li>
+<li><b>Modulation and code.</b> Choose the scheme that supplies $R_b$ in the available bandwidth $B$ with the least $E_b/N_0$ (Chapters 15, 17, 18 and 20): the spectral efficiency $\eta=R_b/B$ and the required $E_b/N_0$ (equivalently $E_s/N_0$ or SNR) come from the modulation and coding tables. Check against Shannon (Chapter 11): $E_b/N_0\ge(2^\eta-1)/\eta$.</li>
+<li><b>Noise.</b> $N=kT_{\rm sys}B$, i.e. $-174+10\log B+F$ dBm; or $N_0=kT_{\rm sys}$ (Chapter 5).</li>
+<li><b>Propagation.</b> Path loss (Friis, Hata, two-ray) plus losses (atmosphere, rain, walls, body), with shadowing/fading margins (Chapter 21).</li>
+<li><b>Receiver.</b> Sum everything: $E_b/N_0=\mathrm{EIRP}-L+G/T-k-10\log R_b$; compare with the requirement and see the margin.</li>
+<li><b>Sharing and interference.</b> Add co-channel interference, multiple access, reuse and scheduling effects (Chapters 19, 22); iterate.</li>
+</ol></div>
+
+<h2>1 · A GSM voice call, bit by bit</h2>
+<p>Speak into a 1991 handset. In order:</p>
+<table>
+<tr><th>Stage</th><th>What happens</th><th>Rate</th><th>Chapter</th></tr>
+<tr><td>Microphone, anti-aliasing filter, sampler</td><td>speech band-limited to 3.4 kHz, sampled at $f_s=8$ kHz</td><td>8000 samples/s</td><td>3</td></tr>
+<tr><td>A/D converter, uniform 13-bit</td><td>quantisation noise at $6.02\times13+1.76=80$ dB for a full-scale sine; 13 bits keep the quality of a companded 8-bit telephone system for low levels</td><td>104 kbit/s raw</td><td>12</td></tr>
+<tr><td>Speech coder (RPE-LTP)</td><td>linear predictive coding exploits the redundancy of the vocal tract: 160 samples (20 ms) are represented by 260 bits (filter coefficients, pitch lag and gain, residual pulses)</td><td>260 bits/20 ms = <b>13 kbit/s</b></td><td>10, 12</td></tr>
+<tr><td>Channel coding</td><td>the 260 bits are split: 50 most important (class Ia) get a 3-bit CRC, 132 (Ib) get none but are protected, plus 4 tail zeros; the 189 bits are encoded by the rate-½ $K=5$ convolutional code (octal 23, 33) to 378 bits; the 78 least important (class II) are unprotected: 456 bits</td><td>456/20 ms = <b>22.8 kbit/s</b></td><td>17, 18</td></tr>
+<tr><td>Interleaving</td><td>the 456 bits are spread over 8 half-bursts of 57 bits (diagonally across 8 TDMA frames), so a burst lost in a fade corrupts at most 12.5% of every speech frame: the convolutional decoder sees scattered, not bursty, errors</td><td>—</td><td>17, 21</td></tr>
+<tr><td>Burst formatting</td><td>2 × 57 data bits, 26-bit training sequence (channel sounding for the equaliser and sync), stealing flags, 3+3 tail bits, 8.25-bit guard period: 156.25 bit periods per slot</td><td>—</td><td>13, 16</td></tr>
+<tr><td>Modulation</td><td>GMSK (Gaussian-filtered MSK, $BT=0.3$): constant envelope, spectrally compact, efficient class-C amplifier</td><td>270.833 kbit/s per carrier = $13\ \text{MHz}/48$</td><td>15</td></tr>
+<tr><td>TDMA</td><td>8 slots/frame (4.615 ms); the call owns 1 slot; one burst every 4.615 ms</td><td>33.85 kbit/s gross per slot</td><td>22</td></tr>
+<tr><td>Radio channel</td><td>900 MHz, path loss $n\approx3.5$, Rayleigh fading, delay spread up to 16 µs (equaliser span: 4 bit periods = 14.8 µs), Doppler ≈ 100 Hz at 120 km/h</td><td>—</td><td>21</td></tr>
+<tr><td>Receiver</td><td>equaliser (Viterbi MLSE over 5 taps) using the training sequence; soft-output Viterbi decoder; CRC check on class Ia; erasure/interpolation of bad frames</td><td>—</td><td>13, 14, 18</td></tr>
+</table>
+<p>Check: $260\ \text{bits}/20\ \text{ms}=13$ kbit/s; $456/20\ \text{ms}=22.8$; the TDMA channel offers $114\times\frac{24}{26}/4.615\ \text{ms}=22.8$ kbit/s, matching exactly; $8\times33.85=270.8$. The chain in numbers: 104 kbit/s → 13 kbit/s (a factor 8 of source coding) → 22.8 kbit/s (×1.75 for protection) → 33.85 kbit/s per slot (×1.48 for training, guard, signalling, timing). <b>Where the dBs come from.</b> The GSM minimum reference sensitivity is $-102$ dBm for a handset: noise floor $-174+10\log(200\ \text{kHz})=-121$ dBm, noise figure 8 dB, required SNR (with the multipath-fading reference channel, coded) about 11 dB: $-121+8+11=-102$ dBm ✓. A 2 W (33 dBm) handset with a 12 dBi base antenna can therefore tolerate $33+12-(-102)-\text{margins}\approx140$ dB of path loss: tens of kilometres in open country, which is why GSM’s timing advance (63 bit periods, 35 km) is sized the way it is (Chapter 22).</p>
+
+<h2>2 · A satellite television downlink (DVB-S2, Ku band)</h2>
+<p><b>Requirement.</b> A geostationary satellite at slant range 38 000 km serves a home with a 60 cm dish. Transponder bandwidth 36 MHz, EIRP 52 dBW at beam centre, carrier 12 GHz. We want the highest rate that gives a sunny-day margin plus rain margin.</p>
+<div class="box derive"><span class="tag">Calculation · step by step</span>
+<ol class="steps">
+<li><b>Receive gain.</b> Dish aperture efficiency 0.65, $\lambda=0.025$ m: $G=\eta(\pi D/\lambda)^2=0.65\,(\pi\cdot0.6/0.025)^2=0.65\times5685=3695$: <b>35.7 dBi</b>.</li>
+<li><b>System noise temperature.</b> LNB noise figure 0.3 dB: $T_{\rm LNB}=290(10^{0.03}-1)=21$ K; antenna pick-up of sky and ground spill-over 60 K; feed and cable losses referred to the input 29 K: $T_{\rm sys}\approx110$ K (20.4 dBK). $G/T=35.7-20.4=\mathbf{15.3}$ dB/K.</li>
+<li><b>Path loss.</b> $L_{\rm fs}=32.44+20\log38\,000+20\log12\,000=205.6$ dB; atmospheric gases and pointing loss 0.5 dB.</li>
+<li><b>Carrier to noise density.</b> $C/N_0=\mathrm{EIRP}-L+G/T+228.6=52-206.1+15.3+228.6=\mathbf{89.8}$ dB-Hz.</li>
+<li><b>Symbol rate.</b> The 36 MHz transponder with roll-off $\alpha=0.35$ (Chapter 13): $R_s=36/(1+0.35)=26.7$ Msym/s; take 27.5 Msym/s (a standard value, a little wider than the transponder). $E_s/N_0=89.8-10\log(27.5\times10^6)=89.8-74.4=\mathbf{15.4}$ dB.</li>
+<li><b>Choose the MODCOD.</b> DVB-S2 (LDPC + BCH, Chapter 18) requires, for a quasi-error-free link: QPSK ½: $E_s/N_0=1.0$ dB (efficiency 0.99 bit/symbol); QPSK ¾: 4.03 dB (1.49); 8PSK ⅔: 6.62 dB (1.98); 8PSK ¾: 7.91 dB (2.23); 16APSK ¾: ≈ 10.2 dB (2.97). With 15.4 dB there is 7.5 dB spare even for 8PSK ¾. Reserve a <b>rain margin</b>: at 12 GHz, in a temperate climate, 0.01% of the year attenuation reaches about 5–6 dB, and the rain also raises the sky noise (a 6 dB rain loss raises $T_{\rm sys}$ from 110 K to $\approx110+190=300$ K: another $10\log(300/110)=4.4$ dB of $E_s/N_0$ loss). Total rain impact ≈ 10 dB at 0.01%.</li>
+<li><b>Decision.</b> QPSK ¾ with margin $15.4-4.03-10=1.4$ dB at the 99.99% level: <b>40.9 Mbit/s</b> ($27.5\times1.487$) per transponder, i.e. about 8 standard-definition or 4 HD channels at 2018-era compression. Clear-sky margin for 8PSK ¾ is 7.5 dB: not enough for the rain margin, which is why DVB-S2 broadcasters use QPSK for the signals that must always arrive, and why adaptive coding and modulation (ACM) is used on two-way broadband links.</li>
+</ol></div>
+<div class="widget" id="w-satlink">The $E_s/N_0$ at the receiver against rain attenuation $A$ (dB) for the chosen dish diameter, EIRP and symbol rate, including the noise-temperature rise of the rain ($T_{\rm rain}=270(1-10^{-A/10})$ K added to the sky pick-up). The horizontal lines are the thresholds of four DVB-S2 modes. The readout gives the clear-sky $E_s/N_0$ and the rain attenuation at which each mode fails: how much rain each can survive. Compare a 45 cm dish with a 90 cm dish.</div>
+<p><b>Check against Shannon.</b> QPSK ¾ carries 1.49 information bits per (complex) symbol. For the complex AWGN channel $\eta\le\log_2(1+E_s/N_0)$, so $E_s/N_0\ge2^{1.49}-1=1.81$, i.e. 2.6 dB; the 4.03 dB required by the standard is 1.4 dB from the limit: the gap that LDPC codes of block length 64 800 leave, including implementation margin (Chapter 18).</p>
+
+<h2>3 · Wi-Fi at home: the rate–range staircase</h2>
+<p>An 802.11ac access point (80 MHz channel, two spatial streams, short guard interval) offers PHY rates from 65 to 866.7 Mbit/s depending on the modulation and coding scheme (MCS). For MCS 9 (256-QAM, rate ⅚): $234\ \text{data subcarriers}\times8\ \text{bits}\times\tfrac56\times2\ \text{streams}/3.6\ \mu\text{s}=866.7$ Mbit/s (Chapter 20 numerology: useful symbol 3.2 µs + short guard 0.4 µs). The link adapts the MCS to the SNR (Chapter 21 link adaptation): each MCS needs a minimum SNR.</p>
+<table>
+<tr><th>MCS</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr>
+<tr><th>modulation, code rate</th><td>BPSK ½</td><td>QPSK ½</td><td>QPSK ¾</td><td>16-QAM ½</td><td>16-QAM ¾</td><td>64-QAM ⅔</td><td>64-QAM ¾</td><td>64-QAM ⅚</td><td>256-QAM ¾</td><td>256-QAM ⅚</td></tr>
+<tr><th>PHY rate (Mbit/s)</th><td>65</td><td>130</td><td>195</td><td>260</td><td>390</td><td>520</td><td>585</td><td>650</td><td>780</td><td>866.7</td></tr>
+<tr><th>SNR needed (dB, typical)</th><td>5</td><td>8</td><td>11</td><td>14</td><td>18</td><td>22</td><td>24</td><td>26</td><td>30</td><td>32</td></tr>
+</table>
+<p><b>Link budget.</b> Transmit power 23 dBm EIRP; noise floor $-174+10\log(80\ \text{MHz})+7$ dB noise figure $=-88$ dBm. Path loss at 5.5 GHz: 47.2 dB at 1 m (Friis), then $10n\log d$ with $n=3.5$ for an indoor environment plus wall losses. SNR$(d)=23-[47.2+35\log d+L_{\rm walls}]+88$. For MCS 9 the SNR must be $\ge32$ dB: $35\log d=23-47.2+88-32-L_{\rm w}=31.8-L_{\rm w}$: with no walls $d=8$ m; with one 10 dB wall $d=4.2$ m. For MCS 0 (5 dB): $35\log d=58.8-L_{\rm w}$: $d=48$ m with no walls. <b>The rate falls by a factor 13 over a factor 6 in range</b>, and is only reached inside the same room. Note also the MAC efficiency of Chapter 22: with frame aggregation the useful throughput is typically 60–70% of the PHY rate. The 2.4 GHz band at the same power and noise bandwidth of 20 MHz reaches farther (lower path loss and less wall loss, but only 40 MHz of bandwidth and a crowded band).</p>
+<div class="widget" id="w-wifi">PHY rate against distance for the 802.11ac link above, as a staircase. Adjust the path-loss exponent, wall loss, transmit power and the number of spatial streams (rates scale with the streams, but the SNR needed is unchanged: MIMO multiplexing needs a good SNR, Chapter 21). The readout lists the range of the fastest and slowest MCS.</div>
+
+<h2>4 · A cellular macro cell: coverage from the uplink budget</h2>
+<p>The <b>uplink</b> (handset to base) is the limiting direction: the handset has 23 dBm instead of 43–46 dBm. A user at the cell edge needs, say, a 1 Mbit/s-class bearer using QPSK ⅓ on 2 resource blocks (360 kHz).</p>
+<ol class="steps">
+<li><b>Noise.</b> $-174+10\log(360\,000)=-118.4$ dBm; base-station noise figure 2.5 dB; required SINR for QPSK ⅓ with HARQ at 10% BLER ≈ −1 dB: receiver sensitivity $=-118.4+2.5-1=-116.9$ dBm.</li>
+<li><b>Gains and margins.</b> Handset 23 dBm, 0 dBi; base antenna 17 dBi; body loss 1 dB, feeder/cable 2 dB, interference margin 3 dB (the neighbouring cells’ load), shadow margin 8 dB (for $\sigma=6$–8 dB and 90% edge coverage).</li>
+<li><b>Maximum allowable path loss.</b> MAPL $=23+17-(-116.9)-1-2-3-8=\mathbf{142.9}$ dB.</li>
+<li><b>Coverage radius.</b> Urban Hata at 900 MHz ($h_b=30$ m, $h_m=1.5$ m): $L=126.4+35.2\log d_{\rm km}$ $\Rightarrow$ $d=10^{(142.9-126.4)/35.2}=\mathbf{2.9}$ km. At 1800 MHz (COST 231): 1.55 km; at 2100: 1.3 km. Suburban or rural, subtract 10 to 28 dB from the path loss: radius ×2 or more.</li>
+<li><b>Area and capacity.</b> A hexagonal cell of radius $R=2.9$ km has area $\tfrac{3\sqrt3}2R^2=22.7$ km$^2$ (three sectors of 7.6 km$^2$). With 20 MHz and average SINR 10 dB, a practical spectral efficiency of about 0.6 of Shannon ($0.6\times\log_2(1+10)=2.1$ bit/s/Hz) and 25% overhead (Chapter 20): $20\times2.1\times0.75\approx31$ Mbit/s per sector per spatial layer; with 2×2 MIMO at that SINR perhaps ×1.6: ≈ 50 Mbit/s. Split the 2.9 km cell into four (radius 1.45 km): ×4 capacity per area (Chapter 22) at the cost of four base stations.</li>
+</ol>
+<p><b>Lesson.</b> Coverage is set by the <em>uplink</em> at low rates (noise-limited, the formula above); capacity is set by <em>interference</em> at high rates (SINR, reuse, scheduling). Rural macro cells are coverage-limited: raise the base antenna, use lower frequencies; urban cells are capacity-limited: shrink cells, add sectors, spectrum and MIMO.</p>
+
+<h2>5 · Deep space: Voyager 1 at 160 AU</h2>
+<p>Voyager 1’s X-band transmitter radiates 23 W through a 3.7 m dish; the receiver is a 70 m dish of NASA’s Deep Space Network.</p>
+<div class="box derive"><span class="tag">Calculation · a link across 24 billion kilometres</span>
+<ol class="steps">
+<li><b>Path loss.</b> $d=160\ \text{AU}=2.39\times10^{13}$ m; $\lambda=3\times10^8/8.4\times10^9=0.0357$ m. $L=20\log\frac{4\pi d}\lambda=20\log(8.4\times10^{15})=\mathbf{318.5}$ dB. (One-way light time 22 hours.)</li>
+<li><b>Gains.</b> Spacecraft HGA 48 dBi (3.7 m at 8.4 GHz, $\eta\approx0.6$: $0.6(\pi\cdot3.7/0.0357)^2=63\,600$: 48 dBi ✓); DSN 70 m: $0.6(\pi\cdot70/0.0357)^2=2.3\times10^7$: 73.6 dBi ≈ 74 dBi. Losses (pointing, cable, polarisation, atmosphere) 2 dB.</li>
+<li><b>Received power.</b> $13.6+48+74-318.5-2=\mathbf{-184.9}$ dBW: $3\times10^{-19}$ W, a third of an attowatt.</li>
+<li><b>Noise.</b> $T_{\rm sys}=25$ K (cryogenic maser/HEMT, Chapter 5): $N_0=-228.6+14=-214.6$ dBW/Hz. $C/N_0=-184.9+214.6=\mathbf{29.7}$ dB-Hz.</li>
+<li><b>Data rate.</b> At 160 bit/s ($22.0$ dB-Hz): $E_b/N_0=7.7$ dB. With a concatenated Reed–Solomon + convolutional code (Chapter 17–18) requiring ≈2.5 dB, the margin is 5 dB, which pays for modulation, synchronisation and demodulator losses (≈3 dB); the maximum rate at 2.5 dB is $10^{(29.7-2.5)/10}=528$ bit/s. Every halving of the rate buys 3 dB. At the data rate of the Voyager imaging era (115 kbit/s at Jupiter, 5 AU) the same budget gives a $C/N_0$ higher by $20\log(160/5)=30$ dB.</li>
+<li><b>Why so slow?</b> Because the received power is $3\times10^{-19}$ W and the noise density $2\times10^{-22}$ W/Hz: at $C/N_0=30$ dB-Hz Shannon’s limit $R<C/(N_0\ln2)=1.44\,C/N_0=1.35$ kbit/s is the ultimate bound (unconstrained bandwidth), and no code can beat it; $-1.59$ dB (Chapter 11) is the floor on $E_b/N_0$. <b>Doubling the dish diameter</b> gains 6 dB; arraying a 70 m dish with three 34 m dishes adds their collecting areas, about +2 dB; a better code gains 1–2 dB: that is all there is.</li>
+</ol></div>
+
+<h2>6 · An optical fibre line: amplifier noise and reach</h2>
+<p>Everything above scales to light. A fibre carries a 64 GBd dual-polarisation 16-QAM signal (4 bits $\times$ 2 polarisations $\times$ 64 GBd = 512 Gbit/s raw, about 400 Gbit/s after 20% forward error correction). Light loses 0.2 dB/km, so every 100 km an <b>erbium-doped fibre amplifier</b> (EDFA) restores the power, adding noise.</p>
+<div class="box derive"><span class="tag">Derivation · OSNR after $N$ amplified spans</span>
+<p>An amplifier of gain $G$ and noise figure $F$ (Chapter 5) adds amplified-spontaneous-emission noise power $P_{\rm ASE}=F\,h\nu\,G\,B_{\rm ref}$ in a reference bandwidth $B_{\rm ref}$ (by definition of $F$ with an input at the shot-noise limit $h\nu$ per Hz). With $h\nu=1.28\times10^{-19}$ J at 1550 nm, $B_{\rm ref}=12.5$ GHz (0.1 nm, the industry standard): $h\nu B_{\rm ref}=1.6\times10^{-9}$ W $=-58$ dBm. In a span, the amplifier gain exactly equals the span loss $L$: the signal at the amplifier output is at the launch power $P$ again, the noise $F\,h\nu B\,G$. So the <b>optical signal-to-noise ratio</b> (in 0.1 nm) of one span is, in dB,
+$$\mathrm{OSNR}_1=P_{\rm ch}[\mathrm{dBm}]-L_{\rm span}-F+58,$$
+and since noise powers from $N$ identical spans add while the signal is unchanged:
+$$\boxed{\ \mathrm{OSNR}_N=58+P_{\rm ch}-L_{\rm span}-F-10\log_{10}N\ }$$
+<b>Example.</b> $P_{\rm ch}=0$ dBm, $L_{\rm span}=20$ dB (100 km), $F=5$ dB: $\mathrm{OSNR}_1=33$ dB; after 15 spans (1500 km): $33-11.8=21.2$ dB. <b>Requirement.</b> A 16-QAM signal at 64 GBd with soft-decision FEC (Chapter 18) needs a symbol SNR of about 11 dB before the decoder; in the 0.1 nm reference band that is $11+10\log(64/12.5)=18.1$ dB, plus about 3 dB for transceiver and nonlinear penalties: 21 dB. So the reach is $N\approx15$ spans, 1500 km. Doubling the launch power would double the reach in this linear model, but the fibre’s Kerr nonlinearity limits the useful launch power (an optimum near 0–2 dBm per channel at 64 GBd): that is the optical equivalent of the amplifier back-off of Chapter 20. <b>Capacity</b>: with $\mathrm{SNR}=21-7\approx14$ dB per polarisation, Shannon gives $2\times64\ \text{GBd}\times\log_2(1+25)=2\times64\times4.7=602$ Gbit/s per wavelength: the 512 Gbit/s raw rate is 85% of it.</p></div>
+<div class="widget" id="w-fibre">Optical SNR (in 0.1 nm) against transmission distance for the chosen span length, fibre loss, launch power and amplifier noise figure; the horizontal line is the OSNR the modulation format needs. The curve crosses it at the reach. Switch the format: QPSK (long haul), 16-QAM, 64-QAM (short): higher spectral efficiency means shorter reach, the same trade-off as everywhere in the book.</div>
+
+<div class="box key"><span class="tag">What the six systems share</span>
+<p>Whether the medium is air, vacuum or glass, the arithmetic is the same: <b>signal power</b> (transmit power × gains − losses), <b>noise</b> ($kT_{\rm sys}B$ or amplifier ASE), <b>modulation and code</b> turning the SNR into a rate (Shannon with a gap of 1–3 dB), and <b>margin</b> for what cannot be known (rain, fading, shadowing, ageing). The designer’s job is the margin: 3 dB too little and the link fails on the first wet day; 3 dB too much and the system costs twice as much.</p></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+In a cellular system the uplink usually limits the coverage radius because
+<ol class="opts"><li>the uplink has more bandwidth</li><li>the handset transmits about 20 dB less power than the base station</li><li>the base station has no receive antenna gain</li><li>the uplink uses higher frequencies</li></ol>
+<div class="sol"><p>A handset radiates 23 dBm against 43–46 dBm for a base station; the base station’s higher receive gain and low noise figure only partly compensate. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+In the GSM voice chain, the step that raises the bit rate from 13 kbit/s to 22.8 kbit/s is
+<ol class="opts"><li>speech coding</li><li>GMSK modulation</li><li>channel coding (rate-½ convolutional code, with part of the bits unprotected)</li><li>TDMA framing</li></ol>
+<div class="sol"><p>$260\to456$ bits per 20 ms. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Heavy rain on a Ku-band satellite downlink
+<ol class="opts"><li>attenuates the signal</li><li>raises the sky noise temperature of the receiving system</li><li>increases the free-space loss</li><li>reduces $E_s/N_0$ by more than the attenuation alone</li></ol>
+<div class="sol"><p>Rain absorbs the wave (A) and, as an absorber, radiates thermal noise towards the antenna (B), so $E_s/N_0$ falls by the attenuation <em>plus</em> the noise rise (D). Free-space loss depends only on the distance and frequency (C false). <b>A, B, D</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+In an amplified optical link with identical spans and amplifiers, the OSNR after $N$ spans is lower than after one span by
+<ol class="opts"><li>$N$ dB</li><li>$20\log N$ dB</li><li>$N/2$ dB</li><li>$10\log N$ dB</li></ol>
+<div class="sol"><p>The signal stays the same while the ASE noise powers add: $10\log N$. <b>(D)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="104" data-tol="0.5" data-marks="1" data-src="Original">
+A GSM microphone signal is sampled at 8 kHz with a uniform 13-bit quantiser. The raw bit rate is ______ kbit/s.
+<div class="sol"><p>$8000\times13=104\ 000$ bit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6.02" data-tol="0.05" data-marks="1" data-src="Original">
+A satellite dish is changed from 60 cm to 120 cm diameter (same efficiency). The gain increase is ______ dB.
+<div class="sol"><p>$G\propto D^2$: $20\log2=6.02$ dB (35.7 → 41.7 dBi at 12 GHz).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="15.3" data-tol="0.1" data-marks="1" data-src="Original">
+A dish of gain 35.7 dBi and system noise temperature 110 K has a figure of merit $G/T$ of ______ dB/K.
+<div class="sol"><p>$35.7-10\log110=35.7-20.4=15.3$ dB/K.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="15" data-tol="0.1" data-marks="2" data-src="Original">
+$C/N_0=88$ dB-Hz with a 20 Msymbol/s signal: $E_s/N_0=$ ______ dB.
+<div class="sol"><p>$88-10\log(2\times10^7)=88-73.0=15.0$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.21" data-tol="0.05" data-marks="2" data-src="Original">
+Heavy rain raises the system noise temperature of a receiver from 110 K to 290 K. The loss in $C/N_0$ caused by the noise alone is ______ dB.
+<div class="sol"><p>$10\log(290/110)=4.21$ dB (in addition to the attenuation of the signal).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="40.9" data-tol="0.2" data-marks="2" data-src="Original">
+DVB-S2 QPSK ¾ has an efficiency of 1.487 information bits per symbol. At a symbol rate of 27.5 Msym/s the information rate is ______ Mbit/s.
+<div class="sol"><p>$27.5\times1.487=40.9$ Mbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="139" data-tol="0.3" data-marks="2" data-src="Original">
+An uplink has handset power 23 dBm, base antenna gain 15 dBi, base sensitivity $-115$ dBm, and total margins and losses of 14 dB. The maximum allowable path loss is ______ dB.
+<div class="sol"><p>$23+15-(-115)-14=139$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="150" data-tol="0.5" data-marks="2" data-src="Original">
+An 802.11n 40 MHz channel has 108 data subcarriers; use MCS 7 (64-QAM, rate ⅚), 1 spatial stream and a 3.6 µs symbol (short guard interval). The PHY rate is ______ Mbit/s.
+<div class="sol"><p>$108\times6\times\frac56/3.6\ \mu\text{s}=150$ Mbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="32.5" data-tol="0.1" data-marks="2" data-src="Original">
+An optical span has launch power 2 dBm, span loss 22 dB and an EDFA noise figure of 5.5 dB. Using $\mathrm{OSNR}_1=58+P-L-F$, the single-span OSNR (0.1 nm) is ______ dB.
+<div class="sol"><p>$58+2-22-5.5=32.5$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="15" data-tol="0.01" data-marks="2" data-src="Original">
+Identical spans give $\mathrm{OSNR}_1=33$ dB; the modulation needs 21 dB. The largest whole number of spans is ______.
+<div class="sol"><p>$33-10\log N\ge21\Rightarrow N\le10^{1.2}=15.8$; 15 spans (1500 km at 100 km/span).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="7.7" data-tol="0.1" data-marks="2" data-src="Original">
+Voyager’s received $C/N_0$ is 29.7 dB-Hz. At 160 bit/s the $E_b/N_0$ is ______ dB.
+<div class="sol"><p>$29.7-10\log160=29.7-22.0=7.7$ dB.</p></div></div>
+
+<p class="pset">Set C · Design problems</p>
+
+<div class="prob" data-type="nat" data-ans="20.5" data-tol="0.3" data-marks="3" data-src="Original (GATE-style)">
+A Ku-band downlink has EIRP 54 dBW, a 0.9 m dish (efficiency 0.65, 12 GHz), $T_{\rm sys}=110$ K, free-space loss 205.6 dB, other losses 0.5 dB and a symbol rate of 30 Msym/s. The clear-sky $E_s/N_0$ is ______ dB.
+<div class="sol"><p>$G=0.65(\pi\cdot0.9/0.025)^2=8300\ (39.2\ \text{dBi})$; $G/T=39.2-20.4=18.8$ dB/K. $C/N_0=54-205.6-0.5+18.8+228.6=95.3$ dB-Hz; $E_s/N_0=95.3-74.8=20.5$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="3" data-src="Original (GATE-style)">
+An optical line has launch power 1 dBm per channel, 120 km spans of loss 24 dB, EDFA noise figure 5 dB; the format needs OSNR $\ge21$ dB. The maximum number of spans is ______.
+<div class="sol"><p>$\mathrm{OSNR}_1=58+1-24-5=30$ dB; $30-10\log N\ge21$: $N\le10^{0.9}=7.94$: 7 spans (840 km).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6.02" data-tol="0.05" data-marks="2" data-src="Original (GATE-style)">
+A deep-space link’s $C/N_0$ changes by how many dB if the distance is <em>halved</em> (everything else equal)? ______ dB.
+<div class="sol"><p>Free-space loss $\propto d^2$: $20\log2=+6.02$ dB (equivalent to doubling the data rate).</p></div></div>
+
+<div class="summary"><h3>Chapter 23 in one breath</h3>
+<ul>
+<li>Recipe: requirement → modulation/code (spectral efficiency, required $E_b/N_0$, Shannon gap) → noise ($kTB$, $N_0=kT$) → propagation and margins → sum $E_b/N_0=\mathrm{EIRP}-L+G/T+228.6-10\log R_b$ → check sharing and interference.</li>
+<li>GSM: 64 → 104 kbit/s raw → 13 kbit/s (RPE-LTP) → 22.8 kbit/s (rate-½ code) → 33.85 kbit/s per slot, 270.833 kbit/s per carrier; $-102$ dBm sensitivity.</li>
+<li>DVB-S2: $G=\eta(\pi D/\lambda)^2$; $C/N_0$; MODCOD from $E_s/N_0$ table; rain = attenuation + noise rise.</li>
+<li>Wi-Fi: rate staircase from SNR thresholds; range falls 6× from MCS 9 to MCS 0, rate falls 13×.</li>
+<li>Cellular: MAPL from the uplink; Hata gives radius; coverage-limited (rural) versus capacity-limited (urban).</li>
+<li>Voyager: 318.5 dB loss, $-185$ dBW received, 29.7 dB-Hz; Shannon limit $1.44\,C/N_0$. Fibre: $\mathrm{OSNR}_N=58+P-L-F-10\log N$.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+
+/* ---------- satellite link with rain ---------- */
+GB.widget('w-satlink',{title:'DVB-S2 downlink: Es/N0 against rain attenuation',h:360,hm:380,controls:[{k:'D',label:'dish diameter (m)',min:.45,max:1.2,step:.05,value:.6,fmt:v=>v.toFixed(2)+' m'},{k:'e',label:'satellite EIRP (dBW)',min:46,max:58,step:.5,value:52,fmt:v=>v+' dBW'},{k:'rs',label:'symbol rate (Msym/s)',min:10,max:36,step:.5,value:27.5,fmt:v=>v+' M'}],
+ draw(g,p){ const lam=.025, G=10*Math.log10(.65*Math.pow(Math.PI*p.D/lam,2)); const esn0=A=>{ const T=110+270*(1-Math.pow(10,-A/10)); return p.e-205.62-.5-A+G-10*Math.log10(T)+228.6-10*Math.log10(p.rs*1e6); };
+  const MC=[['QPSK 1/2',1.0,.989,'green'],['QPSK 3/4',4.03,1.487,'yellow'],['8PSK 3/4',7.91,2.228,'orange'],['16APSK 3/4',10.21,2.967,'red']]; const v=g.full({l:46,b:32}); v.view(0,15,-4,30); v.axes({xl:'rain attenuation A (dB)',ystep:5,xstep:1,xbottom:true}); const xs=[],ys=[]; for(let A=0;A<=15.001;A+=.1){ xs.push(A); ys.push(esn0(A)); } v.line(xs,ys,'blue',2.8);
+  MC.forEach(c=>{ v.hline(c[1],c[3],[6,4],1.6); v.text(15,c[1],c[0],c[3],'right',11,-4,-8); });
+  const lim=th=>{ if(esn0(0)<th) return null; let lo=0,hi=40; for(let i=0;i<60;i++){ const mid=(lo+hi)/2; if(esn0(mid)>th) lo=mid; else hi=mid; } return lo; };
+  return 'dish gain <b>'+G.toFixed(1)+' dBi</b>, G/T = '+(G-20.4).toFixed(1)+' dB/K (clear sky) · clear-sky Es/N0 <b>'+esn0(0).toFixed(1)+' dB</b> · rain attenuation survived: '+MC.map(c=>{ const l=lim(c[1]); return c[0]+' <b>'+(l==null?'—':l.toFixed(1)+' dB')+'</b> ('+(p.rs*c[2]).toFixed(0)+' Mb/s)'; }).join(' · '); }});
+
+/* ---------- Wi-Fi staircase ---------- */
+(function(){ const RATE=[65,130,195,260,390,520,585,650,780,866.7], SNR=[5,8,11,14,18,22,24,26,30,32], NM=['BPSK ½','QPSK ½','QPSK ¾','16-QAM ½','16-QAM ¾','64-QAM ⅔','64-QAM ¾','64-QAM ⅚','256-QAM ¾','256-QAM ⅚'];
+ GB.widget('w-wifi',{title:'802.11ac (80 MHz) rate against distance',h:360,hm:380,controls:[{k:'n',label:'path-loss exponent n',min:2,max:5,step:.1,value:3.5,fmt:v=>v.toFixed(1)},{k:'w',label:'extra wall loss (dB)',min:0,max:30,step:1,value:0,fmt:v=>v+' dB'},{k:'pt',label:'EIRP (dBm)',min:10,max:30,step:1,value:23,fmt:v=>v+' dBm'},{k:'ss',type:'select',label:'spatial streams',options:[[1,'1'],[2,'2'],[3,'3'],[4,'4']],value:2}],
+  draw(g,p){ const noise=-88, snr=d=>p.pt-(47.2+10*p.n*Math.log10(d)+p.w)-noise; const mcs=d=>{ const s=snr(d); let k=-1; for(let i=0;i<10;i++) if(s>=SNR[i]) k=i; return k; };
+   const sc=p.ss/2; const v=g.full({l:50,b:32}); v.view(0,2.2,0,900*sc*1.0+30); v.axes({xl:'log₁₀ distance (m)',ystep:Math.round(200*sc/50)*50||100,xstep:.5}); const xs=[],ys=[]; let last=-2; for(let l=0;l<=2.2;l+=.005){ const d=Math.pow(10,l), k=mcs(d); xs.push(l); ys.push(k<0?NaN:RATE[k]*sc); }
+   v.line(xs,ys,'yellow',2.6); for(let i=0;i<10;i++){ const d=Math.pow(10,(p.pt-p.w-47.2+88-SNR[i])/(10*p.n)); if(d>=1&&d<=158) { v.vline(Math.log10(d),'axis',[2,4],1); v.text(Math.log10(d),RATE[i]*sc,'MCS'+i,'mute','center',10,0,-9); } }
+   const dR=i=>Math.pow(10,(p.pt-p.w-47.2+88-SNR[i])/(10*p.n)); return 'streams × rate: MCS 9 (<b>'+(RATE[9]*sc).toFixed(0)+' Mbit/s</b>, '+NM[9]+') needs SNR ≥ 32 dB → range <b>'+dR(9).toFixed(1)+' m</b> · MCS 0 (<b>'+(RATE[0]*sc).toFixed(0)+' Mbit/s</b>) needs 5 dB → range <b>'+dR(0).toFixed(0)+' m</b> · noise floor '+noise+' dBm'; }});
+})();
+
+/* ---------- fibre OSNR ---------- */
+GB.widget('w-fibre',{title:'Optical line: OSNR against distance',h:360,hm:380,controls:[{k:'sp',label:'span length (km)',min:40,max:120,step:5,value:100,fmt:v=>v+' km'},{k:'al',label:'fibre loss (dB/km)',min:.15,max:.3,step:.01,value:.2,fmt:v=>v.toFixed(2)},{k:'pw',label:'launch power per channel (dBm)',min:-4,max:4,step:.5,value:0,fmt:v=>v+' dBm'},{k:'nf',label:'amplifier noise figure (dB)',min:4,max:7,step:.5,value:5,fmt:v=>v+' dB'},{k:'fm',type:'select',label:'format (required OSNR, 64 GBd, with penalty)',options:[[14.6,'DP-QPSK  (≈14.6 dB)'],[21.1,'DP-16QAM  (≈21.1 dB)'],[27.1,'DP-64QAM  (≈27.1 dB)']],value:21.1}],
+  draw(g,p){ const L=p.sp*p.al, o1=58+p.pw-L-p.nf, osnr=N=>o1-10*Math.log10(N); const v=g.full({l:46,b:32}); v.view(0,6000,0,40); v.axes({xl:'distance (km)',ystep:5,xstep:1000}); const xs=[],ys=[]; for(let d=p.sp;d<=6000;d+=p.sp/2){ xs.push(d); ys.push(osnr(d/p.sp)); } v.line(xs,ys,'blue',2.6); v.hline(p.fm,'red',[6,4],1.8);
+   const N=Math.pow(10,(o1-p.fm)/10), reach=Math.floor(N)*p.sp; v.vline(Math.min(reach,6000),'green',[4,4],1.8); return 'span loss <b>'+L.toFixed(0)+' dB</b> → OSNR after one span <b>'+o1.toFixed(1)+' dB</b> (0.1 nm) · required <b>'+p.fm+' dB</b> → maximum <b>'+Math.floor(N)+' spans = '+reach+' km</b> (linear model; nonlinearity limits the launch power)'; }});
+</script>
