@@ -1,54 +1,73 @@
-<!--meta {"id": "ch05", "num": "5", "part": "Part I · The Mathematical Toolkit", "title": "Randomness That Evolves in Time", "lede": "A random variable is a number you do not know yet. A random process is a whole waveform you do not know yet. Noise, data streams and speech are all of this kind."} -->
+<!--meta {"id":"ch05","num":"5","part":"Part I · The Mathematical Toolkit","title":"Randomness That Evolves in Time: Random Processes and Noise","lede":"A random variable is a number you do not know yet. A random process is a whole waveform you do not know yet. Noise, data streams and speech are all of this kind."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Describe a random process by its mean and autocorrelation; test for wide-sense stationarity, ergodicity and cyclostationarity; list the properties an autocorrelation must have and <b>prove</b> them.</li>
+<li>Derive the Wiener–Khinchin theorem from the periodogram, and compute the PSD of sinusoids, random binary waves, and pulse trains with memory (the general PAM formula).</li>
+<li>Derive thermal noise $N_0=kT$ from a thermodynamic argument; use $v_n^2=4kTRB$, $-174$ dBm/Hz, and noise-equivalent bandwidth.</li>
+<li>Derive $S_Y=|H|^2S_X$; compute the output power of white noise through RC and other filters.</li>
+<li>Derive the in-phase/quadrature representation of narrowband Gaussian noise and its Rayleigh envelope.</li>
+<li>Derive and apply the Friis cascade formula, noise temperature, receiver sensitivity and the Wiener filter.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapters 1 (LTI systems), 2 (Fourier), 3 (complex envelope) and 4 (Gaussian, Rayleigh).</p></div>
 
 <div class="box story"><span class="tag">History · three men, one hiss</span>
-<p><strong>Einstein (1905)</strong> explained why pollen grains jiggle in water: they are kicked by invisible molecules, so a particle's path is a random process with a precise statistical law. <strong>John B. Johnson</strong> at Bell Labs found in 1926 that a plain resistor, with nothing connected to it, produces a faint random voltage. His colleague <strong>Harry Nyquist</strong> saw at once that this was the same phenomenon: the electrons in the metal are doing Brownian motion. In 1928 he derived the open-circuit noise voltage $\overline{v_n^2}=4kTRB$ using nothing but thermodynamics, and the result does not depend on what the resistor is made of.</p>
-<p>The final piece came from <strong>Norbert Wiener</strong> (1930) and, independently, <strong>Aleksandr Khinchin</strong> (1934): the power spectrum of a random signal is the Fourier transform of its autocorrelation. Wiener's wartime work on predicting aircraft positions from noisy radar became the first <em>optimal filter</em>, an ancestor of the matched filter of Chapter 10.</p></div>
+<p><strong>Einstein (1905)</strong> explained why pollen grains jiggle in water: they are kicked by invisible molecules, so a particle’s path is a random process with a precise statistical law. <strong>John B. Johnson</strong> at Bell Labs found in 1926 that a plain resistor, with nothing connected to it, produces a faint random voltage. His colleague <strong>Harry Nyquist</strong> saw at once that this was the same phenomenon: the electrons in the metal are doing Brownian motion. In 1928 he derived the open-circuit noise voltage $\overline{v_n^2}=4kTRB$ using nothing but thermodynamics, and the result does not depend on what the resistor is made of.</p>
+<p>The final piece came from <strong>Norbert Wiener</strong> (1930) and, independently, <strong>Aleksandr Khinchin</strong> (1934): the power spectrum of a random signal is the Fourier transform of its autocorrelation. Wiener’s wartime work on predicting aircraft positions from noisy radar became the first <em>optimal filter</em>, an ancestor of the matched filter of Chapter 14.</p></div>
 
 <div class="box real"><span class="tag">Real world · the noise floor you can calculate</span>
-<p>At room temperature ($T_0=290\,$K) the thermal noise density available from any resistor is $kT_0=4\times10^{-21}\,$W/Hz, which is $-174$ dBm/Hz. Over a 1 MHz receiver bandwidth that is $-174+60=-114$ dBm. Every received signal in every Wi-Fi router, GPS receiver and phone has to climb above this number. Its closeness to the true limit is the reason receivers are cooled (radio telescopes use liquid helium) and why the <em>first</em> amplifier in any receiver is the most important component.</p></div>
+<p>At room temperature ($T_0=290\,$K) the thermal noise density available from any resistor is $kT_0=4\times10^{-21}\,$W/Hz, which is $-174$ dBm/Hz. Over a 1 MHz receiver bandwidth that is $-174+60=-114$ dBm. Every received signal in every Wi-Fi router, GPS receiver and phone has to climb above this number. Its closeness to the true limit is the reason receivers are cooled (radio telescopes use liquid helium) and why the <em>first</em> amplifier in any receiver is the most important component. By the end of this chapter you will be able to compute a receiver’s sensitivity on a napkin.</p></div>
 
 <h2>A random process is a bag of waveforms</h2>
-<p>Pick a random outcome $\omega$ (the "universe"). It determines an entire waveform $x(t;\omega)$. Run the experiment again, get another waveform. The collection of all possible waveforms with their probabilities is the <strong>ensemble</strong>. Two ways to see a random process:</p>
+<p>Pick a random outcome $\omega$ (the “universe”). It determines an entire waveform $x(t;\omega)$. Run the experiment again, get another waveform. The collection of all possible waveforms with their probabilities is the <strong>ensemble</strong>. Two ways to see a random process:</p>
 <ul>
-<li><strong>Vertical slice:</strong> freeze time at $t_0$; the values $X(t_0)$ across the ensemble form an ordinary random variable.</li>
-<li><strong>Horizontal slice:</strong> freeze the outcome; you get one ordinary waveform ("sample function" or "realisation").</li>
+<li><strong>Vertical slice:</strong> freeze time at $t_0$; the values $X(t_0)$ across the ensemble form an ordinary random variable (Chapter 4).</li>
+<li><strong>Horizontal slice:</strong> freeze the outcome; you get one ordinary waveform (“sample function” or “realisation”).</li>
 </ul>
-<div class="widget" id="w-ens">Fifty sample functions (thin) and the distribution of values across the ensemble at the chosen time $t_0$ (histogram, bottom). The three "well-behaved" processes look the same at every $t_0$. The <em>random-amplitude</em> cosine does not: at $t_0=0.25$ every realisation crosses zero, so its variance there is zero.</div>
+<p>The complete description is the joint distribution of $X(t_1),X(t_2),\dots,X(t_k)$ for every choice of times: for a Gaussian process that is simply the mean function and the covariance function; for everything else we settle for the first two moments.</p>
+<div class="widget" id="w-ens">Fifty sample functions (thin) and the distribution of values across the ensemble at the chosen time $t_0$ (histogram, bottom). The three “well-behaved” processes look the same at every $t_0$. The <em>random-amplitude</em> cosine does not: at $t_0=0.25$ every realisation crosses zero, so its variance there is zero.</div>
 
-<h2>Mean, autocorrelation, and what "stationary" means</h2>
-<p>For a process $X(t)$ define
+<h2>Mean, autocorrelation, and what “stationary” means</h2>
+<p>For a process $X(t)$ define the mean and autocorrelation
 $$\mu_X(t)=\E[X(t)],\qquad R_X(t_1,t_2)=\E[X(t_1)X(t_2)].$$
-$R_X$ answers: <em>how much does the value now tell me about the value $t_2-t_1$ seconds later?</em> A process is <strong>wide-sense stationary (WSS)</strong> when (i) the mean is constant and (ii) the autocorrelation depends only on the time difference $\tau=t_2-t_1$:
+$R_X$ answers: <em>how much does the value now tell me about the value $t_2-t_1$ seconds later?</em> (The covariance $C_X=R_X-\mu_X(t_1)\mu_X(t_2)$ removes the means.) A process is <strong>wide-sense stationary (WSS)</strong> when (i) the mean is constant and (ii) the autocorrelation depends only on the time difference $\tau=t_2-t_1$:
 $$\mu_X(t)=\mu_X,\qquad R_X(t,t+\tau)=R_X(\tau).$$
-(Strict-sense stationarity demands that all joint distributions be shift-invariant; for <em>Gaussian</em> processes the two notions coincide.) Almost everything we use in communications, receiver noise and random data streams, is modelled as WSS.</p>
+Strict-sense stationarity demands that all joint distributions be shift-invariant; strict implies wide-sense (if second moments exist), and for <em>Gaussian</em> processes the two notions coincide, because a Gaussian is fixed by its first two moments. Almost everything we use in communications, receiver noise and random data streams, is modelled as WSS. Two processes are <b>jointly WSS</b> if in addition the cross-correlation $R_{XY}(\tau)=\E[X(t+\tau)Y(t)]$ depends only on $\tau$.</p>
 <div class="box ex"><span class="tag">Worked example · random-phase sinusoid</span>
 <p>$X(t)=A\cos(2\pi f_0t+\Theta)$ with $\Theta\sim U[0,2\pi)$. The mean is $\E[\cos(\cdot+\Theta)]=0$ for every $t$. Using $\cos a\cos b=\tfrac12[\cos(a-b)+\cos(a+b)]$:
 $$R_X(t,t+\tau)=\frac{A^2}2\cos(2\pi f_0\tau)+\frac{A^2}{2}\underbrace{\E[\cos(4\pi f_0t+2\pi f_0\tau+2\Theta)]}_{=0\ \text{(uniform phase averages out)}}=\frac{A^2}{2}\cos(2\pi f_0\tau).$$
-It is WSS, with power $R_X(0)=A^2/2$. This is precisely GATE 2014's question for $X=\sqrt2\sin(2\pi t+\varphi)$: $R=\cos 2\pi(t_1-t_2)$.</p></div>
-<div class="box ex"><span class="tag">Worked example · the random binary wave</span>
-<p>Every $T$ seconds, independently, the signal is $+A$ or $-A$ with equal probability, with a random start offset $T_d\sim U[0,T)$ (so that it is stationary). Two samples $\tau$ apart fall in the same bit with probability $1-|\tau|/T$ (then product $=A^2$) and in different, independent bits otherwise (average product 0). Hence
-$$R_X(\tau)=A^2\Big(1-\frac{|\tau|}T\Big)\ \text{ for }|\tau|\le T,\qquad 0\text{ otherwise}\quad\Longrightarrow\quad R_X(\tau)=A^2\,\tri(\tau/T).$$
-This triangle is the autocorrelation of every NRZ data stream. Chapter 9 reuses it.</p></div>
-<div class="box trap"><span class="tag">Trap · "ergodic" and "stationary" are different words</span>
-<p>Ensemble averages ($\E[\cdot]$ over realisations) equal time averages over a single long realisation only for <strong>ergodic</strong> processes. That is what lets us measure the power of a noise source from one long recording. Not every stationary process is ergodic: the process "$X(t)=C$ where $C$ is a random constant" is stationary but a single realisation tells you only about its own $C$.</p></div>
+It is WSS, with power $R_X(0)=A^2/2$. This is precisely GATE 2014’s question for $X=\sqrt2\sin(2\pi t+\varphi)$: $R=\cos 2\pi(t_1-t_2)$. If the phase were <em>not</em> random ($\Theta=0$) the second term would not average away and the process would not be stationary: the randomness of the phase is exactly what makes it WSS. That is why a receiver that does not know the carrier phase models it as uniform.</p></div>
+<div class="box derive"><span class="tag">Derivation · the random binary wave</span>
+<p>Every $T$ seconds, independently, the signal is $+A$ or $-A$ with equal probability. To make it stationary, shift the whole bit grid by a random offset $T_d\sim U[0,T)$ independent of the bits (a real data stream has no preferred origin relative to your clock). Take two samples $\tau>0$ apart. If they fall inside the same bit (probability $1-\tau/T$ when $\tau<T$: the later sample must not cross the next bit boundary, which lies at a uniformly random position) the product is $A^2$; otherwise they lie in different, independent, zero-mean bits and the average product is $0$. Hence
+$$R_X(\tau)=A^2\Big(1-\frac{|\tau|}T\Big)\ \text{ for }|\tau|\le T,\quad 0\text{ otherwise}\ \Longrightarrow\ R_X(\tau)=A^2\,\tri(\tau/T).$$
+This triangle is the autocorrelation of every NRZ data stream. Chapter 13 reuses it. <b>Without the random delay</b> the process is only <em>cyclostationary</em>: its statistics repeat every $T$ but are not shift-invariant (GATE 2025 Q.42 below tests exactly this).</p></div>
+<div class="box trap"><span class="tag">Trap · “ergodic” and “stationary” are different words</span>
+<p>Ensemble averages ($\E[\cdot]$ over realisations) equal time averages over a single long realisation only for <strong>ergodic</strong> processes. That is what lets us measure the power of a noise source from one long recording, $\frac1{2T}\int_{-T}^Tx^2dt\to R_X(0)$. Not every stationary process is ergodic: the process “$X(t)=C$ where $C$ is a random constant” is stationary but a single realisation tells you only about its own $C$. A WSS process is ergodic in the mean if its covariance decays, $C_X(\tau)\to0$; the random-phase sinusoid is ergodic, the random constant is not.</p></div>
 
 <h2>What an autocorrelation function looks like (and what it cannot be)</h2>
 <div class="box key"><span class="tag">Properties of $R_X(\tau)$ for a real WSS process</span>
 <ol>
-<li><strong>Even:</strong> $R_X(-\tau)=R_X(\tau)$.</li>
-<li><strong>Peak at the origin:</strong> $|R_X(\tau)|\le R_X(0)$, and $R_X(0)=\E[X^2]$ is the <em>total average power</em>.</li>
-<li><strong>Tail = DC power:</strong> if $X$ has no periodic component, $R_X(\infty)=\mu_X^2$ (the DC power). Hence AC power (variance) $=R_X(0)-R_X(\infty)$.</li>
+<li><strong>Even:</strong> $R_X(-\tau)=R_X(\tau)$ (substitute $t\to t-\tau$ in the definition).</li>
+<li><strong>Peak at the origin:</strong> $|R_X(\tau)|\le R_X(0)$, and $R_X(0)=\E[X^2]$ is the <em>total average power</em>. Proof: $0\le\E[(X(t+\tau)\mp X(t))^2]=2R_X(0)\mp2R_X(\tau)$.</li>
+<li><strong>Tail = DC power:</strong> if $X$ has no periodic component, $R_X(\infty)=\mu_X^2$ (distant samples decorrelate, so $\E[X(t+\tau)X(t)]\to\E X\cdot\E X$). Hence AC power (variance) $=R_X(0)-R_X(\infty)$.</li>
 <li>If $X(t)$ has a periodic component, $R_X$ has a periodic component of the same period.</li>
-<li><strong>Non-negative definite:</strong> its Fourier transform must be $\ge0$ at every frequency. This is the sneaky one. $\rect(\tau)$ is even, peaks at zero, but its transform is $\sinc(f)$ which goes negative, so <em>a rectangle can never be an autocorrelation</em>; the triangle can (its transform is $\sinc^2\ge0$).</li>
+<li><strong>Non-negative definite:</strong> its Fourier transform must be $\ge0$ at every frequency (shown below). This is the sneaky one. $\rect(\tau)$ is even, peaks at zero, but its transform is $\sinc(f)$ which goes negative, so <em>a rectangle can never be an autocorrelation</em>; the triangle can (its transform is $\sinc^2\ge0$).</li>
 </ol></div>
 <p>Example: $R_X(\tau)=9+16e^{-|\tau|}$. DC power $=R(\infty)=9$ so $\mu=\pm3$; total power $R(0)=25$; variance $=25-9=16$.</p>
 
 <h2>Power spectral density: where in frequency is the power?</h2>
-<p>The <strong>Wiener–Khinchin theorem</strong> says: the autocorrelation and the power spectral density are a Fourier-transform pair,
-$$S_X(f)=\int_{-\infty}^{\infty}R_X(\tau)e^{-j2\pi f\tau}d\tau,\qquad R_X(\tau)=\int_{-\infty}^{\infty}S_X(f)e^{j2\pi f\tau}df .$$
-Evaluate at the origin and you get the most-used identity of the chapter:
+<p>For a deterministic energy signal, $|X(f)|^2$ is the energy spectral density. A random process lasts forever and has infinite energy, so the quantity to look at is <em>power per hertz</em>. The natural definition is the “periodogram”: truncate the process to $|t|\le T/2$, take the transform $X_T(f)=\int_{-T/2}^{T/2}X(t)e^{-j2\pi ft}dt$, and average the energy density per unit time:
+$$S_X(f)\ \overset{\rm def}{=}\ \lim_{T\to\infty}\frac1T\,\E\big[|X_T(f)|^2\big].$$
+<div class="box derive"><span class="tag">Derivation · the Wiener–Khinchin theorem</span>
+<p>Expand the square as a double integral and take the expectation inside:
+$$\frac1T\E|X_T(f)|^2=\frac1T\int_{-T/2}^{T/2}\!\!\int_{-T/2}^{T/2}\E[X(t)X(s)]\,e^{-j2\pi f(t-s)}\,dt\,ds=\frac1T\iint R_X(t-s)\,e^{-j2\pi f(t-s)}\,dt\,ds.$$
+Substitute $\tau=t-s$. For a given $\tau$ the allowed range of the other variable has length $T-|\tau|$, so
+$$\frac1T\E|X_T(f)|^2=\int_{-T}^{T}\Big(1-\frac{|\tau|}T\Big)R_X(\tau)\,e^{-j2\pi f\tau}d\tau\ \xrightarrow{\ T\to\infty\ }\ \int_{-\infty}^{\infty}R_X(\tau)\,e^{-j2\pi f\tau}\,d\tau.$$
+$$\boxed{\ S_X(f)=\int_{-\infty}^{\infty}R_X(\tau)e^{-j2\pi f\tau}d\tau,\qquad R_X(\tau)=\int_{-\infty}^{\infty}S_X(f)e^{j2\pi f\tau}df\ }$$
+The left side is an average of non-negative numbers, so <b>$S_X(f)\ge0$</b> (this proves property 5 above), and for a real process it is even in $f$.</p></div>
+Evaluate the inverse at $\tau=0$ and you get the most-used identity of the chapter:
 $$\boxed{\ \text{Average power}=R_X(0)=\int_{-\infty}^{\infty}S_X(f)\,df=\E[X^2]\ }$$
-$S_X(f)\ge0$ (W/Hz) and, for real processes, even in $f$. Its meaning: pass $X$ through a narrow ideal band-pass filter around $f_1$ of width $\Delta f$; the output power is $\approx 2\,S_X(f_1)\Delta f$ (the factor 2 collects $+f_1$ and $-f_1$).</p>
+$S_X(f)$ has units W/Hz. Its meaning: pass $X$ through a narrow ideal band-pass filter around $f_1$ of width $\Delta f$; the output power is $\approx 2\,S_X(f_1)\Delta f$ (the factor 2 collects $+f_1$ and $-f_1$).</p>
 <div class="widget" id="w-wk">The Wiener–Khinchin pair for four classic processes. Top: autocorrelation $R_X(\tau)$. Bottom: power spectral density $S_X(f)$. Notice the uncertainty principle again: a process that decorrelates quickly (narrow $R$) has a wide spectrum. Vertical arrows are impulses.</div>
 <table>
 <tr><th>Process</th><th>$R_X(\tau)$</th><th>$S_X(f)$</th></tr>
@@ -58,54 +77,108 @@ $S_X(f)\ge0$ (W/Hz) and, for real processes, even in $f$. Its meaning: pass $X$ 
 <tr><td>White noise through RC low-pass ($f_{3\mathrm{dB}}=\frac1{2\pi RC}$)</td><td>$\frac{N_0}{4RC}e^{-|\tau|/RC}$</td><td>$\dfrac{N_0/2}{1+(2\pi fRC)^2}$</td></tr>
 <tr><td>Constant (DC) $\mu$</td><td>$\mu^2$</td><td>$\mu^2\delta(f)$</td></tr>
 </table>
-<p>You can <em>see</em> the binary-wave PSD emerge from randomness. Generate lots of random bit streams, take the FFT of each, square, and average (an "averaged periodogram"). One realisation gives a wildly noisy estimate, averaging reveals the smooth $\sinc^2$:</p>
+<p>You can <em>see</em> the binary-wave PSD emerge from randomness. Generate lots of random bit streams, take the FFT of each, square, and average (an “averaged periodogram”, the definition above with $\E$ replaced by an average). One realisation gives a wildly noisy estimate (the periodogram of a single record does <em>not</em> converge as $T\to\infty$; its standard deviation equals its mean); averaging reveals the smooth $\sinc^2$:</p>
 <div class="widget" id="w-peri">Estimated PSD of a random $\pm1$ bit stream (bars) against theory $T\sinc^2(fT)$ (yellow). With $K=1$ the estimate is as random as the data itself. By $K\approx100$ the sinc-squared emerges, nulls at $f=1/T,2/T,\dots$ and all.</div>
+<div class="box eng"><span class="tag">Engineering practice · measuring a spectrum: Welch’s method</span>
+<p>A spectrum analyser or an FFT-based instrument estimates a PSD exactly as above: cut the record into segments, window each (Hann, to tame leakage, Chapter 2), FFT, square and <b>average</b>. With $K$ independent segments the relative standard deviation of each bin falls as $1/\sqrt K$, while the resolution bandwidth is set by the segment length $\approx1/T_{\rm seg}$. You trade resolution against variance: the “video bandwidth” and “averaging” knobs on a bench analyser are exactly these parameters. When you check an emission mask for a transmitter (e.g. the spectral mask of a Wi-Fi channel) you are comparing such an average periodogram with a regulatory limit.</p></div>
 
-<h3>Symbols with memory: the PSD of a correlated pulse train</h3>
-<p>Chapter 9 will need this. Suppose the pulse amplitudes $b_n$ are <em>not</em> independent but have autocorrelation $R_b[m]=\E[b_nb_{n-m}]$. A pulse train $X(t)=\sum_nb_n\,g(t-nT)$ (made stationary with a random delay) has
-$$S_X(f)=\frac{|G(f)|^2}{T}\;\underbrace{\sum_{m=-\infty}^{\infty}R_b[m]\,e^{-j2\pi fmT}}_{S_b(f)}.$$
-The first factor is the pulse's own spectrum, the second the "spectrum of the symbol sequence". For independent $\pm1$ symbols $R_b[m]=\delta_m$ and $S_b=1$, recovering $|G|^2/T$. Correlation sculpts the spectrum. Example: $b_n=\alpha_n+k\,\alpha_{n-3}$ with $\alpha_n=\pm1$ independent. Then $R_b[0]=1+k^2$, $R_b[\pm3]=k$, others 0, so $S_b(f)=1+k^2+2k\cos(2\pi f\cdot3T)$. At $f=\frac1{3T}$ the cosine is $1$ and $S_b=(1+k)^2$: a <b>spectral null at $f=1/3T$ requires $k=-1$</b> (this is GATE 2016's question). Line codes like AMI and duobinary are exactly this idea: choose the correlation so that the nulls fall where you want (at DC for AMI).</p>
-<h2>White noise</h2>
-<p>If a process has a <em>flat</em> PSD $S(f)=N_0/2$ for all $f$, its autocorrelation is $\frac{N_0}2\delta(\tau)$: values at any two different instants are uncorrelated, however close. That is "white" (all frequencies, like white light). An ideal white process has infinite power $\int\frac{N_0}2df=\infty$, which no physical source can have, but thermal noise is white to well beyond $10^{12}$ Hz, far more than any receiver bandwidth, so the idealisation is excellent. The factor $\tfrac12$ is a convention: $N_0/2$ is the <strong>two-sided</strong> density (spread over $-\infty<f<\infty$), $N_0$ the one-sided density (over $f>0$), and for thermal noise $N_0=kT$.</p>
+<h3>Pulse trains with memory: the PSD of a correlated pulse train</h3>
+<p>Chapter 13 will need this, so we derive it once and for all. A digital waveform is $X(t)=\sum_nb_n\,g(t-nT-T_d)$ with symbol amplitudes $b_n$ (possibly correlated, autocorrelation $R_b[m]=\E[b_nb_{n+m}]$), a pulse shape $g(t)$, and a random delay $T_d\sim U[0,T)$ that makes the process stationary.</p>
+<div class="box derive"><span class="tag">Derivation · PSD of a PAM signal</span>
+<p>$R_X(\tau)=\E\big[\sum_n\sum_kb_nb_kg(t-nT-T_d)g(t+\tau-kT-T_d)\big]$. Put $k=n+m$. Averaging over the uniform delay turns the sum over $n$ into an integral over a full period (divided by $T$):
+$$R_X(\tau)=\frac1T\sum_{m=-\infty}^{\infty}R_b[m]\int_{-\infty}^{\infty}g(u)\,g(u+\tau-mT)\,du=\frac1T\sum_mR_b[m]\,R_g(\tau-mT),$$
+where $R_g(\tau)=\int g(u)g(u+\tau)du$ is the pulse’s (deterministic) autocorrelation, with transform $|G(f)|^2$. Fourier-transforming and using the shift theorem ($R_g(\tau-mT)\to|G|^2e^{-j2\pi fmT}$):
+$$\boxed{\,S_X(f)=\frac{|G(f)|^2}{T}\underbrace{\sum_{m=-\infty}^{\infty}R_b[m]\,e^{-j2\pi fmT}}_{S_b(f)}\,}$$
+The first factor is the pulse’s own spectrum, the second the “spectrum of the symbol sequence”.</p></div>
+<ul>
+<li><b>Independent zero-mean symbols</b> ($R_b[m]=\sigma_b^2\delta_m$): $S_b=\sigma_b^2$ and $S_X=\sigma_b^2|G|^2/T$. For NRZ $\pm A$ with $g=\rect(t/T)$: $\sigma_b^2=A^2$ and $|G|^2=T^2\sinc^2fT$, giving $A^2T\sinc^2(fT)$ ✓ the table entry.</li>
+<li><b>Non-zero mean</b> (unipolar NRZ: $b_n\in\{0,A\}$, mean $\mu=A/2$): $R_b[m]=\sigma^2\delta_m+\mu^2$, and the constant part transforms (Poisson summation: $\sum_me^{-j2\pi fmT}=\frac1T\sum_k\delta(f-\tfrac kT)$) to a <b>line spectrum</b>:
+$$S_X(f)=\frac{\sigma^2|G(f)|^2}{T}+\frac{\mu^2}{T^2}\sum_{k=-\infty}^{\infty}\Big|G\Big(\frac kT\Big)\Big|^2\delta\Big(f-\frac kT\Big).$$
+A DC line at $f=0$ (a unipolar signal has a mean) and, for non-rectangular $g$, lines at the bit rate. Bipolar ($\pm A$, $\mu=0$) coding has no lines. A clock-recovery circuit <em>wants</em> a line at $1/T$, which is why some codes are designed to produce one (Chapter 13).</li>
+<li><b>Correlated symbols</b>: sculpt the spectrum. Example: $b_n=\alpha_n+k\,\alpha_{n-3}$ with $\alpha_n=\pm1$ independent. Then $R_b[0]=1+k^2$, $R_b[\pm3]=k$, others 0, so $S_b(f)=1+k^2+2k\cos(2\pi f\cdot3T)$. At $f=\frac1{3T}$ the cosine is $1$ and $S_b=(1+k)^2$: a <b>spectral null at $f=1/3T$ requires $k=-1$</b> (this is GATE 2016’s question). Line codes like AMI and duobinary are exactly this idea: choose the correlation so that the nulls fall where you want (at DC for AMI).</li>
+</ul>
+
+<h2>White noise and thermal noise</h2>
+<p>If a process has a <em>flat</em> PSD $S(f)=N_0/2$ for all $f$, its autocorrelation is $\frac{N_0}2\delta(\tau)$: values at any two different instants are uncorrelated, however close. That is “white” (all frequencies, like white light). An ideal white process has infinite power $\int\frac{N_0}2df=\infty$, which no physical source can have, but thermal noise is white to well beyond $10^{12}$ Hz, far more than any receiver bandwidth, so the idealisation is excellent. The factor $\tfrac12$ is a convention: $N_0/2$ is the <strong>two-sided</strong> density (spread over $-\infty<f<\infty$), $N_0$ the one-sided density (over $f>0$).</p>
+
+<div class="box derive"><span class="tag">Derivation · Nyquist’s argument for $N_0=kT$ and $v_n^2=4kTRB$</span>
+<ol class="steps">
+<li>Connect two equal resistors $R$ by a lossless transmission line of length $L$ and propagation speed $v$, all at temperature $T$ in thermal equilibrium. Each resistor is matched to the line, so each absorbs everything that reaches it and emits noise into the line.</li>
+<li>Count the modes of the line. Standing waves on a line of length $L$ have frequencies $f_n=nv/2L$, so in a band $df$ there are $2L\,df/v$ modes.</li>
+<li>In equilibrium each mode carries average energy $kT$ (classical equipartition: $\frac12kT$ each for the electric and magnetic degrees of freedom). The line therefore holds energy $kT\cdot2L\,df/v$ in the band, half travelling in each direction.</li>
+<li>Energy travelling in one direction, $kT\,L\,df/v$, arrives at a resistor in the time $L/v$ it takes to traverse the line: the <b>power delivered to a matched load</b> is $kT\,df$. Hence the noise power available from any resistor in bandwidth $B$ is $\boxed{P_{\rm av}=kTB}$, independent of $R$, material or shape.</li>
+<li>Model the noisy resistor as an ideal noiseless $R$ in series with a voltage source $v_n$. A matched load $R$ sees $v_n/2$ across it and absorbs $(v_n/2)^2/R=v_n^2/4R$. Equate to $kTB$:
+$$\boxed{\ \overline{v_n^2}=4kTRB\ ,\qquad\overline{i_n^2}=\frac{4kTB}{R}\ }\quad\text{(Thévenin and Norton forms)}$$</li>
+<li>So the one-sided PSD of the <em>available</em> noise power is $N_0=kT$ W/Hz and the two-sided density is $N_0/2$. At $T_0=290$ K: $kT_0=4.0\times10^{-21}$ W/Hz $=-174$ dBm/Hz.</li>
+</ol>
+<p><b>Quantum footnote.</b> Equipartition fails when $hf\gtrsim kT$: the true density is $\frac{hf}{e^{hf/kT}-1}$, which equals $kT$ for $hf\ll kT$. At 290 K the crossover is $f=kT/h\approx6$ THz, and below 100 GHz the correction is under 1%: so for all radio work noise is white. At cryogenic temperatures or in the optical band the quantum correction dominates (Chapter 21).</p></div>
+<div class="box ex"><span class="tag">Worked example · noise voltage of a 50 Ω resistor</span>
+<p>$R=50\,\Omega$, $T=290$ K, $B=1$ MHz: $v_{n,\rm rms}=\sqrt{4(1.38\times10^{-23})(290)(50)(10^6)}=0.89\,\mu$V. That is the voltage you would see on a very good scope across an open 50 Ω resistor, and it is why 1 µV signals are about the smallest that are practical in 1 MHz bandwidth without exotic design. Terminated into a matched 50 Ω load the voltage across the load is half: $0.45\,\mu$V, and the delivered power is $kTB=4\times10^{-15}$ W $=-114$ dBm.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · other noise sources and the noise floor of a real system</span>
+<p><b>Thermal noise</b> is the unavoidable floor. In addition: <b>shot noise</b> from the discreteness of charge crossing a junction, $\overline{i_n^2}=2qIB$ (also white; dominant in photodiodes and transistors at high bias); <b>flicker or $1/f$ noise</b>, rising towards low frequencies, which dominates below ~1 kHz in amplifiers (why direct-conversion receivers worry about DC offsets and why audio hiss seems bass-heavy); <b>phase noise</b> of oscillators (Chapter 16); <b>quantisation noise</b> in converters (Chapter 12); and <b>man-made and atmospheric noise</b>, which at HF and below exceeds thermal by tens of dB and is far from Gaussian (lightning impulses). The <em>antenna</em> sees sky noise (3 K cosmic background, up to 100+ K in the galaxy plane and the atmosphere) plus ground noise (≈ 290 K): a satellite dish pointing at cold sky has a much lower system noise temperature than a base-station antenna pointing at the horizon. The receiver’s noise floor is $kT_{\rm sys}B$ with $T_{\rm sys}=T_{\rm ant}+T_e$, and Chapter 21 uses the ratio $G/T$ as a figure of merit.</p></div>
+
 <div class="box key"><span class="tag">AWGN</span>
-<p><strong>A</strong>dditive <strong>W</strong>hite <strong>G</strong>aussian <strong>N</strong>oise: $r(t)=s(t)+n(t)$, where $n(t)$ is a zero-mean white Gaussian process with PSD $N_0/2$. After any filter of bandwidth $B$ its samples are Gaussian with variance $\sigma^2=\frac{N_0}2\times(\text{filter's noise bandwidth in two-sided Hz})$. For an ideal low-pass of cut-off $B$: $\sigma^2=\frac{N_0}2\cdot2B=N_0B$.</p></div>
+<p><strong>A</strong>dditive <strong>W</strong>hite <strong>G</strong>aussian <strong>N</strong>oise: $r(t)=s(t)+n(t)$, where $n(t)$ is a zero-mean white Gaussian process with PSD $N_0/2$. After any filter of bandwidth $B$ its samples are Gaussian with variance $\sigma^2=\frac{N_0}2\times(\text{filter’s noise bandwidth in two-sided Hz})$. For an ideal low-pass of cut-off $B$: $\sigma^2=\frac{N_0}2\cdot2B=N_0B$. Projected onto a unit-energy waveform $\phi(t)$, the noise has variance $\frac{N_0}2\int\phi^2=\frac{N_0}2$: this is the “$\sigma^2=N_0/2$ per dimension” of Chapter 14.</p></div>
 
 <h2>Through a linear time-invariant system</h2>
-<p>A WSS process into an LTI system with transfer function $H(f)$ yields a WSS output with
-$$\mu_Y=\mu_XH(0),\qquad S_Y(f)=|H(f)|^2S_X(f),\qquad R_Y=R_X*h*\tilde h\ \ (\tilde h(t)=h(-t)).$$
-Note: only the <strong>magnitude</strong> of $H$ matters for the PSD, not its phase. (GATE 2022 Q.23 hid exactly this fact: with only $|H(f)|$ given, one cannot say the system is a pure delay, yet $S_Y=S_X$ in the pass-band.)</p>
+<div class="box derive"><span class="tag">Derivation · $S_Y=|H|^2S_X$</span>
+<p>Let $Y=X*h$ with WSS input. The mean: $\E Y=\int h(\tau)\E X(t-\tau)d\tau=\mu_XH(0)$. The autocorrelation:
+$$R_Y(\tau)=\E\!\Big[\iint h(u)h(v)X(t-u)X(t+\tau-v)\,du\,dv\Big]=\iint h(u)h(v)R_X(\tau+u-v)\,du\,dv=(R_X*h*\tilde h)(\tau)$$
+with $\tilde h(t)=h(-t)$. It depends only on $\tau$, so $Y$ is WSS. Transform: $\mathcal F\{\tilde h\}=H^*(f)$ (for real $h$), hence
+$$\mu_Y=\mu_XH(0),\qquad\boxed{S_Y(f)=|H(f)|^2S_X(f)}.$$
+Only the <strong>magnitude</strong> of $H$ matters for the PSD, not its phase. (GATE 2022 Q.23 hid exactly this fact: with only $|H(f)|$ given, one cannot say the system is a pure delay, yet $S_Y=S_X$ in the pass-band.) A non-causal check of intuition: the filter acts on each frequency <em>independently</em>, scaling the power density there by $|H(f)|^2$; the periodogram argument says the same.</p></div>
 <div class="widget" id="w-filt">White noise (grey) filtered by an RC low-pass, an ideal low-pass or an ideal band-pass. The output looks smoother as the bandwidth falls: filtering <em>is</em> correlating neighbouring samples. Below, the output PSD is $|H|^2$ times the flat input PSD; its area is the output power, which the readout compares against the variance measured on the sample.</div>
 <div class="box ex"><span class="tag">Worked example · the most-tested calculation in this book</span>
 <p>White noise of two-sided PSD $N_0/2$ through the RC low-pass $H(f)=\dfrac1{1+j2\pi fRC}$. Output power:
 $$P_Y=\int_{-\infty}^{\infty}\frac{N_0}{2}\frac{df}{1+(2\pi fRC)^2}=\frac{N_0}2\cdot\frac1{2RC}=\boxed{\frac{N_0}{4RC}}.$$
-(using $\int_{-\infty}^\infty\frac{df}{1+(af)^2}=\frac\pi a$ with $a=2\pi RC$.) Equivalently use the time domain: $P_Y=\frac{N_0}2\int h^2(t)\,dt$ with $h=\frac1{RC}e^{-t/RC}u(t)$, and $\int h^2=\frac1{2RC}$. ✓. This is GATE 2024 Q.20, and GATE 2023 Q.59 is the same calculation with $h(t)=e^{-t}u(t)$ and $N_0/2=\tfrac12$: $P=\tfrac12\cdot\tfrac12=0.25$ W.</p></div>
-<div class="box key"><span class="tag">Fast rule: "white noise through anything"</span>
+(using $\int_{-\infty}^\infty\frac{df}{1+(af)^2}=\frac\pi a$ with $a=2\pi RC$.) Equivalently use the time domain and Parseval: $P_Y=\frac{N_0}2\int h^2(t)\,dt$ with $h=\frac1{RC}e^{-t/RC}u(t)$, and $\int h^2=\frac1{2RC}$ ✓. The output autocorrelation is the transform of $\frac{N_0/2}{1+(2\pi fRC)^2}$, namely $\frac{N_0}{4RC}e^{-|\tau|/RC}$: samples closer than about $RC$ are strongly correlated. This is GATE 2024 Q.20, and GATE 2023 Q.59 is the same calculation with $h(t)=e^{-t}u(t)$ and $N_0/2=\tfrac12$: $P=\tfrac12\cdot\tfrac12=0.25$ W.</p></div>
+<div class="box key"><span class="tag">Fast rule: “white noise through anything”</span>
 $$P_{\rm out}=\frac{N_0}2\int_{-\infty}^{\infty}|H(f)|^2df=\frac{N_0}2\int_{-\infty}^{\infty}h^2(t)\,dt=\frac{N_0}2\,E_h .$$
 For a linear functional $Y=\int w(t)\phi(t)\,dt$ of white noise: $\Var Y=\frac{N_0}2\int\phi^2(t)\,dt$. (GATE 2020: $S_W=3$ W/Hz and $\phi$ a unit-width pulse gives variance $3\times$ the pulse energy.)</p></div>
-<p><strong>Noise-equivalent bandwidth.</strong> The ideal low-pass that passes the same noise power as a real filter of peak gain $|H(0)|=1$ has $B_N=\int_0^\infty|H|^2df$. For the RC filter, $B_N=\frac1{4RC}=\frac\pi2f_{3\mathrm{dB}}$: a real filter lets through about 57% more noise than the "3-dB bandwidth" suggests.</p>
+<h3>Noise-equivalent bandwidth</h3>
+<p>The ideal low-pass that passes the same noise power as a real filter of peak gain $|H(0)|=1$ has $B_N=\int_0^\infty|H|^2df$. For the RC filter, $B_N=\int_0^\infty\frac{df}{1+(f/f_c)^2}=f_c\frac\pi2=\frac1{4RC}$: a real first-order filter lets through about 57% more noise than the “3-dB bandwidth” suggests. For an $n$th-order Butterworth, $B_N/f_{3\rm dB}=\dfrac{\pi/2n}{\sin(\pi/2n)}$: $1.57$ ($n=1$), $1.11$ ($n=2$), $1.05$ ($n=3$), $1.03$ ($n=4$): steeper filters approach the ideal. Rule of thumb: <b>use the noise bandwidth, not the 3 dB bandwidth, in $N=kTB_NF$</b>.</p>
+
+<div class="box derive"><span class="tag">Derivation · the Wiener filter: the best linear way to clean a noisy signal</span>
+<p>Observe $r=s+n$ with $s$ and $n$ independent, zero-mean, with PSDs $S_s,S_n$. Estimate $s$ with a linear filter, $\hat s=h*r$. The error $e=\hat s-s$ has PSD (independence kills the cross term)
+$$S_e(f)=|H-1|^2S_s+|H|^2S_n.$$
+Minimise pointwise in $f$ (a quadratic in $H$): $\dfrac{\partial}{\partial H}\big[(H-1)^2S_s+H^2S_n\big]=0\Rightarrow$
+$$\boxed{H_{\rm opt}(f)=\frac{S_s(f)}{S_s(f)+S_n(f)}}$$
+At frequencies where the signal dominates the filter passes ($H\to1$); where noise dominates it blocks ($H\to0$): the optimal filter is a <em>soft, SNR-weighted</em> version of an ideal low-pass. The residual error PSD is $\frac{S_sS_n}{S_s+S_n}$. The same structure appears in the MMSE equaliser (Chapter 13), in noise suppression for speech and in Kalman filtering.</p></div>
 
 <h2>Gaussian processes and narrowband noise</h2>
 <p>A process is <strong>Gaussian</strong> if every set of samples $X(t_1),\dots,X(t_k)$ is jointly Gaussian. Two properties explain why we love it: (i) a linear operation on a Gaussian process (filtering, integrating, sampling) gives a Gaussian result; (ii) a WSS Gaussian process is fully specified by $\mu$ and $R_X$, and for white Gaussian noise <em>uncorrelated samples are independent</em>. The second fact is why in digital detection the noise samples of different symbol intervals can be treated independently.</p>
-<p>Receiver noise after a band-pass filter around the carrier $f_c$ is <strong>narrowband noise</strong>, and has the same form as any bandpass signal (Chapter 2):
+<p>Receiver noise after a band-pass filter around the carrier $f_c$ is <strong>narrowband noise</strong>, and has the same form as any bandpass signal (Chapter 3):
 $$n(t)=n_c(t)\cos2\pi f_ct-n_s(t)\sin2\pi f_ct=r(t)\cos(2\pi f_ct+\psi(t)).$$
-For narrowband Gaussian noise of power $\sigma^2$: <strong>$n_c$ and $n_s$ are independent zero-mean Gaussians, each with variance $\sigma^2$</strong> (the same as $n$ itself); the envelope $r=\sqrt{n_c^2+n_s^2}$ is <strong>Rayleigh</strong> distributed and the phase $\psi$ is uniform on $[0,2\pi)$. (Check: $\overline{n^2}=\frac12(\overline{n_c^2}+\overline{n_s^2})\cdot$... in the cos/sin form the cross terms vanish and $\overline{n^2}=\tfrac12\sigma^2+\tfrac12\sigma^2=\sigma^2$ ✓.)</p>
-<div class="widget" id="w-nb">Left: 2500 samples of $(n_c,n_s)$: a round Gaussian cloud. Right: the histogram of the distance from the origin (the envelope) against the Rayleigh pdf $\frac r{\sigma^2}e^{-r^2/2\sigma^2}$. A cloud that is round in two variables becomes a pdf that starts at zero in the radius: a Rayleigh. This envelope law is the starting point for noise in envelope detectors (Chapter 6) and for fading channels.</div>
+<div class="box derive"><span class="tag">Derivation · statistics of $n_c$ and $n_s$</span>
+<p>From the I/Q demodulator of Chapter 3, $n_c=\mathrm{LPF}\{2n\cos2\pi f_ct\}$ and $n_s=\mathrm{LPF}\{-2n\sin2\pi f_ct\}$; both are linear operations on the Gaussian $n$, hence Gaussian, zero-mean. Multiplying by $2\cos$ shifts the PSD: the low-pass part of $S_{2n\cos}$ is $S_n(f-f_c)+S_n(f+f_c)$ (four times the quarter-height copies), the same for $-2n\sin$. So
+$$S_{n_c}(f)=S_{n_s}(f)=S_n(f-f_c)+S_n(f+f_c)\quad(|f|<B/2).$$
+Integrate: if $n$ has two-sided PSD $N_0/2$ over a band of width $B$ around $\pm f_c$, then $S_{n_c}=N_0$ on $|f|<B/2$ and $\E n_c^2=N_0B=\sigma^2$, equal to the power of $n$ itself ($\E n^2=2\cdot\frac{N_0}2B=N_0B$). If the PSD is symmetric about $f_c$ the cross-spectrum between $n_c$ and $n_s$ vanishes, so $n_c(t),n_s(t)$ are uncorrelated and, being jointly Gaussian, <b>independent</b>. Check of the power bookkeeping: $\E n^2=\E[n_c^2]\E[\cos^2]+\E[n_s^2]\E[\sin^2]=\tfrac12\sigma^2+\tfrac12\sigma^2=\sigma^2$ ✓.</p></div>
+So: <strong>$n_c$ and $n_s$ are independent zero-mean Gaussians, each with variance $\sigma^2$ (equal to the power of $n$ itself)</strong>. By the derivation of Chapter 4, the envelope $r=\sqrt{n_c^2+n_s^2}$ is <strong>Rayleigh</strong> and the phase $\psi$ is uniform on $[0,2\pi)$, independent of $r$. In complex-envelope terms $\tilde n=n_c+jn_s$ has $\E|\tilde n|^2=2\sigma^2$, consistent with $P=\frac12\E|\tilde n|^2$.</p>
+<div class="widget" id="w-nb">Left: 2500 samples of $(n_c,n_s)$: a round Gaussian cloud. Right: the histogram of the distance from the origin (the envelope) against the Rayleigh pdf $\frac r{\sigma^2}e^{-r^2/2\sigma^2}$. A cloud that is round in two variables becomes a pdf that starts at zero in the radius: a Rayleigh. This envelope law is the starting point for noise in envelope detectors (Chapter 8) and for fading channels (Chapter 21).</div>
+<div class="box note"><span class="tag">Convention alert · where the factor of 2 hides</span>
+<p>Two common conventions: (a) real bandpass noise with $n_c,n_s$ each of variance $\sigma^2=N_0B$ (used for analog receivers, Chapter 8); (b) complex baseband noise $\tilde n'=(n_c+jn_s)/\sqrt2$ with $\E|\tilde n'|^2=N_0B$, i.e. variance $N_0B/2$ per real dimension, which is the one used in digital detection, where the $\sqrt2$ is absorbed into the signal normalisation. Whenever a question gives $N_0$, always ask: <i>one-sided or two-sided? real or complex?</i></p></div>
 
-<h2>Noise figure and cascades (why the first amplifier matters)</h2>
-<p>Real amplifiers add their own noise. The <strong>noise figure</strong> $F=\dfrac{\mathrm{SNR}_{\rm in}}{\mathrm{SNR}_{\rm out}}\ge1$ (as a ratio; in dB, $NF=10\log_{10}F$) says by how much the SNR degrades. An equivalent description is the <strong>noise temperature</strong> $T_e=(F-1)T_0$. For a chain of stages with gains $G_1,G_2,\dots$ and noise figures $F_1,F_2,\dots$ (all as <em>ratios</em>), the <strong>Friis formula</strong> is
-$$F_{\rm tot}=F_1+\frac{F_2-1}{G_1}+\frac{F_3-1}{G_1G_2}+\cdots,\qquad T_{e,\rm tot}=T_1+\frac{T_2}{G_1}+\frac{T_3}{G_1G_2}+\cdots$$
-A passive attenuator of loss $L$ (gain $1/L$) at $T_0$ has $F=L$. The lesson of the formula: <em>noise added late is divided by all the gain before it</em>, so put a low-noise, high-gain stage first.</p>
+<h2>Noise figure, noise temperature and cascades</h2>
+<p>Real amplifiers add their own noise. The <strong>noise figure</strong> $F=\dfrac{\mathrm{SNR}_{\rm in}}{\mathrm{SNR}_{\rm out}}\ge1$ (as a ratio; in dB, $NF=10\log_{10}F$) says by how much the SNR degrades, measured with the source at the standard temperature $T_0=290$ K. An equivalent description is the <strong>noise temperature</strong>: the temperature $T_e$ of a resistor at the <em>input</em> that would produce the same extra output noise, $T_e=(F-1)T_0$.</p>
+<div class="box derive"><span class="tag">Derivation · the Friis cascade formula</span>
+<p>An amplifier of gain $G$ and input-referred noise temperature $T_e$, fed by a source at $T_s$, has output noise $N_{\rm out}=Gk(T_s+T_e)B$. So $F=\dfrac{\mathrm{SNR}_{\rm in}}{\mathrm{SNR}_{\rm out}}=\dfrac{S/kT_0B}{GS/Gk(T_0+T_e)B}=1+\dfrac{T_e}{T_0}$ ✓. For two stages in cascade the second stage’s noise, referred to the input of the first, is divided by $G_1$: the output noise is $G_1G_2k\big(T_s+T_1+\tfrac{T_2}{G_1}\big)B$, so the cascade has noise temperature $T_e=T_1+T_2/G_1$. Repeating,
+$$\boxed{F_{\rm tot}=F_1+\frac{F_2-1}{G_1}+\frac{F_3-1}{G_1G_2}+\cdots,\qquad T_{e,\rm tot}=T_1+\frac{T_2}{G_1}+\frac{T_3}{G_1G_2}+\cdots}$$
+(all as <em>ratios</em>). A passive attenuator of loss $L\ge1$ at physical temperature $T_0$ has gain $1/L$ and $F=L$: its output noise is just $kT_0B$ (thermal equilibrium) while the signal is attenuated by $L$. The lesson of the formula: <em>noise added late is divided by all the gain before it</em>, so put a low-noise, high-gain stage first, and keep lossy things (cables, filters, switches) <em>after</em> it, not before.</p></div>
 <div class="widget" id="w-friis">A three-stage receiver (LNA → mixer → IF amplifier). The bar shows how much each stage contributes to the total noise figure. Make the LNA gain small and watch the later stages take over; make it large and they almost vanish. (Satellite dishes put the LNA directly at the feed for exactly this reason.)</div>
+<div class="box ex"><span class="tag">Worked example · cable before or after the amplifier?</span>
+<p>A $3$ dB cable and an LNA ($NF=1$ dB, gain 20 dB). <b>Cable first:</b> $F_1=2$, $G_1=0.5$, $F_2=1.259$: $F=2+\frac{0.259}{0.5}=2.52$, i.e. <b>4.0 dB</b>: the cable’s loss adds directly to the noise figure, plus a little. <b>LNA first</b> (amplifier mounted at the antenna, the cable afterwards): $F=1.259+\frac{2-1}{100}=1.269$, i.e. <b>1.03 dB</b>. A 3 dB difference in system noise figure is equivalent to doubling the transmit power or the dish area. That is why cellular base stations use “tower-mounted amplifiers” and why satellite TV LNBs sit at the dish focus.</p></div>
+<div class="box key"><span class="tag">Receiver sensitivity: the napkin formula</span>
+<p>The minimum input power for a required output SNR is
+$$P_{\min}=kT_0B_N\cdot F\cdot\mathrm{SNR}_{\min}\ \Longleftrightarrow\ P_{\min}\ (\mathrm{dBm})=-174+10\log_{10}B_N+NF+\mathrm{SNR}_{\min}.$$
+Examples: $B=1$ MHz, $NF=5$ dB, $\mathrm{SNR}_{\min}=10$ dB: $-174+60+5+10=\mathbf{-99}$ dBm. A 20 MHz Wi-Fi receiver ($NF=6$ dB) needing 20 dB: $-174+73+6+20=\mathbf{-75}$ dBm, close to the sensitivity figure on its datasheet for a high rate. Weaker signals are possible only by lowering $B$, $NF$ or the required SNR (i.e. a slower, more robust modulation and coding scheme, Chapters 15 and 17).</p></div>
 
-<h2>Practice: real GATE questions and originals</h2>
-<div class="prob" data-type="nat" data-ans="0.25" data-tol="0.01" data-marks="2" data-src="GATE 2023 · EC · Q.59">
-Let $X(t)$ be a white Gaussian noise with power spectral density $\tfrac12$ W/Hz. If $X(t)$ is input to an LTI system with impulse response $e^{-t}u(t)$, the average power of the system output is ______ W (two decimals).
-<div class="sol"><p>$P=\frac{N_0}{2}\int h^2dt=\tfrac12\int_0^\infty e^{-2t}dt=\tfrac12\cdot\tfrac12=\mathbf{0.25}$. Official key 0.24–0.26.</p></div></div>
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
 
-<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2024 · EC · Q.20">
-A white Gaussian noise $w(t)$ with zero mean and PSD $N_0/2$, applied to a first-order RC low-pass filter, produces output $n(t)$. At a particular time $t_k$, the variance of the random variable $n(t_k)$ is
-<ol class="opts"><li>$\dfrac{N_0}{4RC}$</li><li>$\dfrac{N_0}{2RC}$</li><li>$\dfrac{N_0}{RC}$</li><li>$\dfrac{2N_0}{RC}$</li></ol>
-<div class="sol"><p>Zero mean, so variance = power = $N_0/(4RC)$. <b>(A)</b>, as in the box above.</p></div></div>
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+Which of the following can be the autocorrelation function of a real WSS process?
+<ol class="opts"><li>$\rect(\tau/2)$</li><li>$\tri(\tau)$</li><li>$e^{-\tau}u(\tau)$</li><li>$\sin\tau$</li></ol>
+<div class="sol"><p>(C) and (D) are not even. (A) is even and peaks at 0, but its transform is a sinc that goes negative: not non-negative-definite. (B): transform $\sinc^2\ge0$ ✓.</p></div></div>
 
 <div class="prob" data-type="msq" data-ans="A,B" data-marks="1" data-src="GATE 2023 · EC · Q.30">
 For a real signal, which of the following is/are valid power spectral density/densities?
@@ -116,6 +189,52 @@ For a real signal, which of the following is/are valid power spectral density/de
 The frequency response $H(f)$ of an LTI system has magnitude equal to 1 for $-\alpha\le f\le\alpha$ and 0 elsewhere (only the magnitude is specified). <b>Statement I:</b> the system is necessarily a pure-delay system for inputs bandlimited to $[-\alpha,\alpha]$. <b>Statement II:</b> for any WSS input with PSD $S_X(f)$, the output PSD obeys $S_Y(f)=S_X(f)$ for $-\alpha\le f\le\alpha$.
 <ol class="opts"><li>I correct, II correct</li><li>I correct, II incorrect</li><li>I incorrect, II correct</li><li>I incorrect, II incorrect</li></ol>
 <div class="sol"><p>II: $S_Y=|H|^2S_X=S_X$ in the pass-band ✓. I: a pure delay needs a <em>linear</em> phase, but the phase is unspecified, so the system could be any all-pass-in-band filter ✗. Key <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+Which statement about a random process $X(t)=C$, where $C$ is a random constant with $\E C=0$, $\Var C=1$, is true?
+<ol class="opts"><li>It is not stationary</li><li>It is ergodic</li><li>Its PSD is flat</li><li>It is WSS but not ergodic</li></ol>
+<div class="sol"><p>Mean 0, $R_X(\tau)=\E[C^2]=1$ for all $\tau$: WSS. One realisation is a constant, whose time average equals its own $C$, not the ensemble mean 0, so it is not ergodic. PSD $=\delta(f)$, not flat. <b>(D)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="-114" data-tol="0.6" data-marks="1" data-src="Original">
+Thermal noise power available from a resistor at $T=290$ K in a bandwidth of 1 MHz, in dBm ($k=1.38\times10^{-23}$ J/K) is ______.
+<div class="sol"><p>$kTB=1.38\times10^{-23}\cdot290\cdot10^{6}=4.0\times10^{-15}$ W $=4\times10^{-12}$ mW $\to-114$ dBm.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.89" data-tol="0.02" data-marks="1" data-src="Original">
+The open-circuit rms thermal noise voltage (in microvolts) of a $50\,\Omega$ resistor at 290 K in a bandwidth of 1 MHz is ______.
+<div class="sol"><p>$\sqrt{4kTRB}=\sqrt{4(1.38\times10^{-23})(290)(50)(10^6)}=\sqrt{8.0\times10^{-13}}=0.89\ \mu$V.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.05" data-marks="2" data-src="Original">
+White noise with two-sided PSD $N_0/2=2\times10^{-3}$ W/Hz is passed through an ideal band-pass filter of unity gain, centre frequency 10 kHz, bandwidth 1 kHz (passing $9.5$–$10.5$ kHz). The output power is ______ W.
+<div class="sol"><p>Two bands (positive and negative frequency), each 1 kHz wide: $P=2\cdot2\times10^{-3}\cdot10^3=4$ W.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.30" data-tol="0.05" data-marks="2" data-src="Original">
+An LNA (gain 20 dB, noise figure 1 dB) feeds a mixer with noise figure 10 dB. The overall noise figure in dB (two decimals) is ______.
+<div class="sol"><p>$F_1=10^{0.1}=1.259$, $G_1=100$, $F_2=10$. $F=1.259+\frac{10-1}{100}=1.349\to10\log_{10}1.349=\mathbf{1.30}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-75" data-tol="0.6" data-marks="2" data-src="Original">
+A receiver has noise bandwidth 20 MHz, noise figure 6 dB, and needs a post-detection SNR of 20 dB. Its sensitivity in dBm is ______.
+<div class="sol"><p>$-174+10\log_{10}(20\times10^6)+6+20=-174+73+6+20=\mathbf{-75}$ dBm.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.57" data-tol="0.01" data-marks="1" data-src="Original">
+A first-order RC low-pass has 3 dB bandwidth 1 kHz. The ratio of its noise-equivalent bandwidth to its 3 dB bandwidth is ______.
+<div class="sol"><p>$B_N=\frac\pi2f_{3\rm dB}$: ratio $=\pi/2=1.57$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.75" data-tol="0.01" data-marks="2" data-src="Original">
+At some frequency a signal has PSD $S_s=3$ W/Hz and independent noise has PSD $S_n=1$ W/Hz. The gain $H$ of the Wiener filter at that frequency is ______.
+<div class="sol"><p>$H=\dfrac{S_s}{S_s+S_n}=\dfrac34=\mathbf{0.75}$. (The residual error density there is $\frac{S_sS_n}{S_s+S_n}=0.75$ W/Hz, against 1 W/Hz if the noise were left unfiltered.)</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="nat" data-ans="0.25" data-tol="0.01" data-marks="2" data-src="GATE 2023 · EC · Q.59">
+Let $X(t)$ be a white Gaussian noise with power spectral density $\tfrac12$ W/Hz. If $X(t)$ is input to an LTI system with impulse response $e^{-t}u(t)$, the average power of the system output is ______ W (two decimals).
+<div class="sol"><p>$P=\frac{N_0}{2}\int h^2dt=\tfrac12\int_0^\infty e^{-2t}dt=\tfrac12\cdot\tfrac12=\mathbf{0.25}$. Official key 0.24–0.26.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2024 · EC · Q.20">
+A white Gaussian noise $w(t)$ with zero mean and PSD $N_0/2$, applied to a first-order RC low-pass filter, produces output $n(t)$. At a particular time $t_k$, the variance of the random variable $n(t_k)$ is
+<ol class="opts"><li>$\dfrac{N_0}{4RC}$</li><li>$\dfrac{N_0}{2RC}$</li><li>$\dfrac{N_0}{RC}$</li><li>$\dfrac{2N_0}{RC}$</li></ol>
+<div class="sol"><p>Zero mean, so variance = power = $N_0/(4RC)$. <b>(A)</b>, as in the box above.</p></div></div>
 
 <div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="GATE 2014 · Set 1 · Q.50">
 Consider the random process $X(t)=\sqrt2\sin(2\pi t+\varphi)$ where the random phase $\varphi$ is uniformly distributed on $[0,2\pi]$. The autocorrelation $\E[X(t_1)X(t_2)]$ is
@@ -129,29 +248,12 @@ The PSD of a real stationary process is $S_X(f)=1/W$ for $|f|\le W$ and 0 otherw
 <div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="GATE 2014 · Set 3 · Q.49 (options paraphrased)">
 Let $X(t)$ be a WSS random process with PSD $S_X(f)$. If $Y(t)=X(2t-1)$, the PSD of $Y$ is
 <ol class="opts"><li>$\tfrac12S_X(\tfrac f2)e^{-j\pi f}$</li><li>$\tfrac12S_X(\tfrac f2)e^{-j\pi f/2}$</li><li>$\tfrac12S_X(\tfrac f2)$</li><li>$S_X(2f)$ (scaled)</li></ol>
-<div class="sol"><p>The shift by 1 only adds a phase factor to the Fourier transform, but a PSD ignores phase (it is the transform of an autocorrelation, and $R_Y(\tau)=R_X(2\tau)$ is unaffected by a constant shift). Time compression by 2 stretches the spectrum: $R_Y(\tau)=R_X(2\tau)\Rightarrow S_Y(f)=\tfrac12S_X(f/2)$. <b>(C)</b>. A great "shifts never matter" question.</p></div></div>
+<div class="sol"><p>The shift by 1 only adds a phase factor to the Fourier transform, but a PSD ignores phase (it is the transform of an autocorrelation, and $R_Y(\tau)=R_X(2\tau)$ is unaffected by a constant shift). Time compression by 2 stretches the spectrum: $R_Y(\tau)=R_X(2\tau)\Rightarrow S_Y(f)=\tfrac12S_X(f/2)$. <b>(C)</b>. A great “shifts never matter” question.</p></div></div>
 
 <div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="GATE 2025 · EC · Q.42">
 Consider $f(t)=\sum_{n=1}^{N}a_n\,p(t-nT)$, with $p(t)=1$ on $[0,0.5T]$ and 0 otherwise, and $a_n$ pairwise independent, zero-mean, unit-variance. (i) The mean of $f(t)$ is independent of $t$. (ii) $\E[f(t)f(t+\tau)]$ is independent of $t$ for all $\tau$. Which is correct?
 <ol class="opts"><li>(i) TRUE, (ii) FALSE</li><li>Both TRUE</li><li>Both FALSE</li><li>(i) FALSE, (ii) TRUE</li></ol>
-<div class="sol"><p>Mean $=\sum\E[a_n]p(\cdot)=0$ for every $t$: (i) true. Autocorrelation: $\E[f(t)f(t+\tau)]=\sum_np(t-nT)p(t+\tau-nT)$ (cross terms vanish). At $\tau=0$ this equals $1$ while $t$ is inside a pulse and $0$ in the gap: it depends on $t$. The process is <em>cyclostationary</em> (statistics repeat every $T$), not WSS. (ii) false. <b>(A)</b>. Note: the random-delay trick from the binary-wave example is what makes real data streams WSS.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="-114" data-tol="0.6" data-marks="1" data-src="Original">
-Thermal noise power available from a resistor at $T=290$ K in a bandwidth of 1 MHz, in dBm ($k=1.38\times10^{-23}$ J/K) is ______.
-<div class="sol"><p>$kTB=1.38\times10^{-23}\cdot290\cdot10^{6}=4.0\times10^{-15}$ W $=4\times10^{-12}$ mW $\to-114$ dBm.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="4" data-tol="0.05" data-marks="2" data-src="Original">
-White noise with two-sided PSD $N_0/2=2\times10^{-3}$ W/Hz is passed through an ideal band-pass filter of unity gain, centre frequency 10 kHz, bandwidth 1 kHz (passing $9.5$–$10.5$ kHz). The output power is ______ W.
-<div class="sol"><p>Two bands (positive and negative frequency), each 1 kHz wide: $P=2\cdot2\times10^{-3}\cdot10^3=4$ W.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
-Which of the following can be the autocorrelation function of a real WSS process?
-<ol class="opts"><li>$\rect(\tau/2)$</li><li>$\tri(\tau)$</li><li>$e^{-\tau}u(\tau)$</li><li>$\sin\tau$</li></ol>
-<div class="sol"><p>(C) and (D) are not even. (A) is even and peaks at 0, but its transform is a sinc that goes negative: not non-negative-definite. (B): transform $\sinc^2\ge0$ ✓.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="1.30" data-tol="0.05" data-marks="2" data-src="Original">
-An LNA (gain 20 dB, noise figure 1 dB) feeds a mixer with noise figure 10 dB. The overall noise figure in dB (two decimals) is ______.
-<div class="sol"><p>$F_1=10^{0.1}=1.259$, $G_1=100$, $F_2=10$. $F=1.259+\frac{10-1}{100}=1.349\to10\log_{10}1.349=\mathbf{1.30}$ dB.</p></div></div>
+<div class="sol"><p>Mean $=\sum\E[a_n]p(\cdot)=0$ for every $t$: (i) true. Autocorrelation: $\E[f(t)f(t+\tau)]=\sum_np(t-nT)p(t+\tau-nT)$ (cross terms vanish). At $\tau=0$ this equals $1$ while $t$ is inside a pulse and $0$ in the gap: it depends on $t$. The process is <em>cyclostationary</em> (statistics repeat every $T$), not WSS. (ii) false. <b>(A)</b>. Note: the random-delay trick from the binary-wave derivation is what makes real data streams WSS.</p></div></div>
 
 <div class="prob" data-type="nat" data-ans="100" data-tol="0.5" data-marks="2" data-src="GATE 2016 · EC (PYQ book)">
 $X(t)=3V(t)-8$, where $V(t)$ is a zero-mean stationary random process with autocorrelation $R_V(\tau)=4e^{-5|\tau|}$. The power in $X(t)$ is ______.
@@ -165,15 +267,21 @@ $\{X_n\}$ is i.i.d. with $X_n=\pm1$ equally likely, and $Y_n=X_n+0.5X_{n-1}$. Th
 Independent equiprobable symbols $\alpha_n=\pm1$ are precoded as $\beta_n=\alpha_n+k\,\alpha_{n-3}$ and used to amplitude-modulate a rectangular pulse $g(t)=1$ for $0\le t\le T$: $X(t)=\sum\beta_ng(t-nT)$. If the PSD of $X(t)$ has a null at $f=\frac1{3T}$, then $k$ is ______.
 <div class="sol"><p>$S_X(f)=\frac{|G(f)|^2}T[1+k^2+2k\cos(6\pi fT)]$. At $f=\frac1{3T}$: $\cos(2\pi)=1$ so the bracket is $(1+k)^2$, zero only if $k=-1$. ($|G|^2$ itself has nulls at multiples of $1/T$, not at $1/3T$.)</p></div></div>
 
-<div class="summary"><h3>Chapter 3 in one breath</h3>
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="Original (design)">
+An antenna feeds a receiver through a $4$ dB cable, followed by a low-noise amplifier (gain 25 dB, NF 1.5 dB). The same receiver is redesigned with the LNA mounted at the antenna and the cable afterwards. The improvement in system noise figure is closest to
+<ol class="opts"><li>1 dB</li><li>about 4 dB</li><li>10 dB</li><li>25 dB</li></ol>
+<div class="sol"><p>Cable first: $F=2.51+\frac{1.413-1}{0.398}=2.51+1.04=3.55\to5.5$ dB. LNA first: $F=1.413+\frac{2.51-1}{316}=1.418\to1.52$ dB. Improvement $\approx\mathbf{4.0}$ dB; closest to (B). (Rule of thumb: moving a lossy element behind a high-gain LNA recovers almost all of its loss in dB.)</p></div></div>
+
+<div class="summary"><h3>Chapter 5 in one breath</h3>
 <ul>
-<li>Process = ensemble of waveforms; WSS means constant mean and $R_X$ depending on $\tau$ only.</li>
-<li>$R_X(0)$ = power; $R_X(\infty)$ = DC power; $R_X$ is even, peaks at 0, transform $\ge0$.</li>
-<li>Wiener–Khinchin: $S_X=\mathcal F\{R_X\}$, $\int S_X\,df=R_X(0)$. Sine ⇒ two lines; NRZ bits ⇒ $A^2T\sinc^2(fT)$; white ⇒ flat.</li>
-<li>Through LTI: $S_Y=|H|^2S_X$ (phase irrelevant). White noise through RC ⇒ $N_0/4RC$; generally $P=\frac{N_0}2\int h^2$.</li>
-<li>Thermal noise: $N_0=kT$, $-174$ dBm/Hz; AWGN after bandwidth $B$: $\sigma^2=N_0B$.</li>
+<li>Process = ensemble of waveforms; WSS means constant mean and $R_X$ depending on $\tau$ only (random phase / random delay make signals stationary).</li>
+<li>$R_X(0)$ = power; $R_X(\infty)$ = DC power; $R_X$ is even, peaks at 0, transform $\ge0$ (proved via the periodogram).</li>
+<li>Wiener–Khinchin: $S_X=\mathcal F\{R_X\}=\lim\frac1T\E|X_T|^2$; $\int S_X\,df=R_X(0)$. Sine ⇒ two lines; NRZ bits ⇒ $A^2T\sinc^2(fT)$; white ⇒ flat. PAM: $S_X=\frac{|G|^2}TS_b(f)$ with lines if the symbol mean is non-zero.</li>
+<li>Thermal noise: $kTB$ available, $\overline{v_n^2}=4kTRB$, $N_0=kT$, $-174$ dBm/Hz (derived from equipartition on a line). AWGN after bandwidth $B$: $\sigma^2=N_0B$.</li>
+<li>Through LTI: $S_Y=|H|^2S_X$ (phase irrelevant). White noise through RC ⇒ $N_0/4RC$; generally $P=\frac{N_0}2\int h^2$; use the noise bandwidth ($\frac\pi2f_{3\rm dB}$ for RC).</li>
+<li>Wiener filter: $H=\frac{S_s}{S_s+S_n}$.</li>
 <li>Narrowband Gaussian noise: $n_c,n_s$ independent, variance $\sigma^2$ each; envelope Rayleigh, phase uniform.</li>
-<li>Friis: $F=F_1+\frac{F_2-1}{G_1}+\cdots$, so the front end decides the noise performance.</li>
+<li>Friis: $F=F_1+\frac{F_2-1}{G_1}+\cdots$; $T_e=(F-1)290$; sensitivity $=-174+10\log B+NF+\mathrm{SNR}_{\min}$ dBm. Put the LNA first.</li>
 </ul></div>
 
 <script>
@@ -228,4 +336,5 @@ GB.widget('w-friis',{title:'Friis noise cascade',h:280,hm:330,controls:[{k:'g1',
    const sc=W/Math.max(tot,1.5); const cols=[C.blue,C.orange,C.red],names=['F₁','(F₂−1)/G₁','(F₃−1)/(G₁G₂)']; let x=x0; c.forEach((v,i)=>{ ctx.fillStyle=cols[i]; ctx.globalAlpha=.8; ctx.fillRect(x,y,v*sc,h); ctx.globalAlpha=1; ctx.fillStyle=C.fg; ctx.font='12px system-ui'; ctx.textAlign='left'; if(v*sc>46) ctx.fillText(v.toFixed(2),x+6,y+h/2+4); x+=v*sc; });
    g.text(x0,y-18,'total F as a sum of three contributions','mute',null,12); g.legend(names.map((n,i)=>[n,['blue','orange','red'][i]]),x0,y+h+26);
    g.text(x0,y+h+60,'F_total = '+tot.toFixed(3)+'   →   NF_total = '+(10*Math.log10(tot)).toFixed(2)+' dB','yellow',null,15); g.text(x0,y+h+86,'Noise temperature  Te = (F−1)·290 K = '+((tot-1)*290).toFixed(0)+' K','fg',null,13); }});
+
 </script>

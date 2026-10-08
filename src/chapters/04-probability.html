@@ -1,127 +1,266 @@
-<!--meta {"id": "ch04", "num": "4", "part": "Part I · The Mathematical Toolkit", "title": "Chance, Noise and the Gaussian", "lede": "Every received signal is a slightly corrupted version of the truth. Probability is the language in which we argue with the corruption."} -->
+<!--meta {"id":"ch04","num":"4","part":"Part I · The Mathematical Toolkit","title":"Chance, Noise and the Gaussian","lede":"Every received signal is a slightly corrupted version of the truth. Probability is the language in which we argue with the corruption."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Use conditional probability and Bayes’ rule to compute posterior probabilities for a noisy channel, and explain why a lopsided prior can overrule the evidence.</li>
+<li>Work with CDFs, pdfs, moments and characteristic functions; use the Markov and Chebyshev inequalities.</li>
+<li><b>Derive</b> the Gaussian normalisation, the Poisson limit of the binomial, the Rayleigh law from two Gaussians, and the arcsine law of a random-phase sinusoid.</li>
+<li>Explain the central limit theorem through characteristic functions, and say why thermal noise is Gaussian.</li>
+<li>Use the $Q$-function fluently: tail probabilities, bounds, the asymptotic formula and the numbers to memorise.</li>
+<li>Find the pdf of a function of a random variable, including impulses where the function is flat.</li>
+<li>Handle joint Gaussians, conditional means (the MMSE estimator) and the sum of independent variables; set up and size a basic detection test (false alarm vs detection) and a Monte-Carlo error-rate simulation.</li>
+</ul>
+<p><b>Prerequisite:</b> school probability. Chapter 2 helps in two places (characteristic functions are Fourier transforms of pdfs).</p></div>
 
 <div class="box story"><span class="tag">History · the hiss that was the Big Bang</span>
-<p>In 1964, two Bell Labs engineers, Arno Penzias and Robert Wilson, were trying to use a giant horn antenna in Holmdel, New Jersey, to listen for faint radio signals from space. They kept hearing a steady hiss, about $3.5\,\mathrm{K}$ worth of noise, in every direction, day and night. They checked the electronics. They evicted a family of pigeons from the horn and scrubbed out what they politely called "white dielectric material". The hiss stayed.</p>
+<p>In 1964, two Bell Labs engineers, Arno Penzias and Robert Wilson, were trying to use a giant horn antenna in Holmdel, New Jersey, to listen for faint radio signals from space. They kept hearing a steady hiss, about $3.5\,\mathrm{K}$ worth of noise, in every direction, day and night. They checked the electronics. They evicted a family of pigeons from the horn and scrubbed out what they politely called “white dielectric material”. The hiss stayed.</p>
 <p>It turned out that the hiss was the afterglow of the Big Bang. They got a Nobel Prize for it in 1978. Lesson for a communication engineer: <strong>noise is not an inconvenience that sits on top of physics. It <em>is</em> physics</strong>, and every receiver ever built has to live with it. To live with it you need to talk about it, and to talk about noise you need probability.</p></div>
 
-<p>Here is the whole plan of this book in one sentence: <em>a transmitter sends one of a few possible waveforms; the channel adds random junk; the receiver has to guess which waveform was sent, and we want to know how often it will guess wrong.</em> Everything in digital communication, from BER curves to error-correcting codes, is some version of that sentence. In analog communication the question is the same, only the guess is "what was the message waveform?" and the score is signal-to-noise ratio instead of error rate.</p>
-<p>So before we touch a single antenna, we are going to rebuild exactly the probability you need. Not the whole subject, only the ten ideas GATE keeps coming back to. You studied all of this once. We are going to rebuild it so that it <em>sticks</em>.</p>
+<p>Here is the whole plan of this book in one sentence: <em>a transmitter sends one of a few possible waveforms; the channel adds random junk; the receiver has to guess which waveform was sent, and we want to know how often it will guess wrong.</em> Everything in digital communication, from BER curves to error-correcting codes, is some version of that sentence. In analog communication the question is the same, only the guess is “what was the message waveform?” and the score is signal-to-noise ratio instead of error rate.</p>
+<p>So before we touch a single antenna we rebuild exactly the probability you need: the ideas that the rest of the book keeps coming back to, each with its derivation so that nothing is a formula from nowhere.</p>
 
 <h2>Probability is area</h2>
-<p>Here is the picture I want you to carry for the whole chapter. Take a square of area 1. Every outcome of your experiment lives somewhere inside it, and the probability of an event is simply <strong>how much of the square it covers</strong>. Conditioning is "zoom in on one region of the square and renormalise so that region has area 1". Bayes' rule is nothing but a ratio of two areas.</p>
-<p>Let's use it for the most basic communication problem. A transmitter sends a bit: $1$ with probability $\pi$, $0$ with probability $1-\pi$. The channel flips the bit with probability $\varepsilon$. You see a <strong>1</strong>. What is the probability a 1 was actually sent?</p>
+<p>Take a square of area 1. Every outcome of your experiment lives somewhere inside it, and the probability of an event is <strong>how much of the square it covers</strong>. Formally, a probability model has a sample space $\Omega$ (all outcomes), events (subsets), and a measure $P$ satisfying Kolmogorov’s axioms: $P(A)\ge0$; $P(\Omega)=1$; and $P(A\cup B)=P(A)+P(B)$ for disjoint $A,B$. Everything else follows. For instance $P(A\cup B)=P(A)+P(B)-P(A\cap B)$ (don’t count the overlap twice), $P(A^c)=1-P(A)$.</p>
+<p><b>Conditioning</b> is “zoom in on one region of the square and renormalise so that region has area 1”. <b>Independence</b> means knowing $B$ does not change the area-fraction of $A$: $P(A\cap B)=P(A)P(B)$. Let’s use these for the most basic communication problem. A transmitter sends a bit: $1$ with probability $\pi$, $0$ with probability $1-\pi$. The channel flips the bit with probability $\varepsilon$. You see a <strong>1</strong>. What is the probability a 1 was actually sent?</p>
+<div class="widget" id="w-bayes">Cut the square vertically by the prior $\pi$ (left = “1 was sent”). Cut each column by the channel: the bottom part of each column is where the receiver saw a 1. The posterior is the <b class="c-green">green</b> area divided by (green + <b class="c-orange">orange</b>). Try $\pi=0.3,\ \varepsilon=0.1$: even a quite reliable channel gives only 79% confidence when the prior is lopsided.</div>
 
-<div class="widget" id="w-bayes">Cut the square vertically by the prior $\pi$ (left = "1 was sent"). Cut each column by the channel: the bottom part of each column is where the receiver saw a 1. The posterior is the <b class="c-green">green</b> area divided by (green + <b class="c-orange">orange</b>). Try $\pi=0.3,\ \varepsilon=0.1$: even a quite reliable channel gives only 79% confidence when the prior is lopsided.</div>
-
-<div class="box def"><span class="tag">Definition · conditional probability and Bayes</span>
-$$P(A\mid B)=\frac{P(A\cap B)}{P(B)},\qquad P(A\mid B)=\frac{P(B\mid A)\,P(A)}{P(B)}=\frac{P(B\mid A)P(A)}{\sum_i P(B\mid A_i)P(A_i)}$$
-<p>For the bit example: $P(\text{sent }1\mid\text{got }1)=\dfrac{\pi(1-\varepsilon)}{\pi(1-\varepsilon)+(1-\pi)\varepsilon}$. This is exactly the "posterior" that a MAP receiver (Chapter 10) uses to decide.</p></div>
+<div class="box derive"><span class="tag">Derivation · total probability and Bayes’ rule</span>
+<p>Definition: $P(A\mid B)=\dfrac{P(A\cap B)}{P(B)}$, so $P(A\cap B)=P(A\mid B)P(B)=P(B\mid A)P(A)$. Dividing the second equality by $P(B)$ gives <b>Bayes</b>. If $A_1,\dots,A_M$ partition $\Omega$ (exactly one occurs), the denominator expands by the <b>law of total probability</b> $P(B)=\sum_iP(B\mid A_i)P(A_i)$:
+$$P(A_j\mid B)=\frac{P(B\mid A_j)\,P(A_j)}{\sum_iP(B\mid A_i)\,P(A_i)}.$$
+For the bit example: $P(\text{sent }1\mid\text{got }1)=\dfrac{\pi(1-\varepsilon)}{\pi(1-\varepsilon)+(1-\pi)\varepsilon}$. In the language of detection (Chapter 14): $P(A_j)$ is the <b>prior</b>, $P(B\mid A_j)$ the <b>likelihood</b>, $P(A_j\mid B)$ the <b>posterior</b>, and the receiver that picks the largest posterior is the MAP receiver, which minimises the probability of error.</p></div>
 
 <div class="box pause"><span class="tag">Pause and ponder</span>
-<p>The channel above is a "binary symmetric channel" with $\varepsilon=0.1$ and a fair prior $\pi=0.5$. You receive a 1. What is the posterior probability that a 1 was sent? Now what if $\pi=0.01$? Which bit does the receiver bet on, and does that depend on what it received?</p>
-<details><summary>Reveal</summary><p>With $\pi=0.5$: $0.9$. With $\pi=0.01$: $\frac{0.01\cdot0.9}{0.01\cdot0.9+0.99\cdot0.1}=0.083$. Even after <em>seeing a 1</em>, a sender who almost never sends 1 is probably still sending 0. A good receiver bets on the prior as much as on the evidence, which is the whole philosophy of MAP detection.</p></details></div>
+<p>The channel above is a “binary symmetric channel” with $\varepsilon=0.1$ and a fair prior $\pi=0.5$. You receive a 1. What is the posterior probability that a 1 was sent? Now what if $\pi=0.01$? Which bit does the receiver bet on, and does that depend on what it received?</p>
+<details><summary>Reveal</summary><p>With $\pi=0.5$: $0.9$. With $\pi=0.01$: $\frac{0.01\cdot0.9}{0.01\cdot0.9+0.99\cdot0.1}=0.083$. Even after <em>seeing a 1</em>, a sender who almost never sends 1 is probably still sending 0. A good receiver bets on the prior as much as on the evidence, which is the whole philosophy of MAP detection. The same logic explains why a “99% accurate” test for a rare disease (or a rare intrusion, or a rare radar target) produces mostly false alarms.</p></details></div>
+
+<div class="box eng"><span class="tag">Engineering practice · the base-rate trap in alarms and detectors</span>
+<p>A radar or an intrusion detector with false-alarm probability $10^{-3}$ per decision sounds excellent. If it makes $10^{6}$ decisions per second and genuine targets appear in one decision in $10^{7}$, then per second it raises $10^3$ false alarms against $0.1$ true detections: the posterior probability that an alarm is real is about $10^{-4}$. Detection systems are therefore designed on <em>prior-aware</em> thresholds, with false-alarm rates of $10^{-6}$ to $10^{-12}$, which is why the section on detection at the end of this chapter, and Chapter 14, spend so long on tails of the Gaussian.</p></div>
+
+<h3>Counting: where the binomial coefficient comes from</h3>
+<p>The number of ways to choose which $k$ of $n$ bits are in error is $\binom nk=\dfrac{n!}{k!(n-k)!}$ (order the $n$ positions in $n!$ ways; the $k!$ orderings of the chosen and the $(n-k)!$ of the unchosen do not matter). If each bit is independently in error with probability $p$, any particular pattern with $k$ errors has probability $p^k(1-p)^{n-k}$, hence
+$$P(k\text{ errors in }n\text{ bits})=\binom nkp^k(1-p)^{n-k},\qquad k=0,1,\dots,n.$$
+This is the <b>binomial</b> law; you will use it for block-error probabilities of every code in Chapter 17.</p>
 
 <h2>Random variables: turning outcomes into numbers</h2>
-<p>A <strong>random variable</strong> $X$ is just a rule that attaches a number to every point of that probability square: the voltage at the output, the number of bit errors in a block, the noise sample at time $t_0$. We describe it with three equivalent objects.</p>
+<p>A <strong>random variable</strong> $X$ is a rule that attaches a number to every point of the probability square: the voltage at the output, the number of bit errors in a block, the noise sample at time $t_0$. It is described by one of three equivalent objects.</p>
 <ul>
-<li><strong>CDF</strong> $F_X(x)=P(X\le x)$: a non-decreasing function from 0 to 1. It always exists.</li>
+<li><strong>CDF</strong> $F_X(x)=P(X\le x)$: non-decreasing, right-continuous, from 0 to 1. It always exists, for discrete, continuous and mixed variables alike.</li>
 <li><strong>pmf</strong> $p_X(x)=P(X=x)$ for discrete $X$ (a list of lumps of probability).</li>
 <li><strong>pdf</strong> $f_X(x)=\dfrac{dF_X}{dx}$ for continuous $X$. A pdf is a <em>density</em>, not a probability. Probability is <strong>area under it</strong>: $P(a<X\le b)=\int_a^b f_X(x)\,dx=F_X(b)-F_X(a)$.</li>
 </ul>
-<p>Two facts we use constantly: $\int_{-\infty}^{\infty} f_X=1$ and $f_X(x)\ge0$. A pdf can exceed 1 (a very narrow bump), a probability never can.</p>
-
+<p>Two facts we use constantly: $\int_{-\infty}^{\infty} f_X=1$ and $f_X(x)\ge0$. A pdf can exceed 1 (a very narrow bump of unit area), a probability never can. A <b>mixed</b> variable has both a continuous part and impulses in its pdf, $f_X(x)=f_c(x)+\sum_ip_i\delta(x-x_i)$; these arise whenever a device saturates or quantises (below).</p>
 <div class="widget" id="w-pdf">Drag the interval edges. The shaded area under the pdf (top) equals the rise of the CDF between the two dashed lines (bottom). Same number, two pictures.</div>
 
-<h2>Expectation, variance, and why mean-square is power</h2>
+<h2>Expectation, variance and characteristic functions</h2>
 <p>The <strong>expectation</strong> (mean) is the probability-weighted average,
 $$\E[X]=\int x f_X(x)\,dx\quad\text{or}\quad \sum_x x\,p_X(x),\qquad \E[g(X)]=\int g(x)f_X(x)\,dx .$$
-Think of the pdf as a thin wire with mass density $f_X$: $\E[X]$ is the balance point. The <strong>variance</strong> is the spread, the moment of inertia about that balance point:
-$$\sigma_X^2=\Var(X)=\E[(X-\mu)^2]=\E[X^2]-\mu^2 .$$
-</p>
-<p>In electronics $X$ is a voltage across $1\,\Omega$. Then $X^2$ is instantaneous power, $\E[X^2]$ is the <strong>average power</strong> (mean-square value), $\mu^2$ is the DC power, and $\sigma^2$ is the AC (fluctuating) power. This is why in the noise chapters "variance" and "power" will be used almost interchangeably for zero-mean signals.</p>
+Think of the pdf as a thin wire with mass density $f_X$: $\E[X]$ is the balance point. The <strong>variance</strong> is the moment of inertia about that point:
+$$\sigma_X^2=\Var(X)=\E[(X-\mu)^2]=\E[X^2]-\mu^2\qquad(\text{expand the square and use linearity}).$$
+In electronics $X$ is a voltage across $1\,\Omega$. Then $X^2$ is instantaneous power, $\E[X^2]$ is the <strong>average power</strong>, $\mu^2$ is the DC power, and $\sigma^2$ is the AC (fluctuating) power. This is why in the noise chapters “variance” and “power” are used almost interchangeably for zero-mean signals.</p>
 <div class="box key"><span class="tag">Rules you will use 100 times</span>
 <ul>
 <li>Linearity (always, no independence needed): $\E[aX+bY+c]=a\E[X]+b\E[Y]+c$.</li>
 <li>$\Var(aX+b)=a^2\Var(X)$. Shifting does nothing, scaling squares.</li>
-<li>If $X,Y$ are <strong>independent</strong>: $\Var(X+Y)=\Var(X)+\Var(Y)$ and $\E[XY]=\E[X]\E[Y]$.</li>
-<li>In general $\Var(X+Y)=\Var X+\Var Y+2\Cov(X,Y)$.</li>
+<li>In general $\Var(X+Y)=\Var X+\Var Y+2\Cov(X,Y)$; if $X,Y$ are <strong>independent</strong>, $\Cov=0$ so variances add, and $\E[XY]=\E[X]\E[Y]$.</li>
 </ul></div>
 
-<h2>A small zoo of distributions you must recognise on sight</h2>
+<h3>How far from the mean? Markov and Chebyshev</h3>
+<div class="box derive"><span class="tag">Derivation · two distribution-free bounds</span>
+<p><b>Markov.</b> For $X\ge0$ and $a>0$: $\E[X]=\int_0^\infty xf\,dx\ge\int_a^\infty xf\,dx\ge a\int_a^\infty f\,dx$, so $P(X\ge a)\le\E[X]/a$. <b>Chebyshev.</b> Apply Markov to $(X-\mu)^2$ with threshold $k^2\sigma^2$:
+$$P\big(|X-\mu|\ge k\sigma\big)\le\frac{\E[(X-\mu)^2]}{k^2\sigma^2}=\frac1{k^2}.$$
+So at most $1/9=11\%$ of any distribution lies beyond $3\sigma$. For a Gaussian the truth is $0.27\%$: Chebyshev is loose, but it needs nothing except the variance. It proves the <b>law of large numbers</b>: the mean of $n$ independent samples has variance $\sigma^2/n$, so $P(|\bar X_n-\mu|\ge\epsilon)\le\sigma^2/(n\epsilon^2)\to0$.</p></div>
+
+<h3>The characteristic function: Fourier transform of the pdf</h3>
+<p>$\Phi_X(\omega)=\E[e^{j\omega X}]=\int f_X(x)e^{j\omega x}dx$. This is the Fourier transform of the pdf (with the opposite sign convention), so everything from Chapter 2 applies. Three payoffs: (i) <b>moments</b>: $\E[X^k]=j^{-k}\Phi^{(k)}(0)$; (ii) the pdf of a sum of <em>independent</em> variables is a convolution, so $\Phi_{X+Y}=\Phi_X\Phi_Y$ (convolution theorem!); (iii) uniqueness: if two variables have the same $\Phi$ they have the same pdf, which lets us identify distributions of sums by inspection. For example, $\Phi_{\rm Gauss}(\omega)=e^{j\mu\omega-\sigma^2\omega^2/2}$ (the Gaussian-is-its-own-transform pair of Chapter 2).</p>
+
+<h2>A small zoo of distributions, with the reasons</h2>
 <table>
 <tr><th>Name</th><th>Where it appears in this book</th><th>pmf / pdf</th><th>Mean</th><th>Variance</th></tr>
 <tr><td><b>Bernoulli</b>($p$)</td><td>one bit; one error/no error</td><td>$P(1)=p$</td><td>$p$</td><td>$p(1-p)$</td></tr>
 <tr><td><b>Binomial</b>($n,p$)</td><td>number of errors in an $n$-bit block</td><td>$\binom nk p^k(1-p)^{n-k}$</td><td>$np$</td><td>$np(1-p)$</td></tr>
 <tr><td><b>Poisson</b>($\lambda$)</td><td>calls arriving at an exchange, photons, shot noise</td><td>$e^{-\lambda}\lambda^k/k!$</td><td>$\lambda$</td><td>$\lambda$</td></tr>
 <tr><td><b>Uniform</b>$(a,b)$</td><td>random phase $\theta\in[0,2\pi)$; quantisation error</td><td>$\frac1{b-a}$ on $[a,b]$</td><td>$\frac{a+b}2$</td><td>$\frac{(b-a)^2}{12}$</td></tr>
-<tr><td><b>Exponential</b>($\lambda$)</td><td>waiting times; $|{\rm envelope}|^2$ of noise</td><td>$\lambda e^{-\lambda x},x\ge0$</td><td>$1/\lambda$</td><td>$1/\lambda^2$</td></tr>
+<tr><td><b>Exponential</b>($\lambda$)</td><td>waiting times; $|\text{envelope}|^2$ of noise</td><td>$\lambda e^{-\lambda x},x\ge0$</td><td>$1/\lambda$</td><td>$1/\lambda^2$</td></tr>
 <tr><td><b>Gaussian</b>$(\mu,\sigma^2)$</td><td>thermal noise; AWGN; everything</td><td>$\frac1{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/2\sigma^2}$</td><td>$\mu$</td><td>$\sigma^2$</td></tr>
 <tr><td><b>Rayleigh</b>($\sigma$)</td><td>envelope of narrowband Gaussian noise; fading</td><td>$\frac{x}{\sigma^2}e^{-x^2/2\sigma^2},x\ge0$</td><td>$\sigma\sqrt{\pi/2}$</td><td>$\frac{4-\pi}{2}\sigma^2$</td></tr>
 </table>
+<div class="box derive"><span class="tag">Where these come from</span>
+<h4>Binomial mean and variance</h4>
+<p>$K=\sum_{i=1}^nB_i$ with independent Bernoulli $B_i$ ($\E B_i=p$, $\Var B_i=p(1-p)$ since $\E B_i^2=p$). Means add; so do variances, by independence: $\E K=np$, $\Var K=np(1-p)$.</p>
+<h4>Poisson as the limit of the binomial: the law of rare events</h4>
+<p>Cut an interval into $n$ tiny sub-intervals, each containing an arrival with probability $p=\lambda/n$ independently. The count is Binomial$(n,\lambda/n)$ and
+$$\binom nk\Big(\frac\lambda n\Big)^k\Big(1-\frac\lambda n\Big)^{n-k}=\frac{\lambda^k}{k!}\cdot\underbrace{\frac{n(n-1)\cdots(n-k+1)}{n^k}}_{\to1}\cdot\underbrace{\Big(1-\frac\lambda n\Big)^{n}}_{\to e^{-\lambda}}\cdot\underbrace{\Big(1-\frac\lambda n\Big)^{-k}}_{\to1}\ \to\ \frac{e^{-\lambda}\lambda^k}{k!}.$$
+So independent, rarely-occurring events (telephone calls, photon arrivals, cosmic-ray hits, errors in a very long low-BER stream) give Poisson counts, and the waiting time to the first arrival is exponential: $P(T>t)=P(\text{no arrival in }t)=e^{-\lambda t}$.</p>
+<h4>Exponential: no memory</h4>
+<p>$P(X>s+t\mid X>s)=\dfrac{e^{-\lambda(s+t)}}{e^{-\lambda s}}=e^{-\lambda t}=P(X>t)$. The time you have already waited tells you nothing about the time still to come. (It is the only continuous distribution with this property.)</p>
+<h4>Uniform variance</h4>
+<p>For $U(-\tfrac\Delta2,\tfrac\Delta2)$: $\sigma^2=\frac1\Delta\int_{-\Delta/2}^{\Delta/2}x^2dx=\frac1\Delta\cdot\frac{2(\Delta/2)^3}3=\frac{\Delta^2}{12}$. This is the <b>quantisation noise power</b> of Chapter 12: a quantiser with step $\Delta$ makes an error uniformly distributed over one step.</p></div>
 <div class="box gate"><span class="tag">GATE pattern</span>
-<p>GATE 2014 (Set 4) asked: <em>"If calls arrive at a telephone exchange such that the arrival of any call is independent of earlier or later calls, the distribution of the number of calls in a fixed interval will be: Poisson / Gaussian / Exponential / Gamma."</em> Answer: <strong>Poisson</strong>. Independent arrivals ⇒ Poisson count; the <em>gaps</em> between them are exponential. One-liners like this are free marks.</p></div>
+<p>GATE 2014 (Set 4) asked: <em>“If calls arrive at a telephone exchange such that the arrival of any call is independent of earlier or later calls, the distribution of the number of calls in a fixed interval will be: Poisson / Gaussian / Exponential / Gamma.”</em> Answer: <strong>Poisson</strong>. Independent arrivals ⇒ Poisson count; the <em>gaps</em> between them are exponential. One-liners like this are free marks.</p></div>
 
 <h2>The Gaussian: why nature loves it</h2>
 <div class="box story"><span class="tag">History · de Moivre, Gauss, Laplace</span>
 <p>In 1733 Abraham de Moivre noticed that coin-toss counts pile up in a bell shape. In 1801 the astronomer Piazzi lost the newly discovered dwarf planet Ceres behind the Sun; the 24-year-old Gauss recovered it using a method of fitting noisy observations (least squares) and, in 1809, argued that measurement errors follow the bell curve. In 1810 Laplace proved the general reason: add up lots of small independent effects and you get a bell, whatever the effects looked like individually. That is the <strong>central limit theorem</strong>.</p></div>
 
-<p>Thermal noise in a resistor is produced by $\sim10^{10}$ electrons jostling independently. Each contributes a tiny random push; their <em>sum</em> is the noise voltage. By the CLT that sum is Gaussian, which is why <strong>AWGN is the default model for almost every communication channel</strong>. Watch the CLT happen: add $n$ random numbers drawn from a decidedly non-Gaussian source and standardise the sum.</p>
-<div class="widget" id="w-clt">Histogram of 6000 standardised sums of $n$ draws (bars) against the Gaussian bell (line). Even the lopsided exponential becomes bell-shaped by $n\approx 20$. At $n=1$ you see the raw shape of one draw.</div>
+<div class="box derive"><span class="tag">Derivation · the Gaussian integral and the density</span>
+<p>Is $\int_{-\infty}^\infty e^{-x^2/2}dx$ finite, and what is it? Square it, and treat the product as a double integral over the plane, then switch to polar coordinates:
+$$I^2=\iint e^{-(x^2+y^2)/2}dx\,dy=\int_0^{2\pi}\!\!\int_0^\infty e^{-r^2/2}\,r\,dr\,d\theta=2\pi\big[-e^{-r^2/2}\big]_0^\infty=2\pi\ \Longrightarrow\ I=\sqrt{2\pi}.$$
+Hence $\varphi(x)=\frac1{\sqrt{2\pi}}e^{-x^2/2}$ integrates to 1, and by shifting and scaling $X\sim\mathcal N(\mu,\sigma^2)$ has pdf $\dfrac1{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/2\sigma^2}$. Its characteristic function is $e^{j\mu\omega-\sigma^2\omega^2/2}$.</p></div>
 
-<div class="box def"><span class="tag">The Gaussian, and the only table you need</span>
+<h3>The central limit theorem, derived</h3>
+<div class="box derive"><span class="tag">Derivation · why sums of many small things are Gaussian</span>
+<p>Let $X_1,\dots,X_n$ be independent with mean $\mu$, variance $\sigma^2$ and a common characteristic function $\Phi$. Define the standardised sum $Z_n=\dfrac1{\sigma\sqrt n}\sum_{i=1}^n(X_i-\mu)$. The characteristic function of a sum of independents is the product, and scaling by $1/\sigma\sqrt n$ rescales the argument. Let $\Psi(\omega)$ be the characteristic function of $X_i-\mu$, whose Taylor expansion is $\Psi(\omega)=1+j\omega\cdot0-\tfrac12\sigma^2\omega^2+o(\omega^2)$ (mean zero, second moment $\sigma^2$). Then
+$$\Phi_{Z_n}(\omega)=\Big[\Psi\!\Big(\frac{\omega}{\sigma\sqrt n}\Big)\Big]^n=\Big[1-\frac{\omega^2}{2n}+o\!\Big(\frac1n\Big)\Big]^n\ \xrightarrow{\ n\to\infty\ }\ e^{-\omega^2/2},$$
+which is the characteristic function of $\mathcal N(0,1)$. By uniqueness, $Z_n\to\mathcal N(0,1)$ in distribution. <b>Only the first two moments of each term survive</b>; the shape of the individual distributions is forgotten. A lopsided exponential becomes bell-shaped by $n\approx20$:</p></div>
+<div class="widget" id="w-clt">Histogram of 6000 standardised sums of $n$ draws (bars) against the Gaussian bell (line). Even the lopsided exponential becomes bell-shaped by $n\approx 20$. At $n=1$ you see the raw shape of one draw.</div>
+<p>Thermal noise in a resistor is produced by $\sim10^{10}$ electrons jostling independently. Each contributes a tiny random push; their <em>sum</em> is the noise voltage. By the CLT that sum is Gaussian, which is why <strong>AWGN is the default model for almost every communication channel</strong>. The same argument says that the <em>interference</em> from many independent users in a cellular network is also approximately Gaussian, and that multipath fading (a sum of many reflected rays) has Gaussian real and imaginary parts, hence Rayleigh magnitude (Chapter 21).</p>
+
+<div class="box def"><span class="tag">The Gaussian: properties to know</span>
 $$X\sim\mathcal N(\mu,\sigma^2):\quad f_X(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}.$$
-<p>Key properties: (i) a linear function of a Gaussian is Gaussian: $aX+b\sim\mathcal N(a\mu+b,a^2\sigma^2)$. (ii) A <em>sum of independent Gaussians</em> is Gaussian with means and variances added. (iii) For jointly Gaussian variables, <strong>uncorrelated ⇒ independent</strong> (only for Gaussians!). (iv) Standardise with $Z=(X-\mu)/\sigma\sim\mathcal N(0,1)$.</p></div>
+<p>(i) A linear function of a Gaussian is Gaussian: $aX+b\sim\mathcal N(a\mu+b,a^2\sigma^2)$ (scaling and shifting the characteristic function). (ii) A <em>sum of independent Gaussians</em> is Gaussian with means and variances added (characteristic functions multiply: exponents add). (iii) For jointly Gaussian variables, <strong>uncorrelated ⇒ independent</strong> (only for Gaussians!). (iv) Standardise with $Z=(X-\mu)/\sigma\sim\mathcal N(0,1)$. (v) Among all distributions of given variance, the Gaussian has the <em>largest entropy</em> (Chapter 10), which is why it is the worst noise for a given power.</p></div>
 
 <h2>The Q-function: the shape of every error probability</h2>
 <p>There is no closed form for $\int e^{-t^2/2}dt$, so we give the tail area a name. For the standard normal,
 $$Q(x)=P(Z>x)=\int_x^\infty\frac1{\sqrt{2\pi}}e^{-t^2/2}\,dt=\tfrac12\erfc\!\Big(\tfrac{x}{\sqrt2}\Big),\qquad Q(-x)=1-Q(x),\qquad Q(0)=\tfrac12 .$$
-For a general $X\sim\mathcal N(\mu,\sigma^2)$: $\;P(X>a)=Q\!\big(\tfrac{a-\mu}{\sigma}\big)$. <strong>Every bit-error probability in this book will have the form $Q(\text{half the distance between the two signals}/\text{noise }\sigma)$</strong>. You are looking at the most important function of the syllabus.</p>
+For a general $X\sim\mathcal N(\mu,\sigma^2)$: $\;P(X>a)=Q\!\big(\tfrac{a-\mu}{\sigma}\big)$. <strong>Every bit-error probability in this book will have the form $Q(\text{half the distance between the two signals}/\text{noise }\sigma)$</strong>. You are looking at the most important function of the syllabus. (The error function: $\erfc(u)=\frac2{\sqrt\pi}\int_u^\infty e^{-t^2}dt$, so $\erfc(u)=2Q(\sqrt2u)$.)</p>
 <div class="widget" id="w-q">Top: the shaded tail is $Q(x)$. Bottom: $\log_{10}Q(x)$. Notice how violently it falls: moving from $x=3$ to $x=4$ cuts the error rate by a factor of 40. The dashed curve is the handy bound $Q(x)\le\frac12e^{-x^2/2}$.</div>
+<div class="box derive"><span class="tag">Derivation · bounds and the large-$x$ approximation</span>
+<p><b>Upper bound.</b> For $t\ge x>0$ we have $1\le t/x$, so $Q(x)=\int_x^\infty\varphi(t)dt\le\frac1x\int_x^\infty t\varphi(t)\,dt=\frac{\varphi(x)}x$ (because $t\varphi(t)=-\varphi'(t)$). <b>Lower bound.</b> Integrate by parts: $Q(x)=\int_x^\infty\frac1t\,t\varphi(t)\,dt=\frac{\varphi(x)}x-\int_x^\infty\frac{\varphi(t)}{t^2}dt\ge\frac{\varphi(x)}x-\frac{Q(x)}{x^2}$ (since $1/t^2\le1/x^2$ on the range), and rearranging gives $Q(x)\ge\dfrac{x}{1+x^2}\varphi(x)$. Together, $\dfrac{x}{1+x^2}\varphi(x)\le Q(x)\le\dfrac{\varphi(x)}x$. The two bounds merge as $x$ grows, so
+$$Q(x)\approx\frac1{x\sqrt{2\pi}}e^{-x^2/2}\qquad(x\gtrsim2),$$
+within 19% at $x=2$ and 6% at $x=4$ (always slightly too large). A second, cruder but cleaner bound, from Craig’s representation $Q(x)=\frac1\pi\int_0^{\pi/2}\exp\!\big(-\frac{x^2}{2\sin^2\theta}\big)d\theta$ (each integrand is at most $e^{-x^2/2}$), is
+$$Q(x)\le\tfrac12e^{-x^2/2}\qquad(x\ge0).$$
+These exponents explain the “waterfall” of BER curves: error probability falls as $e^{-\mathrm{SNR}/2\ldots}$, exponentially in the SNR, so a few dB buy orders of magnitude.</p></div>
 <table>
 <tr><th>$x$</th><td>0</td><td>0.5</td><td>1</td><td>1.5</td><td>2</td><td>2.5</td><td>3</td><td>3.5</td><td>4</td><td>4.75</td></tr>
 <tr><th>$Q(x)$</th><td>0.5</td><td>0.3085</td><td>0.1587</td><td>0.0668</td><td>0.02275</td><td>0.00621</td><td>0.00135</td><td>$2.33\!\times\!10^{-4}$</td><td>$3.17\!\times\!10^{-5}$</td><td>$10^{-6}$</td></tr>
 </table>
-<div class="box key"><span class="tag">Memorise</span><p>$Q(1)\approx0.16,\ Q(2)\approx0.023,\ Q(3)\approx0.00135,\ Q(4)\approx3.2\times10^{-5},\ Q(4.75)\approx10^{-6},\ Q(6)\approx10^{-9}$. For $x\ge2$: $Q(x)\approx\dfrac{1}{x\sqrt{2\pi}}e^{-x^2/2}$ and $\ Q(x)\le\frac12e^{-x^2/2}$. The latter is what you use when GATE gives you $\erfc(u)\approx\frac{1}{u\sqrt\pi}e^{-u^2}$ and asks for the nearest power of 10 (as in GATE 2026).</p></div>
+<div class="box key"><span class="tag">Memorise</span><p>$Q(1)\approx0.16,\ Q(2)\approx0.023,\ Q(3)\approx0.00135,\ Q(4)\approx3.2\times10^{-5},\ Q(4.75)\approx10^{-6},\ Q(6)\approx10^{-9}$. For $x\ge2$: $Q(x)\approx\dfrac{1}{x\sqrt{2\pi}}e^{-x^2/2}$ and $\ Q(x)\le\frac12e^{-x^2/2}$. The latter is what you use when GATE gives you $\erfc(u)\approx\frac{1}{u\sqrt\pi}e^{-u^2}$ and asks for the nearest power of 10 (as in GATE 2026). The inverse: $Q^{-1}(10^{-3})=3.09$, $Q^{-1}(10^{-6})=4.75$, $Q^{-1}(10^{-9})=5.99$, $Q^{-1}(0.1)=1.28$.</p></div>
 
 <h2>Functions of a random variable</h2>
 <p>A signal goes through a rectifier, a clipper, a quantiser, a squarer. What does the pdf of the output look like? There are two clean ways to think.</p>
 <p><strong>Method 1 (CDF method, always works):</strong> write $F_Y(y)=P(g(X)\le y)$, express it as a region of $x$, integrate $f_X$ over it, differentiate.</p>
-<p><strong>Method 2 (slope formula):</strong> if $y=g(x)$ has roots $x_1,x_2,\dots$ for a given $y$,
+<div class="box derive"><span class="tag">Derivation · the slope formula</span>
+<p><strong>Method 2:</strong> suppose $y=g(x)$ has roots $x_1,x_2,\dots$ for a given $y$, where $g'(x_i)\ne0$. The event $\{y<Y\le y+dy\}$ happens when $X$ lies in one of the small intervals $dx_i=dy/|g'(x_i)|$ around the roots. Adding their probabilities, $f_Y(y)dy=\sum_if_X(x_i)\,dx_i$, so
 $$f_Y(y)=\sum_i\frac{f_X(x_i)}{|g'(x_i)|}.$$
-Picture: a thin slice $dy$ of output collects the probability from each thin slice $dx_i=dy/|g'(x_i)|$ of input that maps into it. Where $g$ is steep, a lot of input is squeezed into a little output (high density in $x$-terms, but the slice is wide in $y$ so the density thins out).</p>
+Where $g$ is steep a lot of input is squeezed into a little output; the density in $y$ thins out.</p></div>
+<div class="box ex"><span class="tag">Worked example · a sinusoid with random phase has the “arcsine” law</span>
+<p>$Y=A\cos\Theta$ with $\Theta\sim U(0,2\pi)$: this is the model of a carrier whose phase is unknown to the receiver (and of the amplitude of a sinusoid sampled at a random instant). For $|y|<A$ there are two roots in $[0,2\pi)$, and $|dy/d\theta|=A|\sin\theta|=\sqrt{A^2-y^2}$. Hence
+$$f_Y(y)=2\cdot\frac{1/2\pi}{\sqrt{A^2-y^2}}=\frac1{\pi\sqrt{A^2-y^2}},\qquad|y|<A.$$
+The density is smallest in the middle and <em>infinite</em> at $\pm A$: a sinusoid spends most of its time near its peaks, where it turns around. Check the power: $\E[Y^2]=A^2\E[\cos^2\Theta]=A^2/2$ ✓, the same as Chapter 1.</p></div>
 <p>And there is a third, GATE-favourite phenomenon: where $g$ is <strong>flat</strong> over an interval (a clipper, a quantiser, a comparator), a whole interval of inputs collapses to one output value, which then carries a finite chunk of probability. The pdf of $Y$ then contains <strong>impulses</strong> $\delta(y-y_0)$ whose weight is that chunk. Play with it:</p>
 <div class="widget" id="w-xform">Input $X\sim\mathcal N(0,1)$ (top). Choose a transformation $Y=g(X)$ and compare the histogram of $Y$ (bars) with theory (line). Red arrows are <em>point masses</em>: their <em>height is the probability</em> carried by that one value.</div>
 <div class="box ex"><span class="tag">Worked example · hard limiter</span>
 <p>A clipper outputs $Y=-1$ for $X<-1$, $Y=X$ for $|X|\le1$, $Y=+1$ for $X>1$, with $X\sim\mathcal N(0,1)$. Then $P(Y=1)=P(X>1)=Q(1)=0.1587$, likewise for $Y=-1$, and in between $f_Y(y)=\frac1{\sqrt{2\pi}}e^{-y^2/2}$. Check: $0.1587\times2+\int_{-1}^1\!\varphi=0.317+0.683=1$ ✓.<br>
 So $f_Y(y)=0.1587\,\delta(y+1)+0.1587\,\delta(y-1)+\varphi(y)\,[|y|<1]$.</p></div>
 <div class="box gate"><span class="tag">GATE pattern</span>
-<p>GATE 2023 Q.36 showed a staircase transformation $Y=h(X)$ of a standard normal and asked for the <em>form</em> of $f_Y$. The answer was "impulses at the plateau values plus a piecewise-continuous part $g(y)$". Whenever the graph of $h$ has a flat piece, add an impulse; whenever it is strictly sloped, add a continuous piece. That is the entire trick. (GATE 2014 also asked for the threshold of a 1-bit quantiser fed with $f_X=2e^{-2x}$ so that both outputs are equally likely: solve $F_X(T)=\tfrac12\Rightarrow T=\tfrac{\ln2}{2}=0.347$.)</p></div>
+<p>GATE 2023 Q.36 showed a staircase transformation $Y=h(X)$ of a standard normal and asked for the <em>form</em> of $f_Y$. The answer was “impulses at the plateau values plus a piecewise-continuous part $g(y)$”. Whenever the graph of $h$ has a flat piece, add an impulse; whenever it is strictly sloped, add a continuous piece. That is the entire trick. (GATE 2014 also asked for the threshold of a 1-bit quantiser fed with $f_X=2e^{-2x}$ so that both outputs are equally likely: solve $F_X(T)=\tfrac12\Rightarrow T=\tfrac{\ln2}{2}=0.347$.)</p></div>
+<div class="box eng"><span class="tag">Engineering practice · generating random variables on a computer</span>
+<p>Every BER simulation starts from a uniform random generator. To get any other distribution, use the <b>inverse-CDF method</b>: if $U\sim U(0,1)$ then $F^{-1}(U)$ has CDF $F$, because $P(F^{-1}(U)\le x)=P(U\le F(x))=F(x)$. Exponential: $X=-\ln(1-U)/\lambda$. For the Gaussian, which has no closed-form inverse, the Box–Muller method uses the polar derivation above in reverse: $R=\sqrt{-2\ln U_1}$ (Rayleigh) and $\Theta=2\pi U_2$ (uniform) give two independent standard normals $R\cos\Theta,\ R\sin\Theta$.</p></div>
+
+<h3>Rayleigh and Rice: where the envelope of noise comes from</h3>
+<div class="box derive"><span class="tag">Derivation · the Rayleigh law</span>
+<p>Let $X,Y$ be independent $\mathcal N(0,\sigma^2)$ (the in-phase and quadrature components of narrowband noise, Chapter 5). Their joint pdf is $\frac1{2\pi\sigma^2}e^{-(x^2+y^2)/2\sigma^2}$. Convert to polar coordinates $x=r\cos\theta$, $y=r\sin\theta$ with Jacobian $r$:
+$$f_{R\Theta}(r,\theta)=\frac{r}{2\pi\sigma^2}e^{-r^2/2\sigma^2}\ =\ \underbrace{\frac{r}{\sigma^2}e^{-r^2/2\sigma^2}}_{f_R:\ \text{Rayleigh}}\cdot\underbrace{\frac1{2\pi}}_{f_\Theta:\ \text{uniform}}.$$
+It factorises: the envelope $R$ is <b>Rayleigh</b>, the phase $\Theta$ is uniform, and they are independent. The tail is $P(R>r)=e^{-r^2/2\sigma^2}$, and $R^2/2\sigma^2$ is exponential with mean 1. If a constant (a carrier of amplitude $A$) is added to one component, the envelope is instead <b>Rician</b>: $f_R(r)=\frac r{\sigma^2}e^{-(r^2+A^2)/2\sigma^2}I_0\!\big(\frac{rA}{\sigma^2}\big)$ (the angle integral produces the modified Bessel function $I_0$). For $A\gg\sigma$ the Rician becomes Gaussian around $A$; for $A=0$ it is Rayleigh. These two laws govern non-coherent detection (Chapter 15) and fading (Chapter 21).</p></div>
 
 <h2>Two random variables: correlation and independence</h2>
-<p>The joint behaviour of $X$ and $Y$ lives in a joint pdf $f_{XY}(x,y)$, a bump over the plane. The two numbers you need:
+<p>The joint behaviour of $X$ and $Y$ lives in a joint pdf $f_{XY}(x,y)$, a bump over the plane. Marginals are obtained by integrating out the other variable, $f_X(x)=\int f_{XY}\,dy$; conditionals by slicing and renormalising, $f_{Y|X}(y|x)=f_{XY}(x,y)/f_X(x)$. The two numbers you need:
 $$\Cov(X,Y)=\E[(X-\mu_X)(Y-\mu_Y)]=\E[XY]-\mu_X\mu_Y,\qquad \rho=\frac{\Cov(X,Y)}{\sigma_X\sigma_Y}\in[-1,1].$$
-$\rho=\pm1$ means $Y$ is an exact linear function of $X$; $\rho=0$ means "no <em>linear</em> relationship".</p>
+<b>Why $|\rho|\le1$:</b> the Cauchy–Schwarz inequality $|\E[UV]|^2\le\E[U^2]\E[V^2]$ applied to $U=X-\mu_X$, $V=Y-\mu_Y$; equality holds only if $V$ is a multiple of $U$. So $\rho=\pm1$ means $Y$ is an exact linear function of $X$; $\rho=0$ means “no <em>linear</em> relationship”.</p>
 <p><strong>Independent</strong> means $f_{XY}=f_Xf_Y$ (the bump factorises). Independent ⇒ uncorrelated. The converse is <em>false</em>: let $X$ be symmetric about zero and $Y=X^2$. $Y$ is fully determined by $X$, yet $\E[XY]=\E[X^3]=0$ so $\rho=0$. Look at both situations:</p>
 <div class="widget" id="w-scatter">Each dot is one realisation of $(X,Y)$. The correlation coefficient measures only the straight-line tendency. The parabola and circle datasets are perfectly dependent and yet have $\rho\approx0$.</div>
 <p>The bivariate Gaussian is the pleasant exception, and its picture is worth seeing in 3D. The hill is round when $\rho=0$, and stretches into a ridge along the diagonal as $|\rho|\to1$. For Gaussians, and <em>only</em> Gaussians, $\rho=0$ makes the hill round (factorised) and therefore independent.</p>
 <div class="widget" id="w-bivar">Joint pdf of two unit-variance Gaussians. Drag to rotate. As $\rho\to1$ all the probability piles onto the line $y=x$.</div>
 
+<div class="box derive"><span class="tag">Derivation · the best estimate of $Y$ from $X$ (jointly Gaussian)</span>
+<p>Take zero-mean jointly Gaussian $X,Y$ with variances $\sigma_X^2,\sigma_Y^2$ and correlation $\rho$. Try to write $Y=aX+W$ with $W$ independent of $X$. Making $W=Y-aX$ <em>uncorrelated</em> with $X$ requires $\E[(Y-aX)X]=0$, i.e. $a=\dfrac{\E[XY]}{\E[X^2]}=\rho\dfrac{\sigma_Y}{\sigma_X}$. Since $(X,W)$ are jointly Gaussian (linear combinations of Gaussians) and uncorrelated, they are <em>independent</em>. Therefore
+$$\E[Y\mid X=x]=\rho\frac{\sigma_Y}{\sigma_X}\,x,\qquad\Var(Y\mid X)=\Var W=\sigma_Y^2-a^2\sigma_X^2=\sigma_Y^2(1-\rho^2).$$
+Given $X=x$, $Y$ is Gaussian with that mean and that variance. The conditional mean is the <b>minimum mean-square-error (MMSE) estimate</b> $\hat Y(x)$, a <em>straight line</em> through the cloud, and the residual error power is $\sigma_Y^2(1-\rho^2)$: a correlation of $0.8$ removes $64\%$ of the uncertainty. This is the heart of estimation: Wiener filtering, channel estimation and Kalman filtering (Chapters 5, 13, 16) are this formula with vectors.</p></div>
+
 <div class="box ex"><span class="tag">Worked example · why GATE 2026 Q.38 is easy</span>
 <p>$X\sim U(-1,1)$ and $N\sim\mathcal N(0,1)$ independent, $Y=X+N$, $Z=X^2+N$. Find the correlation (i.e. $\E[XY]$ and $\E[XZ]$ since means are zero). $\E[XY]=\E[X^2]+\E[XN]=\tfrac13+0$ since $\Var X=\frac{(2)^2}{12}=\frac13$. $\E[XZ]=\E[X^3]+\E[XN]=0+0$ because $X^3$ is an odd function of a symmetric variable. Answer $\tfrac13$ and $0$: $Z$ is strongly dependent on $X$ yet uncorrelated with it. Same lesson as the parabola above.</p></div>
 
-<h2>Sums of independent variables</h2>
-<p>The received sample is "signal + noise" and the noise is a sum of lots of things. Facts: means add, variances add (for independent terms), and the <em>pdf</em> of the sum is the <strong>convolution</strong> of the individual pdfs, $f_{X+Y}=f_X*f_Y$. (This will resurface in Fourier land as "convolution becomes multiplication": the characteristic function of a sum is a product.) If both are Gaussian, the result is Gaussian: $\mathcal N(\mu_1,\sigma_1^2)+\mathcal N(\mu_2,\sigma_2^2)\to\mathcal N(\mu_1+\mu_2,\ \sigma_1^2+\sigma_2^2)$.</p>
-<p>Note the plumbing consequence for receivers: <strong>doubling the number of independent noisy samples doubles the noise variance (power) but only $\sqrt2\times$ the noise amplitude</strong>, while the signal parts add coherently and double. That $\sqrt2$ is the root of "coherent combining / matched filtering buys SNR".</p>
+<h2>Sums of independent variables and the value of averaging</h2>
+<p>The received sample is “signal + noise” and the noise is a sum of lots of things. Facts: means add, variances add (for independent terms), and the <em>pdf</em> of the sum is the <strong>convolution</strong> of the individual pdfs, $f_{X+Y}=f_X*f_Y$ (equivalently, characteristic functions multiply). If both are Gaussian, the result is Gaussian: $\mathcal N(\mu_1,\sigma_1^2)+\mathcal N(\mu_2,\sigma_2^2)\to\mathcal N(\mu_1+\mu_2,\ \sigma_1^2+\sigma_2^2)$.</p>
+<div class="box derive"><span class="tag">Derivation · averaging $N$ noisy samples gains $10\log N$ dB</span>
+<p>Measure the same constant $s$ in $N$ independent looks, $r_i=s+n_i$, $\E n_i=0$, $\Var n_i=\sigma^2$. The average $\bar r=\frac1N\sum r_i$ has mean $s$ and variance $\frac1{N^2}\cdot N\sigma^2=\sigma^2/N$. SNR $=s^2/\mathrm{variance}$ therefore improves by exactly $N$:
+$$\mathrm{SNR}_{\rm avg}=N\,\frac{s^2}{\sigma^2}\quad(+10\log_{10}N\ \mathrm{dB}).$$
+<b>Doubling the number of samples doubles the noise <em>power</em> of the sum but only $\sqrt2\times$ its amplitude, while the signal parts add coherently and double</b>: signal power ×4, noise power ×2, SNR ×2 (+3 dB). That factor is the root of the matched filter (Chapter 14), of integrating over a symbol, of receive-diversity combining (Chapter 21) and of the processing gain of spread spectrum (Chapter 19). For correlated noise the gain is smaller: if $\rho$ is the correlation between samples, $\Var\bar n=\frac{\sigma^2}N[1+(N-1)\rho]\to\rho\sigma^2$, so averaging stops helping.</p></div>
+
+<h2>A first look at detection: the receiver operating characteristic</h2>
+<p>Everything in Chapters 14–15 is a refinement of this one-page problem. Decide between $H_0$ (noise only: $r=n$) and $H_1$ (signal present: $r=A+n$) from one sample, with $n\sim\mathcal N(0,\sigma^2)$. Declare $H_1$ if $r>\tau$. Two error probabilities:
+$$P_{FA}=P(r>\tau\mid H_0)=Q\!\Big(\frac\tau\sigma\Big),\qquad P_D=P(r>\tau\mid H_1)=Q\!\Big(\frac{\tau-A}{\sigma}\Big).$$
+Eliminating the threshold: with $d=A/\sigma$,
+$$\boxed{\,P_D=Q\big(Q^{-1}(P_{FA})-d\big)\,}$$
+Raise $\tau$ and both fall (fewer false alarms, more misses); the curve of $P_D$ against $P_{FA}$ is the <b>receiver operating characteristic</b>. The <b>Neyman–Pearson</b> lemma says the likelihood-ratio test (here, a threshold on $r$) is the best possible for any fixed $P_{FA}$. With equal priors and equal costs the best threshold is the midpoint $A/2$ and $P_e=Q(d/2)$, the first appearance of the formula that governs Chapter 14.</p>
+<div class="box ex"><span class="tag">Worked example · how much SNR must a radar have?</span>
+<p>Required: $P_{FA}=10^{-6}$, $P_D=0.9$. Then $Q^{-1}(10^{-6})=4.753$ and $Q^{-1}(0.9)=-1.282$, so $d=4.753+1.282=6.035$ and the required per-sample SNR is $d^2=36.4$, i.e. <b>15.6 dB</b>. Integrating $N=100$ pulses coherently (the averaging gain above) lets each pulse be 20 dB weaker: $-4.4$ dB per pulse. Because $P_{FA}$ sits on the Gaussian tail, relaxing it a hundredfold, from $10^{-6}$ to $10^{-4}$, saves only $1.6$ dB ($d=5.0$, $d^2=25$, $14.0$ dB instead of $15.6$ dB): the price of tail probabilities is logarithmic in the SNR.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · how many bits must a BER simulation run?</span>
+<p>Estimating an error probability $P$ by counting errors in $N$ bits is a binomial experiment: the count has mean $NP$ and standard deviation $\sqrt{NP(1-P)}\approx\sqrt{NP}$, so the <b>relative accuracy</b> is $1/\sqrt{NP}$. For $\pm10\%$ you need $NP\ge100$ errors: $N\ge100/P$ bits. To verify $\mathrm{BER}=10^{-6}$ you must simulate (or transmit) $10^{8}$ bits; to verify $10^{-12}$, as in an optical link, $10^{14}$ bits, which at 10 Gbit/s is almost 3 hours. This is why standards quote BER-test durations, and why importance sampling and the analytical $Q$-function formulas are indispensable.</p></div>
 
 <h2>Practice</h2>
-<div class="prob" data-type="nat" data-ans="0.85" data-tol="0.01" data-marks="2" data-src="Original · inspired by GATE 2022 Q.62">
-A $(7,4)$ Hamming code decodes a 7-bit word correctly if the channel makes <b>at most one</b> bit error. Each bit is flipped independently with probability $\varepsilon=0.1$. The probability that a word is decoded correctly is ______ (two decimals).
-<div class="sol"><p>Number of errors $\sim$ Binomial$(7,0.1)$. $P(\le1)=0.9^7+7(0.1)(0.9)^6=0.4783+0.3720=\mathbf{0.85}$. (The real GATE 2022 question asked exactly this; its official key is 0.84–0.86.)</p></div></div>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+Which of the following is impossible?
+<ol class="opts"><li>A pdf whose maximum value is 5</li><li>A CDF that is constant on an interval</li><li>A random variable whose pdf contains an impulse</li><li>A pdf whose integral over the real line is 2</li></ol>
+<div class="sol"><p>(A) is fine: $U(0,0.2)$ has pdf 5. (B) is fine (no probability in that interval). (C) is fine (mixed variable). (D) violates normalisation. <b>(D)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which of the following are true?
+<ol class="opts"><li>If $X,Y$ are independent then $\Cov(X,Y)=0$.</li><li>If $\Cov(X,Y)=0$ then $X$ and $Y$ are independent.</li><li>If $X,Y$ are jointly Gaussian and uncorrelated, they are independent.</li><li>$\Var(X-Y)=\Var X-\Var Y$ for independent $X,Y$.</li></ol>
+<div class="sol"><p>(A) true. (B) false: $Y=X^2$ with symmetric $X$. (C) true: the joint Gaussian pdf factorises when $\rho=0$. (D) false: $\Var(X-Y)=\Var X+\Var Y$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+A call centre has been silent for 10 minutes. If call inter-arrival times are exponential with mean 2 min, the expected additional wait for the next call is
+<ol class="opts"><li>0 minutes</li><li>2 minutes</li><li>8 minutes</li><li>12 minutes</li></ol>
+<div class="sol"><p>The exponential has no memory: the residual wait has the same law as the original. Mean $=2$ min. <b>(B)</b>.</p></div></div>
 
 <div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
 $X\sim\mathcal N(1,4)$ and $Y\sim\mathcal N(2,9)$ are independent. $P(X+Y>6)$ equals
 <ol class="opts"><li>$Q(1)$</li><li>$Q(3)$</li><li>$Q\!\left(3/\sqrt{13}\right)$</li><li>$Q\!\left(3/5\right)$</li></ol>
 <div class="sol"><p>$X+Y\sim\mathcal N(3,\,4+9=13)$. So $P(X+Y>6)=Q\big(\frac{6-3}{\sqrt{13}}\big)=Q(0.83)\approx0.203$. <b>(C)</b>. Trap: adding standard deviations ($2+3=5$) instead of variances.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="Original">
+$X\sim\mathcal N(0,1)$ is applied to a rectifier $Y=|X|$. Then $f_Y(y)$ for $y\ge0$ is
+<ol class="opts"><li>$\varphi(y)$</li><li>$2\varphi(y)$</li><li>$\frac12\varphi(y)$</li><li>$\varphi(y)+\delta(y)$</li></ol>
+<div class="sol"><p>Two roots $x=\pm y$, each with $|g'|=1$: $f_Y(y)=\varphi(y)+\varphi(-y)=2\varphi(y)$. There is no flat piece so no impulses. Check: $\int_0^\infty2\varphi=1$ ✓.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="0.85" data-tol="0.01" data-marks="2" data-src="Original · inspired by GATE 2022 Q.62">
+A $(7,4)$ Hamming code decodes a 7-bit word correctly if the channel makes <b>at most one</b> bit error. Each bit is flipped independently with probability $\varepsilon=0.1$. The probability that a word is decoded correctly is ______ (two decimals).
+<div class="sol"><p>Number of errors $\sim$ Binomial$(7,0.1)$. $P(\le1)=0.9^7+7(0.1)(0.9)^6=0.4783+0.3720=\mathbf{0.85}$. (The real GATE 2022 question asked exactly this; its official key is 0.84–0.86.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0498" data-tol="0.001" data-marks="1" data-src="Original">
+Telephone calls arrive at an average rate of 3 per minute (Poisson). The probability that no call arrives in a given minute is ______.
+<div class="sol"><p>$P(0)=e^{-\lambda}\lambda^0/0!=e^{-3}=\mathbf{0.0498}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="8.33" data-tol="0.05" data-marks="1" data-src="Original">
+A uniform quantiser has step size $\Delta=0.1$ V. The mean-square quantisation error, in units of $10^{-4}\,\mathrm V^2$, is ______.
+<div class="sol"><p>$\Delta^2/12=0.01/12=8.33\times10^{-4}$ V².</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0455" data-tol="0.002" data-marks="2" data-src="Original">
+Noise $n\sim\mathcal N(0,\sigma^2)$ is passed through a detector that declares an error whenever $|n|>2\sigma$. The probability of error is ______ (use $Q(2)=0.02275$).
+<div class="sol"><p>$P(|n|>2\sigma)=2Q(2)=0.0455$. Two tails.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0668" data-tol="0.002" data-marks="2" data-src="Original">
+A received sample is $r=\mu+n$ with $\mu=2\ \text{V}$ and $n\sim\mathcal N(0,\ 4\ \text{V}^2)$. The probability that $r>5\ \text{V}$ is ______. ($Q(1.5)=0.0668$)
+<div class="sol"><p>$\sigma=2$. $P(r>5)=Q\big(\frac{5-2}{2}\big)=Q(1.5)=0.0668$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.1353" data-tol="0.002" data-marks="1" data-src="Original">
+The envelope $R$ of narrowband Gaussian noise (each quadrature component $\mathcal N(0,\sigma^2)$) is observed. $P(R>2\sigma)$ is ______.
+<div class="sol"><p>Rayleigh tail $P(R>r)=e^{-r^2/2\sigma^2}$, so $e^{-2}=\mathbf{0.1353}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.6" data-tol="0.01" data-marks="2" data-src="Original">
+$X,Y$ are zero-mean, unit-variance, jointly Gaussian with $\rho=0.8$. The MMSE estimate of $Y$ given $X=2$ is ______.
+<div class="sol"><p>$\E[Y\mid X=x]=\rho\frac{\sigma_Y}{\sigma_X}x=0.8\times2=\mathbf{1.6}$. (Residual variance $1-\rho^2=0.36$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="20" data-tol="0.1" data-marks="1" data-src="Original">
+A receiver averages $N=100$ independent noisy looks of a constant signal. The SNR improvement in dB is ______.
+<div class="sol"><p>$10\log_{10}100=\mathbf{20}$ dB.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
 
 <div class="prob" data-type="nat" data-ans="0.347" data-tol="0.01" data-marks="1" data-src="GATE 2014 · Set 2 · Q.49 (EC)">
 The input to a 1-bit quantiser is a random variable $X$ with pdf $f_X(x)=2e^{-2x}$ for $x\ge0$ and $0$ otherwise. For the two outputs to be equally likely, the quantiser threshold should be ______.
@@ -132,24 +271,6 @@ If calls arrive at a telephone exchange such that the time of arrival of any cal
 <ol class="opts"><li>Poisson</li><li>Gaussian</li><li>Exponential</li><li>Gamma</li></ol>
 <div class="sol"><p>Independent arrivals: counts are <b>Poisson</b>, gaps are exponential. Official key: A.</p></div></div>
 
-<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
-Which of the following are true?
-<ol class="opts"><li>If $X,Y$ are independent then $\Cov(X,Y)=0$.</li><li>If $\Cov(X,Y)=0$ then $X$ and $Y$ are independent.</li><li>If $X,Y$ are jointly Gaussian and uncorrelated, they are independent.</li><li>$\Var(X-Y)=\Var X-\Var Y$ for independent $X,Y$.</li></ol>
-<div class="sol"><p>(A) true. (B) false: $Y=X^2$ with symmetric $X$. (C) true: the joint Gaussian pdf factorises when $\rho=0$. (D) false: $\Var(X-Y)=\Var X+\Var Y$.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="0.0455" data-tol="0.002" data-marks="2" data-src="Original">
-Noise $n\sim\mathcal N(0,\sigma^2)$ is passed through a detector that declares an error whenever $|n|>2\sigma$. The probability of error is ______ (use $Q(2)=0.02275$).
-<div class="sol"><p>$P(|n|>2\sigma)=2Q(2)=0.0455$. Two tails.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="0.0668" data-tol="0.002" data-marks="2" data-src="Original">
-A received sample is $r=\mu+n$ with $\mu=2\ \text{V}$ and $n\sim\mathcal N(0,\ 4\ \text{V}^2)$. The probability that $r>5\ \text{V}$ is ______. ($Q(1.5)=0.0668$)
-<div class="sol"><p>$\sigma=2$. $P(r>5)=Q\big(\frac{5-2}{2}\big)=Q(1.5)=0.0668$.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="Original">
-$X\sim\mathcal N(0,1)$ is applied to a rectifier $Y=|X|$. Then $f_Y(y)$ for $y\ge0$ is
-<ol class="opts"><li>$\varphi(y)$</li><li>$2\varphi(y)$</li><li>$\frac12\varphi(y)$</li><li>$\varphi(y)+\delta(y)$</li></ol>
-<div class="sol"><p>Two roots $x=\pm y$, each with $|g'|=1$: $f_Y(y)=\varphi(y)+\varphi(-y)=2\varphi(y)$. There is no flat piece so no impulses. Check: $\int_0^\infty2\varphi=1$ ✓.</p></div></div>
-
 <div class="prob" data-type="nat" data-ans="6" data-tol="0.05" data-marks="1" data-src="GATE 2015 · EC (PYQ book)">
 Let $X$ be the number of tosses of a fair coin needed until two consecutive heads appear for the first time. $\E[X]$ is ______.
 <div class="sol"><p>Let $E_0$ be the expected number of further tosses when the last toss was not a head (or at the start) and $E_1$ when the last toss was a head. $E_0=1+\tfrac12E_1+\tfrac12E_0$ and $E_1=1+\tfrac12\cdot0+\tfrac12E_0$. Substituting, $E_0=1+\tfrac12(1+\tfrac12E_0)+\tfrac12E_0=1.5+\tfrac34E_0$, so $E_0=\mathbf6$.</p></div></div>
@@ -158,14 +279,25 @@ Let $X$ be the number of tosses of a fair coin needed until two consecutive head
 A binary symmetric channel has crossover probability $1/7$. The input is 1 with probability 0.8 and 0 with probability 0.2. Given that the received bit is $Y=0$, the probability that a 1 was transmitted is ______.
 <div class="sol"><p>$P(Y=0)=0.2\cdot\frac67+0.8\cdot\frac17=\frac{2.0}{7}$. $P(X=1\mid Y=0)=\dfrac{0.8/7}{2.0/7}=\mathbf{0.4}$. A prior of 0.8 for a 1 becomes only 0.4 after seeing a 0: Bayes in action (cf. the probability square at the start of the chapter).</p></div></div>
 
-<div class="summary"><h3>Chapter 1 in one breath</h3>
+<div class="prob" data-type="nat" data-ans="15.6" data-tol="0.2" data-marks="2" data-src="Original (design)">
+A detector must achieve $P_{FA}=10^{-6}$ and $P_D=0.9$ for a constant signal $A$ in Gaussian noise of variance $\sigma^2$ (single sample). The required $A^2/\sigma^2$ in dB is ______. (Use $Q^{-1}(10^{-6})=4.753$, $Q^{-1}(0.9)=-1.282$.)
+<div class="sol"><p>$d=A/\sigma=4.753+1.282=6.035$; $d^2=36.4$; $10\log_{10}36.4=\mathbf{15.6}$ dB.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="Original (GATE-style)">
+A sinusoid $A\cos(2\pi f_0t+\Theta)$ with $\Theta\sim U(0,2\pi)$ is sampled at one instant. The probability density of the sample is
+<ol class="opts"><li>$\dfrac1{\pi\sqrt{A^2-y^2}}$ on $|y|<A$</li><li>uniform on $[-A,A]$</li><li>Gaussian with variance $A^2/2$</li><li>Rayleigh</li></ol>
+<div class="sol"><p>Derived above: the arcsine law. <b>(A)</b>. It has the right power ($A^2/2$) but is not Gaussian: it is bounded and peaks at the edges.</p></div></div>
+
+<div class="summary"><h3>Chapter 4 in one breath</h3>
 <ul>
-<li>Probability = area of a unit square; Bayes = ratio of two areas.</li>
-<li>pdf is density, probability is area; $\E[X^2]$ is average power, $\sigma^2$ is AC power.</li>
-<li>Gaussian: closed under linear operations; sums of independent Gaussians add means and variances; uncorrelated ⇔ independent <i>only</i> for jointly Gaussian.</li>
-<li>$Q(x)$ = Gaussian tail; $P(X>a)=Q((a-\mu)/\sigma)$; know $Q(1),Q(2),Q(3),Q(4)$.</li>
-<li>Flat spots in $g(x)$ ⇒ impulses in $f_Y$; slope formula $f_Y=\sum f_X(x_i)/|g'(x_i)|$ otherwise.</li>
-<li>Binomial for "errors in a block", Poisson for arrivals, Uniform for phase/quantisation ($\Delta^2/12$), Rayleigh for noise envelopes.</li>
+<li>Probability = area of a unit square; conditioning = zoom and renormalise; Bayes = ratio of two areas; prior can overrule evidence.</li>
+<li>pdf is density, probability is area; $\E[X^2]$ is average power, $\sigma^2$ AC power. Chebyshev: $P(|X-\mu|\ge k\sigma)\le1/k^2$. Characteristic function = Fourier transform of the pdf; sums ⇒ products.</li>
+<li>Poisson is the rare-event limit of the binomial; exponential has no memory; uniform has variance $\Delta^2/12$; two Gaussian quadratures give a Rayleigh envelope and uniform phase.</li>
+<li>CLT: standardised sums of independent finite-variance terms → $\mathcal N(0,1)$ (characteristic functions: $(1-\omega^2/2n)^n\to e^{-\omega^2/2}$). Gaussians stay Gaussian under linear maps; uncorrelated ⇔ independent only for jointly Gaussian.</li>
+<li>$Q(x)\approx\frac{1}{x\sqrt{2\pi}}e^{-x^2/2}$, $\le\frac12e^{-x^2/2}$; know $Q(1),Q(2),Q(3),Q(4)$ and $Q^{-1}(10^{-6})=4.75$.</li>
+<li>Function of a random variable: slope formula $\sum f_X(x_i)/|g'(x_i)|$; flat segments ⇒ impulses; inverse-CDF sampling.</li>
+<li>Joint Gaussian: $\E[Y|X]=\rho\frac{\sigma_Y}{\sigma_X}x$, residual variance $\sigma_Y^2(1-\rho^2)$. Averaging $N$ looks: SNR $\times N$.</li>
+<li>Detection: $P_D=Q(Q^{-1}(P_{FA})-d)$; BER simulation needs $\gtrsim100/P$ bits.</li>
 </ul></div>
 
 <script>
@@ -245,4 +377,5 @@ GB.three('w-bivar',{title:'Bivariate Gaussian pdf',h:360,cam:{r:10.5,theta:.9,ph
   const f=(rho)=>(x,z)=>6*Math.exp(-(x*x-2*rho*x*z+z*z)/(2*(1-rho*rho)))/(2*Math.PI*Math.sqrt(1-rho*rho));
   const surf=G3.surface(f(0),-3,3,-3,3,44,44,col); scene.add(surf); return {surf,f,col,G3,last:null}; },
  update(s,p){ if(s.last!==p.rho){ s.last=p.rho; s.G3.updateSurface(s.surf,s.f(p.rho),-3,3,-3,3,s.col); } return 'ρ = '+p.rho.toFixed(2)+' (height scaled ×6)'; }});
+
 </script>
