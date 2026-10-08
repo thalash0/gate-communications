@@ -1,0 +1,198 @@
+<!--meta {"id":"ch16","num":"16","part":"Part IV · Digital Communication","title":"Keeping in Step: Carrier, Timing and Frame Synchronisation","lede":"Every receiver in this book has so far been handed three things for free: the exact carrier phase, the exact symbol clock and the start of every frame. In reality it has to find them, in noise, from the signal itself."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>List the three levels of synchronisation (carrier, symbol timing, frame/word) and quantify the loss caused by phase, frequency and timing errors.</li>
+<li><b>Derive</b> the squaring loop and the Costas loop, the data-independent error signal $\propto\sin2\phi$, the phase ambiguity, and the jitter variance $\sigma_\phi^2=N_0B_L/P_c$; relate phase noise and EVM to the maximum usable constellation.</li>
+<li>Explain and derive the early–late gate and the Gardner timing-error detector; understand clock-and-data recovery in serial links.</li>
+<li>Design a frame-synchronisation word (Barker codes), compute false-sync rates, and describe the hunt/verify/lock procedure of E1, Ethernet, GSM and LTE.</li>
+<li>Estimate frequency offsets from crystal tolerance and Doppler, and clock-slip rates in a network.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 7 (PLL), Chapter 13 (eye diagram, line codes), Chapter 15 (BPSK, QPSK).</p></div>
+
+<div class="box story"><span class="tag">History · a loop invented to find a carrier that isn’t there</span>
+<p>In the early 1950s the problem of suppressed-carrier reception (DSB-SC, Chapter 6) had no neat solution: there was no carrier to lock a PLL onto. <strong>John P. Costas</strong> of General Electric worked out in 1956 a loop with two phase detectors in quadrature, whose product is zero precisely when the local oscillator is in step with the hidden carrier, whatever the data. The Costas loop (published 1956, 1962) turned out to be just as good for the digital signals still to come, and it sits inside nearly every coherent receiver ever built. Its descendants include <b>Floyd Gardner’s</b> timing detector (1986), which lets a modem find the symbol clock <em>without</em> knowing the carrier, and the clock-recovery circuits that keep every USB and Ethernet link in step. Synchronisation is the unglamorous half of communications: when it fails, nothing else matters.</p></div>
+
+<div class="box real"><span class="tag">Real world · what “locking on” means</span>
+<p>A GPS receiver spends the first seconds after switch-on searching a two-dimensional grid of code delay and Doppler for the satellite’s signal; only then do its carrier and code tracking loops close. A Wi-Fi card finds the packet start with a correlator on the preamble and corrects a frequency error of up to $\pm40$ ppm (±96 kHz at 2.4 GHz) in microseconds. A USB or PCIe receiver has <em>no clock line</em>: it rebuilds the clock from the transitions in the data. The synchronous digital hierarchy keeps thousands of exchanges to within $10^{-11}$ of each other with cesium clocks and GPS.</p></div>
+
+<h2>Three layers of synchronisation</h2>
+<table>
+<tr><th>Level</th><th>What is needed</th><th>If it is wrong</th><th>Typical technique</th></tr>
+<tr><td><b>Carrier</b></td><td>frequency and phase of the local oscillator (coherent detection)</td><td>constellation rotates (phase error) or spins (frequency error): loss $\cos^2\varphi$, crosstalk between I and Q</td><td>pilot + PLL; squaring/Costas loop; $M$th-power; decision-directed</td></tr>
+<tr><td><b>Symbol timing</b></td><td>the instant to sample the matched-filter output</td><td>sampling off the eye centre: smaller eye, ISI (Chapter 13)</td><td>early–late gate, Gardner, Mueller–Müller, spectral line</td></tr>
+<tr><td><b>Frame / word</b></td><td>where a byte, packet or frame begins</td><td>every bit decoded into the wrong field: total garbage</td><td>sync word + correlator, hunt/verify/lock</td></tr>
+<tr><td><b>Network</b></td><td>all clocks in the network agree on the bit rate</td><td>buffers overflow/underflow: “slips” repeat or drop data</td><td>master clock, stratum hierarchy, GPS, SyncE, PTP</td></tr>
+</table>
+<div class="box derive"><span class="tag">Derivation · what a carrier error costs</span>
+<p>Take the coherent QPSK receiver of Chapter 15 with local oscillator $\cos(2\pi f_ct+\hat\theta)$ whereas the signal has phase $\theta$, so the error is $\phi=\theta-\hat\theta$. The outputs are $r=\sqrt{E}\,e^{j\phi}\,(\text{constellation point})+n$: the whole constellation is <b>rotated by $\phi$</b>. For BPSK the useful component falls to $\cos\phi$: $P_b=Q\big(\sqrt{2E_b/N_0}\cos\phi\big)$; for QPSK the rotation leaks a fraction $\sin\phi$ of each axis into the other, shrinking the margin to $\cos\phi-\sin\phi$: $P_b=\tfrac12Q\Big(\sqrt{\tfrac{2E_b}{N_0}}(\cos\phi-\sin\phi)\Big)+\tfrac12Q\Big(\sqrt{\tfrac{2E_b}{N_0}}(\cos\phi+\sin\phi)\Big)$ (with a worse worst-case: $\phi=45^\circ$ closes the eye entirely). For a <b>frequency error</b> $\Delta f$ the phase error ramps, $\phi(t)=2\pi\Delta f\,t$: the constellation spins; unless $\Delta f\ll1/(2\pi\ldots)$ times the symbol rate (a few $10^{-3}R_s$) data is lost. For high-order QAM the tolerances are harsh: 64-QAM tolerates an rms phase jitter of about $1^\circ$, 1024-QAM about $0.25^\circ$.</p></div>
+
+<h2>Carrier recovery</h2>
+<h3>Pilot tone</h3>
+<p>The simplest approach is to <em>send the carrier</em>: a residual or pilot carrier at a few percent of the power (or a pilot tone in the guard band) is picked out by a narrow PLL (Chapter 7). Cost: a fraction of the power and a spectral line. Used in analog TV, FM stereo (19 kHz pilot), HDTV (ATSC), the pilot tones of OFDM systems (Chapter 20).</p>
+<h3>Squaring and $M$th-power loops</h3>
+<div class="box derive"><span class="tag">Derivation · removing the data by nonlinearity</span>
+<p>BPSK: $s(t)=Am(t)\cos(2\pi f_ct+\theta)$, $m=\pm1$. Squaring gives $s^2=A^2m^2\cos^2(\cdot)=\frac{A^2}2[1+\cos(4\pi f_ct+2\theta)]$ because $m^2=1$: <b>the data has vanished</b> and a spectral line at $2f_c$ with phase $2\theta$ appears. A narrow band-pass filter or PLL at $2f_c$ and a divide-by-2 give the carrier, with a phase ambiguity of $\pi$ ($2\theta$ determines $\theta$ only modulo $\pi$): the receiver may lock to either $\theta$ or $\theta+\pi$ and sees all bits inverted, resolved by differential encoding or a unique word. For QPSK the symbol phases are $\frac\pi4+k\frac\pi2$; the <b>fourth-power</b> $e^{j4(\cdot)}$ removes the data ($4\cdot\frac\pi2=2\pi$), giving $4\theta+\pi$ and a four-fold ambiguity; for $M$-PSK use the $M$th power. <b>Cost: squaring loss.</b> Squaring the noisy signal creates signal×noise and noise×noise terms that add to the line’s phase noise, so the effective loop SNR is reduced by a <i>squaring loss</i> $S_L<1$, which is negligible at high SNR but severe at low SNR (and larger for the $M$th power as $M$ grows): <em>non-data-aided loops need a decent SNR to start working</em>.</p></div>
+<h3>The Costas loop</h3>
+<p>A smarter equivalent, with an implementation friendlier to hardware (no frequency doubling, no divider). Two phase detectors run in quadrature from the same VCO, and the product of their outputs is the error signal.</p>
+<div id="d-costas" class="dia">Costas loop for BPSK. The in-phase arm (top) carries the demodulated data; the quadrature arm (bottom) is near zero when the loop is locked. Their product is the loop’s error signal, independent of the data sign.</div>
+<div class="box derive"><span class="tag">Derivation · the Costas error signal</span>
+<p>Input $r(t)=Am(t)\cos(\omega_ct+\theta)$ (ignore noise), VCO phase $\hat\theta$, phase error $\phi=\theta-\hat\theta$. Multiply by $\cos(\omega_ct+\hat\theta)$ and by $\sin(\omega_ct+\hat\theta)$ and low-pass filter (removing the $2\omega_c$ terms):
+$$x_I=\tfrac A2m(t)\cos\phi,\qquad x_Q=\tfrac A2m(t)\sin\phi.$$
+Their product, $e=x_Ix_Q=\dfrac{A^2}8m^2(t)\sin2\phi=\dfrac{A^2}{8}\sin2\phi$ for $m=\pm1$: <b>the data sign has cancelled</b>, leaving a clean sinusoidal error characteristic exactly like that of a PLL tracking a carrier of phase $2\theta$. Feed $e$ through the loop filter to the VCO: $\dot{\hat\theta}=K_ve$. Stable lock points: $\sin2\phi=0$ with positive slope, i.e. $\phi=0$ and $\phi=\pi$ (two-fold ambiguity, as for squaring), and near $\phi=0$ the linearised loop is $e\approx\frac{A^2}4\phi$, a first-order or (with a PI filter) second-order PLL of Chapter 7. When locked, $x_I=\pm\frac A2m(t)$: <b>the I arm is the demodulated data</b> and the quadrature arm only noise. <b>Equivalence with squaring:</b> the Costas loop and the squaring loop have identical noise performance in the linear regime, but the Costas loop needs no filter at $2f_c$. For QPSK, a four-quadrant version uses the decision-directed error $e=x_I\,\mathrm{sgn}(x_Q)-x_Q\,\mathrm{sgn}(x_I)$ (the sine of the angle between the received point and the nearest constellation point).</p></div>
+<div class="widget" id="w-costas">A decision-directed Costas loop locking onto a noisy BPSK carrier with an initial phase offset and a frequency offset. Top: true carrier phase (blue) and the loop’s estimate (yellow). Bottom: the received constellation de-rotated by the estimate (last 150 symbols): when locked, two tight clouds at $\pm1$ on the real axis (the loop may lock at 0° or at 180° — the phase ambiguity). Raise the loop bandwidth to lock faster but with more phase jitter; lower the SNR and the jitter grows; with a frequency offset a first-order loop keeps a static phase error whereas this second-order loop removes it.</div>
+<div class="box derive"><span class="tag">Derivation · phase jitter of a tracking loop</span>
+<p>Consider a PLL tracking an unmodulated carrier $A\cos(\omega_ct+\theta)$, power $P_c=A^2/2$, in white noise of one-sided density $N_0$. Write the noise as $n_c\cos\omega_ct-n_s\sin\omega_ct$ (Chapter 5). The component $n_s$, in quadrature with the carrier, tilts the resultant phasor by the small angle $\varphi_n\approx n_s/A$. Since $n_s$ has two-sided PSD $N_0$, the phase-noise PSD is $N_0/A^2=N_0/2P_c$ rad²/Hz (two-sided). The loop passes this noise through its closed-loop transfer function $H(f)$, so the output phase variance is
+$$\sigma_\phi^2=\int_{-\infty}^{\infty}\frac{N_0}{2P_c}|H(f)|^2df=\frac{N_0}{P_c}\underbrace{\int_0^\infty|H(f)|^2df}_{B_L}=\frac{N_0B_L}{P_c},$$
+where $B_L$ is the one-sided <b>loop noise bandwidth</b> (for a first-order loop $H=\frac{K}{K+j2\pi f}$, $B_L=K/4$). That is,
+$$\boxed{\sigma_\phi^2=\frac1{\rho_L},\qquad\rho_L=\frac{P_c}{N_0B_L}\ \ (\text{the loop SNR})}$$
+valid for $\rho_L\gg1$. A narrow loop averages more noise but tracks the drift slowly: the designer balances noise jitter against the tracking error caused by oscillator phase noise and Doppler (the same bandwidth trade as the LMS step size and the FM threshold). <b>Example:</b> $P_c=-100$ dBm, $N_0=-174$ dBm/Hz, $B_L=100$ Hz: $\rho_L=-100+174-20=54$ dB, $\sigma_\phi=0.002$ rad $=0.11^\circ$: negligible. In a deep-space link with $P_c/N_0=20$ dB-Hz the same loop has $\rho_L=0$ dB, and the linear theory no longer applies (cycle slips).</p></div>
+<div class="box derive"><span class="tag">Phase noise, EVM and the limit to constellation size</span>
+<p>Residual phase error $\phi$ (rms $\sigma_\phi$ rad) from the local oscillator, plus additive noise, perturbs each received point by an <b>error vector</b>. The error vector magnitude is $\mathrm{EVM}_{\rm rms}=\sqrt{\E|e|^2/\E|s|^2}$, so $\mathrm{SNR}=1/\mathrm{EVM}^2$. A pure phase error of rms $\sigma_\phi$ contributes $\mathrm{EVM}\approx\sigma_\phi$, hence an SNR ceiling of $-20\log\sigma_\phi$ dB: $\sigma_\phi=1^\circ=0.0175$ rad gives 35.2 dB; $0.5^\circ$ gives 41.2 dB. The 802.11 standards specify transmitter EVM limits: $-5$ dB (BPSK 1/2), $-13$ dB (16-QAM 1/2), $-25$ dB (64-QAM 5/6), $-30$ dB (256-QAM), $-35$ dB (1024-QAM): so 1024-QAM needs an oscillator whose integrated phase noise is below about $1^\circ$ rms, which is why it appears only with high-end synthesisers and short links.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · frequency offsets: crystals and Doppler</span>
+<p>Cheap crystals have tolerances of $\pm10$–$40$ ppm. At $2.4$ GHz, $\pm20$ ppm is $\pm48$ kHz for each oscillator, so the <em>difference</em> between transmitter and receiver can reach $\pm96$ kHz, comparable with a third of Wi-Fi’s 312.5 kHz subcarrier spacing: the receiver must estimate and correct the offset from the preamble before anything else (a delay-and-correlate estimator: the phase of $\sum r_kr^*_{k-N}$ gives $\Delta f$ without any decoding). <b>Doppler</b>: a car at $100$ km/h receiving 2.4 GHz: $f_D=\frac vcf_c=\frac{27.8}{3\times10^8}2.4\times10^9=222$ Hz; a low-earth-orbit satellite at 7.5 km/s on a 2 GHz carrier: $\pm50$ kHz, sweeping through zero as it passes overhead, so satellite modems use AFC with a wide pull-in range and an ephemeris-based pre-compensation. A <b>coarse AFC loop</b> (wide, noisy) pulls the frequency within the capture range of the narrow, accurate carrier loop: the “two-stage” structure of almost every modem.</p></div>
+
+<h2>Symbol-timing recovery</h2>
+<p>The matched-filter output must be sampled at the eye’s centre. A rectangular-pulse matched filter sampled $\delta=0.1T$ late has a signal sample of $0.9$ of the peak and, for Nyquist pulses, picks up ISI proportional to the pulse slope: in total, timing errors of 5–10% of $T$ cost a fraction of a dB, and errors of 25% cost several dB (Chapter 14). The symbol clock is nowhere in the signal, so it must be recovered from the data’s transitions. The tolerable timing jitter shrinks with the symbol rate: at 10 Gbaud $T=100$ ps and 5% is 5 ps rms.</p>
+<h3>The spectral-line method</h3>
+<p>Pass the signal through a nonlinearity such as $|r|$ or $r^2$: for random NRZ data the result has a spectral line at $f=1/T$ (the transition density), which a narrow PLL isolates. Self-clocking codes (RZ, Manchester) make it trivial (Chapter 13); scrambling guarantees enough transitions.</p>
+<h3>Early–late gate</h3>
+<div class="box derive"><span class="tag">Derivation · the early–late timing detector</span>
+<p>Let $y(t)=\sum a_kg(t-kT-\tau_0)$ be the matched-filter output, $g$ a symmetric pulse peaking at 0, $a_k=\pm1$, and let the receiver sample at its estimate $\hat\tau$ with timing error $\epsilon=\hat\tau-\tau_0$. Take two extra samples a small $\delta$ before and after the decision instant and form $e=|y(\hat\tau+\delta)|-|y(\hat\tau-\delta)|$. Averaged over the data, $\E[e]\approx g(\epsilon+\delta)-g(\epsilon-\delta)$ (the ISI contributions are zero-mean and average out in the loop filter). Because $g$ is even, $g(\epsilon-\delta)=g(\delta-\epsilon)$, so for small $\epsilon$
+$$\E[e]\approx g(\delta+\epsilon)-g(\delta-\epsilon)\approx2\epsilon\,g'(\delta),$$
+and $g'(\delta)<0$ on the falling edge of the pulse. At $\epsilon=0$ the early and late samples are equal and $e=0$. If we sample too late ($\epsilon>0$) the “late” sample lies further down the falling edge than the “early” one, $e<0$, and the loop moves the sampling instant <em>earlier</em>. The S-curve is linear through the origin with slope $2g'(\delta)$: it is steepest where the pulse edge is steepest, which is why a larger bandwidth (more excess bandwidth, sharper edges) gives better timing information, while a pure sinc pulse with $\alpha=0$ is hard to track.</p></div>
+<h3>Gardner’s detector: two samples per symbol, no carrier needed</h3>
+<p>Gardner (1986) noticed that with two samples per symbol, one at the centre ($y_k$, the decision sample) and one halfway between symbols ($y_{k-1/2}$), the error
+$$e_k=\mathrm{Re}\big\{\,y_{k-1/2}\,(y_k^*-y_{k-1}^*)\,\big\}$$
+has an S-curve $\propto\sin(2\pi\epsilon/T)$ and is <b>insensitive to the carrier phase</b>, so timing can be acquired before the carrier loop converges (rotation by $e^{j\phi}$ multiplies each term by $e^{\pm j\phi}$, and the product is real). Intuition: when the sampling is correct and the symbol changes sign ($y_k$ and $y_{k-1}$ opposite), the mid-sample $y_{k-1/2}$ is zero (the waveform crosses zero midway) so $e=0$; when sampling is late, the mid-sample is no longer zero and has the sign of the transition, giving a signed error. Its descendants (Mueller–Müller for one sample per symbol; Oerder–Meyr for feed-forward) are inside nearly every modem.</p>
+<div class="widget" id="w-ted">The S-curve of the Gardner timing-error detector for random BPSK through a raised-cosine pulse, plotted against the timing offset $\epsilon/T$. The zero crossing at 0 with positive slope is the stable lock point; a larger roll-off $\alpha$ gives a steeper S-curve (more excess bandwidth, more timing information). With $\alpha=0$ (a sinc pulse) there is no useful gradient.</div>
+<div class="box eng"><span class="tag">Engineering practice · clock and data recovery (CDR) in serial links</span>
+<p>USB, SATA, PCIe, Ethernet and optical links transmit no clock. The receiver contains a PLL whose phase detector is driven by the data transitions. The popular <b>Alexander (bang-bang) detector</b> samples the data at the symbol centre and at the edges and, from three consecutive samples, decides whether the clock is early or late (a binary output): a nonlinear loop that is simple and fast, with a limit-cycle jitter of a fraction of a unit interval. Its prerequisite is a minimum <b>transition density</b>: line codes (8B10B: run length ≤5; 128b/130b + scrambling) guarantee transitions (Chapter 13). Jitter tolerance specs (a mask of allowed sinusoidal jitter amplitude against frequency) ensure the CDR loop bandwidth (typically symbol rate/1667 for Ethernet) tracks the input’s low-frequency wander but filters its high-frequency jitter. Two devices with clocks $\pm100$ ppm apart see a relative drift of 200 ppm: one bit slip every 5000 bits, absorbed by an <b>elastic buffer</b> that deletes or inserts idle symbols (Ethernet’s inter-packet gap, PCIe’s SKP ordered sets).</p></div>
+
+<h2>Frame and word synchronisation</h2>
+<p>Knowing the bit boundaries is not enough: the receiver must know which bit is the <i>first</i> of a byte, a frame (E1’s 256 bits), a packet. The universal answer is a known <b>sync word</b> (preamble, frame-alignment signal, unique word) searched for with a correlator.</p>
+<div class="box derive"><span class="tag">Derivation · sync-word design: false alarms and autocorrelation</span>
+<p><b>False sync.</b> Random data matches a given $L$-bit word at any particular position with probability $2^{-L}$, so a sliding correlator produces a false match about once every $2^L$ bit periods. For $L=7$: every 128 bits (E1’s FAS word 0011011 would fire constantly in a 256-bit frame if accepted at once): hence the <b>hunt–verify–lock</b> procedure: on a match, wait exactly one frame and test again; accept after $k$ consecutive agreements (probability of false lock $2^{-Lk}$), and <i>drop</i> sync only after $m$ consecutive failures (tolerating bit errors in the sync word: the loss-of-frame criterion in E1 is 3 consecutive bad FAS words). <b>Good words have good autocorrelation:</b> when the received data contain a partial overlap of the word with itself, the correlator must not mistake it for a full match. A sequence $c_0\dots c_{N-1}$ ($\pm1$) has the <b>aperiodic autocorrelation</b> $R[\ell]=\sum_nc_nc_{n+\ell}$ with $R[0]=N$; a <b>Barker code</b> has $|R[\ell]|\le1$ for all $\ell\ne0$, the smallest possible sidelobes. Known Barker lengths are 2, 3, 4, 5, 7, 11 and 13 only. Barker-13 ($+++++--++-+-+$) has peak 13 and sidelobes of 0 or 1: a peak-to-sidelobe ratio of $20\log13=22.3$ dB and, with the matched filter of Chapter 14, a processing gain of $10\log13=11.1$ dB. <b>Probability of missing a sync word</b> through channel bit errors (BER $p$) with a correlator threshold of $t$ allowed mismatches in $L$ bits: $\sum_{i>t}\binom Lip^i(1-p)^{L-i}$: raising $t$ cuts misses but adds false alarms $\sum_{i\le t}\binom Li2^{-L}$. The designer picks $L$ and $t$ so both are small.</p></div>
+<table>
+<tr><th>System</th><th>Sync pattern</th></tr>
+<tr><td>E1 (2.048 Mbit/s)</td><td>7-bit frame-alignment signal 0011011 in slot 0 of every other frame; multi-frame alignment 0000 in slot 16</td></tr>
+<tr><td>T1</td><td>A single framing bit per frame (193rd bit) forming the pattern 1010… (D4) or a 6-bit pattern 001011 in ESF; recognised over many frames</td></tr>
+<tr><td>Ethernet</td><td>7 bytes 10101010 (clock-recovery preamble) + 1 byte 10101011 (start-frame delimiter)</td></tr>
+<tr><td>GSM</td><td>26-bit training sequence in the middle of each burst (also the equaliser’s channel-sounding signal, Chapter 13)</td></tr>
+<tr><td>Wi-Fi OFDM</td><td>Short training field (periodic, AGC and coarse timing/frequency) + long training field (channel estimate)</td></tr>
+<tr><td>LTE</td><td>Primary and secondary synchronisation signals: Zadoff–Chu (constant-amplitude, ideal periodic autocorrelation) and $m$-sequences; the UE correlates against 3 PSS roots</td></tr>
+<tr><td>GPS</td><td>The 1023-chip Gold code itself, then the 8-bit preamble 10001011 of every subframe</td></tr>
+</table>
+<div class="box eng"><span class="tag">Engineering practice · network synchronisation and slips</span>
+<p>A digital network of exchanges runs on a hierarchy of clocks: a <b>stratum 1</b> source (cesium beam or GPS-disciplined, accuracy $10^{-11}$) distributes timing down the tree to stratum 2 ($\pm1.6\times10^{-8}$), stratum 3 ($\pm4.6\times10^{-6}$, ordinary quartz). If two nodes run at slightly different rates, the elastic buffer eventually overflows or empties, and a whole frame is dropped or repeated (<b>slip</b>). With a relative rate error $\varepsilon$, the accumulated timing error reaches one 125 µs frame after $125\,\mu\mathrm s/\varepsilon$: for two independent stratum-1 clocks ($\varepsilon=2\times10^{-11}$) that is $6.25\times10^6$ s $=72$ days: the ITU’s one slip per 72 days. Time-division duplex and single-frequency networks (TDD-LTE, 5G, DVB-T SFN) need absolute time to $\pm1.5\ \mu$s, delivered by GPS or by PTP (IEEE 1588) over the network with hardware time-stamping to $<100$ ns.</p></div>
+
+<div class="box gate"><span class="tag">GATE pattern · synchronisation</span>
+<p>Synchronisation is rarely examined directly, but its ideas appear in statement questions: phase ambiguity of BPSK recovery by squaring; “a Costas loop is used for DSB-SC demodulation”; PLL lock range; the effect of a phase or frequency error on DSB-SC or SSB output ($\cos\phi$, beating); Barker/PN-code autocorrelation; the frame-slip arithmetic. The PLL questions of Chapter 7 and the DSB-SC phase-error questions of Chapter 6 are the testable core.</p></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A BPSK signal is squared to recover its carrier. The squarer output contains a spectral line at
+<ol class="opts"><li>$f_c$</li><li>$f_c/2$</li><li>$2f_c$</li><li>$4f_c$</li></ol>
+<div class="sol"><p>$m^2\cos^2(\omega_ct+\theta)=\frac12[1+\cos(2\omega_ct+2\theta)]$: a line at $2f_c$, which is then divided by two. <b>(C)</b>. (For QPSK the fourth-power loop gives $4f_c$.)</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Which statements about the Costas loop for BPSK are correct?
+<ol class="opts"><li>Its error signal is proportional to $\sin2\phi$ and is independent of the data.</li><li>The I arm output is the demodulated data when locked.</li><li>It can remove the 180° phase ambiguity without any extra information.</li><li>It does not need a carrier component in the received signal.</li></ol>
+<div class="sol"><p>(A), (B), (D). (C) false: $\sin2\phi=0$ at both $0$ and $\pi$; the ambiguity is resolved only by differential coding or a known preamble.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+When the bit pattern on a serial link has a long run of identical bits, the clock-recovery loop
+<ol class="opts"><li>improves its lock</li><li>receives no transitions and its phase drifts</li><li>gains frequency</li><li>switches off the decision circuit</li></ol>
+<div class="sol"><p>No transitions ⇒ no timing information ⇒ drift, hence run-length-limited codes and scramblers. <b>(B)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.01" data-marks="1" data-src="Original">
+A QPSK carrier-recovery loop based on the $M$th-power principle recovers the carrier up to a phase ambiguity. The number of equivalent lock points is ______.
+<div class="sol"><p>$M=4$: $4\theta$ determines $\theta$ modulo $2\pi/4=90^\circ$: <b>4</b> lock points (resolved by a unique word or differential coding).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.114" data-tol="0.005" data-marks="2" data-src="Original">
+A carrier-tracking loop with one-sided noise bandwidth $B_L=100$ Hz tracks a carrier of $-100$ dBm in noise of $-174$ dBm/Hz. The rms phase jitter in degrees is ______.
+<div class="sol"><p>$\rho_L=\frac{P_c}{N_0B_L}=-100+174-20=54$ dB $=2.5\times10^5$; $\sigma_\phi=\rho_L^{-1/2}=2.0\times10^{-3}$ rad $=\mathbf{0.114}^\circ$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="35.2" data-tol="0.2" data-marks="2" data-src="Original">
+An oscillator contributes an rms phase error of $1^\circ$. The maximum SNR (dB) the receiver can reach (phase error only) is ______.
+<div class="sol"><p>$\sigma_\phi=0.01745$ rad; $\mathrm{SNR}=-20\log_{10}(0.01745)=\mathbf{35.2}$ dB (EVM $=1.75\%$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="30.5" data-tol="0.2" data-marks="1" data-src="Original">
+A transmitter has an EVM of 3% (rms). Its SNR in dB is ______.
+<div class="sol"><p>$-20\log_{10}0.03=\mathbf{30.5}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="222" data-tol="2" data-marks="1" data-src="Original">
+A car moving at 100 km/h receives a 2.4 GHz signal head-on. The maximum Doppler shift in Hz is ______.
+<div class="sol"><p>$f_D=\frac vcf_c=\frac{27.78}{3\times10^8}\times2.4\times10^9=\mathbf{222}$ Hz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="96" data-tol="1" data-marks="2" data-src="Original">
+Transmitter and receiver crystals of a 2.4 GHz radio each have a tolerance of $\pm20$ ppm. The worst-case carrier frequency difference in kHz is ______.
+<div class="sol"><p>Each is $\pm48$ kHz; worst-case difference $=2\times48=\mathbf{96}$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="128" data-tol="0.5" data-marks="1" data-src="Original">
+A 7-bit sync word is searched for in a random bit stream. The mean number of bit periods between false matches is ______.
+<div class="sol"><p>$2^7=\mathbf{128}$ bit periods.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-22.3" data-tol="0.2" data-marks="1" data-src="Original">
+The peak-to-sidelobe ratio (in dB, negative for the sidelobe relative to the peak) of the Barker-13 code is ______.
+<div class="sol"><p>$20\log_{10}(1/13)=\mathbf{-22.3}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="72.3" data-tol="0.5" data-marks="2" data-src="Original">
+Two independent clocks, each accurate to $10^{-11}$ (worst-case relative error $2\times10^{-11}$), drive the two ends of an E1 link with 125 µs frames. The time between frame slips in days is ______.
+<div class="sol"><p>$\dfrac{125\ \mu\mathrm s}{2\times10^{-11}}=6.25\times10^6$ s $=\mathbf{72.3}$ days.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="Original (GATE-style)">
+In a DSB-SC receiver the local oscillator has a frequency error $\Delta f=50$ Hz and no phase error. The demodulated output of a message $m(t)$ is
+<ol class="opts"><li>$\frac{A_c}2m(t)$</li><li>$\frac{A_c}2m(t)\cos(\varphi)$ with fixed $\varphi$</li><li>zero</li><li>$\frac{A_c}2m(t)\cos(2\pi\cdot50\,t)$: the message multiplied by a slow beat</li></ol>
+<div class="sol"><p>Derived in Chapter 6: the output is multiplied by $\cos(2\pi\Delta f\,t)$. <b>(D)</b>. A Costas loop or a pilot would prevent it.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.93" data-tol="0.01" data-marks="2" data-src="Original (GATE-style)">
+A first-order PLL has loop gain $K=2\pi\times1$ kHz (rad/s) and tracks an input whose frequency is $800$ Hz away from the free-running VCO frequency. The steady-state phase error, $\arcsin(\Delta\omega/K)$, in radians (two decimals) is ______.
+<div class="sol"><p>$\sin\theta_e=\dfrac{\Delta\omega}{K}=\dfrac{800}{1000}=0.8$, so $\theta_e=\arcsin0.8=\mathbf{0.93}$ rad $=53.1^\circ$. (At an offset of $1$ kHz the loop would be at the edge of its lock range, $\theta_e=90^\circ$.)</p></div></div>
+
+<div class="summary"><h3>Chapter 16 in one breath</h3>
+<ul>
+<li>Three layers: carrier (rotation/spin of the constellation, $\cos\phi$ loss), symbol timing (eye centre), frame (sync word); plus network clocks (slips).</li>
+<li>Squaring loop: $m^2=1$ ⇒ line at $2f_c$ with phase $2\theta$ (ambiguity $\pi$); $M$th power for $M$-PSK (ambiguity $2\pi/M$). Costas: $e=x_Ix_Q=\frac{A^2}8\sin2\phi$, data-independent; I arm = data.</li>
+<li>Phase jitter $\sigma_\phi^2=N_0B_L/P_c=1/\rho_L$; EVM $=1/\sqrt{\rm SNR}$; $1^\circ$ rms phase error caps SNR at 35 dB (limits QAM order).</li>
+<li>Timing: spectral line, early–late gate ($e=|y(\tau+\delta)|-|y(\tau-\delta)|$), Gardner $e=\mathrm{Re}\{y_{k-1/2}(y_k^*-y_{k-1}^*)\}$ (independent of carrier phase), Alexander CDR; need transitions.</li>
+<li>Frame sync: $2^L$ false-match period; hunt–verify–lock; Barker codes (sidelobes ≤1); Zadoff–Chu in LTE. Clock slip every $T_{\rm frame}/\varepsilon$ (72 days for stratum 1).</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+GB.diagram('d-costas',{w:800,h:210,alt:'Costas loop',items:[
+ ['txt',10,105,'r(t)','t','start'],['arr',[44,105,90,105]],['ln',[90,105,90,48]],['ln',[90,105,90,162]],['arr',[90,48,152,48]],['arr',[90,162,152,162]],
+ ['sum',170,48,16,'×'],['sum',170,162,16,'×'],['arr',[186,48,240,48]],['arr',[186,162,240,162]],['box',240,30,70,36,'LPF','blue'],['box',240,144,70,36,'LPF','blue'],
+ ['ln',[310,48,420,48]],['arr',[420,48,420,88]],['ln',[310,162,420,162]],['arr',[420,162,420,122]],['sum',420,105,17,'×'],
+ ['arr',[437,105,490,105],'e ∝ sin 2φ'],['box',490,83,90,44,'Loop\nfilter','purple'],['arr',[580,105,620,105]],['box',620,83,80,44,'VCO','orange'],
+ ['ln',[660,83,660,14,170,14]],['arr',[170,14,170,30]],['txt',400,8,'cos(ωt+θ̂)','tm'],
+ ['ln',[660,127,660,195,170,195]],['arr',[170,195,170,180]],['txt',400,203,'sin(ωt+θ̂)  (90° shifted)','tm'],
+ ['ln',[350,48,350,18]],['txt',385,24,'I: data','tb','start']]});
+
+/* ---------- Costas loop simulation ---------- */
+GB.widget('w-costas',{title:'Costas loop locking on a noisy BPSK carrier',h:420,hm:480,controls:[{k:'th0',label:'initial phase offset (deg)',min:-170,max:170,step:5,value:100,fmt:v=>v.toFixed(0)+'°'},{k:'df',label:'frequency offset (% of symbol rate)',min:0,max:1.5,step:.05,value:.3,fmt:v=>v.toFixed(2)+'%'},{k:'bw',label:'loop bandwidth  B_nT',min:.003,max:.1,step:.001,value:.02,fmt:v=>v.toFixed(3)},{k:'snr',label:'Eb/N0 (dB)',min:0,max:20,step:1,value:10}],
+ draw(g,p){ const N=900, r=m.rng(77), z=.7071, th=p.bw/(z+1/(4*z)), den=1+2*z*th+th*th, Kp=4*z*th/den, Ki=4*th*th/den; const sig=Math.sqrt(1/(2*Math.pow(10,p.snr/10)));
+  let est=0, nu=0; const tr=[], es=[], pts=[]; const w=TAU*p.df/100; let ph=p.th0*Math.PI/180;
+  for(let k=0;k<N;k++){ const d=r()<.5?-1:1; ph+=w; const re=d*Math.cos(ph)+sig*m.randn(r), im=d*Math.sin(ph)+sig*m.randn(r); const c=Math.cos(est), s=Math.sin(est); const xr=re*c+im*s, xi=-re*s+im*c; const e=xi*(xr>=0?1:-1); est+=Kp*e+nu; nu+=Ki*e; tr.push(ph*180/Math.PI); es.push(est*180/Math.PI); if(k>=N-150) pts.push([xr,xi]); }
+  const wrap=a=>{ let x=a%360; if(x>180) x-=360; if(x<-180) x+=360; return x; }; const narrow=g.w<520;
+  const A=narrow?new GB.V(g,40,22,g.w-60,g.h*.34):new GB.V(g,40,22,g.w*.55-50,g.h-50), B=narrow?new GB.V(g,40,g.h*.5,g.w-60,g.h*.4):new GB.V(g,g.w*.55+12,22,g.w*.45-30,g.h-50);
+  A.view(0,N,-200,200); A.axes({xl:'symbol k',ystep:90,yticks:[[-180,'−180°'],[-90,'−90°'],[0,'0'],[90,'90°'],[180,'180°']]}); A.line(tr.map((_,i)=>i),tr.map(wrap),'blue',1.6); A.line(es.map((_,i)=>i),es.map(wrap),'yellow',1.8); A.title('true carrier phase (blue) vs loop estimate (yellow), wrapped','mute');
+  B.view(-2,2,-2,2,{equal:true}); B.axes({xstep:1,ystep:1,xl:'I',yl:'Q'}); pts.forEach(q=>B.dot(q[0],q[1],'green',2.4)); B.title('derotated constellation (last 150 symbols)','green');
+  const fin=wrap(tr[N-1]-es[N-1]), lockph=Math.abs(fin)<40?'locked at 0°':Math.abs(Math.abs(fin)-180)<40?'locked at 180° (phase ambiguity!)':'not locked / still pulling in'; const sd=Math.sqrt(pts.reduce((s,q)=>s+q[1]*q[1],0)/pts.length);
+  return 'final phase error ≈ <b>'+fin.toFixed(0)+'°</b> → '+lockph+' · rms quadrature spread = '+sd.toFixed(2)+' (noise σ = '+sig.toFixed(2)+')'; }});
+
+/* ---------- Gardner S-curve ---------- */
+GB.widget('w-ted',{title:'Gardner timing-error detector: the S-curve',h:320,hm:340,controls:[{k:'al',label:'roll-off α of the raised-cosine pulse',min:.05,max:1,step:.05,value:.5,fmt:v=>v.toFixed(2)}],
+ draw(g,p){ const al=p.al, S=m.sinc; const gp=t=>{ const d=1-4*al*al*t*t; return Math.abs(d)<1e-6?(Math.PI/4)*S(1/(2*al)):S(t)*Math.cos(Math.PI*al*t)/d; };
+  const K=14, N=600, r=m.rng(5), a=Array.from({length:N},()=>r()<.5?-1:1); const y=t=>{ let s=0; const k0=Math.round(t); for(let k=k0-K;k<=k0+K;k++){ if(k>=0&&k<N) s+=a[k]*gp(t-k); } return s; };
+  const eps=m.linspace(-.5,.5,41), sc=eps.map(e=>{ let s=0,c=0; for(let k=20;k<N-20;k++){ const yk=y(k+e), ym=y(k-1+e), yh=y(k-.5+e); s+=yh*(yk-ym); c++; } return s/c; });
+  const v=g.full({l:46,b:30}).view(-.5,.5,-1.1,1.1); v.axes({xl:'timing offset ε / T',ystep:.5,xstep:.25}); v.line(eps,sc,'yellow',2.6); v.vline(0,'green'); v.hline(0,'axis',[3,3]);
+  const slope=(sc[24]-sc[16])/(eps[24]-eps[16]); return 'average Gardner error vs offset ε (data averaged) · slope at the origin ≈ <b>'+slope.toFixed(2)+'</b> per T (loop gain) · zero crossing at ε = 0 (lock point)'; }});
+</script>
