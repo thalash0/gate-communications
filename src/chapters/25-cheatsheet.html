@@ -1,6 +1,6 @@
 <!--meta {"id": "ch25", "num": "25", "part": "Part VI · Exam Toolkit", "title": "Cheat Sheet, Traps and Mock Tests", "lede": "Everything you need to carry into the exam on one scroll, the mistakes that cost the most marks, and two timed tests to prove you are ready."} -->
 
-<p>Use this chapter in the last week. Each table is a compressed version of a chapter; if a row is not obvious, follow the chapter number to the full story. Print it (the print stylesheet strips the menus) or keep it open on your phone. The first five sections are the GATE core; sections 6 and 7 are the engineering extension of Chapters 17–23.</p>
+<p>Use this chapter in the last week. Each table is a compressed version of a chapter; if a row is not obvious, follow the chapter number to the full story. Print it (the print stylesheet strips the menus) or keep it open on your phone. The first four sections are the GATE core; sections 5 and 6 are the engineering extension (Chapters 17–22).</p>
 
 <h2>1. Signals, maths and noise (Ch 1–5)</h2>
 <div class="cheat"><table>
@@ -25,7 +25,7 @@
 <tr><td>Angle modulation</td><td>FM $f_i=f_c+k_fm$; PM $f_i=f_c+\frac{k_p}{2\pi}\dot m$. Tone: FM $\Delta f=k_fA_m$, $\beta=\Delta f/f_m$; PM $\beta=k_pA_m$, $\Delta f=\beta f_m$. Power $A_c^2/2$ always; $\sum J_n^2=1$; $J_0=0$ at $\beta=2.405,5.52,8.65$; NBFM $B\approx2f_m$; Carson $B=2(\Delta f+f_m)=2f_m(\beta+1)$; FM broadcast $\Delta f=75$, $W=15$ ⇒ 180 kHz; Armstrong: NBFM + multiply</td></tr>
 <tr><td>PLL</td><td>locked: $\sin\phi_e=\dfrac{\Delta\omega}{K_v K_d}$; lock range $\pm K$; VCO control voltage = FM message; second-order loop: natural frequency $\omega_n$ and damping $\zeta$ (Ch 7); synthesizer $f_{out}=Nf_{ref}$</td></tr>
 <tr><td>Superhet</td><td>$f_{IF}=|f_{LO}-f_s|$; high-side $f_{LO}=f_s+f_{IF}$; $f_{im}=f_s+2f_{IF}$; $\alpha=\sqrt{1+Q^2\rho^2}$, $\rho=\frac{f_{im}}{f_s}-\frac{f_s}{f_{im}}$; AM IF 455 kHz, FM IF 10.7 MHz; IIP3 / SFDR: IIP3 $=P_{in}+\frac{\Delta}{2}$, $\mathrm{SFDR}=\frac23(\mathrm{IIP3}-N_{\rm floor})$</td></tr>
-<tr><td>Noise FOM ($\gamma=P_T/N_0W$)</td><td>DSB-SC, SSB: 1 · AM: $\frac{\mu^2P_m}{1+\mu^2P_m}$ ($\le\frac13$) · FM tone: $\frac32\beta^2$; FM general: $3D^2\frac{P_m}{m_p^2}$ · PM: $k_p^2P_m$. FM threshold $\approx20(\beta+1)$ (≈10–13 dB); pre-emphasis improvement up to 13 dB for broadcast</td></tr>
+<tr><td>Noise FOM ($\gamma=P_T/N_0W$)</td><td>DSB-SC, SSB: 1 · AM: $\frac{\mu^2P_m}{1+\mu^2P_m}$ ($\le\frac13$) · FM tone: $\frac32\beta^2$; FM general: $3D^2\frac{P_m}{m_p^2}$ · PM: $k_p^2P_m$. FM threshold $\gamma_{\rm th}\approx20(\beta+1)$ (carrier-to-noise ratio ≈ 10 dB at the limiter); pre-emphasis improvement up to 13 dB for broadcast</td></tr>
 <tr><td>Multiplexing</td><td>FDM: $B=\sum B_i+$ guards; TDM: slot $T_s=1/(Nf_s)$; PAM/PWM/PPM; T1 $=24\times64+8=1.544$ Mbit/s; E1 $=32\times64=2.048$ Mbit/s; Erlang-B for blocking</td></tr>
 </table></div>
 
