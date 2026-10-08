@@ -1,0 +1,211 @@
+<!--meta {"id": "ch25", "num": "25", "part": "Part VI · Exam Toolkit", "title": "Cheat Sheet, Traps and Mock Tests", "lede": "Everything you need to carry into the exam on one scroll, the mistakes that cost the most marks, and two timed tests to prove you are ready."} -->
+
+<p>Use this chapter in the last week. Each table is a compressed version of a chapter; if a row is not obvious, follow the chapter number to the full story. Print it (the print stylesheet strips the menus) or keep it open on your phone. The first four sections are the GATE core; sections 5 and 6 are the engineering extension (Chapters 17–22).</p>
+
+<h2>1. Signals, maths and noise (Ch 1–5)</h2>
+<div class="cheat"><table>
+<tr><th>Topic</th><th>Result</th></tr>
+<tr><td>LTI systems</td><td>$y=x*h$; $H(f)=\int h\,e^{-j2\pi ft}dt$; $e^{j2\pi ft}$ is an eigenfunction; causal $h(t)=0$ for $t<0$; BIBO stable iff $\int|h|<\infty$; distortionless: $|H|$ constant and phase linear (constant group delay $-\frac{1}{2\pi}\frac{d\phi}{df}$); RC low-pass: $f_{3\rm dB}=\frac1{2\pi RC}$, step rise time $0.35/B$; dB: $10\log$ power, $20\log$ amplitude</td></tr>
+<tr><td>Fourier series / transform</td><td>$c_k=\frac1T\int_Tx\,e^{-j2\pi kt/T}dt$; power $\sum|c_k|^2$; Gibbs overshoot 9%. $\rect(t/T)\leftrightarrow T\sinc(fT)$ · $\tri\leftrightarrow\sinc^2$ · $e^{-at}u\leftrightarrow\frac1{a+j2\pi f}$ · Gaussian ↔ Gaussian · $\cos2\pi f_0t\leftrightarrow\frac12[\delta(f\mp f_0)]$ · $x\cos2\pi f_ct\leftrightarrow\frac12[X(f-f_c)+X(f+f_c)]$ · convolution ⇔ product · Parseval $\int|x|^2=\int|X|^2$; narrower in time ⇒ wider in frequency ($\Delta t\,\Delta f\ge\frac1{4\pi}$)</td></tr>
+<tr><td>DFT</td><td>$X_k=\sum_nx_ne^{-j2\pi kn/N}$; resolution $f_s/N$; FFT $\frac N2\log_2N$ multiplications; zero-padding interpolates; window trade-off: rect −13 dB sidelobes (narrow lobe), Hann −31 dB</td></tr>
+<tr><td>Sampling</td><td>$f_s>2W$; replicas every $f_s$; alias $=|f-nf_s|$; $m^2$ doubles bandwidth, product adds; bandpass: $f_s\ge2B$ possible if $2f_H/n\le f_s\le2f_L/(n-1)$ with $n\le\lfloor f_H/B\rfloor$</td></tr>
+<tr><td>Bandpass / Hilbert</td><td>$x=x_I\cos-x_Q\sin$; $x=\mathrm{Re}\{\tilde x\,e^{j2\pi f_ct}\}$; power $=\frac12\overline{|\tilde x|^2}$; $\widehat{\cos}=\sin$; $X_+=2X\,u(f)$; Hilbert transform preserves energy</td></tr>
+<tr><td>Probability</td><td>Bayes $P(A|B)=\frac{P(B|A)P(A)}{P(B)}$; $f_Y=\sum f_X(x_i)/|g'(x_i)|$; independent ⇒ uncorrelated (the converse only for jointly Gaussian); CLT; Rayleigh envelope, mean $\sigma\sqrt{\pi/2}$; power exponential; Rician $K$-factor. Binomial $np,\ np(1-p)$ · Poisson $\lambda,\lambda$ · Uniform$(a,b)$ variance $\frac{(b-a)^2}{12}$ · Exponential $1/\lambda,\ 1/\lambda^2$</td></tr>
+<tr><td>Gaussian tail</td><td>$Q(x)=\tfrac12\erfc(x/\sqrt2)$; $P(X>a)=Q\!\big(\frac{a-\mu}\sigma\big)$; $Q(-x)=1-Q(x)$. $Q(1)=0.159$, $Q(2)=0.0228$, $Q(3)=1.35\!\times\!10^{-3}$, $Q(4)=3.2\!\times\!10^{-5}$, $Q(4.75)\approx10^{-6}$; $Q(x)\le\frac12e^{-x^2/2}$</td></tr>
+<tr><td>WSS process</td><td>$R_X(\tau)$ even, $R(0)\ge|R(\tau)|$, power $=R(0)=\int S\,df$, DC power $=R(\infty)$, $S\ge0$ even; Wiener–Khinchin $S=\mathcal F\{R\}$. Random-phase sine $\frac{A^2}2\cos2\pi f_0\tau$; random NRZ $A^2\tri(\tau/T)$; PAM PSD $\frac{|G(f)|^2}{T}\sum R_a[k]e^{-j2\pi fkT}$</td></tr>
+<tr><td>LTI + noise</td><td>$S_Y=|H|^2S_X$ (phase irrelevant); white noise: $P=\frac{N_0}2\int|H|^2df$; RC: $\frac{N_0}{4RC}$; ideal LPF $B$: $N_0B$; narrowband noise $n_c,n_s$ independent, same variance as $n$; envelope Rayleigh; matched filter $\mathrm{SNR}=2E/N_0$</td></tr>
+<tr><td>Thermal noise</td><td>$N_0=kT$; $kT_0=-174$ dBm/Hz; $P=kTB$ (Nyquist: $S_v=4kTR$); Friis $F=F_1+\frac{F_2-1}{G_1}+\cdots$; $T_e=(F-1)T_0$; attenuator $F=L$</td></tr>
+</table></div>
+
+<h2>2. Analog systems (Ch 6–9)</h2>
+<div class="cheat"><table>
+<tr><th>Topic</th><th>Result</th></tr>
+<tr><td>AM</td><td>$s=A_c[1+\mu m]\cos\omega_ct$; $\mu=\frac{A_{\max}-A_{\min}}{A_{\max}+A_{\min}}$; $B=2W$; $P_t=P_c(1+\frac{\mu^2}2)$; $\eta=\frac{\mu^2}{2+\mu^2}\le\frac13$; $I_t=I_c\sqrt{1+\mu^2/2}$; multi-tone $\mu=\sqrt{\sum\mu_i^2}$; envelope detector: $\frac1{f_c}\ll RC\ll\frac1W$, $\mu\le1$ (diagonal clipping if $RC>\frac{\sqrt{1-\mu^2}}{2\pi\mu W}$)</td></tr>
+<tr><td>DSB-SC / SSB / VSB / QAM</td><td>$B=2W$ / $W$ / $W+f_v$ / $2W$; coherent; phase error $\varphi$ ⇒ $\cos\varphi$; frequency error ⇒ beat; $s_{SSB}=\frac{A_c}2[m\cos\mp\hat m\sin]$; modulated PSD $=\frac14[S(f-f_c)+S(f+f_c)]$; VSB: $H_v(f-f_c)+H_v(f+f_c)=$ const; QAM: two messages on cos & sin; Costas loop recovers DSB-SC carrier</td></tr>
+<tr><td>Angle modulation</td><td>FM $f_i=f_c+k_fm$; PM $f_i=f_c+\frac{k_p}{2\pi}\dot m$. Tone: FM $\Delta f=k_fA_m$, $\beta=\Delta f/f_m$; PM $\beta=k_pA_m$, $\Delta f=\beta f_m$. Power $A_c^2/2$ always; $\sum J_n^2=1$; $J_0=0$ at $\beta=2.405,5.52,8.65$; NBFM $B\approx2f_m$; Carson $B=2(\Delta f+f_m)=2f_m(\beta+1)$; FM broadcast $\Delta f=75$, $W=15$ ⇒ 180 kHz; Armstrong: NBFM + multiply</td></tr>
+<tr><td>PLL</td><td>locked: $\sin\phi_e=\dfrac{\Delta\omega}{K_v K_d}$; lock range $\pm K$; VCO control voltage = FM message; second-order loop: natural frequency $\omega_n$ and damping $\zeta$ (Ch 7); synthesizer $f_{out}=Nf_{ref}$</td></tr>
+<tr><td>Superhet</td><td>$f_{IF}=|f_{LO}-f_s|$; high-side $f_{LO}=f_s+f_{IF}$; $f_{im}=f_s+2f_{IF}$; $\alpha=\sqrt{1+Q^2\rho^2}$, $\rho=\frac{f_{im}}{f_s}-\frac{f_s}{f_{im}}$; AM IF 455 kHz, FM IF 10.7 MHz; IIP3 / SFDR: IIP3 $=P_{in}+\frac{\Delta}{2}$, $\mathrm{SFDR}=\frac23(\mathrm{IIP3}-N_{\rm floor})$</td></tr>
+<tr><td>Noise FOM ($\gamma=P_T/N_0W$)</td><td>DSB-SC, SSB: 1 · AM: $\frac{\mu^2P_m}{1+\mu^2P_m}$ ($\le\frac13$) · FM tone: $\frac32\beta^2$; FM general: $3D^2\frac{P_m}{m_p^2}$ · PM: $k_p^2P_m$. FM threshold $\gamma_{\rm th}\approx20(\beta+1)$ (carrier-to-noise ratio ≈ 10 dB at the limiter); pre-emphasis improvement up to 13 dB for broadcast</td></tr>
+<tr><td>Multiplexing</td><td>FDM: $B=\sum B_i+$ guards; TDM: slot $T_s=1/(Nf_s)$; PAM/PWM/PPM; T1 $=24\times64+8=1.544$ Mbit/s; E1 $=32\times64=2.048$ Mbit/s; Erlang-B for blocking</td></tr>
+</table></div>
+
+<h2>3. Information theory and quantisation (Ch 10–12)</h2>
+<div class="cheat"><table>
+<tr><th>Topic</th><th>Result</th></tr>
+<tr><td>Entropy</td><td>$I=\log_2\frac1p$; $H=-\sum p\log_2p$; $0\le H\le\log_2K$; $H_b(p)=-p\log p-(1-p)\log(1-p)$; relabelling keeps $H$, merging lowers it; $H(X,Y)=H(X)+H(Y|X)$; chain rule; data processing $I(X;Z)\le I(X;Y)$</td></tr>
+<tr><td>Source coding</td><td>Kraft $\sum2^{-\ell_i}\le1$; $H\le\bar L<H+1$; Huffman (merge two smallest); dyadic ⇒ $\bar L=H$; $n$-th extension $\bar L/n\to H$; arithmetic coding ≈ $H$; LZ universal; rate–distortion Gaussian $R(D)=\frac12\log_2\frac{\sigma^2}D$</td></tr>
+<tr><td>Mutual information</td><td>$I=H(X)-H(X|Y)=H(Y)-H(Y|X)=\sum p\log\frac{p(x,y)}{p(x)p(y)}$; $=0$ iff independent; $C=\max_{p(x)}I$</td></tr>
+<tr><td>Channels</td><td>BSC $1-H_b(p)$ · BEC $1-\varepsilon$ · cascade of BSCs $p'=2p(1-p)$ · symmetric $K$-ary: $\log K-H(\text{row})$ · Z-channel by optimisation</td></tr>
+<tr><td>AWGN</td><td>$C=B\log_2(1+\mathrm{SNR})$; $C_\infty=1.44P/N_0$; $\eta=\log_2(1+\eta E_b/N_0)$ ⇒ $E_b/N_0|_{\min}=\frac{2^\eta-1}\eta\to-1.59$ dB; SNR = $\frac{E_b}{N_0}\cdot\frac{R_b}B$; parallel channels: water-filling; BI-AWGN limit at rate ½: 0.19 dB</td></tr>
+<tr><td>PCM</td><td>$L=2^n$; $\Delta=2m_p/L$; noise $\Delta^2/12$; max error $\Delta/2$; SQNR (full-scale sine) $=6.02n+1.76$ dB; general $3\cdot2^{2n}P/m_p^2$; $R_b=nf_s$; $B\ge R_b/2$; μ-law 255, A-law 87.6; ΔΣ: +9 dB (1.5 bit) per OSR doubling (1st order)</td></tr>
+<tr><td>DM / DPCM</td><td>no slope overload iff $\Delta f_s\ge2\pi f_mA$; DPCM gain $\frac1{1-\rho^2}$ (bits saved $\frac12\log_2G_p$)</td></tr>
+</table></div>
+
+<h2>4. Baseband, detection, modulation, synchronisation (Ch 13–16)</h2>
+<div class="cheat"><table>
+<tr><th>Topic</th><th>Result</th></tr>
+<tr><td>Line codes</td><td>polar NRZ PSD $A^2T\sinc^2(fT)$, BW $R_b$; RZ & Manchester BW $2R_b$; AMI & Manchester null at DC; HDB3/B8ZS limit zero runs; scrambling</td></tr>
+<tr><td>ISI</td><td>Nyquist: $g(nT)=\delta_n$ ⇔ $\sum G(f-\frac mT)=T$; min BW $R_s/2$; raised cosine $\frac{(1+\alpha)R_s}2$ (baseband), $(1+\alpha)R_s$ (passband); $R_b=R_s\log_2M$; eye height/width; duobinary; ZF vs MMSE equaliser; LMS $0<\mu<\frac{2}{N\sigma_x^2}$</td></tr>
+<tr><td>Detection</td><td>ML = nearest point; MAP threshold $\frac{\sigma^2}{2A}\ln\frac{P_0}{P_1}$ (towards the unlikely symbol); binary $P_e=Q(d/\sqrt{2N_0})=Q(d/2\sigma)$; $M$ on a line: $\frac{2(M-1)}MQ(\frac d{2\sigma})$; matched filter $h(t)=s(T-t)$, $\mathrm{SNR}_{\max}=2E/N_0$; correlation coefficient $\rho$: $P_e=Q(\sqrt{E_b(1-\rho)/N_0})$</td></tr>
+<tr><td>BER</td><td>BPSK/QPSK/MSK $Q(\sqrt{2\gamma})$ · coherent BFSK, OOK $Q(\sqrt\gamma)$ · DPSK $\frac12e^{-\gamma}$ · non-coh. FSK $\frac12e^{-\gamma/2}$ · 8-PSK $\frac2{3}Q(\sqrt{6\gamma}\sin\frac\pi8)$ · $M$-QAM $\frac4{k}(1-\frac1{\sqrt M})Q\big(\sqrt{\frac{3k\gamma}{M-1}}\big)$, $k=\log_2M$</td></tr>
+<tr><td>Needed $E_b/N_0$ at $10^{-5}$</td><td>BPSK/QPSK 9.6 · DPSK 10.3 · 8-PSK 13.0 · 16-QAM 13.4 · BFSK coh 12.6 · 64-QAM 17.8 · 16-PSK 17.4 dB</td></tr>
+<tr><td>Relations</td><td>$E_s=E_b\log_2M$; QPSK $E_s/N_0=E_b/N_0+3$ dB; QPSK = 2 BPSK, half the bandwidth; $E_s^{16QAM}=\frac{15d^2}6$; MSK $=$ FSK with $h=\frac12$, first-null bandwidth $1.5R_b$ (99% of power in ≈ $1.2R_b$); orthogonal FSK spacing $\frac1{2T}$</td></tr>
+<tr><td>Synchronisation</td><td>squaring loop: $m^2=1$ leaves a line at $2f_c$ (ambiguity $\pi$); Costas $e\propto\sin2\phi$; loop jitter $\sigma_\phi^2=\frac{N_0B_L}{P_c}$; $M$th-power for $M$-PSK ($M$-fold ambiguity); early–late gate, Gardner TED; Barker-13 peak/sidelobe 13:1; frame sync false alarm $2^{-L}$; phase error $\varphi$ costs $\cos\varphi$ (BPSK)</td></tr>
+</table></div>
+
+<h2>5. Error-control coding (Ch 17–18)</h2>
+<div class="cheat"><table>
+<tr><th>Topic</th><th>Result</th></tr>
+<tr><td>Distance</td><td>detect $d-1$; correct $\lfloor(d-1)/2\rfloor$; errors+erasures $2e+\varepsilon\le d-1$; rate $k/n$; Singleton $d\le n-k+1$; Hamming bound $2^k\sum_{i\le t}\binom ni\le2^n$; perfect: Hamming, Golay (23,12,7), odd repetition</td></tr>
+<tr><td>Linear block</td><td>$c=mG$, $G=[I|P]$, $H=[P^T|I]$, $cH^T=0$; $d_{\min}$ = min nonzero weight = fewest dependent columns of $H$; syndrome $s=rH^T=eH^T$; $2^{n-k}$ cosets</td></tr>
+<tr><td>Hamming</td><td>$(2^r-1,2^r-1-r)$, $d=3$, $2^r\ge k+r+1$; syndrome = column of $H$ = error position; extended $d=4$ (SECDED); $P_b\approx\frac{d}nP_w=9p^2$ for (7,4)</td></tr>
+<tr><td>BSC decoding</td><td>$P_{\rm correct}=\sum_{i\le t}\binom nip^i(1-p)^{n-i}$; (7,4), $p=0.1$ ⇒ 0.85</td></tr>
+<tr><td>Coding gain</td><td>soft $10\log R_cd_{\min}$; hard $10\log R_c(t+1)$; Golay 5.6 / 3.2 dB; hard ≈ 3 dB worse asymptotically (≈2 dB in practice)</td></tr>
+<tr><td>Cyclic / BCH / RS</td><td>$g(x)\mid x^n+1$; $c=x^rm+[x^rm\bmod g]$; $x^7+1=(x+1)(x^3+x+1)(x^3+x^2+1)$; BCH $d\ge2t+1$ from roots $\alpha..\alpha^{2t}$; (15,7,5), (15,5,7); RS$(n,k)$ over GF($2^m$): $d=n-k+1$, $t=\frac{n-k}2$ symbols, $n=2^m-1$; interleaver depth $I\ge b/t$</td></tr>
+<tr><td>CRC</td><td>$R=x^rM\bmod G$; sent $=x^rM+R$; XOR long division; detects all single, all bursts $\le r$, all odd weights if $(x+1)\mid G$; undetected random $2^{-r}$; CRC-32 0x04C11DB7, CRC-16-CCITT 0x1021</td></tr>
+<tr><td>ARQ</td><td>$\eta_{SW}=\frac{1-P}{1+2a}$, $\eta_{GBN}=\frac{1-P}{1+2aP}$, $\eta_{SR}=1-P$; window $\ge1+2a$; chase combining $10\log N$</td></tr>
+<tr><td>Convolutional</td><td>rate $1/n$, $K$, $2^{K-1}$ states; (7,5): $d_{\rm free}=5$, $T(D)=\frac{D^5}{1-2D}$; $K=7$ (171,133): $d_{\rm free}=10$; Viterbi: ACS, survivor per state, hard metric Hamming, soft Euclidean; $P_b\le\sum c_dP_d$; soft gain $10\log R_cd_{\rm free}$; puncturing sets the rate</td></tr>
+<tr><td>Iterative codes</td><td>turbo: RSC + interleaver, $L_{\rm ext}=L_{\rm tot}-L_{\rm apr}-L_cy$, $L_c=4E_s/N_0$; LDPC: $R=1-d_v/d_c$, $nd_v=md_c$, check update $2\tanh^{-1}\prod\tanh\frac{L}{2}$; polar BEC: $\varepsilon^-=2\varepsilon-\varepsilon^2$, $\varepsilon^+=\varepsilon^2$; TCM gain $10\log(d^2_{\rm coded}/d^2_{\rm unc})$ (8-PSK 4-state: 3 dB)</td></tr>
+</table></div>
+
+<h2>6. Spread spectrum, OFDM and wireless (Ch 19–22)</h2>
+<div class="cheat"><table>
+<tr><th>Topic</th><th>Result</th></tr>
+<tr><td>Spread spectrum</td><td>$G_p=W/R_b=T_b/T_c$; $E_b/J_0=G_pP/J$; $M_j=G_p-(E_b/J_0)_{\rm req}-L$; m-sequence: period $2^m-1$, $2^{m-1}$ ones, autocorrelation $N,-1$; Gold cross-correlation $\{-1,-t,t-2\}$, $t=2^{\lceil(m+1)/2\rceil}+1$ (65 for $m=10$); Walsh orthogonal only if aligned; CDMA $P_b=Q\big([\frac{K-1}{3N}+\frac{N_0}{2E_b}]^{-1/2}\big)$; worst-case partial-band jammer $\frac1{e\gamma}$; GPS C/A: 1.023 Mchip/s, 1023 chips, 43 dB</td></tr>
+<tr><td>OFDM</td><td>$\Delta f=1/T$; IFFT; CP $\ge L-1$; $Y_k=H_kX_k$; overhead $\frac{N+C}{N}$; PAPR max $N$, CCDF $1-(1-e^{-\gamma})^N$; CFO SIR $\approx\frac3{(\pi\varepsilon)^2}$; $b_k=\lfloor\log_2(1+\gamma_k/\Gamma)\rfloor$, $\Gamma\approx9.8$ dB; Wi-Fi 312.5 kHz/3.2 µs/0.8 µs; LTE 15 kHz/66.7 µs</td></tr>
+<tr><td>Link budget</td><td>$P_r=P_tG_tG_r(\frac\lambda{4\pi d})^2$; $L_{\rm fs}=32.44+20\log d_{\rm km}+20\log f_{\rm MHz}$; $E_b/N_0=\mathrm{EIRP}-L+G/T+228.6-10\log R_b$; sensitivity $-174+10\log B+F+\mathrm{SNR}$; two-ray $d^{-4}$ beyond $4h_th_r/\lambda$; shadow margin $z\sigma$</td></tr>
+<tr><td>Fading</td><td>$f_m=vf_c/c$; $T_c\approx0.24/f_m$; $B_c\approx\frac1{5\tau_{\rm rms}}$; BPSK Rayleigh $\frac12[1-\sqrt{\frac{\bar\gamma}{1+\bar\gamma}}]\approx\frac1{4\bar\gamma}$; MRC SNRs add, BER $\propto\bar\gamma^{-L}$; Alamouti 2×1: diversity 2, rate 1; MIMO $C=\log_2\det(I+\frac\rho{N_t}HH^H)$; beamforming gain $N_t$</td></tr>
+<tr><td>Multiple access, cellular</td><td>ALOHA $S=Ge^{-2G}$ (0.184), slotted $Ge^{-G}$ (0.368); CSMA/CD $L_{\min}=2\tau R$, $\eta=\frac1{1+2ea}$; $N=i^2+ij+j^2$, $D=R\sqrt{3N}$, SIR $=\frac{(3N)^{n/2}}6$; sectoring ×3; splitting ×4; channels/cell $B_t/(B_cN)$; Erlang-B; multi-user diversity $\bar\gamma H_K$</td></tr>
+</table></div>
+
+<h2>7. Constants and dB</h2>
+<div class="cheat"><table>
+<tr><td>$k=1.38\times10^{-23}$ J/K · $T_0=290$ K · $kT_0=4\times10^{-21}$ W/Hz $=-174$ dBm/Hz · $c=3\times10^8$ m/s · $\log_2e=1.4427$ · $\ln2=0.693$ · $\log_{10}2=0.301$ · $\log_23=1.585$ · $-228.6$ dBW/K/Hz $=10\log k$</td></tr>
+<tr><td>3 dB ≈ ×2 · 10 dB = ×10 · 6 dB ≈ ×4 · 20 dB amplitude = ×10 · dBm = dB re 1 mW · 30 dBm = 1 W · $-174+10\log_{10}B$ = noise floor (dBm) · 1 ppm at 2.4 GHz = 2.4 kHz</td></tr>
+</table></div>
+
+<h2>The 14 mistakes that cost the most marks</h2>
+<div class="cols">
+<div class="box trap"><span class="tag">Factor of 2</span><ol>
+<li>Using $N_0$ where the question gives $N_0/2$ (or vice versa); $\sigma^2=N_0/2$ per real dimension.</li>
+<li>Forgetting that a cosine carrier halves power: $P=A^2/2$, and modulated PSD has a $\frac14$.</li>
+<li>Bandwidth: null-to-null ($2R_b$) vs Nyquist ($R_s$) vs raised cosine $(1+\alpha)R_s$; baseband vs passband.</li>
+<li>BER vs symbol-error rate (QPSK $P_s\approx2P_b$).</li></ol></div>
+<div class="box trap"><span class="tag">Units</span><ol start="5">
+<li>dB used as a ratio inside $\log_2(1+\mathrm{SNR})$, or $E_b/N_0$ vs $E_s/N_0$ vs per-sample SNR.</li>
+<li>Hz vs rad/s ($\omega=2\pi f$): FM/PM $\Delta f$ and $k_f$ units.</li>
+<li>Answer asked as ratio vs dB (2021 Q.52!).</li>
+<li>Adding standard deviations instead of variances; adding powers in dB.</li></ol></div>
+<div class="box trap"><span class="tag">Conceptual</span><ol start="9">
+<li>Thinking "uncorrelated ⇒ independent" or "PSD depends on phase".</li>
+<li>Applying $P_c(1+\mu^2/2)$ to FM (power is $A_c^2/2$).</li>
+<li>Applying $6.02n+1.76$ to a signal that is not a full-scale sine.</li>
+<li>Using the exact $Q$ when the question hands you an approximation (2014, 2026).</li>
+<li>Claiming spreading or coding gain on an AWGN link that has neither jammer nor code; or forgetting the code rate when converting $E_b$ to $E_c$.</li>
+<li>Counting $d_{\min}$ from pairs of code words instead of the minimum <em>weight</em> (linear codes), or $t=d_{\min}/2$.</li></ol></div>
+</div>
+
+<div class="box key"><span class="tag">Exam-day checklist</span>
+<ul>
+<li>Write $Q(1),Q(2),Q(3),Q(4)$, $\log_2e$, $kT_0=-174$ on your scratch sheet in the first minute.</li>
+<li>Do all one-mark Communication questions first (they are almost all formula-recall or one-step).</li>
+<li>For every detection/BER question: draw the points, mark thresholds, shade the error regions, count them.</li>
+<li>For every NAT: re-read what unit, how many decimals; check the answer is physically sensible ($P_e\le1$, $H\le\log_2K$, $\eta\le\frac13$ for AM, code rate $\le1$).</li>
+</ul></div>
+
+<h2>Mock test: 24 marks, 40 minutes</h2>
+<p>Eight 1-mark and eight 2-mark questions in the style of GATE. Set a timer for 40 minutes, answer every question <em>before</em> opening any solution, then check. Your score is counted in the sidebar progress for this chapter.</p>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.05" data-marks="1" data-src="Mock">
+A WSS process has autocorrelation $R_X(\tau)=9+4e^{-|\tau|}$. Its variance is ______.
+<div class="sol"><p>Variance $=R(0)-R(\infty)=13-9=4$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="1.18" data-tol="0.01" data-marks="1" data-src="Mock">
+A carrier of amplitude 10 V is amplitude modulated by a tone with $\mu=0.6$. The total transmitted power in a $50\,\Omega$ load is ______ W.
+<div class="sol"><p>$P_c=\frac{10^2}{2\cdot50}=1$ W; $P_t=1(1+0.36/2)=1.18$ W.</p></div></div>
+<div class="prob" data-type="nat" data-ans="100" data-tol="0.5" data-marks="1" data-src="Mock">
+A single-tone FM signal has $\Delta f=45$ kHz and $f_m=5$ kHz. Carson's bandwidth in kHz is ______.
+<div class="sol"><p>$2(45+5)=100$ kHz.</p></div></div>
+<div class="prob" data-type="nat" data-ans="1.75" data-tol="0.01" data-marks="1" data-src="Mock">
+A source emits four symbols with probabilities $\frac12,\frac14,\frac18,\frac18$. Its entropy in bits/symbol is ______.
+<div class="sol"><p>$0.5+0.5+0.375+0.375=1.75$.</p></div></div>
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Mock">
+The maximum SNR of a 12-bit ADC for a full-scale sinusoidal input is about
+<ol class="opts"><li>62 dB</li><li>68 dB</li><li>74 dB</li><li>80 dB</li></ol>
+<div class="sol"><p>$6.02\cdot12+1.76=74$ dB.</p></div></div>
+<div class="prob" data-type="nat" data-ans="4.5" data-tol="0.05" data-marks="1" data-src="Mock">
+BPSK has $P_e=Q(\sqrt{2E_b/N_0})$. For $P_e=Q(3)=1.35\times10^{-3}$ the required $E_b/N_0$ (linear) is ______.
+<div class="sol"><p>$\sqrt{2\gamma}=3\Rightarrow\gamma=4.5$ (6.5 dB).</p></div></div>
+<div class="prob" data-type="nat" data-ans="0.733" data-tol="0.005" data-marks="1" data-src="Mock">
+The code rate of the (15,11) Hamming code is ______.
+<div class="sol"><p>$11/15=0.733$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="9" data-tol="0.05" data-marks="1" data-src="Mock">
+A 64-QAM system sends 1.5 Mbaud. The bit rate in Mbit/s is ______.
+<div class="sol"><p>$1.5\times\log_264=9$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.05" data-marks="2" data-src="Mock">
+White noise of two-sided PSD $10^{-3}$ W/Hz passes through an ideal low-pass filter of cut-off 500 Hz and then an amplifier of voltage gain 2. The output noise power in watts is ______.
+<div class="sol"><p>$10^{-3}\times2\times500=1$ W before gain; $\times2^2=4$ W.</p></div></div>
+<div class="prob" data-type="nat" data-ans="25.23" data-tol="0.1" data-marks="2" data-src="Mock">
+An SSB system and a single-tone AM system ($\mu=1$, envelope detection) are both operated with channel SNR $\gamma=30$ dB. The output SNR of the AM system in dB is ______.
+<div class="sol"><p>FOM of AM $=\frac13$ ($-4.77$ dB): $30-4.77=25.23$ dB (SSB gives 30 dB).</p></div></div>
+<div class="prob" data-type="nat" data-ans="12" data-tol="0.1" data-marks="2" data-src="Mock">
+A channel of bandwidth 3 kHz has SNR = 15 (ratio). The Shannon capacity in kbit/s is ______.
+<div class="sol"><p>$3000\log_2(16)=12$ kbit/s.</p></div></div>
+<div class="prob" data-type="nat" data-ans="1.8" data-tol="0.02" data-marks="2" data-src="Mock">
+A source has four symbols with probabilities 0.5, 0.2, 0.15, 0.15. The average codeword length (bits/symbol) of a Huffman code is ______.
+<div class="sol"><p>Merge 0.15+0.15=0.3; then 0.2+0.3=0.5; then 0.5+0.5. Lengths 1, 2, 3, 3: $0.5+0.4+0.45+0.45=1.8$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="0.0228" data-tol="0.001" data-marks="2" data-src="Mock">
+Equiprobable antipodal signalling at $\pm2$ V is received in Gaussian noise of standard deviation 1 V and detected optimally. The bit error probability is ______ (use $Q(2)=0.0228$).
+<div class="sol"><p>Threshold 0; half-distance 2; $\sigma=1$: $Q(2)=0.0228$.</p></div></div>
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="Mock">
+A channel of 3 kHz bandwidth carries a raised-cosine signal with roll-off 0.5, with no inter-symbol interference. The maximum symbol rate is
+<ol class="opts"><li>2000 sym/s</li><li>3000 sym/s</li><li>4000 sym/s</li><li>6000 sym/s</li></ol>
+<div class="sol"><p>$R_s=\frac{2B}{1+\alpha}=\frac{6000}{1.5}=4000$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="0.96" data-tol="0.01" data-marks="2" data-src="Mock">
+A (7,4) Hamming code is used on a BSC with crossover probability 0.05 and corrects every pattern of at most one error. The probability of correct decoding is ______ (two decimals).
+<div class="sol"><p>$0.95^7+7(0.05)(0.95)^6=0.698+0.257=0.956\approx0.96$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="32" data-tol="0.2" data-marks="2" data-src="Mock">
+Telephone speech is sampled at 8 kHz and coded with 8 bits per sample. The minimum (Nyquist) channel bandwidth in kHz needed for the binary PCM stream is ______.
+<div class="sol"><p>$R_b=64$ kbit/s; $B_{\min}=R_b/2=32$ kHz.</p></div></div>
+
+
+<h2>Mock test B: coding, spread spectrum, OFDM and wireless (14 marks, 20 minutes)</h2>
+<p>This is not a GATE-pattern test (GATE rarely examines these chapters) but the engineering questions a viva or an interview would ask. Six one-mark and four two-mark questions.</p>
+
+<div class="prob" data-type="nat" data-ans="127" data-tol="0.01" data-marks="1" data-src="Mock B">
+A 7-stage LFSR with a primitive feedback polynomial generates a sequence of period ______.
+<div class="sol"><p>$2^7-1=127$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="20" data-tol="0.1" data-marks="1" data-src="Mock B">
+A DSSS system spreads 10 kbit/s with a chip rate of 1 Mchip/s. The processing gain is ______ dB.
+<div class="sol"><p>$G_p=100$; $10\log100=20$ dB.</p></div></div>
+<div class="prob" data-type="nat" data-ans="312.5" data-tol="0.1" data-marks="1" data-src="Mock B">
+An OFDM system has a useful symbol duration of 3.2 µs. The subcarrier spacing is ______ kHz.
+<div class="sol"><p>$1/3.2\ \mu\text{s}=312.5$ kHz.</p></div></div>
+<div class="prob" data-type="nat" data-ans="0.368" data-tol="0.005" data-marks="1" data-src="Mock B">
+The maximum throughput of slotted ALOHA is ______.
+<div class="sol"><p>$1/e=0.368$ at $G=1$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="Mock B">
+The cluster size of a hexagonal system with $i=1$, $j=1$ is ______.
+<div class="sol"><p>$N=1+1+1=3$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="91.5" data-tol="0.2" data-marks="1" data-src="Mock B">
+The free-space path loss over 1 km at 900 MHz is ______ dB.
+<div class="sol"><p>$32.44+20\log1+20\log900=32.44+59.08=91.5$ dB.</p></div></div>
+<div class="prob" data-type="nat" data-ans="2.5" data-tol="0.1" data-marks="2" data-src="Mock B">
+BPSK in flat Rayleigh fading with an average SNR of 30 dB has a bit error probability of ______ $\times10^{-4}$.
+<div class="sol"><p>$\approx1/(4\bar\gamma)=1/4000=2.5\times10^{-4}$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="11" data-tol="0.1" data-marks="2" data-src="Mock B">
+Four-branch MRC receives with each branch at 5 dB mean SNR. The mean SNR at the combiner output is ______ dB.
+<div class="sol"><p>SNRs add: $4\times3.16=12.6$, i.e. $5+6.02=11.0$ dB.</p></div></div>
+<div class="prob" data-type="nat" data-ans="3.98" data-tol="0.03" data-marks="2" data-src="Mock B">
+A rate-½ convolutional code with $K=3$ has $d_{\rm free}=5$. The asymptotic soft-decision coding gain is ______ dB.
+<div class="sol"><p>$10\log(0.5\times5)=3.98$ dB.</p></div></div>
+<div class="prob" data-type="nat" data-ans="7200" data-tol="1" data-marks="2" data-src="Mock B">
+A regular (3,6) LDPC code has block length 2400. The number of edges in its Tanner graph is ______.
+<div class="sol"><p>$nd_v=2400\times3=7200$ (and 1200 check nodes).</p></div></div>
+
+<h2>Where to go next</h2>
+<p>If you scored under 60%, redo the chapter(s) whose problems you missed, then the corresponding rows of the PYQ index (Chapter 24). If you scored over 80%, re-solve <em>all</em> the real PYQs against the clock, then spend your remaining days on the other GATE subjects: you are ready for this one. For the engineering side, Chapter 23 shows how the pieces combine into real systems.</p>
+
+<script>
+/* nothing to initialise */
+</script>

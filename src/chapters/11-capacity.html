@@ -1,0 +1,338 @@
+<!--meta {"id":"ch11","num":"11","part":"Part III · Information Theory","title":"Channels and Capacity: The Ultimate Limit","lede":"Noise limits how fast you can communicate, not how accurately. This chapter proves where the wall is, how to compute it for any channel, and why every real system, from a dial-up modem to a deep-space probe, is judged by its distance from it."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Describe a discrete memoryless channel by its transition matrix; compute mutual information and <b>derive</b> the capacity of the BSC, BEC, symmetric and Z channels; recognise lossless, deterministic, noiseless and useless channels.</li>
+<li>Prove the data-processing inequality and cascade formulas; state Fano’s inequality.</li>
+<li>State Shannon’s noisy-channel coding theorem and explain its random-coding proof and the converse; read the noise-ball picture.</li>
+<li><b>Derive</b> the capacity of the Gaussian channel and the Shannon–Hartley formula, the wideband limit $1.44P/N_0$, and the ultimate limit $E_b/N_0\ge-1.59$ dB.</li>
+<li>Compute the “Shannon gap” of uncoded QAM, the penalty of hard decisions, and the water-filling power allocation over parallel channels (the basis of DSL, OFDM and MIMO).</li>
+<li>Judge how close real systems are to capacity.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 10 (entropy, mutual information basics), Chapter 4 (Gaussian), Chapter 5 (noise PSD).</p></div>
+
+<div class="box story"><span class="tag">History · the modem race and the wall at 35 kbit/s</span>
+<p>In the 1960s a telephone modem delivered 300 bit/s. Thirty years of engineering, from V.21 (300 bit/s) through V.32 (9.6 kbit/s, 1984) to V.34 (33.6 kbit/s, 1994), pushed the speed up a hundredfold, and then it stopped. The reason is a number you can compute on a napkin. A telephone line is about $3.1$ kHz wide with an SNR of 30–35 dB, and the Shannon–Hartley formula gives $C=3100\log_2(1+10^{3.3})\approx34$ kbit/s. V.34 was essentially <i>at</i> capacity, and the industry knew nothing more could be squeezed from the analog line. The 56k modems that followed (V.90) did not break Shannon’s law: they avoided the analog bottleneck on the downstream path by plugging the server’s digital line straight into the exchange, so only one noisy analog segment remained. The channel capacity is not a suggestion.</p></div>
+
+<div class="box real"><span class="tag">Real world · distance from the wall, and the Voyagers</span>
+<p>Everything in modern communications is designed with the capacity formula open on the desk: the number of bits per second per hertz a Wi-Fi router can offer, the SNR a satellite TV set needs, the power of a deep-space transmitter. DVB-S2 satellite broadcasting operates within about 0.7 dB of the Shannon limit; LTE and 5G turbo/LDPC/polar codes within 1 dB; the Voyager probes, 20 billion kilometres away, whisper at about 160 bits per second with a few watts of power, and Earth’s 70 m dishes recover them with coding gains of several dB over the uncoded case.</p></div>
+
+<h2>The discrete memoryless channel</h2>
+<p>A <strong>discrete memoryless channel (DMC)</strong> is a table of conditional probabilities $p(y\mid x)$ (the <b>transition matrix</b>, rows indexed by input $x$, columns by output $y$, each row summing to 1): given the input symbol $x$, the output is $y$ with that probability, independently each use. The standard examples:</p>
+<table>
+<tr><th>Channel</th><th>Matrix (rows = input 0, 1)</th><th>Picture</th></tr>
+<tr><td><b>Binary symmetric (BSC)</b>, flip prob. $p$</td><td>$\begin{pmatrix}1-p&p\\p&1-p\end{pmatrix}$</td><td>Each bit flips with probability $p$ (a hard-decision BPSK link has $p=Q(\sqrt{2E_b/N_0})$)</td></tr>
+<tr><td><b>Binary erasure (BEC)</b>, erasure prob. $\varepsilon$</td><td>$\begin{pmatrix}1-\varepsilon&\varepsilon&0\\0&\varepsilon&1-\varepsilon\end{pmatrix}$ (outputs $0,e,1$)</td><td>Bit is lost but <em>flagged</em> as lost (packet networks, fading with detection)</td></tr>
+<tr><td><b>Z-channel</b>, $p$</td><td>$\begin{pmatrix}1&0\\p&1-p\end{pmatrix}$</td><td>A “0” is always received correctly; a “1” may decay to 0 (optical on–off, photon loss, flash memory)</td></tr>
+<tr><td><b>$q$-ary symmetric</b></td><td>diagonal $1-p$, off-diagonal $p/(q-1)$</td><td>Errors equally likely to any other symbol</td></tr>
+</table>
+<p>The simplest of these, the BSC, is what a hard-decision demodulator turns an AWGN channel into (Chapter 15): the BSC is therefore the model for every coded system in Chapter 17.</p>
+
+<h3>Mutual information and what it can and cannot do</h3>
+<p>How much does seeing $Y$ tell us about $X$? Before seeing $Y$ our uncertainty about $X$ is $H(X)$; after seeing it, $H(X\mid Y)$ (the “equivocation”). The reduction is the <strong>mutual information</strong>:
+$$I(X;Y)=H(X)-H(X\mid Y)=H(Y)-H(Y\mid X)=H(X)+H(Y)-H(X,Y)=\sum_{x,y}p(x,y)\log_2\frac{p(x,y)}{p(x)p(y)}.$$
+It is symmetric, non-negative ($=D(p_{XY}\|p_Xp_Y)\ge0$, Chapter 10), and <b>zero exactly when $X$ and $Y$ are independent</b> (GATE 2025 Q.60: a joint table $P(0,0)=0.06,\ P(0,1)=0.14,\ P(1,0)=0.24,\ P(1,1)=0.56$ has marginals $P(X=0)=0.2$, $P(Y=0)=0.3$ and $0.2\times0.3=0.06$ ✓ so every cell equals the product of marginals; $I=0$). Two structural facts:</p>
+<ul>
+<li><b>$I(X;Y)$ is concave in the input distribution</b> (for a fixed channel) and convex in the channel (for a fixed input): so the maximum over inputs is a well-behaved convex problem, with any local maximum global.</li>
+<li><b>Data-processing inequality.</b> If $X\to Y\to Z$ form a Markov chain ($Z$ depends on $X$ only through $Y$), then $I(X;Z)\le I(X;Y)$. <i>Proof.</i> Expand $I(X;Y,Z)$ in two ways with the chain rule: $I(X;Y,Z)=I(X;Y)+I(X;Z\mid Y)=I(X;Z)+I(X;Y\mid Z)$. The Markov property makes $I(X;Z\mid Y)=0$, and $I(X;Y\mid Z)\ge0$, hence $I(X;Y)\ge I(X;Z)$. $\square$ <b>No processing of the received data, however clever, can create information about the input.</b> (It justifies the slogan that a hard-decision decoder cannot beat a soft-decision one: quantising $Y$ to a bit is processing.)</li>
+</ul>
+<div class="widget" id="w-mi">Binary symmetric channel with flip probability $p$ and input prior $\pi=P(X=1)$. The two bars decompose the entropies: $H(X)=H(X|Y)+I$ and $H(Y)=H(Y|X)+I$ with the same (green) $I(X;Y)$. The curve shows $I(X;Y)$ as a function of the prior: capacity is its peak.</div>
+
+<h2>Capacity: the best the channel can do</h2>
+<p>The mutual information depends on how <em>we</em> choose to use the channel (the input distribution). The <strong>channel capacity</strong> is the best we can do:
+$$C=\max_{p(x)}I(X;Y)\quad\text{bits per channel use}.$$</p>
+<div class="box derive"><span class="tag">Derivation · capacities of the symmetric channels</span>
+<p><b>Symmetric channels</b> (every row is a permutation of every other row, and likewise columns). Then $H(Y\mid X=x)$ is the same number $h_{\rm row}$ for every input, so $H(Y\mid X)=h_{\rm row}$ regardless of $p(x)$, and $I(X;Y)=H(Y)-h_{\rm row}\le\log_2|\mathcal Y|-h_{\rm row}$. The bound is attained by the uniform input (which makes the output uniform by the column symmetry). Hence
+$$C=\log_2|\mathcal Y|-H(\text{any row}).$$
+<b>BSC:</b> $|\mathcal Y|=2$, row $=(1-p,p)$: $\boxed{C_{\rm BSC}=1-H_b(p)}$. At $p=0$: 1 bit/use. At $p=\frac12$: $C=0$ (GATE 2014: the output is independent of the input; nothing gets through). At $p=1$: also $C=1$: the channel is a perfect inverter! The worst channel is the useless one, not the very noisy one.</p>
+<p><b>BEC.</b> Seeing an unerased output reveals $X$ exactly; seeing the erasure reveals nothing. So $H(X\mid Y)=\varepsilon H(X)$ and $I(X;Y)=(1-\varepsilon)H(X)\le1-\varepsilon$, attained by a uniform input:
+$$\boxed{C_{\rm BEC}=1-\varepsilon}.$$ A fraction $1-\varepsilon$ of the bits get through: capacity is exactly what common sense says, and an optimal code simply has to hide the erasures. <b>Z-channel.</b> With input probability $P(X=1)=\pi$ the output is 1 with probability $\pi(1-p)$; maximising $H_b(\pi(1-p))-\pi H_b(p)$ over $\pi$ gives $C=\log_2\!\big(1+(1-p)p^{p/(1-p)}\big)$, e.g. $0.322$ bit for $p=\frac12$, attained by a <em>non-uniform</em> input with $P(X=1)=0.4$ (the best input uses the reliable “0” more often).</p></div>
+<div class="widget" id="w-isurf">$I(X;Y)$ for the BSC as a surface over the prior $\pi$ and the flip probability $p$. The ridge along $\pi=\frac12$ is the capacity curve $1-H_b(p)$; the valley along $p=\frac12$ is where the channel is useless; the corners at $p=0$ and $p=1$ are perfect channels.</div>
+<div class="box ex"><span class="tag">Worked example · GATE 2022 Q.61 (a cyclic channel)</span>
+<p>Three inputs $a,b,c$; each is received correctly with probability $1-\alpha$ and as the “next” letter ($a\to b,\ b\to c,\ c\to a$) with probability $\alpha$. By symmetry the uniform input is optimal and $H(Y\mid X)=H_b(\alpha)$ for every input: $C=\log_23-H_b(\alpha)$. On $[0.25,1]$, $H_b(\alpha)$ is smallest at $\alpha=1$ (where the channel deterministically permutes the letters: no noise at all, just relabelling), so capacity is maximised at $\alpha=\mathbf{1.00}$ ($C=\log_23$). Again: <b>a perfectly predictable channel is a perfect channel</b>.</p></div>
+
+<h3>A zoo of channel types</h3>
+<p>The two conditional entropies decide what a channel is. $H(X\mid Y)$ is the ambiguity left about the input after seeing the output (“equivocation”); $H(Y\mid X)$ is the output uncertainty caused by noise given the input.
+<table>
+<tr><th>Channel</th><th>Condition</th><th>Transition matrix</th><th>Capacity</th></tr>
+<tr><td><b>Lossless</b></td><td>$H(X\mid Y)=0$: the input can be read off the output</td><td>each column has a single non-zero entry</td><td>$\log_2(\#\text{inputs})$</td></tr>
+<tr><td><b>Deterministic</b></td><td>$H(Y\mid X)=0$: each input gives one definite output</td><td>each row has a single 1</td><td>$\log_2(\#\text{distinct outputs})$</td></tr>
+<tr><td><b>Noiseless</b></td><td>both: lossless and deterministic</td><td>a permutation matrix</td><td>$\log_2K$ (e.g. the cyclic channel at $\alpha=1$)</td></tr>
+<tr><td><b>Useless</b></td><td>$I(X;Y)=0$: output independent of input</td><td>all rows identical</td><td>0 (BSC with $p=\frac12$)</td></tr>
+</table>
+GATE 2017 showed a binary channel whose two rows were both $(0.25,\,0.75)$: identical rows ⇒ the output has the same distribution whatever is sent ⇒ <b>useless</b> (not noiseless, lossless or deterministic).</p>
+
+<h3>Cascades and repeated use</h3>
+<p>Two BSCs in cascade with crossover $p_1,p_2$: the bit is flipped iff exactly one of them flips it, so $p=p_1(1-p_2)+p_2(1-p_1)$; for equal $p$, $p'=2p(1-p)$. For $N$ identical BSCs, writing $1-2p'=(1-2p)^N$ (each stage multiplies the “bias” $1-2p$) gives $p_N=\frac12\big[1-(1-2p)^N\big]\to\frac12$: a long chain of noisy links ends up carrying nothing, which is the reason long-haul links <em>regenerate</em> (decode and re-encode) at every repeater instead of just amplifying (Chapter 12). This is the data-processing inequality in action: $C$ can only fall in a cascade. E.g. $p=0.1$: $N=2$: $0.18$; $N=3$: $0.244$.</p>
+
+<h2>Shannon’s noisy-channel coding theorem</h2>
+<div class="box key"><span class="tag">The theorem</span>
+<p>For a DMC with capacity $C$: if $R<C$ there exist codes (long enough) with error probability $\to0$; if $R>C$, error probability is bounded away from 0 (and $\to1$ as $n\to\infty$). <em>Existence</em>, not construction: Shannon’s proof is by choosing codewords <b>at random</b>! Constructing practical capacity-approaching codes took until turbo codes (1993), LDPC (Gallager 1960, rediscovered 1996) and polar codes (Arıkan 2008).</p></div>
+<h3>Why it is true: the noise-ball picture</h3>
+<p>Send a long block of $n$ symbols. The channel adds noise that, with high probability, moves the received point to somewhere within a “noise ball” around the sent point; that ball contains about $2^{nH(Y|X)}$ typical outputs. Altogether the receiver can see about $2^{nH(Y)}$ typical outputs. If we choose codewords so that their noise balls <em>don’t overlap</em>, the receiver identifies the right codeword every time. How many non-overlapping balls fit? About
+$$\frac{2^{nH(Y)}}{2^{nH(Y|X)}}=2^{n\,I(X;Y)}\quad\Longrightarrow\quad\text{rate }R=I(X;Y)\to C\text{ bits per use.}$$
+This is a <em>sphere-packing</em> argument. Try packing balls yourself in a unit sphere:</p>
+<div class="widget" id="w-spheres">Illustration only: random sequential packing of non-overlapping noise balls (radius $r$) inside the space of received signals (big wire sphere). Bigger noise ⇒ bigger balls ⇒ fewer codewords fit ⇒ lower rate. The count (bits ≈ $\log_2$ of the number of balls) is a toy analogue of capacity.</div>
+<div class="box derive"><span class="tag">Derivation · the random-coding proof in five steps</span>
+<ol class="steps">
+<li><b>Random code.</b> Pick $2^{nR}$ codewords $x^n(1),\dots,x^n(2^{nR})$ independently, each symbol drawn from the capacity-achieving $p(x)$.</li>
+<li><b>Decoder: joint typicality.</b> Decode to the message $w$ whose codeword is jointly typical with the received $y^n$ (i.e. $(x^n,y^n)$ has empirical statistics matching $p(x,y)$), if there is exactly one such $w$.</li>
+<li><b>Correct codeword is jointly typical:</b> by the AEP the transmitted $x^n$ and the received $y^n$ are jointly typical with probability $\to1$.</li>
+<li><b>A wrong codeword is jointly typical only rarely:</b> a codeword independent of $y^n$ is jointly typical with it with probability $\le2^{-n[I(X;Y)-3\epsilon]}$ (the fraction of $(x,y)$ pairs that are typical, from the sizes of the typical sets $2^{nH(X,Y)}$ vs $2^{nH(X)}2^{nH(Y)}$).</li>
+<li><b>Union bound.</b> There are $2^{nR}-1$ wrong codewords, so $P(\text{error})\le\epsilon+2^{nR}2^{-n[I-3\epsilon]}=\epsilon+2^{-n[I-R-3\epsilon]}\to0$ whenever $R<I(X;Y)\le C$. Since the average over random codes is small, at least one specific code is at least as good. $\square$</li>
+</ol>
+<p><b>Converse.</b> For any code of rate $R$ and error probability $P_e$, Fano’s inequality ($H(W\mid\hat W)\le H_b(P_e)+P_e\log_2(M-1)$, where $M=2^{nR}$) combined with the data-processing inequality gives $nR=H(W)=I(W;\hat W)+H(W\mid\hat W)\le nC+1+P_eR\,n$, i.e. $P_e\ge1-\frac CR-\frac1{nR}$: for $R>C$ the error probability cannot go to zero. $\square$</p></div>
+<div class="box note"><span class="tag">What the theorem does <em>not</em> say</span>
+<p>It promises error-free communication only as the block length $n\to\infty$, so it says nothing about delay or complexity; Shannon’s random codes are impossible to decode (exhaustive search). At finite length $n$ the best achievable rate is lower: $R\approx C-\sqrt{V/n}\,Q^{-1}(\epsilon)$ with $V$ the “channel dispersion”. For a BSC with $p=0.11$ ($C=0.5$) a block length of $n=1000$ gives $R\approx0.43$ at $P_e=10^{-3}$: real, practical codes (Chapter 17) trade a loss of this kind for latency.</p></div>
+<div class="box ex"><span class="tag">Worked example · repetition coding vs the capacity promise</span>
+<p>BSC with $p=0.1$ has $C=1-H_b(0.1)=0.531$. The 3-fold repetition code (rate $\frac13$) decodes by majority vote, with $P_e=3p^2(1-p)+p^3=0.028$: <em>not</em> small, and its rate is only $\frac13$. Increasing the repetition factor to reach $P_e=10^{-6}$ needs about 21 repetitions (rate $\approx0.05$). Shannon says that a good long code of rate $0.5$ (ten times more efficient than repetition) can have $P_e<10^{-6}$ <em>with the same channel</em>. The trick is coding across <em>many</em> bits so that the noise is “averaged out”, not repeating individual bits.</p></div>
+
+<h2>Continuous channels: the Gaussian channel</h2>
+<p>Real channels carry real numbers. The role of entropy is played by <b>differential entropy</b> $h(X)=-\int f(x)\log_2f(x)\,dx$, which (unlike $H$) can be negative and changes under scaling, $h(aX)=h(X)+\log_2|a|$, but whose <em>differences</em> (mutual information $I=h(Y)-h(Y|X)$) are meaningful. Two values: uniform on an interval of length $a$: $h=\log_2a$; Gaussian $\mathcal N(\mu,\sigma^2)$:
+$$h=\tfrac12\log_2(2\pi e\sigma^2).$$</p>
+<div class="box derive"><span class="tag">Derivation · the Gaussian has the largest entropy for a given power</span>
+<p>Let $f$ be any density with variance $\sigma^2$ (mean zero), and $g=\mathcal N(0,\sigma^2)$. Then $0\le D(f\|g)=\int f\log\frac fg=-h(f)-\int f\log g$, and $-\int f\log_2g=\int f\big[\tfrac12\log_2(2\pi\sigma^2)+\frac{x^2}{2\sigma^2}\log_2e\big]=\tfrac12\log_2(2\pi\sigma^2)+\tfrac12\log_2e=h(g)$ (this uses only the second moment of $f$). Therefore $h(f)\le h(g)=\frac12\log_22\pi e\sigma^2$, with equality iff $f$ is Gaussian. <b>Among all noises of a given power, Gaussian noise is the worst; and among all signals of a given power the Gaussian carries the most information.</b></p></div>
+<div class="box derive"><span class="tag">Derivation · capacity of the AWGN channel</span>
+<p>$Y=X+Z$, $Z\sim\mathcal N(0,\sigma^2)$ independent of $X$, with the power constraint $\E[X^2]\le P$. Then $I(X;Y)=h(Y)-h(Y\mid X)=h(Y)-h(Z)$. The output variance is at most $P+\sigma^2$, so $h(Y)\le\frac12\log_22\pi e(P+\sigma^2)$ with equality when $Y$ (hence $X$) is Gaussian. Therefore
+$$C=\tfrac12\log_22\pi e(P+\sigma^2)-\tfrac12\log_22\pi e\sigma^2=\tfrac12\log_2\Big(1+\frac P{\sigma^2}\Big)\ \ \text{bits per real sample}.$$
+<i>Geometric view (sphere packing):</i> in $n$ dimensions the received vectors lie in a sphere of radius$^2$ $n(P+\sigma^2)$ and each noise ball has radius$^2$ $n\sigma^2$; the number of balls that fit is the ratio of volumes $\big(\frac{P+\sigma^2}{\sigma^2}\big)^{n/2}$, i.e. $\frac12\log(1+P/\sigma^2)$ bits per dimension.</p></div>
+<div class="box derive"><span class="tag">Derivation · the Shannon–Hartley theorem</span>
+<p>A channel of bandwidth $B$ supports $2B$ independent real samples per second (Nyquist, Chapter 3). The noise per sample has variance $\sigma^2=\frac{N_0}2\cdot2B=N_0B$ (Chapter 5) and the signal has power $P$ per sample, so multiplying the per-sample capacity by $2B$ samples/s:
+$$\boxed{\,C=B\log_2\!\Big(1+\frac{S}{N}\Big)=B\log_2\!\Big(1+\frac{P}{N_0B}\Big)\ \text{bits/s}\,}$$
+the <b>Shannon–Hartley theorem</b> (Ralph Hartley 1928 had the form $B\log(\ldots)$ without the noise; Shannon completed it). Remember, SNR here is a <em>ratio</em>: 30 dB $=1000$. For a complex baseband channel with complex noise of variance $N_0B$: $C=\log_2(1+\mathrm{SNR})$ per complex sample, $B$ complex samples/s: the same.</p></div>
+<ul>
+<li><b>Telephone line:</b> $B=4$ kHz, SNR 30 dB: $C=4000\log_2(1001)=39.9$ kbit/s (with the real 3.1 kHz band: 31 kbit/s): the famous barrier of analog modems.</li>
+<li><b>Power-limited regime</b> ($S/N\ll1$): $C\approx1.44\,B\cdot S/N=1.44\,S/N_0$ independent of $B$ (using $\ln(1+x)\approx x$).</li>
+<li><b>Bandwidth-limited regime</b> ($S/N\gg1$): every extra 3 dB of SNR buys $+1$ bit/s/Hz; doubling the bandwidth doubles $C$.</li>
+</ul>
+<div class="widget" id="w-cap">Capacity versus bandwidth with fixed signal power $P$ and noise density $N_0$. Capacity does <em>not</em> grow forever: it saturates at $C_\infty=\frac P{N_0}\log_2e=1.44\,P/N_0$, because more bandwidth also admits more noise. This is the plot GATE 2025 Q.15 asked about: increasing and concave, flattening to a horizontal asymptote.</div>
+<div class="box ex"><span class="tag">Worked examples · GATE capacity questions</span>
+<p><b>GATE 2014 (Set 2).</b> $P/\sigma^2=1000$ (so $P/N_0=1000$), $W\to\infty$: $C_\infty=1.44\times1000=1.44$ kbps. <b>GATE 2026 Q.55.</b> $B=1$ MHz, $kT=-174$ dBm/Hz so noise $=-174+60=-114$ dBm; $S=-80$ dBm; SNR $=34$ dB $=2512$; $C=B\log_2(2513)=11.3\,B>3B$ ✓ (C). <b>GATE 2021 Q.23.</b> Speech band-limited to 4 kHz is sampled at $1.25\times$ Nyquist $=10$ kHz; samples are uniform on $[-5,5]$ V, quantised by an 8-bit uniform quantiser: each of the 256 levels is equally likely, so each sample carries $H=8$ bits: source rate $80$ kbps. For reliable transmission over an AWGN channel with $S/N=26$ dB $=398$: $B\log_2(399)\ge80$ kbps ⇒ $B\ge\dfrac{80}{8.640}=\mathbf{9.26}$ kHz.</p></div>
+
+<h3>The ultimate limit: $-1.59$ dB</h3>
+<p>Express signal power as $P=E_bR$ (energy per bit times bit rate). At the capacity rate $R=C$ with spectral efficiency $\eta=C/B$ bit/s/Hz,
+$$\eta=\log_2\!\Big(1+\eta\frac{E_b}{N_0}\Big)\ \Longrightarrow\ \frac{E_b}{N_0}\Big|_{\min}=\frac{2^\eta-1}{\eta}.$$
+Push $\eta\to0$ (infinite bandwidth) and this tends to $\ln2=0.693=\mathbf{-1.59\ dB}$: <b>the Shannon limit.</b> No code, no modulation, no technology can deliver reliable communication at an $E_b/N_0$ below $-1.59$ dB.</p>
+<table>
+<tr><th>$\eta$ (bit/s/Hz)</th><th>0.5</th><th>1</th><th>2</th><th>4</th><th>6</th><th>8</th></tr>
+<tr><th>min $E_b/N_0$ (dB)</th><th>−0.82</th><th>0.00</th><td>1.76</td><td>5.74</td><td>10.21</td><td>15.7</td></tr>
+</table>
+<p>Modern codes (turbo, LDPC) work within 0.5–1 dB of this wall. The curve contains the central design trade of every link: moving left (smaller $\eta$) saves energy per bit but costs bandwidth; moving right saves bandwidth but costs power — the “power vs bandwidth” trade-off, to which Chapter 15 returns when comparing PSK, FSK and QAM.</p>
+<div class="widget" id="w-shannon">The Shannon boundary: minimum $E_b/N_0$ against spectral efficiency. Reliable communication is possible only in the region to the right of the curve. The red markers are the uncoded schemes you will meet in Chapter 15 (at a bit-error rate of $10^{-5}$): they sit about 8–10 dB to the right of the wall; powerful codes close that gap.</div>
+
+<div class="box derive"><span class="tag">Derivation · the gap of uncoded QAM (and what coding must win back)</span>
+<p>Square $M$-QAM with $M=2^\eta$ has symbol-error probability $P_e\approx4Q\big(\sqrt{3\,\mathrm{SNR}/(M-1)}\big)$ (Chapter 15). The SNR needed for a given $P_e$ is therefore $\mathrm{SNR}_{\rm req}=\frac{M-1}3\big[Q^{-1}(P_e/4)\big]^2$, whereas capacity at spectral efficiency $\eta=\log_2M$ needs $\mathrm{SNR}_{\rm cap}=2^\eta-1=M-1$. The ratio is independent of $M$:
+$$\Gamma=\frac{\mathrm{SNR}_{\rm req}}{\mathrm{SNR}_{\rm cap}}=\frac{[Q^{-1}(P_e/4)]^2}3.$$
+For $P_e=10^{-5}$: $Q^{-1}(2.5\times10^{-6})=4.56$, $\Gamma=6.9=\mathbf{8.4}$ dB; for $P_e=10^{-6}$: $9.3$ dB. <b>Uncoded QAM is about 9 dB from capacity at any rate</b>. Of this, at most $1.53$ dB ($10\log\frac{\pi e}6$) can be won by <i>shaping</i> (using Gaussian-like instead of uniform constellation points); the rest, $\approx8$ dB, is the potential <i>coding gain</i> of Chapter 17, harvested by turbo/LDPC codes to within 1 dB. <b>Hard decisions</b> cost extra: slicing the received value into a bit before decoding turns the AWGN channel into a BSC and, at low SNR, loses about $10\log_{10}(\pi/2)=2$ dB of $E_b/N_0$ compared with passing unquantised (soft) values to the decoder. Practical soft decoders use 3–4 bit quantisation, within 0.2 dB of unquantised.</p></div>
+
+<h2>Parallel channels and water-filling</h2>
+<p>Real channels are rarely flat: a telephone line attenuates high frequencies, a multipath wireless channel has deep fades at some frequencies, and a MIMO link splits into several parallel sub-channels of unequal strength. If we have $N$ independent Gaussian sub-channels with noise levels $N_i$ (strength inverse to $N_i$) and a <i>total</i> power budget $P=\sum P_i$, how should we divide the power?</p>
+<div class="box derive"><span class="tag">Derivation · water-filling</span>
+<p>Maximise $\sum_i\frac12\log_2\big(1+\frac{P_i}{N_i}\big)$ subject to $\sum P_i=P$, $P_i\ge0$. The objective is concave, so the KKT conditions are necessary and sufficient. With a Lagrange multiplier $\lambda$: $\frac{1}{2\ln2}\frac1{N_i+P_i}=\lambda$ whenever $P_i>0$, i.e. $N_i+P_i=\nu$ (a constant, “the water level”), and $P_i=0$ if $N_i>\nu$ (because even $P_i=0$ has marginal gain $\frac1{2N_i\ln2}<\lambda$). Hence
+$$\boxed{\,P_i=(\nu-N_i)^+\,,\qquad\nu\ \text{chosen so that}\ \sum_i(\nu-N_i)^+=P\,}$$
+Picture the noise levels $N_i$ as the bumpy floor of a vessel, and pour in a volume $P$ of water: the water surface sets $\nu$, and the depth above each floor point is the power given to that channel. <b>Strong channels (low noise) get the most power; channels whose floor is above the water get none.</b> This is counter-intuitive: <em>give the most to the best</em>, not to the worst.</p></div>
+<div class="widget" id="w-wf">Water-filling over eight sub-channels whose noise levels (grey) vary like a frequency-selective channel. The blue columns are the power allotted to each. Raise the total power and more channels turn on; at very low power only the best one is used. The readout compares the water-filling capacity with equal power allocation.</div>
+<div class="box ex"><span class="tag">Worked example · three sub-channels</span>
+<p>Noise levels $N=(1,2,4)$, total power $P=4$. Try all three: $\nu=\frac{P+\sum N_i}3=\frac{4+7}3=3.67<4=N_3$: channel 3 would get a negative power, so switch it off. Two channels: $\nu=\frac{4+3}2=3.5\ge2$ ✓. Powers $(2.5,\,1.5,\,0)$ and $C=\frac12\log_2(1+2.5)+\frac12\log_2(1+\frac{1.5}2)=0.904+0.404=\mathbf{1.307}$ bits, against $\frac12[\log_2(1+\frac43)+\log_2(1+\frac23)+\log_2(1+\frac13)]=1.19$ bits for equal power ($4/3$ each).</p></div>
+<div class="box eng"><span class="tag">Engineering practice · water-filling in DSL, OFDM and MIMO</span>
+<p>An ADSL modem divides the copper pair into 256 sub-carriers of 4.3125 kHz (discrete multi-tone, the same idea as OFDM, Chapter 20). It measures the SNR of each at start-up and <b>loads</b> each tone with 0–15 bits (BPSK to 32768-QAM) according to the available SNR: high-frequency tones on a long line are “below the water” and carry nothing, while the tones at a few hundred kHz carry 10–12 bits each. A fixed total power constraint (about $20$ dBm) and a flat power spectral density ceiling make the allocation “approximate water-filling”. A MIMO link with channel matrix $\mathbf H$ is diagonalised by the SVD into $\min(N_t,N_r)$ parallel sub-channels with gains $\sigma_k^2$ and the capacity-achieving transmitter water-fills across them (Chapter 21). At high SNR water-filling gives nothing over equal allocation; at low SNR it concentrates all power on the best mode (beamforming).</p></div>
+
+<h2>A glance ahead: fading and MIMO capacity</h2>
+<p>If the channel gain $h$ is random (fading, Chapter 21) and known at the receiver, the capacity of a block-fading channel is the <b>ergodic capacity</b> $\E\big[\log_2(1+|h|^2\mathrm{SNR})\big]$, which is less than $\log_2(1+\E|h|^2\mathrm{SNR})$ by Jensen’s inequality (concavity of $\log$): <em>fading costs capacity</em>. When the channel is slow and the code is shorter than the channel’s coherence, the relevant measure is the <b>outage probability</b> $P(\log_2(1+|h|^2\mathrm{SNR})<R)$. For a MIMO channel with $N_t$ transmit and $N_r$ receive antennas and a rich scattering environment, $C=\log_2\det\big(\mathbf I+\frac{\mathrm{SNR}}{N_t}\mathbf H\mathbf H^\dagger\big)\approx\min(N_t,N_r)\log_2\mathrm{SNR}$ at high SNR: the capacity grows <em>linearly</em> with the number of antennas, the “multiplexing gain”, the single biggest advance in wireless since turbo codes.</p>
+
+<h2>How close are real systems?</h2>
+<table>
+<tr><th>System</th><th>Operating point</th><th>Distance from the Shannon limit</th></tr>
+<tr><td>Dial-up modem V.34</td><td>33.6 kbit/s in 3.1 kHz ($\eta\approx10.8$ bit/s/Hz) needs the 32.6 dB SNR that Shannon prescribes</td><td>A few dB (trellis-coded QAM)</td></tr>
+<tr><td>ADSL / VDSL</td><td>Per-tone bit loading of 0–15 bits chosen from each tone’s measured SNR (water-filling and the gap approach)</td><td>≈ 6–9 dB gap less coding gain and margin</td></tr>
+<tr><td>Wi-Fi 6 (1024-QAM, rate-5/6 LDPC)</td><td>≈ 6–7 bit/s/Hz per spatial stream after OFDM overheads; needs SNR ≈ 35 dB</td><td>A few dB</td></tr>
+<tr><td>DVB-S2 (QPSK + LDPC/BCH)</td><td>≈ 1 bit/s/Hz at $E_s/N_0\approx1$ dB</td><td>≈ 0.7–1 dB</td></tr>
+<tr><td>LTE/5G data (turbo/LDPC/polar)</td><td>0.2–7.4 bit/s/Hz, link-adaptive from −6 dB to 25 dB SNR</td><td>≈ 1–2 dB</td></tr>
+<tr><td>Deep space (Voyager: RS + convolutional)</td><td>$E_b/N_0\approx2.5$ dB for $10^{-5}$</td><td>≈ 3.5 dB (later turbo/LDPC missions: ≈ 1 dB)</td></tr>
+</table>
+
+<div class="box gate"><span class="tag">GATE pattern · channels and capacity</span>
+<ul>
+<li><b>Every year</b> has at least one capacity / mutual-information question. Types: (1) BSC/BEC/DMC capacity, including “which $p$ maximises capacity”; (2) $I(X;Y)=0$ for independent variables; (3) Shannon–Hartley numerics, $C_\infty=1.44P/N_0$; (4) channel-type recognition (useless/lossless/…); (5) minimum $E_b$ or bandwidth for a given rate.</li>
+<li>Shortcuts: independence ⇒ $I=0$; symmetric channel ⇒ uniform input optimal and $C=\log|Y|-H(\text{row})$; BEC $=1-\varepsilon$.</li>
+<li>Do <b>not</b> confuse SNR in dB with the ratio inside the log.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+Which channel has the larger capacity: a BEC with erasure probability 0.2, or a BSC with crossover probability 0.2?
+<ol class="opts"><li>The BEC (0.8 vs 0.278 bit/use)</li><li>The BSC</li><li>They are equal</li><li>Cannot be compared</li></ol>
+<div class="sol"><p>$C_{\rm BEC}=1-0.2=0.8$; $C_{\rm BSC}=1-H_b(0.2)=1-0.722=0.278$. The BEC is much better because it <em>tells</em> the receiver which bits are unreliable. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+$X\to Y\to Z$ is a Markov chain. Which statements are true?
+<ol class="opts"><li>$I(X;Z)\le I(X;Y)$</li><li>$I(X;Z)\ge I(X;Y)$</li><li>$I(X;Z)\le I(Y;Z)$</li><li>$H(X\mid Z)\le H(X\mid Y)$</li></ol>
+<div class="sol"><p>Data-processing: $I(X;Z)\le\min\{I(X;Y),I(Y;Z)\}$, so (A) and (C) are true and (B) false. (D) is false: $H(X|Z)=H(X)-I(X;Z)\ge H(X)-I(X;Y)=H(X|Y)$. Processing can only increase the equivocation.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+A channel has three inputs and two outputs: input 1 always gives output 1, and inputs 2 and 3 always give output 2. The channel is
+<ol class="opts"><li>lossless</li><li>deterministic</li><li>noiseless</li><li>useless</li></ol>
+<div class="sol"><p>Each row of the transition matrix has a single 1, so $H(Y|X)=0$: <b>deterministic</b>. It is not lossless (output 2 could come from input 2 or 3, so $H(X|Y)>0$), and its capacity is $\log_22=1$ bit.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="0.75" data-tol="0.005" data-marks="1" data-src="Original">
+The capacity of a binary erasure channel with erasure probability 0.25 (bits per use) is ______.
+<div class="sol"><p>$1-\varepsilon=\mathbf{0.75}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.278" data-tol="0.003" data-marks="1" data-src="Original">
+The capacity of a BSC with crossover probability 0.2 (bits per use) is ______.
+<div class="sol"><p>$1-H_b(0.2)=1-0.7219=\mathbf{0.278}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.244" data-tol="0.002" data-marks="2" data-src="Original">
+Three identical BSCs with $p=0.1$ are cascaded. The crossover probability of the equivalent BSC is ______.
+<div class="sol"><p>$p_3=\frac12[1-(1-2p)^3]=\frac12[1-0.8^3]=\frac12(0.488)=\mathbf{0.244}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.028" data-tol="0.001" data-marks="2" data-src="Original">
+A 3-fold repetition code (majority-vote decoding) is used over a BSC with $p=0.1$. The probability of decoding error is ______.
+<div class="sol"><p>Error iff $\ge2$ of 3 bits flip: $3p^2(1-p)+p^3=3(0.01)(0.9)+0.001=\mathbf{0.028}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.322" data-tol="0.003" data-marks="2" data-src="Original">
+The capacity of a Z-channel in which a transmitted 1 is received as 0 with probability $p=\frac12$ (and a 0 is always received correctly) is, using $C=\log_2\big(1+(1-p)p^{p/(1-p)}\big)$, ______ bits/use.
+<div class="sol"><p>$(1-p)p^{p/(1-p)}=0.5\times0.5^{1}=0.25$; $C=\log_2(1.25)=\mathbf{0.322}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6.66" data-tol="0.03" data-marks="1" data-src="Original">
+The Shannon capacity (Mbit/s) of a 1 MHz channel at an SNR of 20 dB is ______.
+<div class="sol"><p>$10^6\log_2(101)=\mathbf{6.66}$ Mbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.77" data-tol="0.05" data-marks="1" data-src="Original">
+The minimum SNR (dB) at which the capacity of an AWGN channel equals $2B$ ($2$ bit/s/Hz) is ______.
+<div class="sol"><p>$2=\log_2(1+\mathrm{SNR})\Rightarrow\mathrm{SNR}=3\to10\log3=\mathbf{4.77}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="32.6" data-tol="0.2" data-marks="2" data-src="Original">
+A modem must carry 33.6 kbit/s over a channel of bandwidth 3.1 kHz. The minimum SNR (dB) required by Shannon is ______.
+<div class="sol"><p>$\eta=33.6/3.1=10.84$ bit/s/Hz; $\mathrm{SNR}=2^{10.84}-1=1830\to\mathbf{32.6}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.885" data-tol="0.01" data-marks="1" data-src="Original">
+A channel has $P/N_0=2000$ (Hz). Its capacity as $B\to\infty$ (in kbit/s) is ______.
+<div class="sol"><p>$C_\infty=\frac P{N_0}\log_2e=2000\times1.4427=\mathbf{2.885}$ kbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.5" data-tol="0.02" data-marks="2" data-src="Original">
+Three parallel Gaussian sub-channels have noise levels $(1,2,4)$ and a total power of 4. The water-filling power allotted to the best (first) sub-channel is ______.
+<div class="sol"><p>Channel 3 is off ($\nu=3.67<N_3=4$); with two channels $\nu=3.5$, so $P_1=3.5-1=\mathbf{2.5}$ (and $P_2=1.5$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="9.3" data-tol="0.2" data-marks="2" data-src="Original">
+Using $\Gamma=\frac13[Q^{-1}(P_e/4)]^2$ with $Q^{-1}(2.5\times10^{-7})=5.03$, the gap to capacity of uncoded square QAM at $P_e=10^{-6}$, in dB, is ______.
+<div class="sol"><p>$\Gamma=\frac{5.03^2}3=8.43\to10\log_{10}8.43=\mathbf{9.3}$ dB.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="nat" data-ans="0" data-tol="0.01" data-marks="1" data-src="GATE 2014 · Set 1 · Q.23">
+The capacity of a Binary Symmetric Channel (BSC) with cross-over probability 0.5 is ______.
+<div class="sol"><p>$C=1-H_b(0.5)=0$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2014 · Set 2 · Q.22">
+The capacity of a band-limited AWGN channel is $C=W\log_2\!\big(1+\frac P{\sigma^2W}\big)$ bps, with $\sigma^2$ the one-sided noise PSD. For a fixed $P/\sigma^2=1000$, the capacity (kbps) with infinite bandwidth is approximately
+<ol class="opts"><li>1.44</li><li>1.08</li><li>0.72</li><li>0.36</li></ol>
+<div class="sol"><p>$C_\infty=\frac P{\sigma^2}\log_2e=1000\times1.4427=1.44$ kbps. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2" data-tol="0.02" data-marks="2" data-src="GATE 2014 · Set 3 · Q.52">
+A binary random variable $X$ takes the value 1 with probability $\frac13$. $X$ is the input to a cascade of two independent identical BSCs, each with crossover probability $\frac12$, with outputs $Y_1$ and $Y_2$. The value of $H(Y_1)+H(Y_2)$ in bits is ______.
+<div class="sol"><p>A BSC with $p=\frac12$ makes its output uniform whatever the input: $H(Y_1)=1$; likewise $H(Y_2)=1$. Total $=\mathbf2$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="9.26" data-tol="0.1" data-marks="1" data-src="GATE 2021 · EC · Q.23">
+A speech signal band-limited to 4 kHz is sampled at 1.25 times the Nyquist rate. The samples, statistically independent and uniform on $[-5\,\text{V},+5\,\text{V}]$, are quantised by an 8-bit uniform quantiser and transmitted over an AWGN voice-grade channel with signal-to-noise power ratio 26 dB. The minimum channel bandwidth (kHz, two decimals) for arbitrarily small error probability is ______.
+<div class="sol"><p>Rate $=10\,\text{ksamples/s}\times8=80$ kbps. $C=B\log_2(1+398.1)=8.64B\ge80\,000\Rightarrow B=9.26$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1" data-tol="0.01" data-marks="2" data-src="GATE 2022 · EC · Q.61">
+A DMC has inputs $a,b,c$ and outputs $a,b,c$. Each input is received correctly with probability $1-\alpha$, and as the next letter ($a\to b,\ b\to c,\ c\to a$) with probability $\alpha$. The value of $\alpha\in[0.25,1]$ that maximises the capacity is ______ (two decimals).
+<div class="sol"><p>$C=\log_23-H_b(\alpha)$; $H_b$ is minimal (=0) at $\alpha=1$ on that interval. Answer <b>1.00</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2025 · EC · Q.15 (plots described)">
+An AWGN channel has bandwidth $W$, noise PSD $N_0/2$, and average transmit power $P_{av}$ fixed. How does the capacity $C$ depend on $W$ (with $P_{av},N_0$ fixed)?
+<ol class="opts"><li>It increases with $W$, concavely, and saturates at $\frac{P_{av}}{N_0}\log_2e$</li><li>It increases linearly without bound</li><li>It decreases with $W$</li><li>It first increases then decreases</li></ol>
+<div class="sol"><p>$C=W\log_2(1+\frac{P}{N_0W})$: increasing, concave, with limit $1.44P/N_0$. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0" data-tol="0.005" data-marks="2" data-src="GATE 2025 · EC · Q.60">
+Bernoulli variables $X,Y$ with $P(0,0)=0.06,\ P(0,1)=0.14,\ P(1,0)=0.24,\ P(1,1)=0.56$. The mutual information $I(X;Y)$ (two decimals) is ______.
+<div class="sol"><p>$P(X=0)=0.20$, $P(Y=0)=0.30$; $0.2\times0.3=0.06$, $0.2\times0.7=0.14$, $0.8\times0.3=0.24$, $0.8\times0.7=0.56$: independent ⇒ $I=0$.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="C" data-marks="2" data-src="GATE 2026 · EC · Q.55">
+$B=1$ MHz, $kT=-174$ dBm/Hz, received signal power $S=-80$ dBm over an additive Gaussian channel. Which options are TRUE for the Shannon capacity $C$?
+<ol class="opts"><li>$C=B$</li><li>$C=2B$</li><li>$C>3B$</li><li>$C<B$</li></ol>
+<div class="sol"><p>SNR $=34$ dB, $C=11.3B$. Only (C).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="2" data-src="Original">
+A BSC has crossover probability $p=0.11$. Its capacity (bits/use, using $H_b(0.11)=0.5$) is ______.
+<div class="sol"><p>$C=1-H_b(0.11)=0.50$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.32" data-tol="0.02" data-marks="2" data-src="Original">
+Two identical BSCs, each with $p=0.1$, are cascaded. The capacity of the cascade (bits/use) is ______. (Use $H_b(0.18)=0.68$.)
+<div class="sol"><p>$p'=2(0.1)(0.9)=0.18$; $C=1-H_b(0.18)=0.32$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="39.9" data-tol="0.3" data-marks="1" data-src="Original">
+A telephone channel has bandwidth 4 kHz and SNR 30 dB. Its Shannon capacity in kbit/s is ______.
+<div class="sol"><p>$4000\log_2(1001)=39.87$ kbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="31.5" data-tol="0.2" data-marks="2" data-src="GATE 2016 · EC (PYQ book, reworded)">
+A voice-grade AWGN telephone channel has bandwidth 4.0 kHz and two-sided noise PSD $\eta/2=2.5\times10^{-5}$ W/Hz. Information is sent at 52 kbit/s with arbitrarily small error probability. The minimum bit energy $E_b$ (mJ/bit) required is ______.
+<div class="sol"><p>$N_0=\eta=5\times10^{-5}$ W/Hz; noise power $N_0B=0.2$ W. Capacity condition $52\,000=4000\log_2(1+S/N)\Rightarrow S/N=2^{13}-1=8191$, so $S=8191\times0.2=1638$ W. $E_b=S/R_b=1638/52000=\mathbf{31.5}$ mJ/bit. (An absurd number for a real telephone line; the point is the method.)</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2017 · EC (PYQ book)">
+A binary memoryless channel has transition probabilities $P(0|0)=0.25,\ P(1|0)=0.75,\ P(0|1)=0.25,\ P(1|1)=0.75$. The channel is
+<ol class="opts"><li>lossless</li><li>noiseless</li><li>useless</li><li>deterministic</li></ol><div class="sol"><p>Both rows are $(0.25,\ 0.75)$: the output distribution does not depend on the input, so $I(X;Y)=0$: <b>useless</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 11 in one breath</h3>
+<ul>
+<li>DMC = transition matrix. $I(X;Y)=H(X)-H(X|Y)=H(Y)-H(Y|X)\ge0$; $=0$ iff independent. Data-processing: $X\to Y\to Z\Rightarrow I(X;Z)\le I(X;Y)$.</li>
+<li>$C=\max_{p(x)}I(X;Y)$. Symmetric: $C=\log|Y|-H(\text{row})$. BSC $1-H_b(p)$; BEC $1-\varepsilon$; Z-channel $\log_2(1+(1-p)p^{p/(1-p)})$. Useless (identical rows) = 0; noiseless = $\log K$. Cascade of $N$ BSCs: $p_N=\frac12[1-(1-2p)^N]$.</li>
+<li>Coding theorem: $R<C$ ⇒ $P_e\to0$ (random coding + joint typicality); $R>C$ ⇒ impossible (Fano). Existence, with $n\to\infty$.</li>
+<li>Gaussian maximises entropy ⇒ $C=\frac12\log_2(1+P/\sigma^2)$ per real sample; Shannon–Hartley $C=B\log_2(1+S/N)$; $C_\infty=1.44P/N_0$; $E_b/N_0\ge\frac{2^\eta-1}\eta\to\ln2=-1.59$ dB.</li>
+<li>Uncoded QAM sits $\approx9$ dB from capacity ($\Gamma=\frac13[Q^{-1}(P_e/4)]^2$); shaping ≤ 1.53 dB; hard decisions lose ≈ 2 dB. Water-filling $P_i=(\nu-N_i)^+$ (DSL, OFDM, MIMO). Fading lowers capacity (Jensen); MIMO capacity ∝ $\min(N_t,N_r)$.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI, lg=Math.log2;
+/* ---------- mutual information of a BSC ---------- */
+GB.widget('w-mi',{title:'Mutual information of a binary symmetric channel',h:340,hm:360,controls:[{k:'p',label:'flip probability p',min:0,max:1,step:.01,value:.11},{k:'pi',label:'input prior π = P(X=1)',min:.01,max:.99,step:.01,value:.5}],
+ draw(g,p){ const pp=p.p, pi=p.pi; const py1=pi*(1-pp)+(1-pi)*pp, HX=m.H(pi), HY=m.H(py1), HYX=m.H(pp), I=HY-HYX, HXY=HX-I; const ctx=g.ctx,C=g.C; const x0=24, sc=(g.w-48)/2.0;
+   const bar=(row,labelA,vA,colA,vB,colB,alignRight)=>{ const y=30+row*50, w1=vA*sc, w2=vB*sc; const start=alignRight?(x0+sc*1.0+ (1*sc*0) ): x0; };
+   const baseX=x0+Math.max(HXY,HYX)*sc; const rows=[['H(X) = '+HX.toFixed(3),HXY,I,'H(X|Y)='+HXY.toFixed(3)],['H(Y) = '+HY.toFixed(3),HYX,I,'H(Y|X)='+HYX.toFixed(3)]];
+   rows.forEach((r,i)=>{ const y=26+i*52; ctx.fillStyle=C.orange; ctx.globalAlpha=.8; ctx.fillRect(baseX-r[1]*sc,y,r[1]*sc,26); ctx.fillStyle=C.green; ctx.fillRect(baseX,y,r[2]*sc,26); ctx.globalAlpha=1; ctx.fillStyle=C.fg; ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.fillText(r[0],x0+2,y-5); if(r[1]*sc>70){ ctx.textAlign='center'; ctx.fillText(r[3],baseX-r[1]*sc/2,y+17); } else { ctx.textAlign='right'; ctx.fillText(r[3],baseX-r[1]*sc-4,y+17); } if(r[2]*sc>40){ ctx.textAlign='center'; ctx.fillStyle='#06121a'; ctx.fillText('I = '+I.toFixed(3),baseX+r[2]*sc/2,y+17);} });
+   const v=g.panel(0,1,{pad:{t:132,b:22,l:40,r:14}}).view(0,1,0,1.05); v.axes({xl:'prior π',ystep:.5}); v.fn(x=>{ const q=x*(1-pp)+(1-x)*pp; return m.H(q)-m.H(pp); },'green',2.4,null,300); v.dot(pi,I,'yellow',5); v.hline(1-m.H(pp),'yellow'); v.text(.02,1-m.H(pp)+.07,'C = 1 − H_b(p) = '+(1-m.H(pp)).toFixed(3),'yellow','left',12);
+   return 'I(X;Y) = <b>'+I.toFixed(4)+'</b> bits/use · capacity of this channel = <b>'+(1-m.H(pp)).toFixed(4)+'</b> (reached at π = ½)'; }});
+
+/* ---------- 3D I(X;Y) surface ---------- */
+GB.three('w-isurf',{title:'I(X;Y) for the BSC over (prior π, flip p)',h:400,cam:{r:9,theta:.8,phi:.5},spin:.4,
+ setup(o){ const {THREE,scene,C,G3}=o; const f=(x,z)=>{ const pi=x/3+.5, pp=z/3+.5, q=pi*(1-pp)+(1-pi)*pp; return 2.2*(m.H(q)-m.H(pp)); }; const col=h=>{ const t=Math.min(1,h/2.2); return new THREE.Color().setHSL(.62-.5*t,.8,.2+.4*t); };
+  scene.add(G3.surface(f,-1.5,1.5,-1.5,1.5,48,48,col)); scene.add(G3.axes(1.7,['π','I','p'],C)); return {}; }, update(){} });
+
+/* ---------- sphere packing ---------- */
+GB.three('w-spheres',{title:'Noise balls inside the signal space',h:380,cam:{r:4.2,theta:.6,phi:.3},spin:.5,controls:[{k:'r',label:'noise-ball radius r (noise level)',min:.1,max:.5,step:.01,value:.25}],
+ setup(o){ const {THREE,scene}=o; const big=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshBasicMaterial({color:0x58c4dd,wireframe:true,transparent:true,opacity:.18})); scene.add(big); const grp=new THREE.Group(); scene.add(grp); return {THREE,grp,last:-1}; },
+ update(s,p){ if(s.last===p.r) return; s.last=p.r; const {THREE,grp}=s; while(grp.children.length){ const c=grp.children.pop(); c.geometry.dispose(); c.material.dispose(); }
+  const rng=m.rng(5), r=p.r, pts=[]; for(let a=0;a<6000&&pts.length<400;a++){ const x=[rng()*2-1,rng()*2-1,rng()*2-1]; if(Math.hypot(...x)>1-r) continue; if(pts.every(q=>Math.hypot(x[0]-q[0],x[1]-q[1],x[2]-q[2])>=2*r)) pts.push(x); }
+  pts.forEach((q,i)=>{ const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL((i*.137)%1,.7,.55),transparent:true,opacity:.55})); mesh.position.set(...q); grp.add(mesh); const dot=new THREE.Mesh(new THREE.SphereGeometry(.02,6,4),new THREE.MeshBasicMaterial({color:0xffffff})); dot.position.set(...q); grp.add(dot); });
+  return 'noise balls that fit: <b>'+pts.length+'</b> → about <b>'+Math.log2(Math.max(1,pts.length)).toFixed(1)+' bits</b> per use (toy model)'; }});
+
+/* ---------- capacity vs bandwidth ---------- */
+GB.widget('w-cap',{title:'Capacity vs bandwidth at fixed power',h:300,hm:320,controls:[{k:'snr0',label:'P/N₀ (dB·Hz)',min:20,max:60,step:1,value:40,fmt:v=>v+' dB-Hz'}],
+ draw(g,p){ const PN=m.undb(p.snr0); const Cinf=PN*Math.LOG2E; const v=g.full({l:56,b:28}).view(0,5*PN/ (1+0) ,0,Cinf*1.15); const f=W=>W*lg(1+PN/W); v.view(0,6*PN,0,Cinf*1.15); v.axes({xl:'B (Hz)',yl:'C (bit/s)'}); v.hline(Cinf,'red'); v.fn(f,'yellow',2.6,null,400); v.fn(W=>PN*Math.LOG2E*0+W*lg(1+PN/W)*0,'mute',0);
+  v.text(6*PN*.98,Cinf*1.06,'C∞ = 1.44 P/N₀','red','right',12); const Bm=PN; v.dot(Bm,f(Bm),'blue',5); v.text(Bm,f(Bm)-Cinf*.07,'B = P/N₀: already '+(100*f(Bm)/Cinf).toFixed(0)+'% of C∞','blue','left',11); return 'C∞ = (P/N₀)·log₂e = <b>'+Cinf.toExponential(2)+'</b> bit/s'; }});
+
+/* ---------- Shannon limit ---------- */
+GB.widget('w-shannon',{title:'The Shannon boundary',h:340,hm:360,controls:[{k:'eta',label:'spectral efficiency η = R/B (bit/s/Hz)',min:.1,max:8,step:.05,value:2}],
+ draw(g,p){ const v=g.full({l:48,b:30}).view(-2,22,Math.log10(.08),Math.log10(10)); v.axes({xl:'Eb/N0 (dB)',xstep:2,yticks:[.1,.2,.5,1,2,4,8].map(x=>[Math.log10(x),String(x)]),ystep:1}); const ebn0=e=>10*Math.log10((Math.pow(2,e)-1)/e);
+  const xs=[],ys=[]; for(let i=0;i<=300;i++){ const e=Math.pow(10,Math.log10(.08)+(Math.log10(10)-Math.log10(.08))*i/300); xs.push(ebn0(e)); ys.push(Math.log10(e)); } v.line(xs,ys,'yellow',2.6); v.poly(xs.map((x,i)=>[x,ys[i]]).concat([[22,Math.log10(10)],[22,Math.log10(.08)]]),'green',.1);
+  v.vline(-1.59,'red'); v.text(-1.5,Math.log10(.14),'−1.59 dB','red','left',11); v.text(14,Math.log10(.2),'reliable communication possible','green','center',12); v.text(-.8,Math.log10(5),'impossible','red','left',12);
+  [[1,9.59,'BPSK'],[2,9.59,'QPSK'],[4,13.4,'16-QAM'],[6,17.8,'64-QAM']].forEach(q=>{ v.dot(q[1],Math.log10(q[0]),'red',5); v.text(q[1]+.4,Math.log10(q[0]),q[2],'red','left',11); }); v.dot(ebn0(p.eta),Math.log10(p.eta),'blue',6);
+  return 'η = '+p.eta.toFixed(2)+' bit/s/Hz needs Eb/N0 ≥ <b>'+ebn0(p.eta).toFixed(2)+' dB</b> (limit as η→0: −1.59 dB)'; }});
+
+/* ---------- water-filling ---------- */
+GB.widget('w-wf',{title:'Water-filling over parallel channels',h:340,hm:380,controls:[{k:'P',label:'total power P',min:.2,max:30,step:.1,value:6,fmt:v=>v.toFixed(1)},{k:'tilt',label:'channel tilt (spread of noise levels)',min:0,max:2,step:.05,value:1,fmt:v=>v.toFixed(2)}],
+ draw(g,p){ const K=8; const N=[]; for(let i=0;i<K;i++){ const f=i/(K-1); N.push(Math.exp(p.tilt*(1.7*f+.9*Math.sin(5*f))) ); }
+  // find water level
+  const idx=N.map((_,i)=>i).sort((a,b)=>N[a]-N[b]); let nu=0,k=K; for(k=K;k>=1;k--){ const sum=idx.slice(0,k).reduce((s,i)=>s+N[i],0); nu=(p.P+sum)/k; if(nu>=N[idx[k-1]]) break; }
+  const P=N.map(n=>Math.max(0,nu-n)); const C=P.reduce((s,q,i)=>s+.5*lg(1+q/N[i]),0), Ceq=N.reduce((s,n)=>s+.5*lg(1+p.P/K/n),0);
+  const ymax=Math.max(nu*1.1,Math.max(...N)*1.1,1); const v=g.full({l:40,b:30}).view(-.6,K-.4,0,ymax); v.axes({xl:'sub-channel (frequency)',ystep:Math.max(1,Math.round(ymax/4)),xticks:N.map((_,i)=>[i,String(i+1)])});
+  N.forEach((n,i)=>{ v.rect(i-.38,0,i+.38,n,'mute',.55); if(P[i]>0) v.rect(i-.38,n,i+.38,n+P[i],'blue',.7); });
+  v.hline(nu,'yellow',[6,4],2); v.text(K-.5,nu+ymax*.04,'water level ν = '+nu.toFixed(2),'yellow','right',12); g.legend([['noise level Nᵢ','mute'],['allocated power Pᵢ','blue']],g.w-250,14);
+  return 'active sub-channels: <b>'+P.filter(q=>q>0).length+'</b> of '+K+' · capacity with water-filling = <b>'+C.toFixed(2)+'</b> bit/use-set · equal power = '+Ceq.toFixed(2)+' (gain '+(C-Ceq).toFixed(2)+' bits)'; }});
+</script>

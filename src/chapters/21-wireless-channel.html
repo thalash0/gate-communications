@@ -1,0 +1,313 @@
+<!--meta {"id":"ch21","num":"21","part":"Part V · Systems","title":"The Air Is Not a Wire: Link Budgets, Fading, Diversity and MIMO","lede":"A radio signal leaves the antenna, spreads over a sphere, bounces off buildings, cancels itself in some places and doubles up in others, and arrives changing with every wavelength you move. This chapter turns that mess into numbers: path loss, link budgets, fading statistics, the diversity that tames them, and the multiple antennas that turn the mess into capacity."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li><b>Derive</b> the Friis equation and the two-ray model; write a link budget in dB, find the maximum range for a given sensitivity, and include shadowing margin.</li>
+<li>Explain why higher carrier frequency does not by itself mean higher path loss (aperture versus gain), and why millimetre waves need beamforming.</li>
+<li>Describe small-scale fading: Doppler spread and coherence time, delay spread and coherence bandwidth; classify a channel as flat/selective and slow/fast.</li>
+<li><b>Derive</b> the average BER of BPSK in Rayleigh fading ($\approx1/4\bar\gamma$) and see why fading costs 30 dB or more at $10^{-5}$.</li>
+<li><b>Derive</b> maximal-ratio combining and its diversity order, selection diversity and the Alamouti code; compare their BER.</li>
+<li><b>Derive</b> MIMO capacity via the SVD, understand spatial multiplexing versus diversity versus beamforming, and quote the capacity of $N\times N$ systems.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 4 (Rayleigh, Rician, exponential), Chapter 5 (noise power), Chapter 11 (capacity), Chapter 15 (BER), Chapter 20 (OFDM, delay spread).</p></div>
+
+<div class="box story"><span class="tag">History · from Marconi’s letter S to Bell Labs’ BLAST</span>
+<p>On 12 December 1901 Guglielmo Marconi, in a hut on Signal Hill, Newfoundland, listened for three dots, the letter S, sent from Poldhu in Cornwall 3500 km away: proof that radio waves follow the Earth’s curvature (via the ionosphere, which nobody yet understood). Fifty years later radio engineering was still empirical. <strong>Harald Friis</strong> of Bell Labs gave the transmission formula that bears his name in 1946 (his cascade noise-figure formula, Chapter 5, dates from 1944). <strong>Yoshihisa Okumura</strong> drove through Tokyo in 1968 with a field-strength meter in a van to measure what cities do to signals; <strong>Masaharu Hata</strong> fitted his data with the formula that is still in every planning tool. In 1968 <strong>Clarke</strong> described the random fading of a moving receiver, and <strong>William Jakes</strong> made it a simulation recipe in 1974. For two decades fading was “the enemy” to be beaten with diversity. Then in 1995 <strong>Emre Telatar</strong> proved, and <strong>Gerard Foschini</strong> and <strong>Michael Gans</strong> at Bell Labs argued, that with several antennas at both ends rich scattering <em>multiplies</em> capacity; <strong>Siavash Alamouti</strong> (1998) found a two-antenna code of stunning simplicity. The enemy became a resource, and MIMO is now in every Wi-Fi router and phone.</p></div>
+
+<div class="box real"><span class="tag">Real world</span>
+<p>A Wi-Fi router in the next room and a 5G small cell down the street live on the same physics as a satellite 36 000 km away: received power from the Friis equation, a margin for shadowing, a fading margin, and enough diversity to make the margin affordable. The 3GPP channel models used to design 4G and 5G (TDL-A…E, CDL, UMa/UMi/InH) are the sophisticated descendants of this chapter’s models. Every number in “coverage”, “range” and “link budget” on a data sheet comes out of the equations below.</p></div>
+
+<h2>The link budget</h2>
+<div class="box derive"><span class="tag">Derivation · the Friis transmission equation</span>
+<p>A transmitter radiating power $P_t$ isotropically spreads it over a sphere; at distance $d$ the <b>power flux density</b> is $P_t/(4\pi d^2)$ W/m². A directive antenna with gain $G_t$ (relative to isotropic) in the direction of the receiver multiplies this by $G_t$. A receiving antenna of <b>effective aperture</b> $A_e$ collects $P_r=A_e\cdot P_tG_t/(4\pi d^2)$. Antenna theory (reciprocity and the equivalence of a matched receiving antenna to an absorbing area: $A_e=\lambda^2G/4\pi$) gives for the receiver of gain $G_r$:
+$$\boxed{\ P_r=P_tG_tG_r\Big(\frac{\lambda}{4\pi d}\Big)^2=\frac{P_tG_tG_r}{L_{\rm fs}},\qquad L_{\rm fs}=\Big(\frac{4\pi d}{\lambda}\Big)^2\ }$$
+In dB: $L_{\rm fs}=20\log_{10}\frac{4\pi d}{\lambda}$; with $d$ in km and $f$ in MHz,
+$$L_{\rm fs}\,[\mathrm{dB}]=32.44+20\log_{10}d_{\rm km}+20\log_{10}f_{\rm MHz}.$$
+It grows by 6 dB per doubling of distance <em>and</em> of frequency. Examples: 1 km at 2.4 GHz: $32.44+0+67.6=100.0$ dB; at 28 GHz: 121.4 dB; a geostationary satellite ($d=35\,786$ km) at 12 GHz: $32.44+91.1+81.6=205.1$ dB. <b>Why frequency appears.</b> The $\lambda^2$ does not come from nature’s absorption of high frequencies: it is the aperture of an <em>isotropic</em> antenna. Re-write with apertures, $G=4\pi A_e/\lambda^2$:
+$$P_r=\frac{P_t\,A_t\,A_r}{\lambda^2d^2}.$$
+For antennas of <em>fixed physical size</em>, received power <em>rises</em> as $f^2$. That is why dishes get small at high frequency, why a phased array of 64–256 patch elements fits in a base-station panel (and a 4–16 element module in a phone) at 28 GHz, and why millimetre-wave links are viable if (and only if) both ends use <b>beamforming</b> to restore the antenna gain that the fixed-gain isotropic assumption took away. (Real mm-wave links lose extra to rain, oxygen at 60 GHz and blockage.)</p></div>
+<p>The link is analysed as a <b>link budget</b>: add gains and subtract losses in dB, from the transmitter to the detector.
+$$P_r\,[\mathrm{dBm}]=P_t+G_t+G_r-L_{\rm path}-L_{\rm other}-M,$$
+with $P_t$ the transmit power (dBm), $G$ antenna gains (dBi), $L_{\rm path}$ the path loss, $L_{\rm other}$ cable, polarisation, atmospheric, pointing and body losses, and $M$ the <b>margin</b> for shadowing and fading below. The receiver is characterised by its <b>sensitivity</b>, the weakest signal it can decode:
+$$P_{\min}=-174+10\log_{10}B+F+\mathrm{SNR}_{\min}\quad[\mathrm{dBm}]$$
+($-174$ dBm/Hz from Chapter 5, $B$ the bandwidth in Hz, $F$ the noise figure, $\mathrm{SNR}_{\min}$ the SNR at the decision point for the chosen modulation and code; for example Wi-Fi at 20 MHz, $F=6$ dB, 6 Mbit/s BPSK ½ needing about 5 dB: $-174+73+6+5=-90$ dBm in the ideal case; the standard specifies $-82$ dBm, leaving 8 dB for implementation loss and interference). The system works where $P_r\ge P_{\min}$. For the free-space model this gives the maximum range
+$$d_{\max}=\frac{\lambda}{4\pi}\sqrt{\frac{P_tG_tG_r}{P_{\min}}}.$$
+<b>Example (Wi-Fi at 50 m).</b> $P_t=20$ dBm, $G_t=G_r=2$ dBi, 2.4 GHz: $L_{\rm fs}=32.44+20\log0.05+67.6=74.0$ dB; $P_r=20+4-74.0=-50$ dBm: 40 dB above the $-90$ dBm sensitivity. Free space would give a range of $50\times10^{40/20}=5$ km; walls and furniture bring the real figure below 100 m, so the model needs the sections that follow.</p>
+<div class="box eng"><span class="tag">Engineering practice · the digital-link equation in $E_b/N_0$ form</span>
+<p>For a symbol-rate-limited link it is convenient to write the budget directly in $E_b/N_0$:
+$$\frac{E_b}{N_0}=\frac{P_r}{kT_sR_b}=\mathrm{EIRP}\,[\mathrm{dBW}]-L+\Big(\frac GT\Big)[\mathrm{dB/K}]-10\log_{10}k-10\log_{10}R_b,\qquad-10\log k=228.6\ \mathrm{dBW/K/Hz},$$
+with the <b>EIRP</b> $=P_tG_t$ and the receiver’s figure of merit $G/T_s$ (antenna gain over system noise temperature). Required $E_b/N_0$ (from the modulation and code, Chapters 15, 17, 18) plus a margin $M$ sets $R_b$ or the range. Chapter 23 works full budgets with this equation for a satellite-TV dish, a Wi-Fi link, a cellular uplink, a deep-space probe and an optical line (the GPS signal is analysed in Chapter 19).</p></div>
+<div class="widget" id="w-link">Received power against distance for the free-space model, the two-ray ground-reflection model (heights 30 m and 1.5 m) and the log-distance model with the chosen exponent $n$ and shadowing margin; the horizontal line is the receiver sensitivity. Where a curve crosses it is the maximum range (readout). Try 2.4 GHz and 28 GHz with the same antenna <em>gains</em>: only the 28 GHz curve drops, but raise the gain by the extra array gain and it recovers.</div>
+
+<h2>Large-scale propagation</h2>
+<div class="box derive"><span class="tag">Derivation · the two-ray ground-reflection model and the $d^{-4}$ law</span>
+<p>Over flat ground a receiver at height $h_r$ gets the direct ray (length $d_1$) and a ray reflected from the ground (length $d_2$) from a transmitter of height $h_t$ at horizontal distance $d\gg h_t,h_r$. The ground reflection coefficient is $\approx-1$ for grazing incidence. The path difference is
+$$\Delta d=d_2-d_1=\sqrt{d^2+(h_t+h_r)^2}-\sqrt{d^2+(h_t-h_r)^2}\approx\frac{2h_th_r}{d}.$$
+The received complex amplitude is the free-space amplitude times $\big|1-e^{-j2\pi\Delta d/\lambda}\big|=2\big|\sin(\pi\Delta d/\lambda)\big|$. For $\Delta d\ll\lambda$ (large $d$) this is $\approx2\pi\Delta d/\lambda=4\pi h_th_r/(\lambda d)$, so the <em>power</em> is
+$$P_r\approx P_tG_tG_r\Big(\frac{\lambda}{4\pi d}\Big)^2\Big(\frac{4\pi h_th_r}{\lambda d}\Big)^2=P_tG_tG_r\frac{h_t^2h_r^2}{d^4}.$$
+Beyond the <b>breakpoint distance</b> $d_b\approx4h_th_r/\lambda$ the received power falls at 40 dB per decade (12 dB per octave), <em>independent of frequency</em>. (Below $d_b$ the two rays alternate between constructive and destructive interference with $d$.) Example: $h_t=30$ m, $h_r=1.5$ m at 900 MHz ($\lambda=0.33$ m): $d_b=540$ m. Doubling the antenna height gives $+6$ dB, which is why base-station towers are tall.</p></div>
+<p>Real environments fall between $d^{-2}$ and $d^{-4}$; the empirical <b>log-distance model</b> summarises them:
+$$\mathrm{PL}(d)=\mathrm{PL}(d_0)+10\,n\log_{10}\frac d{d_0}+X_\sigma,\qquad X_\sigma\sim\mathcal N(0,\sigma^2)\ \mathrm{dB}.$$
+<table>
+<tr><th>Environment</th><th>exponent $n$</th><th>shadowing $\sigma$ (dB)</th></tr>
+<tr><td>free space</td><td>2</td><td>0</td></tr>
+<tr><td>indoor line of sight (corridor)</td><td>1.6–1.8</td><td>3–6</td></tr>
+<tr><td>indoor, obstructed (offices)</td><td>3–5</td><td>6–9</td></tr>
+<tr><td>urban macro-cell</td><td>3–4</td><td>6–10</td></tr>
+<tr><td>dense urban / heavily shadowed</td><td>4–6</td><td>8–12</td></tr>
+</table>
+The random term $X_\sigma$ is <b>shadowing</b>: a slow variation, over tens of metres, caused by buildings and terrain obstructing the path, log-normal because the many independent attenuations multiply (their logs add: the central limit theorem in dB). Its correct handling requires a <b>shadow-fade margin</b>: to make the signal exceed the threshold at the cell edge with probability $1-P_{\rm out}$, the median received power must be $z\sigma$ above it, where $Q(z)=P_{\rm out}$: $z=1.28$ for $P_{\rm out}=10\%$ (margin $10.3$ dB at $\sigma=8$ dB), $z=1.64$ for 5% (13.2 dB). A margin of 10 dB with $n=3.5$ costs $10^{10/35}=1.9\times$ in range.</p>
+<div class="box eng"><span class="tag">Engineering practice · the Okumura–Hata formula</span>
+<p>The urban median path loss of Hata (valid for 150–1500 MHz, base-station height $h_b=30$–200 m, mobile height $h_m=1$–10 m, range 1–20 km) is
+$$L_{\rm urban}=69.55+26.16\log f_{\rm MHz}-13.82\log h_b-a(h_m)+(44.9-6.55\log h_b)\log d_{\rm km},$$
+$a(h_m)=(1.1\log f-0.7)h_m-(1.56\log f-0.8)$ for a small/medium city. For $f=900$ MHz, $h_b=30$ m, $h_m=1.5$ m the slope is $44.9-6.55\log30=35.2$ dB/decade, an exponent $n=3.5$; at 1 km $L=126.4$ dB and at 5 km $L=151.0$ dB, compared to free space 105.5 dB at 5 km: 45 dB of extra loss from the city. Suburban and open areas subtract 10 to 30 dB. COST 231 extends it to 2 GHz; 3GPP’s UMa and UMi models extend to 100 GHz. <b>Indoor</b>: add wall penetration losses (a few dB per light wall, 10–15 dB for brick/concrete, 20+ for metallised glass), floor losses (15–20 dB each). <b>Millimetre waves</b>: add absorption (≈15 dB/km from oxygen at 60 GHz; 5–10 dB/km in heavy rain at 28 GHz) and human-body blockage (20–40 dB).</p></div>
+
+<h2>Small-scale fading</h2>
+<p>Over distances of a wavelength or less the signal changes by tens of dB. At the receiver, $L$ scattered waves with random amplitudes $\alpha_l$, delays $\tau_l$ and arrival angles $\theta_l$ add as phasors; moving $\lambda/2$ changes the relative phases by $\pi$ and turns constructive into destructive interference. With many scatterers and no dominant path the sum is a complex Gaussian (central limit theorem): the envelope is <b>Rayleigh</b>, $p(r)=\frac r{\sigma^2}e^{-r^2/2\sigma^2}$, the power $\gamma\propto r^2$ is exponential, $p(\gamma)=\frac1{\bar\gamma}e^{-\gamma/\bar\gamma}$ (Chapter 4). With a dominant (line-of-sight) component of power ratio $K$ to the scattered power the envelope is <b>Rician</b> ($K=0$: Rayleigh; $K\to\infty$: no fading). Two independent questions then decide what the receiver sees: <em>how fast does the channel change in time</em> (Doppler) and <em>how selective is it in frequency</em> (delay spread).</p>
+<h3>Time selectivity: Doppler spread and coherence time</h3>
+<div class="box derive"><span class="tag">Derivation · Doppler, Clarke’s spectrum and the coherence time</span>
+<p>A receiver moving at speed $v$ at angle $\theta$ to the direction of an incoming plane wave sees the carrier shifted by $f_D=\dfrac vc f_c\cos\theta=f_m\cos\theta$, with <b>maximum Doppler</b> $f_m=vf_c/c$ (100 km/h at 2.1 GHz: $f_m=194$ Hz; 350 km/h at 2.6 GHz: 842 Hz; walking at 1.4 m/s at 5 GHz: 23 Hz). In Clarke’s isotropic model the arrival angle is uniform, $\theta\sim U(0,2\pi)$. The Doppler shift $f=f_m\cos\theta$ has density $p(f)=\frac{1}{\pi\sqrt{f_m^2-f^2}}$ ($|f|<f_m$) (each $f$ arises from two angles $\pm\theta$), and the power spectrum of the received signal is
+$$S(f)=\frac{1}{\pi f_m\sqrt{1-(f/f_m)^2}},\qquad|f|<f_m$$
+(the “U-shaped” Jakes spectrum, with peaks at $\pm f_m$ for waves arriving head-on and from behind). By Wiener–Khinchin (Chapter 5) the autocorrelation of the complex channel gain is its inverse Fourier transform:
+$$R_h(\Delta t)=J_0(2\pi f_m\,\Delta t)$$
+($J_0$ the zeroth-order Bessel function). It falls to 0.5 at $2\pi f_m\Delta t=1.52$, i.e. $\Delta t=0.24/f_m$: the <b>coherence time</b> $T_c\approx0.24/f_m$ to $0.42/f_m$ depending on the definition: a channel is essentially constant over a time shorter than about a quarter of the Doppler period. At 100 km/h and 2.1 GHz: $T_c\approx1.2$ ms. Spacing for fade independence: the first zero of $J_0(2\pi\Delta x/\lambda)$ is at $\Delta x\approx0.38\lambda$, so antennas about 5 cm apart at 2.4 GHz see nearly independent fading.</p></div>
+<p>The signal bandwidth versus Doppler spread decides <b>fast vs slow fading</b>: if the symbol time $T_s\ll T_c$ (i.e. $B_s\gg f_m$) the channel is constant during a symbol (<b>slow fading</b>: the usual case, and the one assumed in all channel-estimation schemes); if $T_s>T_c$ (rare: slow data rate, fast vehicle) the channel changes within a symbol (<b>fast fading</b>), causing an irreducible error floor. Fades are deep but short: for Rayleigh fading the <b>level-crossing rate</b> (crossings per second of a threshold $\rho=R/R_{\rm rms}$ in the downward direction) and <b>average fade duration</b> are
+$$N_R=\sqrt{2\pi}\,f_m\rho\,e^{-\rho^2},\qquad\bar\tau=\frac{e^{\rho^2}-1}{\rho f_m\sqrt{2\pi}}.$$
+For $f_m=100$ Hz and a $-20$ dB threshold ($\rho=0.1$): 24.8 crossings per second, each lasting on average 0.4 ms: deep fades are brief, which is why interleaved coding can bridge them.</p>
+<h3>Frequency selectivity: delay spread and coherence bandwidth</h3>
+<p>The multipath components arrive over a range of delays; the <b>power-delay profile</b> $P(\tau)$ has mean delay $\bar\tau$ and <b>rms delay spread</b> $\tau_{\rm rms}=\sqrt{\overline{\tau^2}-\bar\tau^2}$ (typical values: indoor 20–100 ns; urban 0.3–2 µs; hilly 3–10 µs; Chapter 20’s cyclic prefixes exist for these). The Fourier transform of $P(\tau)$ gives the frequency correlation of the channel; two frequencies are strongly correlated (0.5) if they differ by less than the <b>coherence bandwidth</b>
+$$B_c\approx\frac{1}{5\tau_{\rm rms}}\quad(0.5\ \text{correlation}),\qquad\approx\frac1{50\tau_{\rm rms}}\ (0.9).$$
+$\tau_{\rm rms}=1$ µs gives $B_c\approx200$ kHz. A signal with bandwidth $B\ll B_c$ undergoes <b>flat fading</b> (a single complex gain; symbol time $T_s\gg\tau_{\rm rms}$: no ISI); with $B\gtrsim B_c$ it is <b>frequency-selective</b>: ISI, the problem OFDM and equalisers solve.</p>
+<table>
+<tr><th></th><th>flat fading</th><th>frequency-selective fading</th></tr>
+<tr><th>slow</th><td>$B_s\ll B_c$, $T_s\ll T_c$: narrowband voice at walking speed, a single OFDM subcarrier</td><td>$B_s>B_c$, $T_s\ll T_c$: wideband data, most 4G/5G (use OFDM)</td></tr>
+<tr><th>fast</th><td>$B_s\ll B_c$, $T_s>T_c$: low-rate FSK at very high speed</td><td>both bad: avoid</td></tr>
+</table>
+<h3>What Rayleigh fading does to the error rate</h3>
+<div class="box derive"><span class="tag">Derivation · average BER in Rayleigh fading</span>
+<p>In flat slow fading the received SNR $\gamma$ is constant over a bit but random from bit to bit, exponentially distributed with mean $\bar\gamma$. The average BER for coherent BPSK is the AWGN error probability averaged over $\gamma$. Use Craig’s form $Q(x)=\frac1\pi\int_0^{\pi/2}e^{-x^2/(2\sin^2\theta)}d\theta$ with $x=\sqrt{2\gamma}$ and integrate over $\gamma$ first (the moment generating function of the exponential, $\int_0^\infty e^{-s\gamma}\frac1{\bar\gamma}e^{-\gamma/\bar\gamma}d\gamma=\frac{1}{1+s\bar\gamma}$):
+$$P_b=\frac1\pi\int_0^{\pi/2}\frac{d\theta}{1+\bar\gamma/\sin^2\theta}=\frac12\Big[1-\sqrt{\frac{\bar\gamma}{1+\bar\gamma}}\Big]\ \ \xrightarrow{\ \bar\gamma\gg1\ }\ \ \frac1{4\bar\gamma}.$$
+<em>The error probability falls only as the inverse of the SNR</em>, not exponentially (Chapter 15): 10 dB buys a factor 10, not a factor $10^{4}$. Numbers: $\bar\gamma=10$ dB: $P_b=0.023$ (AWGN: $3.9\times10^{-6}$); $20$ dB: $2.5\times10^{-3}$; $30$ dB: $2.5\times10^{-4}$. To reach $10^{-5}$ requires $\bar\gamma=25\,000=44$ dB compared with 9.6 dB for AWGN: <b>a fading penalty of 34 dB</b>. The mechanism: the average is dominated by the rare deep fades. The probability that $\gamma<\gamma_0$ is $1-e^{-\gamma_0/\bar\gamma}\approx\gamma_0/\bar\gamma$ — linear in $1/\bar\gamma$ — and when a bit falls in such a fade it is wrong with probability ½. Raising power cannot fix this economically; <b>diversity, coding with interleaving</b>, and adaptive modulation can.</p></div>
+<div class="widget" id="w-fade">A Rayleigh fading envelope $20\log|h(t)|$ (dB relative to the rms level) of a mobile receiver, generated by Clarke’s sum-of-sinusoids model (32 scatterers with uniformly random arrival angles). Set the speed and carrier frequency: $f_m=vf_c/c$ and the time axis is shown in milliseconds and in units of $1/f_m$. Deep fades (below $-20$ dB) are rare, brief, and roughly $\lambda/2$ apart; faster or higher-frequency: the same pattern runs through faster. The dotted line is the $-10$ dB level; the readout gives $f_m$, the coherence time and the theoretical level-crossing rate for it.</div>
+
+<h2>Diversity</h2>
+<p>If the receiver gets $L$ independent copies of the signal (branches) fading independently, the probability that all of them are in a deep fade at once is the product of the individual probabilities: $\approx(\gamma_0/\bar\gamma)^L$. The slope of the BER curve on a log–log plot, the <b>diversity order</b>, becomes $L$. Sources: <b>space</b> (antennas $\gtrsim\lambda/2$ apart, in rich scattering), <b>polarisation</b>, <b>time</b> (coding plus interleaving over more than $T_c$), <b>frequency</b> (OFDM subcarriers, wideband Rake, frequency hopping over more than $B_c$), and <b>angle</b>.</p>
+<div class="box derive"><span class="tag">Derivation · maximal-ratio combining (MRC)</span>
+<p>Branch $l$ receives $y_l=h_lx+n_l$, with independent noise $n_l$ of variance $N_0/2$ per real dimension and known complex gains $h_l$. Form $z=\sum_lw_ly_l=x\sum_lw_lh_l+\sum_lw_ln_l$. The SNR is $\dfrac{|\sum w_lh_l|^2E_s}{(N_0)\sum|w_l|^2}$; by the Cauchy–Schwarz inequality it is maximised by $w_l=h_l^{*}$ (match each branch’s weight to its own channel: strong branches count more, phases are aligned), giving
+$$\gamma_{\rm MRC}=\sum_{l=1}^{L}\gamma_l,\qquad\gamma_l=\frac{|h_l|^2E_s}{N_0}.$$
+<em>The SNRs add</em>. For independent Rayleigh branches with equal mean $\bar\gamma$ each, the sum of $L$ exponentials is a gamma (chi-square with $2L$ degrees of freedom) variable with $p(\gamma)=\dfrac{\gamma^{L-1}e^{-\gamma/\bar\gamma}}{\bar\gamma^L(L-1)!}$, and the BER of BPSK is
+$$P_b=\Big[\frac{1-\mu}2\Big]^L\sum_{k=0}^{L-1}\binom{L-1+k}{k}\Big[\frac{1+\mu}2\Big]^k,\qquad\mu=\sqrt{\frac{\bar\gamma}{1+\bar\gamma}}\ \xrightarrow{\ \bar\gamma\gg1\ }\ \binom{2L-1}{L}\Big(\frac1{4\bar\gamma}\Big)^L.$$
+(For $L=1$ this is the previous formula.) Diversity order $L$: the curve falls at $L$ decades per 10 dB. Numbers (per-branch average SNR needed for $10^{-5}$): $L=1$: 44.0 dB; $L=2$: 21.3 dB; $L=4$: 10.0 dB, already within 0.4 dB of the AWGN requirement. There is in addition an <b>array gain</b>: the <em>total</em> mean SNR is $L\bar\gamma$ (3 dB for $L=2$).</p>
+<p><b>Selection combining</b> simply picks the branch with the largest SNR: the CDF of the maximum of $L$ i.i.d. exponentials is $(1-e^{-\gamma/\bar\gamma})^L$ and the mean SNR is $\bar\gamma\sum_{k=1}^L1/k$ ($1.5\bar\gamma$ for $L=2$: 1.76 dB; MRC would give $2\bar\gamma$, 3 dB). It needs no phase information or co-phasing and uses one RF chain: attractive in cheap receivers (the Wi-Fi “antenna diversity” of 2000s routers). <b>Equal-gain</b> combining co-phases and adds with equal weights (within 1 dB of MRC for $L$ small).</p></div>
+<h3>Transmit diversity: the Alamouti code</h3>
+<div class="box derive"><span class="tag">Derivation · the Alamouti space-time block code (2 transmit, 1 receive antenna)</span>
+<p>Mobiles cannot easily carry two antennas, but base stations can: can <em>transmit</em> diversity be had with no feedback of channel state? Alamouti (1998) sends two symbols $s_1,s_2$ over two time slots from two antennas:
+$$\text{slot 1: antenna 1 }s_1,\ \text{antenna 2 }s_2;\qquad\text{slot 2: antenna 1 }-s_2^*,\ \text{antenna 2 }s_1^*.$$
+With the channel constant over the two slots ($h_1,h_2$ from antennas 1 and 2), the receiver gets $r_1=h_1s_1+h_2s_2+n_1$, $r_2=-h_1s_2^*+h_2s_1^*+n_2$. Combine
+$$\tilde s_1=h_1^*r_1+h_2r_2^*=(|h_1|^2+|h_2|^2)s_1+h_1^*n_1+h_2n_2^*,$$
+$$\tilde s_2=h_2^*r_1-h_1r_2^*=(|h_1|^2+|h_2|^2)s_2+h_2^*n_1-h_1n_2^*,$$
+because the cross terms cancel: the code’s $2\times2$ matrix is orthogonal ($\mathbf G^H\mathbf G=(|s_1|^2+|s_2|^2)I$). Each symbol is detected independently with SNR $(|h_1|^2+|h_2|^2)E_s/(2N_0)$ — the sum of two branch SNRs, with $E_s/2$ per antenna for a fixed total transmit power: <b>diversity order 2, rate 1, no channel knowledge at the transmitter, trivial linear decoding</b>. Its BER is that of two-branch MRC at $\bar\gamma/2$ per branch (a 3 dB penalty compared with receive MRC for the same total power, because no array gain at the transmitter without CSI). It is the only complex orthogonal STBC with rate 1; it appears in 3G (WCDMA transmit diversity), WiMAX, LTE (SFBC), Wi-Fi 11n.</p></div>
+<div class="widget" id="w-div">Average BER of BPSK in Rayleigh fading against the per-branch average SNR for no diversity, MRC with $L=2,4$ branches, 2-branch selection combining, Alamouti $2\times1$ (total power fixed), and the unfaded AWGN reference. Hold the BER line and read the SNR horizontally: with $L=4$ the fading penalty has nearly gone. The readout lists the SNR needed for the chosen BER.</div>
+
+<h2>MIMO: using the scattering</h2>
+<p>With $N_t$ transmit and $N_r$ receive antennas and a narrowband (flat) channel, the received vector is
+$$\mathbf y=\mathbf H\mathbf x+\mathbf n,\qquad\mathbf H\in\mathbb C^{N_r\times N_t},\quad H_{ij}\ \text{the gain from transmit antenna }j\text{ to receive antenna }i.$$
+When scatterers are plentiful the entries of $\mathbf H$ are nearly independent complex Gaussians; with no scattering (line of sight, antennas close together) $\mathbf H$ is nearly rank 1.</p>
+<div class="box derive"><span class="tag">Derivation · MIMO capacity by the SVD</span>
+<p>Write the singular value decomposition $\mathbf H=\mathbf U\boldsymbol\Sigma\mathbf V^H$ with unitary $\mathbf U,\mathbf V$ and $\boldsymbol\Sigma=\mathrm{diag}(\sigma_1\ge\dots\ge\sigma_r\ge0)$, $r=\mathrm{rank}\,\mathbf H\le\min(N_t,N_r)$. Precode $\mathbf x=\mathbf V\tilde{\mathbf x}$ and decode $\tilde{\mathbf y}=\mathbf U^H\mathbf y$. Since $\mathbf U^H\mathbf U=\mathbf I$ and unitary transformations preserve white Gaussian noise,
+$$\tilde y_i=\sigma_i\tilde x_i+\tilde n_i,\qquad i=1,\dots,r:$$
+the MIMO channel is equivalent to $r$ <b>parallel, non-interfering scalar channels</b> with gains $\sigma_i^2$ (the eigenvalues of $\mathbf H\mathbf H^H$). With total transmit power $P$ divided equally among the $N_t$ antennas (no channel knowledge at the transmitter) and noise power $N_0B$, per-antenna SNR $\rho/N_t$ with $\rho=P/(N_0B)$:
+$$\boxed{\ C=\log_2\det\Big(\mathbf I_{N_r}+\frac{\rho}{N_t}\mathbf H\mathbf H^H\Big)=\sum_{i=1}^{r}\log_2\Big(1+\frac{\rho}{N_t}\sigma_i^2\Big)\ \ \text{bit/s/Hz}\ }$$
+With channel knowledge at the transmitter the optimal power allocation across the eigenmodes is water-filling (Chapter 11). <b>Scaling.</b> For an i.i.d. Rayleigh channel with $N_t=N_r=N$ the $N$ eigenvalues are of the same order and at high SNR $C\approx N\log_2\rho+\text{const}$: <b>capacity grows linearly with the number of antennas, with no extra power or bandwidth</b>, versus $\log_2\rho$ for one antenna. The extra degrees of freedom are “spatial streams”. Numbers (mean over fading, 20 dB SNR): $1\times1$: 5.9; $2\times2$: 11.3; $4\times4$: 22.1; $8\times8$: 44.0 bit/s/Hz. <b>Special cases.</b> $N_t=1$, $N_r=N$ (SIMO): $C=\log_2(1+\rho\|\mathbf h\|^2)$: the SNR gain $N$ (MRC) is only a log-gain. $N_t=N$, $N_r=1$ (MISO) without CSI: no array gain; with CSI, <b>beamforming</b> $\mathbf x=\mathbf h^H/\|\mathbf h\|\,s$ gives the full array gain $N$.</p></div>
+<div class="widget" id="w-mimo">Ergodic (mean) capacity of $N\times N$ i.i.d. Rayleigh MIMO channels against SNR, with equal power per transmit antenna (200 channel realisations per point), together with the AWGN single-antenna curve $\log_2(1+\rho)$. At high SNR the slope in bit/s/Hz per 3 dB (a factor 2 in $\rho$) equals the number of antennas $N$: multiplexing gain. At low SNR (0 dB), the gain is also nearly linear, due to array gain. Include the $1\times2$ and $2\times1$ curves to see that receive diversity (array gain) raises the curve by a constant while multiplexing raises the slope.</div>
+<h3>Three ways to use antennas</h3>
+<table>
+<tr><th>Technique</th><th>What it needs</th><th>What it gives</th></tr>
+<tr><td><b>Diversity</b> (MRC, Alamouti)</td><td>independent fading branches; CSI at receiver only</td><td>order $N_tN_r$: robust (reliability, range); low-rate</td></tr>
+<tr><td><b>Spatial multiplexing</b> (V-BLAST, SVD)</td><td>rich scattering (full-rank $\mathbf H$), high SNR; CSI at receiver</td><td>up to $\min(N_t,N_r)$ parallel streams: rate</td></tr>
+<tr><td><b>Beamforming</b></td><td>CSI (or direction) at the transmitter; calibrated array</td><td>array gain $N_t$ (and nulls towards others): SNR, range, interference suppression</td></tr>
+</table>
+<p>The three cannot all be maximised: the Zheng–Tse <b>diversity–multiplexing trade-off</b> says that at multiplexing gain $r$ (rate $r\log\rho$) the best diversity order is $(N_t-r)(N_r-r)$ (piecewise-linear interpolation between $N_tN_r$ and 0 as $r$ goes from 0 to $\min(N_t,N_r)$): a system sends many streams at high SNR and one robust stream (or beamformed) at low SNR, and <b>rank adaptation</b> in LTE/5G chooses between them every few milliseconds on the basis of channel reports. <b>Multi-user MIMO</b> serves several users on the same time–frequency resource by spatial separation (zero-forcing precoding); <b>massive MIMO</b> (64–256 base-station antennas, many users) exploits “channel hardening” and nearly orthogonal user channels so that simple linear processing approaches capacity.</p>
+<div class="box eng"><span class="tag">Engineering practice · MIMO in the standards, and what spoils it</span>
+<p>LTE downlink: up to 8 layers (2×2 and 4×4 in the field), codebook-based precoding; Wi-Fi 802.11n/ac/ax: up to 4 (n), 8 (ac wave 2, ax) spatial streams, with a 2×2 phone and router doubling the peak rate of a 1×1 link; 5G NR sub-6 GHz: 64T64R massive MIMO radios with beam-sweeping in mmWave. <b>Impairments</b>: line-of-sight with closely-spaced antennas gives a rank-one channel (high $K$-factor); antenna spacing below $\lambda/2$ or correlated scatterers reduce the effective rank (the Kronecker model: $\mathbf H=\mathbf R_r^{1/2}\mathbf H_w\mathbf R_t^{1/2}$); the SNR must be high enough ($>15$–20 dB) to use more than one stream; the channel must be known: <b>pilot overhead scales with the number of transmit antennas</b>, and in fast fading the CSI is out of date (the feedback delay vs $T_c$). Hence smartphones show 2 streams most of the time and 4 only at high SNR near the cell centre.</p></div>
+
+<div class="box gate"><span class="tag">GATE pattern · wireless channels</span>
+<ul>
+<li>Link budget arithmetic in dB (Friis; EIRP; noise power $kTB$; sensitivity; $E_b/N_0$ link equation); FSPL dB formula; two-ray $d^{-4}$; path-loss exponent.</li>
+<li>Doppler $f_m=vf_c/c$; coherence time $\approx1/(2f_m)$ or $0.423/f_m$; coherence bandwidth $\approx1/(5\tau_{\rm rms})$; classification flat/selective, slow/fast; rms delay spread of a given profile.</li>
+<li>Rayleigh facts: envelope and power distributions; $P(\gamma<\gamma_0)=1-e^{-\gamma_0/\bar\gamma}$; BPSK BER $\approx1/4\bar\gamma$; diversity order from the slope; MRC SNR sum; Alamouti decoding.</li>
+<li>MIMO capacity $\log_2\det(\mathbf I+\frac\rho{N_t}\mathbf H\mathbf H^H)$ for a given $\mathbf H$; rank and number of streams.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+In free space with fixed antennas, doubling both the distance and the carrier frequency changes the received power by
+<ol class="opts"><li>$-6$ dB</li><li>$-12$ dB</li><li>$-3$ dB</li><li>$-24$ dB</li></ol>
+<div class="sol"><p>$L_{\rm fs}\propto d^2f^2$: each doubling costs 6 dB; two doublings: $12$ dB. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+In the two-ray ground-reflection model, for distances beyond the breakpoint, the received power falls with distance $d$ as
+<ol class="opts"><li>$d^{-1}$</li><li>$d^{-2}$</li><li>$d^{-4}$</li><li>$d^{-6}$</li></ol>
+<div class="sol"><p>$P_r\propto h_t^2h_r^2/d^4$: 40 dB per decade. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,C" data-marks="1" data-src="Original">
+Which statements about flat Rayleigh fading are correct?
+<ol class="opts"><li>The received power (SNR) is exponentially distributed</li><li>The average BPSK bit error probability falls only as $1/(4\bar\gamma)$ at high SNR</li><li>A 10 dB increase in average SNR reduces the BER by roughly a factor of 10</li><li>The envelope has a Gaussian distribution</li></ol>
+<div class="sol"><p>(A), (B), (C) true. (D) false: the <em>real and imaginary parts</em> are Gaussian; the envelope is Rayleigh. <b>A, B, C</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+A signal of bandwidth 5 MHz is transmitted in an environment with rms delay spread 1 µs. The channel is
+<ol class="opts"><li>flat fading, since 5 MHz is a narrow band</li><li>fast fading</li><li>flat, with no ISI</li><li>frequency-selective, since $B\gg B_c\approx200$ kHz</li></ol>
+<div class="sol"><p>$B_c\approx1/(5\tau_{\rm rms})=200$ kHz $\ll5$ MHz: frequency-selective, needing an equaliser or OFDM. <b>(D)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+The Alamouti scheme with two transmit antennas and one receive antenna achieves
+<ol class="opts"><li>diversity order 2 and rate 1 without channel knowledge at the transmitter</li><li>diversity order 2 and rate 2</li><li>an array gain of 3 dB at the transmitter</li><li>diversity order 1 and rate 2</li></ol>
+<div class="sol"><p>Orthogonal $2\times2$ code: two symbols in two slots (rate 1), decoded with SNR $\propto|h_1|^2+|h_2|^2$ (order 2), with no CSI at the transmitter. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="B,D" data-marks="1" data-src="Original">
+Which statements about MIMO capacity are correct for an $N\times N$ i.i.d. Rayleigh channel at high SNR?
+<ol class="opts"><li>It increases as $\log_2N$</li><li>It increases approximately linearly with $N$ at fixed total transmit power</li><li>It requires a line-of-sight channel</li><li>It requires a scattering-rich channel with full-rank $\mathbf H$</li></ol>
+<div class="sol"><p>$C\approx N\log_2\rho$: linear in $N$ (B); needs rank $N$, hence scattering (D); a pure LOS channel has rank 1 (C false). <b>B, D</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="86.4" data-tol="0.2" data-marks="1" data-src="Original">
+The free-space path loss at 5 GHz over 100 m is ______ dB.
+<div class="sol"><p>$32.44+20\log_{10}0.1+20\log_{10}5000=32.44-20+73.98=86.4$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-60" data-tol="0.2" data-marks="1" data-src="Original">
+A transmitter radiates 30 dBm into an antenna of gain 10 dBi; the receive antenna is 0 dBi; the path loss is 100 dB. The received power is ______ dBm.
+<div class="sol"><p>$30+10+0-100=-60$ dBm.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-95" data-tol="0.3" data-marks="1" data-src="Original">
+The receiver noise floor for a bandwidth of 20 MHz and a noise figure of 6 dB is ______ dBm.
+<div class="sol"><p>$-174+10\log_{10}(2\times10^7)+6=-174+73+6=-95$ dBm.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3.15" data-tol="0.1" data-marks="2" data-src="Original">
+A 2.4 GHz link has $P_t=20$ dBm, 0 dBi antennas and receiver sensitivity $-90$ dBm. The maximum free-space range is ______ km.
+<div class="sol"><p>Allowed loss $20+90=110$ dB. $20\log d_{\rm km}=110-32.44-67.60=9.96$, $d=10^{0.498}=3.15$ km.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2400" data-tol="5" data-marks="2" data-src="Original">
+Base station height 50 m, mobile height 2 m, carrier 1.8 GHz. The two-ray breakpoint distance $4h_th_r/\lambda$ is ______ m.
+<div class="sol"><p>$\lambda=0.1667$ m; $4\times50\times2/0.1667=2400$ m.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="9.87" data-tol="0.1" data-marks="2" data-src="Original">
+Log-normal shadowing has $\sigma=6$ dB. The margin needed so that the signal exceeds the threshold at 95% of locations ($z=1.645$) is ______ dB.
+<div class="sol"><p>$1.645\times6=9.87$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="180" data-tol="1" data-marks="1" data-src="Original">
+A car travels at 108 km/h and the carrier is 1.8 GHz. The maximum Doppler shift is ______ Hz.
+<div class="sol"><p>$v=30$ m/s; $f_m=30\times1.8\times10^9/3\times10^8=180$ Hz. Coherence time $\approx0.24/f_m=1.3$ ms.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="100" data-tol="1" data-marks="1" data-src="Original">
+A channel has rms delay spread 2 µs. The coherence bandwidth, using $B_c\approx1/(5\tau_{\rm rms})$, is ______ kHz.
+<div class="sol"><p>$1/(5\times2\times10^{-6})=10^5$ Hz $=100$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0025" data-tol="0.0003" data-marks="2" data-src="Original">
+BPSK in flat Rayleigh fading with average SNR 20 dB: the average bit error probability, $\frac12[1-\sqrt{\bar\gamma/(1+\bar\gamma)}]$, is ______ (decimal).
+<div class="sol"><p>$\bar\gamma=100$: $\frac12(1-\sqrt{100/101})=\frac12(1-0.99504)=0.00248$ (the approximation $1/(4\bar\gamma)=0.0025$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.095" data-tol="0.003" data-marks="2" data-src="Original">
+In Rayleigh fading the probability that the instantaneous SNR is more than 10 dB below its mean ($\gamma<0.1\bar\gamma$) is ______.
+<div class="sol"><p>$P=1-e^{-0.1}=0.0952$: the channel is 10 dB below its mean about 1 time in 10.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="20" data-tol="0.2" data-marks="2" data-src="Original">
+To limit outage (SNR below the decoding threshold) to 1% in flat Rayleigh fading, the mean SNR must exceed the threshold by ______ dB.
+<div class="sol"><p>$1-e^{-\gamma_{\rm th}/\bar\gamma}=0.01\Rightarrow\bar\gamma/\gamma_{\rm th}=99.5=20.0$ dB: a fading margin of 20 dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="9.77" data-tol="0.05" data-marks="2" data-src="Original">
+Three-branch MRC receives with each branch having an average SNR of 5 dB. The mean SNR at the combiner output is ______ dB.
+<div class="sol"><p>The SNRs add: $3\times10^{0.5}=9.49\ (9.77\ \text{dB})$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.75" data-tol="0.02" data-marks="2" data-src="Original">
+With channel gains $h_1=0.5+0.5j$ and $h_2=1-0.5j$ in an Alamouti $2\times1$ system, the effective gain $|h_1|^2+|h_2|^2$ multiplying each decoded symbol is ______.
+<div class="sol"><p>$|h_1|^2=0.5$, $|h_2|^2=1.25$; sum $=1.75$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="8.14" data-tol="0.05" data-marks="2" data-src="Original">
+A $2\times2$ MIMO channel has $\mathbf H=\mathbf I_2$ and SNR $\rho=15$ dB (31.6) with equal power on the two antennas. The capacity $\log_2\det(\mathbf I+\frac\rho2\mathbf H\mathbf H^H)$ is ______ bit/s/Hz.
+<div class="sol"><p>$2\log_2(1+15.81)=2\times4.07=8.14$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.39" data-tol="0.05" data-marks="2" data-src="Original">
+A $2\times2$ channel with all entries equal to 1 (a perfectly correlated, rank-1 channel) at $\rho=10$ dB (10): the capacity is ______ bit/s/Hz.
+<div class="sol"><p>$\mathbf H\mathbf H^H=\begin{bmatrix}2&2\\2&2\end{bmatrix}$ has eigenvalues 4 and 0: $C=\log_2(1+\frac{10}{2}\cdot4)=\log_2 21=4.39$. (The identity channel at the same SNR gives $2\log_2(1+5)=5.17$: the correlated channel loses the second stream.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="9.03" data-tol="0.05" data-marks="1" data-src="Original">
+The array gain of an 8-antenna transmit beamformer with perfect channel knowledge is ______ dB.
+<div class="sol"><p>$10\log_{10}8=9.03$ dB.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="nat" data-ans="-115.2" data-tol="0.3" data-marks="2" data-src="Original (GATE-style)">
+A geostationary satellite at 36 000 km transmits at 12 GHz with an EIRP of 50 dBW. A ground dish has a gain of 40 dBi. Using only free-space loss, the received power is ______ dBW.
+<div class="sol"><p>$L_{\rm fs}=32.44+91.13+81.58=205.15$ dB. $P_r=50+40-205.15=-115.2$ dBW ($=-85.2$ dBm).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="10.9" data-tol="0.3" data-marks="3" data-src="Original (GATE-style)">
+For the downlink above add 2 dB of atmospheric and pointing loss, a receiver figure of merit $G/T=15$ dB/K and a data rate of 36 Mbit/s. Using $E_b/N_0=\mathrm{EIRP}-L+G/T+228.6-10\log R_b$ (dB), the $E_b/N_0$ is ______ dB.
+<div class="sol"><p>$50-(205.15+2)+15+228.6-75.56=10.9$ dB. (Enough for a rate-¾ QPSK link with coding, Chapters 15 and 18.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.9" data-tol="0.2" data-marks="2" data-src="Original (GATE-style)">
+BPSK with 2-branch MRC in independent Rayleigh fading, each branch having mean SNR 20 dB. Using the exact formula, the BER is ______ $\times10^{-5}$.
+<div class="sol"><p>$\bar\gamma=100$, $\mu=0.99504$: $\big(\frac{1-\mu}2\big)^2\big[1+2\frac{1+\mu}2\big]=(0.00248)^2(2.995)=1.84\times10^{-5}$. (Single branch: $2.5\times10^{-3}$: a 135-fold improvement; the asymptote $\binom32(1/400)^2=1.9\times10^{-5}$.)</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="Original (GATE-style)">
+A vehicle at 100 km/h uses a 900 MHz carrier and a 200 kHz bandwidth data link in an urban area with $\tau_{\rm rms}=0.5$ µs. The channel is best described as
+<ol class="opts"><li>fast and frequency-selective</li><li>slow and flat</li><li>fast and flat</li><li>slow and frequency-selective</li></ol>
+<div class="sol"><p>$f_m=83$ Hz, $T_c\approx0.24/f_m\approx2.9$ ms $\gg T_s=5$ µs (slow). $B_c=1/(5\times0.5\ \mu\text{s})=400$ kHz $>200$ kHz (flat). <b>(B)</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 21 in one breath</h3>
+<ul>
+<li>Friis: $P_r=P_tG_tG_r(\lambda/4\pi d)^2$; $L_{\rm fs}=32.44+20\log d_{\rm km}+20\log f_{\rm MHz}$; $=P_tA_tA_r/\lambda^2d^2$ (aperture view: higher $f$ needs beamforming, not higher loss per se). Link budget: $P_r=P_t+G_t+G_r-L-M$ vs sensitivity $-174+10\log B+F+\mathrm{SNR}_{\min}$; $E_b/N_0=\mathrm{EIRP}-L+G/T+228.6-10\log R_b$.</li>
+<li>Two-ray: $P_r\propto(h_th_r)^2/d^4$ beyond $d_b=4h_th_r/\lambda$. Log-distance $n=2..5$ plus log-normal shadowing ($z\sigma$ margin); Hata for cities.</li>
+<li>Small-scale: Rayleigh; $f_m=vf_c/c$, Jakes spectrum, $R(\Delta t)=J_0(2\pi f_m\Delta t)$, $T_c\approx0.24/f_m$; $B_c\approx1/5\tau_{\rm rms}$; flat/selective, slow/fast; LCR $\sqrt{2\pi}f_m\rho e^{-\rho^2}$.</li>
+<li>BPSK in Rayleigh: $\frac12[1-\sqrt{\bar\gamma/(1+\bar\gamma)}]\approx1/4\bar\gamma$: 34 dB penalty at $10^{-5}$.</li>
+<li>Diversity order $L$: MRC (weights $h^*$, SNRs add), SC ($\bar\gamma\sum1/k$), Alamouti (2 Tx, rate 1, no CSIT). BER $\approx\binom{2L-1}L(4\bar\gamma)^{-L}$.</li>
+<li>MIMO: $C=\log_2\det(\mathbf I+\frac\rho{N_t}\mathbf H\mathbf H^H)=\sum\log_2(1+\frac\rho{N_t}\sigma_i^2)$ via SVD: linear in $\min(N_t,N_r)$; beamforming array gain; diversity–multiplexing trade-off.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+const binom=(n,k)=>{ let r=1; for(let i=1;i<=k;i++) r=r*(n-k+i)/i; return r; };
+const pRay=g=>.5*(1-Math.sqrt(g/(1+g)));
+const mrcB=(L,g)=>{ const mu=Math.sqrt(g/(1+g)); let s=0; for(let k=0;k<L;k++) s+=binom(L-1+k,k)*Math.pow((1+mu)/2,k); return Math.pow((1-mu)/2,L)*s; };
+const fmtD=d=>d>=1000?(d/1000).toFixed(d>=1e4?1:2)+' km':d.toFixed(0)+' m';
+
+/* ---------- link budget ---------- */
+GB.widget('w-link',{title:'Link budget: received power against distance',h:380,hm:400,controls:[{k:'f',type:'select',label:'carrier frequency',options:[[900,'900 MHz'],[2400,'2.4 GHz'],[5800,'5.8 GHz'],[28000,'28 GHz']],value:2400},{k:'pt',label:'transmit power Pt (dBm)',min:0,max:46,step:1,value:20,fmt:v=>v+' dBm'},{k:'g',label:'antenna gains Gt+Gr (dBi)',min:0,max:60,step:1,value:4,fmt:v=>v+' dB'},{k:'n',label:'path-loss exponent n',min:2,max:5,step:.1,value:3,fmt:v=>v.toFixed(1)},{k:'mg',label:'shadow/fade margin (dB)',min:0,max:25,step:1,value:8,fmt:v=>v+' dB'},{k:'sn',label:'receiver sensitivity (dBm)',min:-130,max:-60,step:1,value:-90,fmt:v=>v+' dBm'}],
+ draw(g,p){ const lam=3e8/(p.f*1e6), fs=d=>20*Math.log10(4*Math.PI*d/lam), ht=30, hr=1.5, G=p.g, base=p.pt+G; const v=g.full({l:50,b:32}); v.view(0.5,5,-160,0); v.axes({xl:'log₁₀ d (m)',ystep:20,xstep:.5}); const xs=[],a=[],b=[],c=[];
+  const pl1=fs(1); for(let l=.5;l<=5.001;l+=.02){ const d=Math.pow(10,l); xs.push(l); a.push(base-fs(d)); b.push(Math.min(base-fs(d),base+20*Math.log10(ht*hr)-40*l)); c.push(base-(pl1+10*p.n*l)-p.mg); }
+  v.line(xs,a,'blue',2); v.line(xs,b,'orange',2); v.line(xs,c,'yellow',2.6); v.hline(p.sn,'red',[6,4],1.6); g.legend([['free space','blue'],['two-ray (30 m, 1.5 m)','orange'],['log-distance, n = '+p.n.toFixed(1)+', margin','yellow'],['sensitivity','red']],56,g.h*.7,true);
+  const dfs=lam/(4*Math.PI)*Math.sqrt(Math.pow(10,(base-p.sn)/10)), dld=Math.pow(10,(base-p.sn-pl1-p.mg)/(10*p.n)); const dtr=Math.min(dfs,Math.pow(10,(base+20*Math.log10(ht*hr)-p.sn)/40));
+  return 'λ = '+(lam*100).toFixed(1)+' cm · free-space loss at 1 km: <b>'+fs(1000).toFixed(1)+' dB</b> · maximum range: free space <b>'+fmtD(dfs)+'</b> · two-ray <b>'+fmtD(dtr)+'</b> · log-distance with margin <b>'+fmtD(dld)+'</b>'; }});
+
+/* ---------- Clarke fading ---------- */
+(function(){ const r=m.rng(2024), NS=32, th=[],ph=[]; for(let i=0;i<NS;i++){ th.push(TAU*(i+r())/NS); ph.push(TAU*r()); }
+ GB.widget('w-fade',{title:'Rayleigh fading seen by a moving receiver (Clarke model)',h:340,hm:360,controls:[{k:'v',label:'speed (km/h)',min:3,max:300,step:1,value:60,fmt:v=>v+' km/h'},{k:'fc',type:'select',label:'carrier frequency',options:[[.9,'900 MHz'],[2.1,'2.1 GHz'],[3.5,'3.5 GHz'],[28,'28 GHz']],value:2.1}],
+  draw(g,p){ const fm=p.v/3.6*p.fc*1e9/3e8, T=Math.max(.02,24/fm), N=1200, xs=[],ys=[]; for(let i=0;i<N;i++){ const t=T*i/N; let sr=0,si=0; for(let k=0;k<NS;k++){ const a=TAU*fm*Math.cos(th[k])*t+ph[k]; sr+=Math.cos(a); si+=Math.sin(a); } xs.push(t*1000); ys.push(10*Math.log10(Math.max((sr*sr+si*si)/NS,1e-6))); }
+   const v=g.full({l:46,b:32}); v.view(0,T*1000,-40,12); v.axes({xl:'t (ms)',ystep:10,xstep:Math.max(.5,Math.round(T*1000/8*10)/10)}); v.line(xs,ys,'blue',1.6); v.hline(-10,'axis'); v.hline(-20,'axis'); v.hline(0,'mute',[2,3],1);
+   const rho=Math.pow(10,-10/20), lcr=Math.sqrt(TAU)*fm*rho*Math.exp(-rho*rho); return 'f<sub>m</sub> = v f<sub>c</sub>/c = <b>'+fm.toFixed(0)+' Hz</b> · coherence time ≈ 0.24/f<sub>m</sub> = <b>'+(240/fm).toFixed(2)+' ms</b> · fades 10 dB below rms: <b>'+lcr.toFixed(1)+'</b> per second · window = 24/f<sub>m</sub> = '+(T*1000).toFixed(1)+' ms'; }});
+})();
+
+/* ---------- diversity BER ---------- */
+GB.widget('w-div',{title:'BPSK in Rayleigh fading: the value of diversity',h:380,hm:400,controls:[{k:'t',type:'select',label:'target BER for the readout',options:[[1e-2,'10⁻²'],[1e-3,'10⁻³'],[1e-5,'10⁻⁵']],value:1e-3}],
+ draw(g,p){ const cur=[['AWGN (no fading)','mute',x=>m.Q(Math.sqrt(2*x))],['Rayleigh, 1 branch','red',x=>pRay(x)],['2-branch selection','orange',x=>2*pRay(x)-pRay(x/2)],['Alamouti 2×1','purple',x=>mrcB(2,x/2)],['2-branch MRC','yellow',x=>mrcB(2,x)],['4-branch MRC','green',x=>mrcB(4,x)]]; const col=c=>c==='purple'?'blue':c;
+  const v=g.full({l:46,b:32}); v.view(0,40,-8,-.3); v.axes({xl:'average SNR per branch (dB)',ystep:1,xstep:5}); const xs=[]; for(let x=0;x<=40.001;x+=.25) xs.push(x);
+  cur.forEach(c=>v.line(xs,xs.map(x=>Math.log10(Math.max(c[2](Math.pow(10,x/10)),1e-12))),col(c[1]),2.2)); v.hline(Math.log10(p.t),'axis'); g.legend(cur.map(c=>[c[0],col(c[1])]),58,g.h*.6,true);
+  const need=f=>{ let lo=-5,hi=70; for(let i=0;i<80;i++){ const mid=(lo+hi)/2; if(f(Math.pow(10,mid/10))>p.t) lo=mid; else hi=mid; } return lo; };
+  return 'SNR needed for BER '+p.t.toExponential(0)+': '+cur.map(c=>c[0].replace('Rayleigh, 1 branch','1 branch')+' <b>'+need(c[2]).toFixed(1)+'</b>').join(' · ')+' dB'; }});
+
+/* ---------- MIMO capacity ---------- */
+(function(){
+ function cap(nt,nr,rho,T,r){ let s=0; for(let t=0;t<T;t++){ const hr=[],hi=[]; for(let i=0;i<nr;i++){ hr.push([]); hi.push([]); for(let j=0;j<nt;j++){ hr[i].push(m.randn(r)*Math.SQRT1_2); hi[i].push(m.randn(r)*Math.SQRT1_2); } }
+   const Ar=[],Ai=[]; for(let i=0;i<nr;i++){ Ar.push([]); Ai.push([]); for(let j=0;j<nr;j++){ let sr=0,si=0; for(let k=0;k<nt;k++){ sr+=hr[i][k]*hr[j][k]+hi[i][k]*hi[j][k]; si+=hi[i][k]*hr[j][k]-hr[i][k]*hi[j][k]; } Ar[i].push((i===j?1:0)+rho/nt*sr); Ai[i].push(rho/nt*si); } }
+   // complex Cholesky log-det
+   const Lr=[...Array(nr)].map(()=>Array(nr).fill(0)), Li=[...Array(nr)].map(()=>Array(nr).fill(0)); let ld=0; for(let i=0;i<nr;i++){ for(let j=0;j<=i;j++){ let sr=Ar[i][j], si=Ai[i][j]; for(let k=0;k<j;k++){ sr-=Lr[i][k]*Lr[j][k]+Li[i][k]*Li[j][k]; si-=Li[i][k]*Lr[j][k]-Lr[i][k]*Li[j][k]; } if(i===j){ Lr[i][i]=Math.sqrt(Math.max(sr,1e-300)); ld+=Math.log2(Lr[i][i]); } else { Lr[i][j]=sr/Lr[j][j]; Li[i][j]=si/Lr[j][j]; } } } s+=2*ld; } return s/T; }
+ const CFG=[[1,1,'1×1','mute'],[1,2,'1×2 (receive diversity)','orange'],[2,1,'2×1','red'],[2,2,'2×2','blue'],[4,4,'4×4','green'],[8,8,'8×8','yellow']]; let curves=null; const SN=[]; for(let s=0;s<=30;s+=2) SN.push(s);
+ GB.widget('w-mimo',{title:'Ergodic capacity of MIMO Rayleigh channels',h:380,hm:400,controls:[{k:'s',label:'SNR marker (dB)',min:0,max:30,step:2,value:20,fmt:v=>v+' dB'}],
+  draw(g,p){ if(!curves){ const r=m.rng(31337); curves=CFG.map(c=>SN.map(s=>cap(c[0],c[1],Math.pow(10,s/10),200,r))); }
+   const v=g.full({l:46,b:32}); v.view(0,30,0,72); v.axes({xl:'SNR (dB)',ystep:10,xstep:5}); const aw=SN.map(s=>Math.log2(1+Math.pow(10,s/10))); v.line(SN,aw,'mute',1.6,[5,4]); CFG.forEach((c,i)=>v.line(SN,curves[i],c[3],2.4)); v.vline(p.s,'axis');
+   g.legend(CFG.map(c=>[c[2],c[3]]),58,g.h*.08,true); const ix=SN.indexOf(p.s); return 'at '+p.s+' dB: '+CFG.map((c,i)=>c[2].split(' ')[0]+' <b>'+curves[i][ix].toFixed(1)+'</b>').join(' · ')+' bit/s/Hz (single-antenna AWGN: '+aw[ix].toFixed(1)+')'; }});
+})();
+</script>

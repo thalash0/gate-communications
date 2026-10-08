@@ -1,0 +1,410 @@
+<!--meta {"id":"ch18","num":"18","part":"Part IV · Digital Communication","title":"Codes with Memory and Codes Near Capacity: Convolutional, Turbo, LDPC, Polar","lede":"Block codes live on one word at a time. Convolutional codes let every output bit depend on a sliding window of input bits, and the Viterbi algorithm decodes them optimally; wire two of them through an interleaver and decode iteratively and you reach within a whisker of Shannon's limit. This chapter follows the 60-year road from the codes of Voyager to the codes of your phone."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Describe a convolutional encoder by its generator polynomials, state diagram and trellis; compute output sequences, rate and constraint length; <b>derive</b> the transfer function and the free distance.</li>
+<li><b>Derive</b> the Viterbi algorithm from the principle of optimality, state its complexity, perform a hard-decision decode by hand, and estimate coding gain and BER from the distance spectrum with the union bound.</li>
+<li>Explain puncturing, termination, tail-biting and recursive systematic codes.</li>
+<li>Explain turbo codes: parallel concatenation, the interleaver’s role, extrinsic information and the iterative BCJR decoder, with the log-likelihood-ratio algebra <b>derived</b>.</li>
+<li>Explain LDPC codes: parity-check graph, belief propagation, <b>derive</b> the tanh rule, min-sum approximation, thresholds and girth; run a decoder in the browser.</li>
+<li>Explain polar codes and channel polarisation, <b>derive</b> the erasure-channel recursion, and choose frozen bits.</li>
+<li>Explain trellis-coded modulation and set partitioning, compute its Euclidean-distance gain, and place every scheme on a map of the Shannon limit for the binary-input AWGN channel.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 11 (capacity), Chapter 14 (ML detection), Chapter 15 (BPSK, QAM, PSK), Chapter 17 (block codes, union bound, coding gain).</p></div>
+
+<div class="box story"><span class="tag">History · the road to the limit</span>
+<p>Shannon proved in 1948 that codes reaching capacity exist, then spent the rest of his career not finding them. <strong>Peter Elias</strong> (1955) introduced convolutional codes as an alternative to blocks; sequential decoding (Fano, Wozencraft) made them usable but variable-time. <strong>Andrew Viterbi</strong> in 1967 invented his algorithm to <em>prove a bound</em>, not to be built; <strong>David Forney</strong> showed it was maximum-likelihood and practical, and by the late 1970s it was flying on deep-space probes, sending data across hundreds of millions of kilometres. By the 1980s the best practical system was “Viterbi + Reed–Solomon”, still 3 dB from the limit. In 1982 <strong>Gottfried Ungerboeck</strong> showed how to combine coding and modulation to give telephone modems 4 dB of free gain.</p>
+<p>At the 1993 ICC conference in Geneva, <strong>Claude Berrou</strong>, Alain Glavieux and Punya Thitimajshima announced a code with BER $10^{-5}$ at $E_b/N_0=0.7$ dB, rate ½, within 0.5 dB of the limit. Many in the audience assumed a mistake in the simulation. It was not. <strong>Turbo codes</strong> were reproduced within months, and the surprised community went back to a PhD thesis written thirty years earlier by <strong>Robert Gallager</strong> and ignored for want of computing power: <strong>low-density parity-check (LDPC) codes</strong>, rediscovered by MacKay and Neal in 1995, now sit in every Wi-Fi router and 5G phone. In 2008 <strong>Erdal Arıkan</strong>, a Turkish professor, proved that a code built by recursive channel “polarisation” achieves capacity with a decoding complexity of $N\log N$: <strong>polar codes</strong>, chosen for the 5G control channels in 2016. The Shannon limit, once a mirage, is now an engineering specification.</p></div>
+
+<div class="box real"><span class="tag">Real world</span>
+<p><b>GSM voice</b>: convolutional code rate ½, $K=5$. <b>Voyager and satellite TV (DVB-S)</b>: $K=7$ rate ½ convolutional code ($g=171,133$ octal), punctured to ⅔, ¾, ⅚, ⁷⁄₈. <b>3G/4G data (UMTS, LTE)</b>: turbo codes. <b>Wi-Fi 802.11n/ac/ax, 5G data channels, DVB-S2, 10GBASE-T, flash memory</b>: LDPC. <b>5G control channels</b>: polar codes with CRC-aided list decoding. <b>Telephone modems V.32/V.34, Gigabit Ethernet 1000BASE-T</b>: trellis-coded modulation. <b>Deep-space (CCSDS)</b>: LDPC, turbo, and the legacy $K=7$ code. Almost every bit that reaches you wirelessly went through a code from this chapter.</p></div>
+
+<h2>Convolutional codes</h2>
+<p>A <b>convolutional encoder</b> is a shift register of $K-1$ memory cells (the <b>constraint length</b> $K$ counts the current bit plus the memory) feeding $n$ modulo-2 adders; for each input bit, $n$ output bits are produced, so the rate is $R_c=1/n$ (more generally $k/n$). The output bits are <em>convolutions</em> of the input with the generator sequences, which is the origin of the name. The classic example has $K=3$, $n=2$, with generators $g^{(1)}=(1,1,1)=7_8$ and $g^{(2)}=(1,0,1)=5_8$:
+$$y_n^{(1)}=u_n\oplus u_{n-1}\oplus u_{n-2},\qquad y_n^{(2)}=u_n\oplus u_{n-2}.$$
+In polynomial form $y^{(i)}(D)=g^{(i)}(D)\,u(D)$ with $g^{(1)}=1+D+D^2$, $g^{(2)}=1+D^2$ and $D$ the unit delay. The encoder output is read in pairs; to end the code word, $K-1$ zeros (the <b>tail</b>) flush the register back to the all-zero state, a rate loss of $(K-1)/L$ for $L$ message bits.</p>
+<p><b>Example.</b> Input $1011\,00$ (message 1011 plus tail): outputs $11,\ 10,\ 00,\ 01,\ 01,\ 11$. (Do the first by hand: $u_1=1$, previous bits $0,0$: $y^{(1)}=1,\ y^{(2)}=1$.)</p>
+<h3>State diagram and trellis</h3>
+<p>The register content $(u_{n-1},u_{n-2})$ is the encoder’s <b>state</b>: $2^{K-1}$ states. Each input bit makes a transition: from state $s$ with input $u$ to the state $(u,u_{n-1})$, emitting the pair $(y^{(1)},y^{(2)})$. Drawing the state diagram unrolled in time gives the <b>trellis</b>: at each step every state has two outgoing branches ($u=0,1$) and two incoming. Every code word is a <em>path through the trellis</em> beginning and ending in state 00, which is the central picture of the chapter: decoding means finding the best path.</p>
+<div class="box derive"><span class="tag">Derivation · free distance and the transfer function</span>
+<p>The error-correcting power is the <b>free distance</b> $d_{\rm free}$: the minimum Hamming weight of the output of any path that leaves state 00 and returns to it (by linearity, the distance between any two code sequences equals the weight of a single non-zero one). To enumerate all such paths, break the state diagram at state 00 into a source and a sink and label each branch with $D^{w}N^{u}L$: $D^w$ for output weight $w$, $N$ for one input 1 (so the exponent of $N$ counts information-bit errors) and $L$ for one step in length. For the $K=3$ code, states $a=00,\ b=10,\ c=01,\ d=11$ (state $=(u_{n-1}u_{n-2})$):</p>
+<table><tr><th>from → to</th><th>input $u$</th><th>output</th><th>branch label</th></tr>
+<tr><td>$a\to b$</td><td>1</td><td>11</td><td>$D^2NL$</td></tr>
+<tr><td>$b\to c$</td><td>0</td><td>10</td><td>$DL$</td></tr>
+<tr><td>$b\to d$</td><td>1</td><td>01</td><td>$DNL$</td></tr>
+<tr><td>$c\to a$</td><td>0</td><td>11</td><td>$D^2L$</td></tr>
+<tr><td>$c\to b$</td><td>1</td><td>00</td><td>$NL$</td></tr>
+<tr><td>$d\to c$</td><td>0</td><td>01</td><td>$DL$</td></tr>
+<tr><td>$d\to d$</td><td>1</td><td>10</td><td>$DNL$</td></tr></table>
+<p>(the self-loop $a\to a$ with output 00 is the zero path and is removed). Treat the labels as gains in a signal-flow graph; the state variables obey $X_b=D^2NL\,X_a+NL\,X_c$, $X_c=DL\,X_b+DL\,X_d$, $X_d=DNL\,X_b+DNL\,X_d$, and the output $X_e=D^2L\,X_c$. Solving ($X_a=1$):
+$$X_d=\frac{DNL}{1-DNL}X_b,\quad X_c=DL\Big(1+\frac{DNL}{1-DNL}\Big)X_b=\frac{DL}{1-DNL}X_b,\quad X_b=\frac{D^2NL(1-DNL)}{1-DNL(1+L)}\ ,$$
+so that $X_c=\dfrac{D^3NL^2}{1-DNL(1+L)}$ and finally $T=X_e=D^2L\,X_c$:
+$$T(D,N,L)=\frac{D^5NL^3}{1-DNL(1+L)}=D^5NL^3+D^6N^2L^4(1+L)+\cdots$$
+Setting $N=L=1$: $T(D)=\dfrac{D^5}{1-2D}=\sum_{d\ge5}2^{d-5}D^d$. So $d_{\rm free}=\mathbf5$, with exactly $a_d=2^{d-5}$ paths of output weight $d$. The path of weight 5 is $u=1,0,0$: outputs $11,10,11$, three trellis steps ($L^3$), one information 1 ($N$). Differentiating with respect to $N$ at $N=1$ gives the total number of information-bit errors on weight-$d$ paths: $c_d=\partial T/\partial N|_{N=1}$ with $c_d=(d-4)\,2^{d-5}$: $c_5=1,\ c_6=4,\ c_7=12,\ c_8=32,\dots$ These are the numbers needed for the BER bound below. For the standard $K=7$ code (171,133): $d_{\rm free}=10$, $a_d=11,38,193,1331,\dots$ at $d=10,12,14,16$ and $c_d=36,211,1404,11633,\dots$ (found by the same enumeration on a 64-state graph).</p></div>
+<table>
+<tr><th>$K$</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr>
+<tr><th>best rate-½ $d_{\rm free}$</th><td>5</td><td>6</td><td>7</td><td>8</td><td>10</td><td>10</td><td>12</td></tr>
+<tr><th>generators (octal)</th><td>7, 5</td><td>17, 15</td><td>35, 23</td><td>75, 53</td><td>171, 133</td><td>371, 247</td><td>753, 561</td></tr>
+</table>
+<p>Increasing $K$ buys distance but doubles the number of states each time: the decoder complexity is $2^{K-1}$ per bit, which is why $K=7$ (64 states) was the long-time standard and $K=9$ (256 states) is used in CDMA2000 and the 3G standards.</p>
+
+<h2>The Viterbi algorithm</h2>
+<div class="box derive"><span class="tag">Derivation · maximum-likelihood sequence decoding by dynamic programming</span>
+<p>Given the received sequence $\mathbf r$, the ML decoder chooses the code sequence $\mathbf x$ maximising $P(\mathbf r\mid\mathbf x)$. For a memoryless channel $P(\mathbf r|\mathbf x)=\prod_nP(r_n|x_n)$, so with $\Lambda=-\ln P$ the problem is to minimise the <b>path metric</b> $\sum_n\lambda_n$, a sum of per-branch costs $\lambda_n=-\ln P(\mathbf r_n\mid\mathbf x_n)$: for the BSC this is the Hamming distance between the received pair and the branch label (up to a constant); for AWGN it is the squared Euclidean distance $\|\mathbf r_n-\mathbf x_n\|^2$ (equivalently, maximise the correlation). Enumerating all $2^L$ paths is hopeless. <b>Principle of optimality:</b> consider two paths that arrive at the same state at the same time. Their futures are identical (the future depends on the state, not on how it was reached), so whichever has the smaller metric so far will also be smaller after any common continuation; the other path can <em>never</em> be part of the best path and may be discarded. Hence at each of the $2^{K-1}$ states, at each time, keep only one <b>survivor</b>.</p>
+<p>The algorithm, per time step and per state: <b>ADD</b> the branch metric to the path metric of each of the two arriving paths; <b>COMPARE</b> them; <b>SELECT</b> the smaller and record which predecessor it came from. After the last step (terminated at state 00) trace the stored decisions backwards to read the message. Complexity: $2\cdot2^{K-1}$ branch computations per bit, linear in the message length (instead of exponential). With only a finite memory one can force a decision after $\approx5K$ steps, because all survivors then almost surely share a common ancestor (the <b>truncation depth</b>), so a continuous stream needs $2^{K-1}\times5K$ decision bits of memory. Soft decisions simply replace the Hamming metric by $\sum(r-x)^2$; the same hardware with 3-bit inputs gains about 2 dB.</p></div>
+<div class="widget" id="w-trellis">Hard-decision Viterbi decoding of the $K=3$ (7,5) code. The message (8 bits + 2 tail zeros) is encoded and up to three of the 20 received bits are flipped (sliders: 0 = none, 1–20 = bit index; flipped bits turn red). Gray lines are all trellis branches, blue lines the <i>survivors</i> chosen by the compare–select, yellow the traceback path from the final state 00. Numbers at the nodes are the accumulated path metrics (Hamming distance). Two errors far apart are always corrected ($d_{\rm free}=5$); three errors close together defeat the decoder: exactly the failure mode of ML decoding.</div>
+<div class="box ex"><span class="tag">Worked example · decoding by hand (and by widget)</span>
+<p>Message $1011$ + tail $00$ is sent as $11\,10\,00\,01\,01\,11$ and received as $10\,10\,00\,11\,01\,11$ (bits 2 and 7 flipped). The survivor metrics (states $00,01,10,11$) are: step 1: $1,\infty,1,\infty$; step 2: $2,1,2,3$; step 3: $2,3,1,3$; step 4: $3,2,2,2$; step 5: $3,2,3,2$; step 6 (tail, ending in 00): <b>2</b>. The traceback through state 00 gives input $1\,0\,1\,1\,0\,0$: the message is recovered, and the final metric 2 equals the number of channel errors the decoder assumed. Put a third flipped bit close to those two in the widget and the decoder can be lost: three errors packed into one constraint span exceed what $d_{\rm free}=5$ guarantees ($t=\lfloor(5-1)/2\rfloor=2$).</p></div>
+<h3>Performance: the union bound</h3>
+<div class="box derive"><span class="tag">Derivation · error probability from the distance spectrum</span>
+<p>By linearity assume the all-zero path was sent. An <em>error event</em> begins when some other path that diverged from the zero path accumulates a smaller metric. The probability that a specific path of output weight $d$ beats the zero path is the pairwise error probability $P_d$: for soft decisions with BPSK, exactly as in Chapter 17, $P_d=Q\big(\sqrt{2dR_cE_b/N_0}\big)$; for hard decisions with crossover $p=Q(\sqrt{2R_cE_b/N_0})$, the path wins if more than half of its $d$ differing bits are flipped (ties broken at random for even $d$):
+$$P_d^{\rm hard}=\sum_{k>d/2}\binom dkp^k(1-p)^{d-k}+\tfrac12\binom d{d/2}p^{d/2}(1-p)^{d/2}\ [d\text{ even}].$$
+The union bound sums over all paths. The first-event error probability is $P_e\le\sum_da_dP_d$, and each such event, on a path with $c_d$-weighted information 1’s, corrupts that many data bits:
+$$\boxed{\ P_b\le\sum_{d\ge d_{\rm free}}c_d\,P_d\ }\ \ (\text{per information bit, rate-1/}n\text{ code}).$$
+At high SNR the $d_{\rm free}$ term dominates and the asymptotic coding gain is, as for block codes, $10\log_{10}(R_cd_{\rm free})$ (soft) and $\approx10\log_{10}\big(R_c\lceil d_{\rm free}/2\rceil\big)$ (hard). For $K=3$: soft $10\log_{10}(0.5\cdot5)=3.98$ dB, hard $10\log_{10}(0.5\cdot3)=1.76$ dB; for the $K=7$ code: $10\log_{10}(0.5\cdot10)=6.99$ dB (soft), $10\log_{10}(0.5\cdot5)=3.98$ dB (hard). The widget plots the full bound.</p></div>
+<div class="widget" id="w-convber">BER bounds ($P_b\le\sum c_dP_d$, series truncated at $d_{\rm free}+7$ or $+8$, tight above BER $\sim10^{-3}$) of the $K=3$ and $K=7$ rate-½ codes against uncoded BPSK on the AWGN channel. Compare soft and hard decisions: soft is about 2 dB better. The readout gives the $E_b/N_0$ needed for BER $10^{-5}$ and the real gain; it is a little below the asymptotic gain because many paths of weight just above $d_{\rm free}$ contribute at practical error rates.</div>
+<div class="box eng"><span class="tag">Engineering practice · puncturing, termination, tail-biting</span>
+<p><b>Puncturing.</b> To raise the rate without redesigning the decoder, the transmitter deletes some of the coded bits according to a periodic pattern known to the receiver, which inserts neutral (zero-LLR) values at those positions and runs the <em>same</em> rate-½ Viterbi decoder. The $K=7$ pattern for rate ⅔ keeps 3 of every 4 coded bits (period 2 input bits), ¾ keeps 4 of 6, and so on to ⁷⁄₈; each step costs distance ($d_{\rm free}=10,6,5,4,3$ for rates ½, ⅔, ¾, ⅚, ⁷⁄₈), so the code adapts its strength to the channel quality: this is the “code rate” selection of DVB-S and early Wi-Fi. <b>Termination.</b> The flush tail costs $K-1$ bits (about 1% for a 600-bit block with $K=7$). <b>Tail-biting</b> removes the tail by initialising the register with the last $K-1$ message bits, so the path starts and ends in the same (unknown) state; the decoder runs circularly (LTE control channels, short packets). <b>Hardware.</b> A $K=7$ decoder performs 64 add-compare-select operations per bit: a chip of a few thousand gates delivers hundreds of Mbit/s, which is why this code dominated for forty years. At $K=9$ the cost is $4\times$, for about 0.4 dB.</p></div>
+
+<h2>Turbo codes: two simple codes and a conversation</h2>
+<p>A convolutional code with $K=7$ has 64 states; to get $d_{\rm free}$ high enough to approach capacity, $K$ would have to be 20 or more: $2^{19}$ states, impossible to decode. Berrou’s idea: build a <em>long</em> code with a random-like structure out of two <em>short</em> codes, and decode it by letting the two small decoders talk to each other.</p>
+<h3>Recursive systematic encoders</h3>
+<p>A <b>recursive systematic convolutional</b> (RSC) encoder emits the input bits $u$ unchanged (systematic) and a parity stream $p(D)=\dfrac{g_{\rm ff}(D)}{g_{\rm fb}(D)}\,u(D)$ generated by a register with <em>feedback</em>. LTE’s 8-state RSC: $\dfrac{1+D+D^3}{1+D^2+D^3}$ (octal 15/13). The feedback matters. A non-recursive code excited by a single 1 produces a finite burst of parity (at most $K$ non-zero pairs), so a block containing just one 1 has a code word of weight $\le K+1$ regardless of the length: this weight is the same on both sides of an interleaver, giving a bad code. The recursive filter, driven by one 1, rings forever (an impulse response of infinite length), so the single-1 input gives a code word of <em>very high</em> weight; to return the register to zero the input must contain at least <em>two</em> ones. Low-weight code words are then produced only by weight-2 (and higher) inputs, and a random interleaver makes it unlikely that both encoders see a bad pattern at once.</p>
+<div id="d-turboenc" class="dia">Turbo encoder: two identical RSC encoders; the second sees the input in a pseudo-random order (the interleaver $\pi$). The transmitted word is $(u,\,p_1,\,p_2)$: rate $\tfrac13$ before puncturing, $\tfrac12$ after discarding alternate parity bits.</div>
+<div class="box derive"><span class="tag">Derivation · the interleaver gain (why long interleavers make better codes)</span>
+<p>Take a block of $N$ information bits and an RSC code whose feedback polynomial has period $P$: a pair of 1s separated by exactly $P$ (or a multiple of $P$) positions makes the register return to zero quickly, producing a low parity weight, and the number of such weight-2 inputs is about $N$ (one for each starting position). After a <em>uniform random</em> interleaver, the same two ones are separated by a random distance in the second encoder; the probability that it too is a multiple of $P$ is about $1/N$. So the expected number of weight-2 input patterns that are bad for <em>both</em> encoders is about $N\times\tfrac1N=O(1)$ while the total information-bit error rate they cause is that count times their information weight (2) divided by $N$: $P_b\propto N^{-1}$ in the error-floor region. That is the <b>interleaver gain</b>: doubling the block length halves the floor, so the codes are good <em>because</em> they are long and random-like, in agreement with Shannon’s random-coding argument (Chapter 11). Turbo codes are designed to <i>look</i> random while still having the structure that lets two small decoders decode them. The residual weakness is a low $d_{\rm free}$ (tens, not hundreds), so for very low BER the performance bends over into an <b>error floor</b>.</p></div>
+<h3>Iterative decoding</h3>
+<p>The decoder consists of two <b>soft-in soft-out</b> (SISO) decoders, each for one RSC code, running the BCJR (Bahl–Cocke–Jelinek–Raviv, 1974) maximum <em>a posteriori</em> algorithm on the trellis; it outputs not a hard bit but the log-likelihood ratio $L(u_k\mid\mathbf y)=\ln\dfrac{P(u_k=+1\mid\mathbf y)}{P(u_k=-1\mid\mathbf y)}$ for each bit. The two decoders exchange information in turns.</p>
+<div class="box derive"><span class="tag">Derivation · channel, a-priori and extrinsic information</span>
+<p><b>Channel LLR.</b> For BPSK $x=\pm1$ over AWGN with noise variance $\sigma^2$ (so $\sigma^2=N_0/2E_s$ with $E_s=1$), $p(y\mid x)\propto e^{-(y-x)^2/2\sigma^2}$ and
+$$L(x\mid y)=\ln\frac{p(y\mid+1)}{p(y\mid-1)}=\frac{(y+1)^2-(y-1)^2}{2\sigma^2}=\frac{2}{\sigma^2}\,y\ \triangleq L_c\,y,\qquad L_c=\frac{2}{\sigma^2}=\frac{4E_s}{N_0}=4R_c\frac{E_b}{N_0}.$$
+The sign is the hard decision and the magnitude is its reliability.</p>
+<p><b>The BCJR output splits into three terms.</b> The posterior is a sum over all trellis branches $(s',s)$ in which $u_k=+1$ divided by the same sum over branches with $u_k=-1$; each branch probability factors as $\alpha_{k-1}(s')\,\gamma_k(s',s)\,\beta_k(s)$ ($\alpha,\beta$: the forward and backward state probabilities, depending only on the other branches). The branch term is
+$$\gamma_k(s',s)\propto\exp\!\Big[\tfrac12u_k\big(L(u_k)+L_cy_k^{s}\big)\Big]\cdot\exp\!\Big[\tfrac12L_cy_k^{p}x_k^{p}\Big],$$
+where $L(u_k)$ is the <i>a-priori</i> LLR of the bit and $y^s_k,y^p_k$ the received systematic and parity samples. The first exponential depends on the branch only through $u_k=\pm1$, so it comes out of numerator and denominator as $e^{+\frac12(\cdot)}$ and $e^{-\frac12(\cdot)}$, whose log-ratio is exactly the bracket. Therefore
+$$\boxed{\ L(u_k\mid\mathbf y)=\underbrace{L(u_k)}_{\text{a priori}}+\underbrace{L_c\,y_k^{s}}_{\text{channel}}+\underbrace{L_e(u_k)}_{\text{extrinsic}}\ }$$
+where $L_e$ depends on all the received symbols (parity and systematic) <em>of the other positions</em>, through the code constraints. It is the genuinely new information the decoder has derived from the code’s structure.</p>
+<p><b>The exchange.</b> Decoder 1 computes $L_e^{(1)}$, passes it through the interleaver to decoder 2 as <em>its</em> a-priori input; decoder 2 computes $L_e^{(2)}$ and sends it back through the de-interleaver as the a-priori input of decoder 1, and so on. Only the <em>extrinsic</em> part is exchanged: feeding back the channel and a-priori terms would let each decoder hear its own words again and count the same evidence twice. Because the interleaver scatters neighbouring bits, the extrinsic values arriving from the other decoder are approximately independent of the first decoder’s own errors, so each pass adds roughly new information. After 6–18 iterations the signs of $L(u_k|\mathbf y)$ are the decisions. The ideal of a single decoder for the product code, which would be optimal, has $2^{N}$ states and is out of the question; iterating between the two small ones is the approximation that works.</p></div>
+<div id="d-turbodec" class="dia">Iterative turbo decoder: two BCJR (SISO) decoders exchange extrinsic LLRs through the interleaver $\pi$ and the de-interleaver $\pi^{-1}$. After the last iteration the signs of the total LLR are the decoded bits (and a CRC checks them).</div>
+<div class="box eng"><span class="tag">Engineering practice · turbo codes in LTE, and why 5G moved on</span>
+<p>Berrou’s original code: two 16-state RSC codes, a 65 536-bit interleaver, rate ½ after puncturing, 18 iterations: $10^{-5}$ BER at $E_b/N_0=0.7$ dB, 0.5 dB from the BI-AWGN limit. In practice: the max-log-MAP simplification replaces BCJR’s sums by maxima (Viterbi-like, 0.3–0.5 dB loss), 6–8 iterations are run, block lengths range from 40 to 6144 bits (3G/4G data), and decoding stops early when a CRC passes. The LTE turbo interleaver is the QPP (quadratic permutation polynomial) $\pi(i)=(f_1i+f_2i^2)\bmod N$, which allows contention-free parallel decoding. Limitations: the two decoders must wait for each other and the trellis is sequential, so throughput scales poorly beyond a few hundred Mbit/s, and the $d_{\rm free}$ leaves an error floor around $10^{-6}$ at high rates. Those two limits, together with LDPC’s lower decoding complexity at high rates and highly parallel structure, are why 5G NR moved the data channel to LDPC.</p></div>
+
+<h2>LDPC codes: the sparse graph</h2>
+<p>A <b>low-density parity-check</b> code is a linear block code (Chapter 17) whose parity-check matrix $H$ is <em>sparse</em>: a few 1s per row and column. It is <b>regular</b> $(d_v,d_c)$ if every column has $d_v$ ones and every row has $d_c$; counting the ones both ways, $n\,d_v=m\,d_c$ with $m=n-k$ checks, so the design rate is $R_c\ge1-d_v/d_c$ (equality if $H$ is full rank). The $(3,6)$ code has rate ½. The picture to hold is the <b>Tanner graph</b>: $n$ <i>variable nodes</i> (code bits), $m$ <i>check nodes</i> (parity equations), and an edge for every 1 of $H$.</p>
+<div id="d-tanner" class="dia">Tanner graph of the (7,4) Hamming code: seven variable nodes (circles) and three checks (squares). It has short cycles (4-cycles through bits 1 and 4), unlike the long-girth graphs of good LDPC codes, which is why belief propagation works better on large sparse codes than on this tiny one.</div>
+<h3>Decoding by message passing</h3>
+<p>Brute-force ML decoding of a long block code is impossible, but sparsity gives an efficient local algorithm. <b>Gallager’s bit-flipping</b> (1962): compute all parity checks; flip the bit that participates in the most failed checks; repeat. The soft-decision version, <b>belief propagation</b> (sum-product algorithm), passes probabilities along the edges of the Tanner graph.</p>
+<div class="box derive"><span class="tag">Derivation · the sum-product (tanh) rule</span>
+<p>Work with LLRs $L=\ln\frac{P(x=0)}{P(x=1)}$ and the sign convention $(-1)^x$. <b>Variable node.</b> The bit’s evidence is the channel LLR $L_{\rm ch}=L_cy$ plus what each connected check tells it. Independent evidence adds in the log domain, so the message from variable $v$ to check $c$ uses all its sources <em>except</em> $c$ itself (extrinsic again):
+$$m_{v\to c}=L_{\rm ch}(v)+\sum_{c'\ne c}m_{c'\to v}.$$
+<b>Check node.</b> A check says that the bits $x_1,\dots,x_{d_c}$ sum to 0 mod 2, i.e. $\prod_i(-1)^{x_i}=1$, so $(-1)^{x_v}=\prod_{v'\ne v}(-1)^{x_{v'}}$. For a bit with LLR $L$: $E[(-1)^x]=P(0)-P(1)=\dfrac{e^L-1}{e^L+1}=\tanh\dfrac L2$. If the other bits are independent, the expectation of the product is the product of the expectations, so $\tanh\frac{m_{c\to v}}2=\prod_{v'\ne v}\tanh\frac{m_{v'\to c}}2$, i.e.
+$$\boxed{\ m_{c\to v}=2\tanh^{-1}\!\Big(\prod_{v'\ne v}\tanh\frac{m_{v'\to c}}2\Big)\ }$$
+Intuition: a check is only as reliable as its weakest member; one very unreliable input ($\tanh\approx0$) kills the message. Since $\tanh$ is monotonic and $\tanh^{-1}$ amplifies near 1, the result is dominated by the smallest $|m|$, which gives the hardware-friendly <b>min-sum</b> rule $m_{c\to v}\approx\prod\mathrm{sgn}(m_{v'\to c})\cdot\min|m_{v'\to c}|$ (it overestimates reliabilities; multiplying by a factor $\approx0.75$, “normalised min-sum”, recovers nearly all of the lost 0.2–0.5 dB). <b>Example:</b> incoming LLRs $2,\ -1.5,\ 3$: $\tanh1\cdot\tanh(-0.75)\cdot\tanh1.5=0.7616\times(-0.6351)\times0.9051=-0.4378$, so the message is $2\tanh^{-1}(-0.4378)=-0.939$ (min-sum would give $-1.5$).</p>
+<p><b>Why it works.</b> The independence assumed above is exact on a tree. In a graph with large <b>girth</b> (shortest cycle) the neighbourhood of a node looks like a tree up to a depth of girth/2 iterations; with block length $n\to\infty$ and random graphs the cycles are long. On this tree-like structure one can track the <i>distribution</i> of messages through the iterations (<b>density evolution</b>, Richardson–Urbanke 2001) and find, for each degree distribution, a <b>threshold</b> $E_b/N_0$ above which the BER goes to zero as $n\to\infty$. The $(3,6)$ regular code has a threshold of 1.11 dB, 0.92 dB from the rate-½ BI-AWGN limit of 0.19 dB. Irregular codes, with a few high-degree variable nodes that quickly gain confidence and spread it, have degree distributions $\lambda(x),\rho(x)$ optimised by linear programming; Chung et al. (2001) found a code with threshold 0.0045 dB from the Shannon limit.</p></div>
+<div class="widget" id="w-ldpc">A running belief-propagation decoder on a random regular $(3,6)$ LDPC code (rate ½) of the chosen block length, over the BPSK/AWGN channel (all-zero code word sent: by the symmetry of the decoder, the BER is the same for every code word). 100–160 frames per point (a green dot means no errors were seen). <b>Sum-product</b> uses the tanh rule; <b>min-sum</b> the approximation. Raise the iterations: the first few iterations give most of the gain, with diminishing returns beyond 15–20. A short code (120 bits) gives only a modest gain over uncoded BPSK; the longer code shows the beginning of the characteristic steep <i>waterfall</i> at $E_b/N_0\approx2$–4 dB. Real LDPC codes have $n\sim10^3$–$10^5$ and waterfalls within 1 dB of the limit.</div>
+<div class="box eng"><span class="tag">Engineering practice · LDPC codes in Wi-Fi and 5G</span>
+<p>Random sparse matrices make poor hardware. Standards use <b>quasi-cyclic</b> LDPC codes: $H$ is built from a small <i>base matrix</i> in which every entry is replaced by a $Z\times Z$ circulant (a cyclically shifted identity) or the zero matrix, the “lifting” of a base graph. Encoding is then done with shift registers and decoding processes $Z$ checks in parallel. 802.11n/ac/ax: lengths 648, 1296, 1944, $Z=27,54,81$, rates ½, ⅔, ¾, ⁵⁄₆. <b>5G NR</b>: two base graphs, BG1 (for large blocks, up to 8448 information bits, rates ⅓–⁸⁄₉) and BG2 (small blocks, up to 3840 bits, rates ⅕–⅔), lifted by $Z$ up to 384, with <i>rate matching</i> by a circular buffer (puncture the start, repeat or transmit successive redundancy versions for HARQ). Layered scheduling (update one block row at a time) doubles the convergence speed. LDPC decoders sustain tens of Gbit/s in silicon. Their weakness is the <b>error floor</b>: small configurations in the graph (<i>trapping sets</i>) trap the decoder at a BER around $10^{-7}$ or below; designs avoid short cycles and add an outer BCH or CRC code to clean up. 10GBASE-T Ethernet uses a $(2048,1723)$ LDPC code; DVB-S2 uses 64 800-bit LDPC blocks with an outer BCH.</p></div>
+
+<h2>Polar codes: capacity by construction</h2>
+<p>Arıkan’s insight: rather than searching for a good code, <em>transform</em> $N$ uses of an ordinary channel into $N$ synthetic channels, most of which are either perfect or useless. Send data only through the perfect ones.</p>
+<div class="box derive"><span class="tag">Derivation · polarisation, shown exactly for the erasure channel</span>
+<p>Take two copies of a binary channel $W$ and transmit $x_1=u_1\oplus u_2,\ x_2=u_2$. Define two <em>synthetic</em> channels: $W^-$ (the channel seen by $u_1$ if $u_2$ is unknown) and $W^+$ (the channel seen by $u_2$ once $u_1$ has been decoded and is known). Since the transformation is invertible, the total information is preserved: $I(W^-)+I(W^+)=2I(W)$ (chain rule for mutual information). For the <b>binary erasure channel</b> with erasure probability $\varepsilon$:</p>
+<ul>
+<li>$W^-$: to know $u_1=x_1\oplus x_2$ both $x_1$ and $x_2$ must be received, so $u_1$ is erased unless both arrive: $\varepsilon^-=1-(1-\varepsilon)^2=2\varepsilon-\varepsilon^2$ (worse than $\varepsilon$).</li>
+<li>$W^+$: knowing $u_1$, $u_2$ can be read from $x_2$ directly or from $x_1\oplus u_1$: erased only if both are erased: $\varepsilon^+=\varepsilon^2$ (better than $\varepsilon$).</li>
+</ul>
+<p>The mean is conserved, $\tfrac12(\varepsilon^-+\varepsilon^+)=\varepsilon$, but the two are spread apart. Repeat: apply the same pairing to each of the two new channels, and so on $n$ times, to get $N=2^n$ channels. Numbers for $\varepsilon=0.5$: level 1: $0.75,\ 0.25$; level 2: $0.9375,\ 0.5625,\ 0.4375,\ 0.0625$; level 3 (in order): $0.996,\ 0.879,\ 0.809,\ 0.316,\ 0.684,\ 0.191,\ 0.121,\ 0.004$. The values are pushed towards 0 and 1, and Arıkan proved that as $n\to\infty$ <em>all</em> channels polarise: a fraction $1-\varepsilon=C$ become perfect and a fraction $\varepsilon$ become useless, for <em>any</em> binary-input symmetric channel. The code: put $k=NR$ information bits on the $k$ best channels, and fix the others (the <b>frozen bits</b>, normally 0, known to the receiver). Encoding is a fast butterfly transform $\mathbf x=\mathbf u\,F^{\otimes n}$ with $F=\begin{bmatrix}1&0\\1&1\end{bmatrix}$ ($N\log_2N/2$ XORs). <b>Example, $N=4$:</b> $F^{\otimes2}=\begin{bmatrix}1&0&0&0\\1&1&0&0\\1&0&1&0\\1&1&1&1\end{bmatrix}$; for $R=\tfrac12$ the best two channels are $u_3,u_4$ ($\varepsilon=0.4375,\ 0.0625$), so $u_1=u_2=0$ and the code words are $u_3(1010)\oplus u_4(1111)\in\{0000,\ 1010,\ 1111,\ 0101\}$, a $(4,2)$ code with $d_{\min}=2$. For $N=8$ the info set of the rate-½ code is $\{u_4,u_6,u_7,u_8\}$.</p></div>
+<div class="widget" id="w-polar">Channel polarisation on the binary erasure channel. Each of the $N=2^n$ bars is the erasure probability of one synthetic channel (index order, or sorted). As $n$ grows the bars bunch up at 0 (reliable: carry data) and 1 (useless: freeze); the average stays at $\varepsilon$ (conservation of capacity). The readout counts the nearly perfect channels (below 0.01) against the capacity $N(1-\varepsilon)$: the gap shrinks slowly with $N$, which is why long polar codes are good and short ones need help.</div>
+<div class="box eng"><span class="tag">Engineering practice · decoding polar codes, and why 5G uses them for control</span>
+<p><b>Successive cancellation</b> (SC) decodes $u_1,u_2,\dots$ in order, each from the channel output and the previous decisions (frozen bits are known), using LLR recursions of the same $F$ butterflies: complexity $O(N\log N)$. SC alone is mediocre at practical lengths, because one wrong decision poisons all later ones. <b>SC list decoding</b> (Tal–Vardy 2011) keeps the $L$ best paths (typically $L=8$) and selects among them with an outer <b>CRC</b>: this “CA-SCL” decoder matches or beats LDPC and turbo at short lengths (tens to a few hundred bits; up to about a thousand) with no visible error floor, exactly what the 5G <i>control</i> channels (short blocks) need, while LDPC handles the long data blocks. The price is latency (sequential decoding order) and complexity linear in $L$.</p></div>
+
+<h2>Coded modulation: coding in the signal space</h2>
+<p>Everything so far used binary codes with BPSK: the code rate $R_c<1$ means more coded bits, hence more bandwidth for a given data rate. When the channel is <em>band-limited</em> (telephone line, DSL, cable) that is not allowed. Ungerboeck’s idea (1982): keep the symbol rate, <b>enlarge the constellation</b> (QPSK → 8-PSK) and use the redundancy to <em>increase the Euclidean distance</em> between allowed symbol sequences, instead of the Hamming distance between bit sequences.</p>
+<div class="box derive"><span class="tag">Derivation · set partitioning and the 3-dB gain of 8-PSK TCM</span>
+<p>Reference: <b>uncoded QPSK</b> carries 2 bits/symbol at symbol energy $E_s=1$ with minimum squared distance $d^2=2$. Put 8-PSK (also with $E_s=1$ and so the same power) on the same symbol rate, carrying 2 information bits and 1 redundant bit. The 8 points are at angles $k\cdot45^\circ$, and the squared distance between neighbours is $\Delta_0^2=4\sin^2(\pi/8)=0.586$: much smaller than 2, so we need a code to make up for it. <b>Partition</b> the 8 points into two subsets of 4 (even and odd $k$: two QPSK squares), then each into two of 2 (antipodal pairs), then single points; the minimum squared distance inside a subset grows at each level:
+$$\Delta_0^2=0.586\ \ (\text{8 points}),\qquad\Delta_1^2=2\ \ (\text{4 points, QPSK}),\qquad\Delta_2^2=4\ \ (\text{2 points, antipodal}).$$
+<b>Code design (Ungerboeck rules):</b> the coded bit(s) select the subset and the uncoded bits select the point within the subset. A <i>parallel transition</i> (same state, same coded bits, different uncoded bit) is separated by $\Delta_2^2=4$; the trellis is laid out so that branches leaving or entering a state belong to the same $\Delta_1$-subset (distance $\ge2$) and distinct paths diverging and re-merging have a minimum total distance of $\Delta_1^2+\Delta_0^2+\Delta_1^2=2+0.586+2=4.586$ for 8 or more states. For the 4-state code the parallel transitions limit the free distance to $\min(4,\,4.586)=4$: a gain $10\log_{10}(4/2)=\mathbf{3.0}$ dB over uncoded QPSK with <em>no</em> bandwidth expansion. For the 8-state code (no parallel transitions) $d^2_{\rm free}=4.586$ and the gain is $10\log_{10}(4.586/2)=\mathbf{3.6}$ dB; larger codes give 4.1 dB (16 states) and about 5 dB with hundreds of states.</p></div>
+<div class="widget" id="w-setpart">Set partitioning of 8-PSK. Level 0: the whole constellation, neighbouring points $\Delta_0^2=0.586$ apart (squared distance for unit symbol energy). Level 1: two QPSK subsets (colours), $\Delta_1^2=2$. Level 2: four antipodal pairs, $\Delta_2^2=4$. Level 3: single points. The code makes the sequence of subsets obey a trellis, so the nearest erroneous sequence differs in many symbols by large distances rather than in one symbol by a small one.</div>
+<div class="box eng"><span class="tag">Engineering practice · TCM and BICM in real systems</span>
+<p><b>V.32</b> (1984) modems: 8-state TCM over 32-QAM: 9.6 kbit/s over an ordinary voice line, a 4 dB gain that made 9600 bit/s possible. <b>V.34</b>: 4-dimensional trellis codes, 16 to 64 states, up to 33.6 kbit/s, right to the capacity of the telephone channel. <b>1000BASE-T</b> Gigabit Ethernet: 4D 8-state TCM over four twisted pairs with 5-level PAM. For fading wireless channels, TCM’s design criterion (Euclidean distance) is the wrong one, the right one being the <i>Hamming diversity</i> of the code (Chapter 21). The modern approach is <b>bit-interleaved coded modulation</b> (BICM): a powerful binary code (LDPC, turbo, polar, convolutional), a bit interleaver, then a Gray-labelled QAM mapper; the demapper computes a bit-wise LLR for each of the $\log_2M$ bits per symbol from the received constellation point and hands them to the soft decoder. BICM with Gray mapping loses only a fraction of a dB against the capacity of the constellation, and is the structure of LTE, 5G, Wi-Fi and DVB-S2: change the constellation order and the code rate (the <i>modulation and coding scheme</i>, MCS) to match the channel (Chapter 21).</p></div>
+
+<h2>The map of the road to capacity</h2>
+<p>The Shannon limit for a given code rate on the AWGN channel with BPSK inputs (the BI-AWGN capacity of Chapter 11) is the minimum $E_b/N_0$ at which the capacity reaches $R_c$; for $R_c=\tfrac12$ it is 0.19 dB (for Gaussian inputs, 0 dB). The widget plots that limit and places the codes of the last two chapters at BER $\approx10^{-5}$.</p>
+<div class="widget" id="w-capgap">The binary-input AWGN capacity limit (solid, computed by numerical integration) and the unconstrained Gaussian-input limit (dashed), as code rate against the required $E_b/N_0$ in dB, with the operating points ($E_b/N_0$ for BER $\approx10^{-5}$; approximate values from the literature) of: uncoded BPSK (rate 1: 9.6 dB), the (7,4) Hamming code with hard decisions (9.2 dB, from Chapter 17), the $K=7$ rate-½ convolutional code with soft Viterbi decoding (≈4.4 dB), the concatenation of Reed–Solomon (255,223) and the same convolutional code (rate 0.44, ≈2.5 dB), Berrou’s rate-½ turbo code (0.7 dB), and a long irregular LDPC code (≈0.25 dB). Each step from 1948 to today closed the gap.</div>
+<table>
+<tr><th>Era</th><th>Scheme (rate ½ unless stated)</th><th>$E_b/N_0$ at BER $10^{-5}$</th><th>Gap to BI-AWGN limit (0.19 dB)</th></tr>
+<tr><td>—</td><td>uncoded BPSK (rate 1)</td><td>9.6 dB</td><td>(the BI-AWGN capacity is zero-error only for rate $<1$)</td></tr>
+<tr><td>1950s–60s</td><td>(7,4) Hamming, hard (rate 0.57)</td><td>9.2 dB</td><td>≈ 9 dB (8.6 dB against its own rate-4/7 limit)</td></tr>
+<tr><td>1970s</td><td>$K=7$ convolutional + soft Viterbi</td><td>≈ 4.4 dB</td><td>≈ 4.2 dB</td></tr>
+<tr><td>1980s</td><td>RS(255,223) + $K=7$ (rate 0.44)</td><td>≈ 2.5 dB</td><td>≈ 2.3 dB</td></tr>
+<tr><td>1993</td><td>turbo code, $N=65536$</td><td>0.7 dB</td><td>0.5 dB</td></tr>
+<tr><td>2001</td><td>long irregular LDPC</td><td>≈ 0.25 dB</td><td>≈ 0.05 dB</td></tr>
+<tr><td>2008</td><td>polar + CRC list decoding</td><td>within 0.5–1 dB at short lengths</td><td>close to the finite-length bound</td></tr>
+</table>
+
+<div class="box gate"><span class="tag">GATE pattern · convolutional and modern codes</span>
+<ul>
+<li>Compute the encoder output or the state sequence for a given input; read rate, constraint length ($K$) and number of states ($2^{K-1}$) off the circuit; $d_{\rm free}$ from the trellis (path of least weight from 00 back to 00); decoded sequence by minimum Hamming distance (Viterbi).</li>
+<li>Formulas: rate $k/n$; states $2^{K-1}$; $d_{\rm free}$; soft asymptotic gain $10\log R_cd_{\rm free}$; LDPC design rate $1-d_v/d_c$, $nd_v=md_c$; LLR $=\frac{2}{\sigma^2}y$; extrinsic $=$ total $-$ a-priori $-$ channel; polar BEC recursion $\varepsilon^-=2\varepsilon-\varepsilon^2$, $\varepsilon^+=\varepsilon^2$; TCM gain $10\log(d^2_{\rm coded}/d^2_{\rm uncoded})$.</li>
+<li>Concept statements: why soft beats hard, why recursive, why the interleaver, why only extrinsic is exchanged, why min-sum over-estimates, why iterating works on large-girth graphs.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+A convolutional encoder has a constraint length $K=4$ (three memory cells) and produces 3 output bits per input bit. Its code rate and number of trellis states are
+<ol class="opts"><li>$\tfrac13$ and 8</li><li>$\tfrac13$ and 16</li><li>$\tfrac14$ and 8</li><li>3 and 4</li></ol>
+<div class="sol"><p>Rate $1/n=1/3$; states $2^{K-1}=2^3=8$. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,C" data-marks="1" data-src="Original">
+Which statements about the Viterbi algorithm for a convolutional code are correct?
+<ol class="opts"><li>It performs maximum-likelihood sequence decoding</li><li>Its complexity grows linearly with the length of the sequence</li><li>Its complexity per decoded bit grows as $2^{K-1}$</li><li>It must store the metrics of all $2^L$ possible paths for an $L$-bit message</li></ol>
+<div class="sol"><p>(A) ML for memoryless channels; (B) ACS work per step is fixed ($2^{K-1}$ states), so total work is linear in $L$; (C) yes; (D) false: only one survivor per state (the principle of optimality). <b>A, B, C</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+Replacing hard decisions by 3-bit soft decisions at the input of a Viterbi decoder gives, at practical error rates, a gain of about
+<ol class="opts"><li>0.2 dB</li><li>2 dB</li><li>6 dB</li><li>10 dB</li></ol>
+<div class="sol"><p>Asymptotically 3 dB (a factor 2 in the exponent); at practical BER about 2 dB, with 3-bit quantisation losing only about 0.2 dB against unquantised soft values. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+In an iterative turbo decoder, the quantity passed from one SISO decoder to the other is
+<ol class="opts"><li>the hard-decision bits</li><li>the total LLR including the channel term</li><li>the extrinsic LLR (total minus channel minus a-priori)</li><li>the received parity samples</li></ol>
+<div class="sol"><p>Feeding back anything but the extrinsic part would count the same information twice. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Which statements about LDPC codes are correct?
+<ol class="opts"><li>In a regular $(d_v,d_c)$ code with $n$ variable nodes and $m$ check nodes, $nd_v=md_c$</li><li>The min-sum check-node rule overestimates the magnitude given by the tanh rule</li><li>The message from variable node $v$ to check $c$ includes the message $c$ sent to $v$ in the previous iteration</li><li>Short cycles in the Tanner graph degrade belief-propagation decoding</li></ol>
+<div class="sol"><p>(A) both count the edges. (B) $|\prod\tanh|\le\min|\tanh|$. (C) false: the message excludes the recipient’s own contribution (extrinsic rule). (D) true: they violate the independence assumption. <b>A, B, D</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+For a polar code over a binary erasure channel with erasure probability $\varepsilon$, as $N\to\infty$ the fraction of synthetic channels that become (almost) perfect is
+<ol class="opts"><li>$\varepsilon$</li><li>$1-\varepsilon$</li><li>$\tfrac12$</li><li>$\varepsilon^2$</li></ol>
+<div class="sol"><p>Mutual information is conserved by the transform: the fraction of perfect channels tends to the capacity $C=1-\varepsilon$. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+Trellis-coded modulation improves the performance of a band-limited link over uncoded transmission by
+<ol class="opts"><li>reducing the symbol rate</li><li>increasing the bandwidth in proportion to the code rate</li><li>increasing the minimum Euclidean distance between allowed symbol sequences without increasing bandwidth</li><li>using hard decisions instead of soft decisions</li></ol>
+<div class="sol"><p>The constellation is enlarged (e.g. QPSK → 8-PSK) instead of the symbol rate, and the trellis structure maximises the free Euclidean distance. <b>(C)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="1" data-src="Original">
+The rate-½ $K=3$ encoder with generators $(7,5)_8$ encodes the message $1101$ followed by the tail $00$. The Hamming weight of the 12-bit code word is ______.
+<div class="sol"><p>Outputs: $11,\ 01,\ 01,\ 00,\ 10,\ 11$ (state-by-state with $y^{(1)}=u\oplus u_{-1}\oplus u_{-2}$, $y^{(2)}=u\oplus u_{-2}$). Weight $2+1+1+0+1+2=\mathbf7$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="8" data-tol="0.01" data-marks="1" data-src="Original">
+For the $(7,5)$ code with $T(D)=D^5/(1-2D)$, the number of paths (diverging from and re-merging with the zero path) of output weight 8 is ______.
+<div class="sol"><p>$T(D)=D^5\sum_k(2D)^k$; the coefficient of $D^8$ is $2^3=8$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="256" data-tol="0.01" data-marks="1" data-src="Original">
+The number of trellis states of a $K=9$ convolutional code (as in CDMA2000 and some deep-space systems) is ______.
+<div class="sol"><p>$2^{K-1}=2^8=256$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6.99" data-tol="0.03" data-marks="2" data-src="Original">
+The asymptotic soft-decision coding gain of the rate-½, $K=7$ code ($d_{\rm free}=10$) over uncoded BPSK is ______ dB.
+<div class="sol"><p>$10\log_{10}(R_cd_{\rm free})=10\log_{10}(0.5\times10)=10\log_{10}5=6.99$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.76" data-tol="0.03" data-marks="2" data-src="Original">
+The asymptotic <em>hard-decision</em> coding gain of the rate-½, $K=3$ code ($d_{\rm free}=5$) is ______ dB.
+<div class="sol"><p>A weight-5 error path wins if at least 3 of its 5 differing bits flip, so the exponent is $3R_cE_b/N_0$: gain $10\log_{10}(0.5\times3)=1.76$ dB. (Soft: $10\log_{10}2.5=3.98$ dB.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.8" data-tol="0.005" data-marks="1" data-src="Original">
+A rate-½ convolutional code is punctured by a periodic pattern that keeps 5 of every 8 coded bits (which correspond to 4 input bits). The resulting code rate is ______.
+<div class="sol"><p>4 information bits per 5 transmitted bits: $R=4/5=0.8$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3600" data-tol="0.01" data-marks="1" data-src="Original">
+A regular $(3,6)$ LDPC code has $n=1200$ variable nodes. The number of edges in its Tanner graph is ______.
+<div class="sol"><p>Edges $=nd_v=1200\times3=3600$ (and $m=3600/6=600$ checks, so the design rate is $1-600/1200=\tfrac12$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.2" data-tol="0.005" data-marks="1" data-src="Original">
+The design rate of a regular LDPC code with $d_v=4$ and $d_c=5$ is ______.
+<div class="sol"><p>$R=1-d_v/d_c=1-4/5=0.2$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-0.94" data-tol="0.02" data-marks="2" data-src="Original">
+A check node receives variable-to-check LLRs $2,\ -1.5,\ 3$ from three of its neighbours. Using the sum-product (tanh) rule, the message it sends to the fourth neighbour is ______.
+<div class="sol"><p>$2\tanh^{-1}\big[\tanh(1)\tanh(-0.75)\tanh(1.5)\big]=2\tanh^{-1}(-0.4378)=-0.939$. (Min-sum would give $-1.5$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.2" data-tol="0.02" data-marks="2" data-src="Original">
+A variable node of degree 3 has channel LLR $0.8$ and receives check messages $+1.2,\ -0.5,\ +0.7$. Its total (a-posteriori) LLR is ______.
+<div class="sol"><p>$0.8+1.2-0.5+0.7=2.2$ (decision: bit 0). The message sent back to the first check would exclude that check’s own $+1.2$: $1.0$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.9" data-tol="0.02" data-marks="1" data-src="Original">
+In a turbo decoder the total output LLR of a bit is $+5.2$, the a-priori LLR was $+1.0$ and the channel (systematic) term $L_cy$ is $+2.3$. The extrinsic LLR passed on is ______.
+<div class="sol"><p>$L_e=L_{\rm total}-L_{\rm apriori}-L_cy=5.2-1.0-2.3=1.9$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3.99" data-tol="0.03" data-marks="2" data-src="Original">
+A BPSK symbol ($x=\pm1$) is received over AWGN at $E_s/N_0=3$ dB as $y=0.5$. The channel LLR $\ln\frac{p(y|+1)}{p(y|-1)}$ is ______.
+<div class="sol"><p>$L=\frac{2}{\sigma^2}y$ with $\sigma^2=N_0/(2E_s)$, so $L=4(E_s/N_0)y=4\times1.995\times0.5=3.99$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.4096" data-tol="0.002" data-marks="2" data-src="Original">
+A binary erasure channel has $\varepsilon=0.4$. After one polarisation step the two channels have $\varepsilon^-=0.64$ and $\varepsilon^+=0.16$. Applying the “+” transform again to the “−” channel gives an erasure probability of ______.
+<div class="sol"><p>$\varepsilon^{-+}=(\varepsilon^-)^2=0.64^2=0.4096$. (Applying “−”: $2(0.64)-0.64^2=0.8704$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.12" data-tol="0.05" data-marks="2" data-src="Original">
+A 16-state 8-PSK trellis code has $d_{\rm free}^2=5.17$ for unit symbol energy; uncoded QPSK with the same $E_s$ and throughput has $d^2=2$. The asymptotic coding gain is ______ dB.
+<div class="sol"><p>$10\log_{10}(5.17/2)=10\log_{10}2.585=4.12$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.86" data-tol="0.03" data-marks="2" data-src="Original">
+Using $E_b/N_0\ge\dfrac{2^{2R}-1}{2R}$ for a real AWGN channel with Gaussian inputs (rate $R$ bits per real dimension), the Shannon limit at $R=\tfrac34$ is ______ dB.
+<div class="sol"><p>$(2^{1.5}-1)/1.5=(2.828-1)/1.5=1.219=0.86$ dB. (At $R=\tfrac12$ it is exactly 0 dB; with binary inputs the limit at $R=\tfrac12$ rises to 0.19 dB and at $R=\tfrac34$ to 1.63 dB.)</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original (GATE-style)">
+The $(7,5)$ convolutional encoder ($y^{(1)}=u_n\oplus u_{n-1}\oplus u_{n-2}$, $y^{(2)}=u_n\oplus u_{n-2}$) starts in state $(u_{n-1}u_{n-2})=00$. After the input sequence $1,1,0,1$ the state is
+<ol class="opts"><li>00</li><li>01</li><li>10</li><li>11</li></ol>
+<div class="sol"><p>The state is simply the last two inputs, $(u_{n-1},u_{n-2})$ after the last bit: the sequence $1,1,0,1$ leaves $(u_4,u_3)=(1,0)$ = <b>10</b>. (C). (States visited: $00\to10\to11\to01\to10$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="2" data-src="Original (GATE-style)">
+A message of 4 bits terminated with two zeros is sent with the $(7,5)$ code and the received hard-decision pairs are $01\ 11\ 01\ 00\ 11\ 01$. The final Viterbi path metric (Hamming distance of the best path ending in state 00) is ______.
+<div class="sol"><p>The best path corresponds to the message $0110$ (+00) whose code word is $00\,11\,01\,01\,11\,00$; it differs from the received sequence in pairs 1, 4 and 6 by one bit each: metric <b>3</b>. The Viterbi recursion (try the widget with these bits) ends in state 00 with metric 3.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.01" data-marks="2" data-src="Original (GATE-style)">
+The transfer function of a rate-½ convolutional code is $T(D,N)=\dfrac{D^6N}{1-2DN}$. The number of paths of output weight 8 that diverge from and re-merge with the all-zero path is ______.
+<div class="sol"><p>$T=D^6N\sum_k(2DN)^k$; the coefficient of $D^8$ ($k=2$) is $2^2=4$ (each with information weight $N^3$, i.e. 3 information 1s). $d_{\rm free}=6$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.8" data-tol="0.1" data-marks="2" data-src="Original (GATE-style)">
+For the $K=3$ code with $d_{\rm free}=5$ and $c_5=1$, the dominant term of the soft-decision union bound is $c_5Q\big(\sqrt{2d_{\rm free}R_cE_b/N_0}\big)$. At $E_b/N_0=7$ dB its value is ______ $\times10^{-7}$.
+<div class="sol"><p>$E_b/N_0=5.01$; argument $\sqrt{2\cdot5\cdot0.5\cdot5.01}=\sqrt{25.06}=5.006$; $Q(5.006)=2.78\times10^{-7}$. (The next term, $c_6Q(\sqrt{2\cdot6\cdot0.5\cdot5.01})=4Q(5.48)\approx8.3\times10^{-8}$, is smaller still; the full bound is the sum of such terms.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.005" data-marks="2" data-src="Original (GATE-style)">
+A polar code of length $N=4$ and rate ½ is used on a BEC with $\varepsilon=0.5$ with information on the two best synthetic channels. Under successive-cancellation decoding the block-error probability is upper-bounded by $\sum_{i\in A}\varepsilon_i$, where $A$ is the information set and $\varepsilon_i$ the erasure probabilities of the synthetic channels $(0.9375,\ 0.5625,\ 0.4375,\ 0.0625)$. The bound is ______.
+<div class="sol"><p>$A=\{3,4\}$: $0.4375+0.0625=0.5$. (The code is operating exactly at capacity for $N=4$: of course the bound is poor; for large $N$ the same sum becomes tiny when $R<C$.)</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="Original (GATE-style)">
+Which of the following correctly lists the codes in order of increasing closeness to the Shannon limit (at rate ½, BER $\sim10^{-5}$) in the chronology of this chapter?
+<ol class="opts"><li>Turbo, $K=7$ Viterbi, Hamming, long LDPC</li><li>Hamming, turbo, $K=7$ Viterbi, long LDPC</li><li>$K=7$ Viterbi, Hamming, long LDPC, turbo</li><li>Hamming, $K=7$ Viterbi, turbo, long LDPC</li></ol>
+<div class="sol"><p>Required $E_b/N_0$: Hamming hard ≈ 9.2 dB, $K=7$ Viterbi ≈ 4.4 dB, turbo 0.7 dB, long LDPC ≈ 0.25 dB (limit 0.19 dB). <b>(D)</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 18 in one breath</h3>
+<ul>
+<li>Convolutional code: shift register, rate $1/n$, constraint length $K$, $2^{K-1}$ states; code words are trellis paths; $d_{\rm free}$ from the transfer function ($(7,5)$: $T=D^5/(1-2D)$, $d_{\rm free}=5$).</li>
+<li>Viterbi: ML by dynamic programming; one survivor per state (principle of optimality); ACS; $2^{K-1}$ work per bit; soft decisions +2 dB; $P_b\le\sum c_dP_d$; soft gain $10\log R_cd_{\rm free}$.</li>
+<li>Puncturing sets the rate; tail or tail-biting terminates.</li>
+<li>Turbo: parallel RSC codes + interleaver, interleaver gain $\propto1/N$; iterative BCJR passes extrinsic LLR $=L_{\rm total}-L_{\rm apriori}-L_cy$; $L_c=4E_s/N_0$.</li>
+<li>LDPC: sparse $H$, Tanner graph, belief propagation: variable = sum of LLRs; check = $2\tanh^{-1}\prod\tanh(\cdot/2)$; min-sum; girth, density evolution, thresholds; quasi-cyclic in Wi-Fi/5G.</li>
+<li>Polar: $\varepsilon^-=2\varepsilon-\varepsilon^2$, $\varepsilon^+=\varepsilon^2$; channels polarise to 0 or 1; freeze the bad ones; SC list decoding + CRC.</li>
+<li>TCM: enlarge constellation, set-partition, maximise Euclidean distance: 3–5 dB with no extra bandwidth; BICM (Gray + binary code) in modern systems.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+
+/* ---------- diagrams ---------- */
+GB.diagram('d-turboenc',{w:640,h:160,alt:'turbo encoder',items:[
+ ['txt',6,50,'u','t','start'],['ln',[28,50,80,50]],['ln',[80,50,80,14]],['arr',[80,14,560,14],'u  (systematic)'],
+ ['arr',[80,50,230,50]],['box',230,30,110,40,'RSC 1','blue'],['arr',[340,50,560,50],'p₁'],
+ ['ln',[80,50,80,124]],['arr',[80,124,130,124]],['box',130,104,70,40,'π','orange'],['arr',[200,124,230,124]],['box',230,104,110,40,'RSC 2','blue'],['arr',[340,124,560,124],'p₂']]});
+GB.diagram('d-turbodec',{w:700,h:190,alt:'turbo decoder',items:[
+ ['arr',[200,16,200,46]],['txt',200,10,'channel: y_s, y_p1','tm'],['arr',[480,16,480,46]],['txt',480,10,'channel: π(y_s), y_p2','tm'],
+ ['box',140,46,120,52,'SISO 1\n(BCJR)','blue'],['box',420,46,120,52,'SISO 2\n(BCJR)','blue'],
+ ['arr',[260,72,310,72]],['box',310,52,60,40,'π','orange'],['arr',[370,72,420,72]],['txt',340,40,'Lₑ¹ → a priori','tm'],
+ ['ln',[540,72,600,72,600,150,370,150]],['box',310,130,60,40,'π⁻¹','orange'],['arr',[310,150,200,150,200,98]],['txt',255,168,'Lₑ² → a priori','tm'],['txt',612,111,'iterate','tb','start']]});
+(function(){ const X=[60,155,250,345,440,535,630], CX=[200,350,500], CB=[[0,1,3,4],[0,2,3,5],[1,2,3,6]], items=[];
+ CB.forEach((b,c)=>b.forEach(i=>items.push(['ln',[CX[c],56,X[i],146]])));
+ CX.forEach((x,c)=>items.push(['box',x-20,26,40,30,'c'+(c+1),'orange']));
+ X.forEach((x,i)=>items.push(['sum',x,160,14,'x'+(i+1)]));
+ GB.diagram('d-tanner',{w:700,h:190,alt:'Tanner graph of the Hamming (7,4) code',items}); })();
+
+/* ---------- Viterbi trellis ---------- */
+(function(){
+ const par=x=>{ x^=x>>2; x^=x>>1; return x&1; };
+ const stp=(s,u)=>{ const reg=(u<<2)|s; return {ns:reg>>1,o:[par(reg&7),par(reg&5)]}; };
+ const MSG={a:'10110100',b:'01101001',c:'11010011',d:'00111010'}, SN=['00','01','10','11'];
+ GB.widget('w-trellis',{title:'Viterbi decoder for the (7,5) code, hard decisions',h:380,hm:400,controls:[{k:'m',type:'select',label:'message',options:Object.keys(MSG).map(k=>[k,MSG[k]+' + tail 00']),value:'a'},{k:'f1',label:'flip received bit #',min:0,max:20,step:1,value:2},{k:'f2',label:'flip received bit #',min:0,max:20,step:1,value:7},{k:'f3',label:'flip received bit #',min:0,max:20,step:1,value:0}],
+  draw(g,p){ const C=g.C, ctx=g.ctx; const msg=[...MSG[p.m]].map(Number).concat([0,0]), T=msg.length;
+   let s=0; const tx=[]; msg.forEach(u=>{ const r=stp(s,u); tx.push(r.o); s=r.ns; });
+   const flipped=new Set([p.f1,p.f2,p.f3].filter(v=>v>0).map(v=>v-1)); const rx=tx.map((o,t)=>o.map((b,j)=>flipped.has(2*t+j)?b^1:b));
+   const INF=1e9; let pm=[0,INF,INF,INF]; const PM=[pm.slice()], BP=[];
+   for(let t=0;t<T;t++){ const nm=[INF,INF,INF,INF], bp=[null,null,null,null];
+    for(let s0=0;s0<4;s0++){ if(pm[s0]>=INF) continue; for(let u=0;u<2;u++){ const r=stp(s0,u), d=(r.o[0]!==rx[t][0])+(r.o[1]!==rx[t][1]), mm=pm[s0]+d; if(mm<nm[r.ns]){ nm[r.ns]=mm; bp[r.ns]={from:s0,u}; } } }
+    pm=nm; PM.push(pm.slice()); BP.push(bp); }
+   const path=[0], dec=[]; { let st=0; for(let t=T-1;t>=0;t--){ const b=BP[t][st]; dec.unshift(b.u); path.unshift(b.from); st=b.from; } }
+   const x0=64, dx=(g.w-90)/T, y0=84, dy=(g.h-150)/3; const X=t=>x0+t*dx, Y=s=>y0+s*dy;
+   ctx.font='11px system-ui'; ctx.textBaseline='middle';
+   for(let t=0;t<T;t++){ ctx.textAlign='center'; const cx=X(t)+dx/2; ctx.fillStyle=C.mute; ctx.fillText(tx[t].join(''),cx,16); for(let j=0;j<2;j++){ ctx.fillStyle=flipped.has(2*t+j)?C.red:C.fg; ctx.font=flipped.has(2*t+j)?'700 13px system-ui':'13px system-ui'; ctx.fillText(String(rx[t][j]),cx+(j?7:-7),36); } ctx.font='11px system-ui'; }
+   ctx.textAlign='right'; ctx.fillStyle=C.mute; ctx.fillText('sent',x0-14,16); ctx.fillStyle=C.fg; ctx.fillText('received',x0-8,36);
+   ctx.textAlign='right'; for(let s2=0;s2<4;s2++){ ctx.fillStyle=C.mute; ctx.fillText(SN[s2],x0-22,Y(s2)); }
+   const seg=(t,s0,s1,col,w,dash)=>{ ctx.strokeStyle=col; ctx.lineWidth=w; ctx.setLineDash(dash||[]); ctx.beginPath(); ctx.moveTo(X(t),Y(s0)); ctx.lineTo(X(t+1),Y(s1)); ctx.stroke(); ctx.setLineDash([]); };
+   for(let pass=0;pass<3;pass++) for(let t=0;t<T;t++) for(let s0=0;s0<4;s0++){ if(PM[t][s0]>=INF) continue; for(let u=0;u<2;u++){ const r=stp(s0,u); const surv=BP[t][r.ns]&&BP[t][r.ns].from===s0&&BP[t][r.ns].u===u; const on=path[t]===s0&&path[t+1]===r.ns&&dec[t]===u;
+     if(pass===0&&!surv) seg(t,s0,r.ns,C.grid||C.axis,1,u?[3,3]:null);
+     if(pass===1&&surv&&!on) seg(t,s0,r.ns,C.blue,1.8,u?[5,3]:null);
+     if(pass===2&&on) seg(t,s0,r.ns,C.yellow,3.4,u?[7,3]:null); } }
+   ctx.textAlign='center'; for(let t=0;t<=T;t++) for(let s0=0;s0<4;s0++){ if(PM[t][s0]>=INF) continue; const on=path[t]===s0; ctx.beginPath(); ctx.arc(X(t),Y(s0),9,0,TAU); ctx.fillStyle=on?C.yellow:C.panel2; ctx.fill(); ctx.strokeStyle=on?C.yellow:C.axis; ctx.lineWidth=1.2; ctx.stroke(); ctx.fillStyle=on?'#10131a':C.fg; ctx.font='600 10px system-ui'; ctx.fillText(String(PM[t][s0]),X(t),Y(s0)+.5); }
+   ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.fillStyle=C.mute; ctx.fillText('solid = input 0, dashed = input 1;  gray: discarded,  blue: survivors,  yellow: traceback from state 00',14,g.h-16);
+   const ok=dec.join('')===msg.join(''), nerr=flipped.size; return 'sent <b>'+msg.join('')+'</b> · decoded <b>'+dec.join('')+'</b> → '+(ok?'<b style="color:#83c167">correct</b>':'<b style="color:#fc6255">decoding error</b>')+' · '+nerr+' channel error'+(nerr===1?'':'s')+' injected · final path metric = '+PM[T][0]; }});
+})();
+
+/* ---------- convolutional code BER bounds ---------- */
+(function(){
+ const SP={k3:{R:.5,c:{5:1,6:4,7:12,8:32,9:80,10:192,11:448,12:1024},nm:'K=3 (7,5)',d:5},k7:{R:.5,c:{10:36,12:211,14:1404,16:11633,18:77433},nm:'K=7 (171,133)',d:10}};
+ const binom=(n,k)=>{ let r=1; for(let i=1;i<=k;i++) r=r*(n-k+i)/i; return r; };
+ const soft=(sp,g)=>{ let s=0; for(const d in sp.c) s+=sp.c[d]*m.Q(Math.sqrt(2*(+d)*sp.R*g)); return Math.min(s,.5); };
+ const hard=(sp,g)=>{ const p=m.Q(Math.sqrt(2*sp.R*g)), q=1-p; let s=0; for(const dd in sp.c){ const d=+dd; let pd=0; for(let k=Math.floor(d/2)+1;k<=d;k++) pd+=binom(d,k)*Math.pow(p,k)*Math.pow(q,d-k); if(d%2===0) pd+=.5*binom(d,d/2)*Math.pow(p*q,d/2); s+=sp.c[dd]*pd; } return Math.min(s,.5); };
+ const need=(f,t)=>{ let lo=0,hi=16; for(let i=0;i<60;i++){ const mid=(lo+hi)/2; if(f(Math.pow(10,mid/10))>t) lo=mid; else hi=mid; } return (lo+hi)/2; };
+ GB.widget('w-convber',{title:'Union-bound BER of rate-½ convolutional codes (AWGN, BPSK)',h:380,hm:400,controls:[{k:'c',type:'select',label:'code',options:[['k3','K = 3, (7,5)'],['k7','K = 7, (171,133)'],['both','both']],value:'k7'}],
+  draw(g,p){ const v=g.full({l:46,b:32}); v.view(0,10,-8,-.3); v.axes({xl:'Eb/N0 (dB)',ystep:1,xstep:1}); const xs=[]; for(let x=0;x<=10.001;x+=.1) xs.push(x);
+   const lg=f=>xs.map(x=>Math.log10(Math.max(f(Math.pow(10,x/10)),1e-12))); const leg=[['uncoded','mute']];
+   v.line(xs,lg(g=>m.Q(Math.sqrt(2*g))),'mute',2);
+   const list=p.c==='both'?['k3','k7']:[p.c]; const cols={k3:['orange','red'],k7:['yellow','green']}; const T=1e-5; let rd=[];
+   list.forEach(k=>{ const sp=SP[k]; v.line(xs,lg(x=>soft(sp,x)),cols[k][0],2.4); v.line(xs,lg(x=>hard(sp,x)),cols[k][1],2.4,[6,4]); leg.push([sp.nm+' soft',cols[k][0]],[sp.nm+' hard',cols[k][1]]);
+    const us=need(x=>m.Q(Math.sqrt(2*x)),T), s=need(x=>soft(sp,x),T), h=need(x=>hard(sp,x),T); rd.push(sp.nm+': BER 10⁻⁵ at <b>'+s.toFixed(2)+' dB</b> soft (gain '+(us-s).toFixed(2)+'; asymptotic '+(10*Math.log10(sp.R*sp.d)).toFixed(2)+'), <b>'+h.toFixed(2)+' dB</b> hard (gain '+(us-h).toFixed(2)+')'); });
+   v.hline(-5,'axis'); g.legend(leg,60,g.h*.56,true); return 'uncoded needs <b>9.59 dB</b> · '+rd.join(' · '); }});
+})();
+
+/* ---------- LDPC belief propagation ---------- */
+(function(){
+ const cache={};
+ function build(n,seed){ const dv=3,dc=6,mm=n*dv/dc,E=n*dv,r=m.rng(seed); const vs=new Int32Array(E), cs=new Int32Array(E); for(let i=0;i<n;i++) for(let k=0;k<dv;k++) vs[i*dv+k]=i; for(let j=0;j<mm;j++) for(let k=0;k<dc;k++) cs[j*dc+k]=j;
+  for(let i=E-1;i>0;i--){ const j=Math.floor(r()*(i+1)); const t=cs[i]; cs[i]=cs[j]; cs[j]=t; }
+  for(let tr=0;tr<4000;tr++){ const seen=new Set(); let bad=-1; for(let e=0;e<E;e++){ const k=vs[e]*mm+cs[e]; if(seen.has(k)){ bad=e; break; } seen.add(k); } if(bad<0) break; const j=Math.floor(r()*E); const t=cs[bad]; cs[bad]=cs[j]; cs[j]=t; }
+  const ve=[],ce=[]; for(let i=0;i<n;i++) ve.push([]); for(let j=0;j<mm;j++) ce.push([]); for(let e=0;e<E;e++){ ve[vs[e]].push(e); ce[cs[e]].push(e); }
+  return {n,mm,E,vs,cs,ve,ce}; }
+ function ber(H,ebn0,iters,dec,frames,r){ const {n,mm,E,vs,ve,ce}=H; const sig2=1/ebn0; const sig=Math.sqrt(sig2); let errs=0; const ch=new Float64Array(n), c2v=new Float64Array(E), v2c=new Float64Array(E);
+  for(let f=0;f<frames;f++){ for(let i=0;i<n;i++){ const y=1+sig*m.randn(r); ch[i]=2*y/sig2; } c2v.fill(0); let hard=new Uint8Array(n), done=false;
+   for(let it=0;it<iters;it++){ for(let e=0;e<E;e++) v2c[e]=0; for(let i=0;i<n;i++){ let tot=ch[i]; const L=ve[i]; for(let a=0;a<L.length;a++) tot+=c2v[L[a]]; for(let a=0;a<L.length;a++) v2c[L[a]]=tot-c2v[L[a]]; hard[i]=tot<0?1:0; }
+    let ok=true; for(let j=0;j<mm&&ok;j++){ let par=0; const L=ce[j]; for(let a=0;a<L.length;a++) par^=hard[vs[L[a]]]; if(par) ok=false; } if(ok){ done=true; break; }
+    for(let j=0;j<mm;j++){ const L=ce[j], d=L.length;
+     if(dec==='sp'){ const t=[]; for(let a=0;a<d;a++) t.push(Math.tanh(v2c[L[a]]/2)); for(let a=0;a<d;a++){ let pr=1; for(let b=0;b<d;b++) if(b!==a) pr*=t[b]; pr=Math.max(-.999999,Math.min(.999999,pr)); c2v[L[a]]=2*Math.atanh(pr); } }
+     else { const sc=dec==='nms'?.8:1; for(let a=0;a<d;a++){ let sg=1,mn=1e9; for(let b=0;b<d;b++) if(b!==a){ const x=v2c[L[b]]; if(x<0) sg=-sg; const ax=Math.abs(x); if(ax<mn) mn=ax; } c2v[L[a]]=sc*sg*mn; } } } }
+   if(!done){ for(let i=0;i<n;i++){ let tot=ch[i]; const L=ve[i]; for(let a=0;a<L.length;a++) tot+=c2v[L[a]]; hard[i]=tot<0?1:0; } }
+   for(let i=0;i<n;i++) if(hard[i]) errs++; }
+  return errs/(n*frames); }
+ const PTS=[0,.5,1,1.5,2,2.5,3,3.5,4];
+ GB.widget('w-ldpc',{title:'Belief propagation on a random (3,6) LDPC code (rate ½)',h:360,hm:380,controls:[{k:'n',type:'select',label:'block length n',options:[[120,'120 bits'],[252,'252 bits']],value:252},{k:'it',type:'select',label:'iterations',options:[[1,'1'],[3,'3'],[8,'8'],[20,'20'],[50,'50']],value:20},{k:'d',type:'select',label:'check-node rule',options:[['sp','sum-product (tanh)'],['ms','min-sum'],['nms','normalised min-sum (×0.8)']],value:'sp'}],
+  draw(g,p){ const key=p.n+'|'+p.it+'|'+p.d; let res=cache[key]; if(!res){ const H=build(+p.n,12345), r=m.rng(777), fr=+p.n<=120?160:100; res=PTS.map(e=>ber(H,Math.pow(10,e/10),+p.it,p.d,fr,r)); cache[key]={r:res,fr}; res=cache[key]; }
+   const v=g.full({l:46,b:32}); v.view(0,4.2,-5,-.2); v.axes({xl:'Eb/N0 (dB)',ystep:1,xstep:.5}); const xs=[],us=[]; for(let x=0;x<=4.2;x+=.05){ xs.push(x); us.push(Math.log10(m.Q(Math.sqrt(2*Math.pow(10,x/10))))); } v.line(xs,us,'mute',2);
+   const fl=Math.log10(1/(p.n*res.fr)); const px=[],py=[]; res.r.forEach((b,i)=>{ if(b>0){ px.push(PTS[i]); py.push(Math.log10(b)); } else { v.dot(PTS[i],Math.max(fl,-4.9),'green',3); } }); v.line(px,py,'yellow',2.4); px.forEach((x,i)=>v.dot(x,py[i],'yellow',3.4)); v.hline(fl,'axis',[2,4]);
+   g.legend([['uncoded BPSK','mute'],['LDPC after '+p.it+' iteration(s)','yellow'],['green dot: no errors in '+res.fr+' frames','green']],60,g.h*.6,true);
+   const i3=PTS.indexOf(3); return 'n = '+p.n+', '+p.it+' iterations, '+({sp:'sum-product',ms:'min-sum',nms:'normalised min-sum'})[p.d]+' · BER at 3 dB: <b>'+(res.r[i3]>0?res.r[i3].toExponential(1):'< '+(1/(p.n*res.fr)).toExponential(0))+'</b> vs uncoded <b>'+m.Q(Math.sqrt(2*Math.pow(10,.3))).toExponential(1)+'</b>'; }});
+})();
+
+/* ---------- polar polarisation ---------- */
+GB.widget('w-polar',{title:'Channel polarisation on the BEC: erasure probability of each synthetic channel',h:340,hm:360,controls:[{k:'n',label:'levels n  (N = 2ⁿ)',min:1,max:10,step:1,value:6,fmt:v=>'n='+v+', N='+(1<<v)},{k:'e',label:'erasure probability ε',min:.05,max:.95,step:.05,value:.5,fmt:v=>v.toFixed(2)},{k:'v',type:'select',label:'order',options:[[0,'natural index order'],[1,'sorted']],value:0}],
+ draw(g,p){ let l=[p.e]; for(let i=0;i<p.n;i++){ const nl=[]; l.forEach(x=>{ nl.push(2*x-x*x,x*x); }); l=nl; } const N=l.length; const arr=p.v?l.slice().sort((a,b)=>a-b):l; const v=g.full({l:46,b:30}); v.view(0,N,0,1.02); v.axes({ystep:.25,xstep:Math.max(1,N/8)});
+  const xs=arr.map((_,i)=>i+.5); v.bars(xs.filter((_,i)=>arr[i]<.5),arr.filter(a=>a<.5),Math.min(.9,1),'green',.85); v.bars(xs.filter((_,i)=>arr[i]>=.5),arr.filter(a=>a>=.5),1,'red',.7); v.hline(p.e,'yellow',[6,4],1.6); v.text(N*.99,p.e,'ε = '+p.e.toFixed(2),'yellow','right',12,0,-9);
+  const good=arr.filter(a=>a<.01).length, bad=arr.filter(a=>a>.99).length, mean=arr.reduce((a,b)=>a+b,0)/N; return 'N = '+N+' · mean erasure probability = <b>'+mean.toFixed(3)+'</b> (= ε: capacity conserved) · nearly perfect (<0.01): <b>'+(100*good/N).toFixed(1)+'%</b> vs capacity '+(100*(1-p.e)).toFixed(1)+'% · nearly useless (>0.99): <b>'+(100*bad/N).toFixed(1)+'%</b>'; }});
+
+/* ---------- 8-PSK set partitioning ---------- */
+GB.widget('w-setpart',{title:'Set partitioning of 8-PSK (Ungerboeck)',h:340,hm:360,controls:[{k:'l',type:'select',label:'partition level',options:[[0,'level 0: all 8 points'],[1,'level 1: 2 subsets of 4 (QPSK)'],[2,'level 2: 4 subsets of 2 (antipodal)'],[3,'level 3: 8 single points']],value:1}],
+ draw(g,p){ const v=g.full({l:20,b:20,t:14}); v.view(-1.7,1.7,-1.5,1.5,{equal:true}); const cols=['blue','orange','green','yellow','red','mute','blue','orange']; v.circle(0,0,1,'axis',1,[4,4]); const lev=+p.l, nsub=[1,2,4,8][lev]; const pts=[...Array(8).keys()].map(k=>[Math.cos(k*Math.PI/4),Math.sin(k*Math.PI/4),k]);
+  for(let s=0;s<nsub;s++){ const mem=pts.filter(q=>q[2]%nsub===s); if(mem.length>1) for(let a=0;a<mem.length;a++){ const b=(a+1)%mem.length; if(mem.length===2&&a===1) break; v.seg(mem[a][0],mem[a][1],mem[b][0],mem[b][1],cols[s],1.8); } }
+  pts.forEach(q=>{ v.dot(q[0],q[1],cols[q[2]%nsub],9); v.text(q[0]*1.28,q[1]*1.22,String(q[2]),'fg','center',12); });
+  const d2=[4*Math.sin(Math.PI/8)**2,2,4,Infinity][lev]; v.text(0,0,lev<3?'Δ²='+d2.toFixed(3):'single points','fg','center',14);
+  return 'level '+lev+': '+nsub+' subset'+(nsub>1?'s':'')+' · minimum squared distance inside a subset <b>'+(lev<3?d2.toFixed(3):'∞')+'</b> (unit symbol energy) · uncoded QPSK has d² = 2 · 4-state code: min(Δ₂²=4, 2+0.586+2) = 4 → +3.0 dB; 8-state: 4.586 → +3.6 dB'; }});
+
+/* ---------- capacity map ---------- */
+(function(){
+ const xg=[],wg=[]; for(let i=0;i<=400;i++){ const x=-10+20*i/400; xg.push(x); wg.push(Math.exp(-x*x/2)/Math.sqrt(TAU)*(20/400)*((i===0||i===400)?.5:1)); }
+ const Cb=mu=>{ let s=0; for(let i=0;i<xg.length;i++){ const L=mu+Math.sqrt(2*mu)*xg[i]; s+=wg[i]*(L>-40?Math.log2(1+Math.exp(-Math.min(L,700))):-L/Math.LN2); } return 1-s; };
+ const limit=R=>{ let lo=1e-3,hi=400; for(let i=0;i<60;i++){ const mid=Math.sqrt(lo*hi); if(Cb(mid)<R) lo=mid; else hi=mid; } const mu=Math.sqrt(lo*hi); return 10*Math.log10(mu/(4*R)); };
+ const PT=[['uncoded BPSK',1,9.6,'mute'],['Hamming (7,4) hard',4/7,9.17,'orange'],['K=7 conv, soft Viterbi',.5,4.4,'yellow'],['RS(255,223)+K=7',.437,2.5,'purple'],['turbo (1993)',.5,.7,'green'],['long LDPC',.5,.25,'blue']];
+ let curve=null;
+ GB.widget('w-capgap',{title:'The road to the Shannon limit (rate against Eb/N0 at BER ≈ 10⁻⁵)',h:380,hm:400,controls:[],
+  draw(g){ if(!curve){ const xs=[],ys=[]; for(let R=.02;R<=.985;R+=.01){ xs.push(limit(R)); ys.push(R); } curve={xs,ys}; }
+   const v=g.full({l:44,b:32}); v.view(-2,11,0,1.05); v.axes({xl:'Eb/N0 (dB)',ystep:.25,xstep:1}); const gx=[],gy=[]; for(let R=.02;R<=1.05;R+=.01){ gx.push(10*Math.log10((Math.pow(2,2*R)-1)/(2*R))); gy.push(R); } v.line(gx,gy,'mute',1.8,[6,4]); v.line(curve.xs,curve.ys,'fg',2.4);
+   const rows=[]; PT.forEach(q=>{ const col=q[3]==='purple'?'red':q[3]; v.dot(q[2],q[1],col,6); const gap=q[1]<1?q[2]-limit(q[1]):null; const lab=q[0]==='long LDPC'?['right',-9,-12]:q[0]==='turbo (1993)'?['left',9,14]:[q[2]>6?'right':'left',q[2]>6?-9:9,q[1]>.9?12:-10]; v.text(q[2],q[1],q[0],col,lab[0],11,lab[1],lab[2]); if(gap!==null) rows.push(q[0]+' <b>'+gap.toFixed(1)+'</b>'); });
+   g.legend([['BI-AWGN capacity (binary input)','fg'],['Gaussian-input limit','mute']],g.w-270,g.h*.74,true); return 'gap to the binary-input limit (dB): '+rows.join(' · '); }});
+})();
+</script>

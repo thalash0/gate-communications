@@ -1,0 +1,344 @@
+<!--meta {"id":"ch01","num":"1","part":"Part I · The Mathematical Toolkit","title":"Signals, Systems and the Language of Filters","lede":"Before a message can be modulated, coded or detected it is a signal, and before it reaches anyone it passes through systems: cables, amplifiers, filters, the sky. This chapter builds the vocabulary the rest of the book speaks."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Classify a signal (energy/power, even/odd, periodic, deterministic/random) and compute its energy or power from first principles.</li>
+<li>Test any system for linearity, time-invariance, causality, memory and stability, and know which tests are quick and which are traps.</li>
+<li><b>Derive</b> the convolution integral, the frequency response $H(f)$ and the rule “sinusoid in, sinusoid out”, instead of memorising them.</li>
+<li>Analyse the RC circuit and the RLC resonant circuit in time and frequency domains, including rise time $\approx 0.35/B$ and the Q-factor.</li>
+<li>State and use the conditions for distortionless transmission; explain group delay and why phase matters for data but little for speech.</li>
+<li>Choose a filter order from a specification, and do decibel bookkeeping ($\mathrm{dB}$, $\mathrm{dBm}$, $\mathrm{dBW}$) without hesitation.</li>
+</ul>
+<p><b>Prerequisites:</b> school calculus and complex numbers ($e^{j\theta}=\cos\theta+j\sin\theta$). Nothing else.</p></div>
+
+<div class="box story"><span class="tag">History · the cable that taught engineers about systems</span>
+<p>In August 1858 a transatlantic telegraph cable carried Queen Victoria’s message to President Buchanan, 98 words that took 16 hours to get through. Within weeks the cable died: the operators had raised the sending voltage to 2000 V trying to speed it up, and the insulation failed. The real problem was understood by a young William Thomson (later Lord Kelvin): a long submarine cable behaves like a giant distributed <em>resistor–capacitor</em> circuit, so that a sharp pulse put in at one end arrives at the other as a slow, smeared lump, and pulses sent too quickly overlap. Thomson’s analysis, written in 1855 before the cable was laid, predicted that the signalling speed is inversely proportional to $RC$ (i.e. proportional to bandwidth). Wildman Whitehouse, the cable’s chief electrician, ignored it; Thomson was right.</p>
+<p>That is the whole of this chapter in one story: a <b>system</b> acts on a <b>signal</b>; the system’s memory (here, capacitance) limits how fast the signal can change; and “how fast” translates into bandwidth. Eight years later, with Thomson’s theory applied, a new cable worked.</p></div>
+
+<h2>What is a signal?</h2>
+<p>A <b>signal</b> is a quantity that varies and carries information: a voltage $v(t)$ from a microphone, the pressure of a sound wave, the brightness along a scan line of a television picture, the sequence of bits $b[n]$ in a file. Mathematically it is a function of one or more independent variables; in this book almost always <em>time</em>.</p>
+
+<h3>A taxonomy that you will use all the time</h3>
+<table>
+<tr><th>Division</th><th>Meaning</th><th>Example</th></tr>
+<tr><td>Continuous-time / discrete-time</td><td>$x(t)$ defined for every real $t$; $x[n]$ defined only for integer $n$ (samples)</td><td>Microphone voltage / its 8 kHz samples</td></tr>
+<tr><td>Analog / digital</td><td>Amplitude can take any value in a range / only from a finite set</td><td>Voltage / the 8-bit PCM codeword</td></tr>
+<tr><td>Deterministic / random</td><td>Fully specified by a formula / only statistics are known (Chapters 4–5)</td><td>$A\cos 2\pi f_0t$ / thermal noise, a speech waveform before it is spoken</td></tr>
+<tr><td>Periodic / aperiodic</td><td>$x(t+T_0)=x(t)$ for all $t$</td><td>A carrier / one pulse</td></tr>
+<tr><td>Even / odd</td><td>$x(-t)=x(t)$ / $x(-t)=-x(t)$</td><td>$\cos$ / $\sin$</td></tr>
+<tr><td>Energy / power</td><td>Finite total energy / finite average power (but infinite energy)</td><td>A single pulse / a sinusoid or a random bit stream</td></tr>
+<tr><td>Real / complex</td><td>Complex signals are bookkeeping devices (Chapter 3)</td><td>$e^{j2\pi f_0t}$</td></tr>
+</table>
+
+<h3>Energy and power, from first principles</h3>
+<p>Why call $\int|x|^2dt$ “energy”? Because if $x(t)$ is a voltage across a $1\,\Omega$ resistor, the instantaneous power dissipated is $v^2/R=x^2(t)$ watts, and integrating power over time gives energy in joules. Communication engineers adopt the <b>normalised $1\,\Omega$ convention</b> so that “power” of a signal is just $\overline{x^2}$, whatever the actual impedance; real power is $\overline{x^2}/R$, and ratios (SNR, efficiency) do not depend on $R$ at all.</p>
+$$E=\int_{-\infty}^{\infty}|x(t)|^2\,dt,\qquad P=\lim_{T\to\infty}\frac1{2T}\int_{-T}^{T}|x(t)|^2\,dt .$$
+<p>If $0<E<\infty$ the signal is an <b>energy signal</b> (and $P=0$); if $0<P<\infty$ it is a <b>power signal</b> (and $E=\infty$). A signal can be neither (a ramp $t\,u(t)$). For a periodic signal the limit reduces to one period: $P=\frac1{T_0}\int_{T_0}|x|^2dt$.</p>
+
+<div class="box derive"><span class="tag">Derivation · power of a sinusoid, and of a sum of sinusoids</span>
+<p>For $x(t)=A\cos(2\pi f_0t+\theta)$ the period is $T_0=1/f_0$. Use $\cos^2u=\tfrac12(1+\cos2u)$:
+$$P=\frac1{T_0}\int_0^{T_0}A^2\cos^2(2\pi f_0t+\theta)\,dt=\frac{A^2}{2T_0}\Big[\underbrace{\int_0^{T_0}dt}_{T_0}+\underbrace{\int_0^{T_0}\cos(4\pi f_0t+2\theta)dt}_{0}\Big]=\frac{A^2}{2}.$$
+The oscillating part integrates to zero over any whole number of cycles. So a sinusoid’s power is half the square of its <b>peak</b>, or the square of its RMS value $A/\sqrt2$. This $\tfrac12$ is the single most-forgotten factor in the whole of communications.</p>
+<p>Now take two sinusoids of <em>different</em> frequencies, $x=A\cos(2\pi f_1t)+B\cos(2\pi f_2t)$. Squaring gives $A^2\cos^2+B^2\cos^2+2AB\cos(2\pi f_1t)\cos(2\pi f_2t)$, and the cross term is $AB[\cos2\pi(f_1-f_2)t+\cos2\pi(f_1+f_2)t]$, a pair of oscillations of non-zero frequency whose long-time average vanishes. Hence
+$$P=\frac{A^2+B^2}2\qquad(\text{different frequencies: powers add}).$$
+This is <b>orthogonality</b> of sinusoids at work: components at different frequencies do not interact in the average. If the frequencies are <em>equal</em> the amplitudes combine as phasors first, $A\cos(\omega t)+B\cos(\omega t+\theta)$ has amplitude $\sqrt{A^2+B^2+2AB\cos\theta}$ and power $\tfrac12(A^2+B^2+2AB\cos\theta)$, which is why two equal signals in phase give <em>four</em> times the power of one, not two (+6 dB, not +3 dB).</p></div>
+
+<div class="box ex"><span class="tag">Worked example · energy of a one-sided exponential and a pulse</span>
+<p>(a) $x(t)=e^{-at}u(t)$, $a>0$: $E=\int_0^\infty e^{-2at}dt=\dfrac1{2a}$. (b) $x(t)=A\,\rect(t/\tau)$ (height $A$, width $\tau$): $E=A^2\tau$. (c) A random binary signal that is $\pm1\,\mathrm V$ forever has $P=1\,\mathrm W$ and $E=\infty$: a power signal. (d) $x(t)=3+4\cos(2\pi t)$ has $P=3^2+\tfrac{4^2}2=17$ (the DC and the sinusoid are orthogonal: they add in power).</p></div>
+
+<h3>Even and odd parts</h3>
+<p>Every signal splits uniquely as $x=x_e+x_o$ with $x_e(t)=\tfrac12[x(t)+x(-t)]$ and $x_o(t)=\tfrac12[x(t)-x(-t)]$. Even and odd parts have zero cross-energy, $\int x_ex_o\,dt=0$ (an odd integrand over a symmetric range), so $E_x=E_{x_e}+E_{x_o}$. For the causal $x(t)=e^{-t}u(t)$, $x_e=\tfrac12e^{-|t|}$ and $x_o=\tfrac12\sgn(t)e^{-|t|}$, and each carries half the energy. The same split reappears in Fourier analysis: the even part gives the real part of the spectrum and the odd part the imaginary part.</p>
+
+<h3>The elementary signals</h3>
+<ul>
+<li><b>Unit step</b> $u(t)$ (0 for $t<0$, 1 for $t>0$): switches things on. <b>Rectangle</b> $\rect(t/T)$: $u(t+T/2)-u(t-T/2)$. <b>Ramp</b> $r(t)=t\,u(t)=\int_{-\infty}^tu$.</li>
+<li><b>Complex exponential</b> $e^{j2\pi ft}=\cos2\pi ft+j\sin2\pi ft$: <em>the</em> building block. Real sinusoids are $\cos=\tfrac12(e^{j\cdot}+e^{-j\cdot})$.</li>
+<li><b>Sinc</b> $\sinc(x)=\dfrac{\sin\pi x}{\pi x}$: value 1 at the origin, zeros at nonzero integers.</li>
+<li><b>Impulse (delta)</b> $\delta(t)$: the idealisation of a very narrow, very tall pulse of unit area.</li>
+</ul>
+
+<div class="box derive"><span class="tag">The impulse, defined by what it <em>does</em></span>
+<p>No ordinary function is zero everywhere but the origin yet has unit area. Instead, define $\delta$ as the limit of narrower and narrower unit-area pulses, e.g. $\delta_\varepsilon(t)=\frac1\varepsilon\rect(t/\varepsilon)$, and ask what happens when we integrate it against a smooth function $x(t)$:
+$$\int x(t)\delta_\varepsilon(t)\,dt=\frac1\varepsilon\int_{-\varepsilon/2}^{\varepsilon/2}x(t)\,dt\ \xrightarrow{\ \varepsilon\to0\ }\ x(0).$$
+Shifting, we get the <b>sifting property</b> $\displaystyle\int_{-\infty}^{\infty}x(t)\,\delta(t-t_0)\,dt=x(t_0)$: the impulse “sifts out” the value of $x$ at the instant it sits on. Two consequences you will use repeatedly:</p>
+<ul>
+<li><b>Scaling:</b> $\delta(at)=\dfrac1{|a|}\delta(t)$. (Substitute $u=at$ in $\int\delta(at)dt$: the area becomes $1/|a|$. Squeezing time by 3 makes a pulse of the same height three times narrower, so its area is a third.)</li>
+<li><b>Product:</b> $x(t)\delta(t-t_0)=x(t_0)\delta(t-t_0)$, and $\delta(t)=\dfrac{du}{dt}$ (the derivative of a step).</li>
+</ul></div>
+
+<h2>Systems and their properties</h2>
+<p>A <b>system</b> is anything that turns an input signal into an output signal, $y=\mathcal S\{x\}$: an amplifier, a filter, a cable, the radio channel between two antennas, an algorithm. The following properties decide what mathematics applies.</p>
+<dl>
+<dt>Linearity</dt><dd>$\mathcal S\{ax_1+bx_2\}=a\,\mathcal S\{x_1\}+b\,\mathcal S\{x_2\}$. Two parts: <em>additivity</em> and <em>homogeneity</em> (scaling). Consequence: <b>zero in ⇒ zero out</b>. A system with an added offset, $y=2x+3$, is <em>not</em> linear (it is “affine”).</dd>
+<dt>Time invariance</dt><dd>Delay the input by $t_0$, and the output is merely delayed by $t_0$: $x(t-t_0)\mapsto y(t-t_0)$. The system’s behaviour does not drift with the clock.</dd>
+<dt>Causality</dt><dd>The output at time $t$ depends only on inputs at times $\le t$. All physical real-time systems are causal; <em>off-line</em> processing need not be.</dd>
+<dt>Memory</dt><dd>A <em>memoryless</em> system’s output at $t$ depends only on $x(t)$ (a resistor, an ideal amplifier, a diode). Capacitors, inductors, delays and integrators have memory.</dd>
+<dt>Stability (BIBO)</dt><dd>Every bounded input gives a bounded output.</dd>
+<dt>Invertibility</dt><dd>Distinct inputs give distinct outputs, so the input can be recovered (important for equalisation, Chapter 13).</dd>
+</dl>
+
+<div class="box key"><span class="tag">A quick procedure for the two tests that GATE loves</span>
+<p><b>Time-invariance test:</b> (1) feed the delayed input $x_d(t)=x(t-t_0)$ into the system and write the result $y_1(t)$. (2) Take the <em>original</em> output $y(t)$ and delay it: $y_2(t)=y(t-t_0)$. (3) The system is TI iff $y_1\equiv y_2$ for all $x$. The trap: in step (2) replace $t$ by $t-t_0$ <em>everywhere</em> in the formula, including the explicit $t$’s.<br>
+<b>Linearity test:</b> feed $ax_1+bx_2$; compare with $ay_1+by_2$. Quick kills: a constant added, a power or absolute value of $x$, a product of $x$ with itself.</p></div>
+
+<table>
+<tr><th>System</th><th>Linear?</th><th>TI?</th><th>Causal?</th><th>Memory?</th><th>Why</th></tr>
+<tr><td>$y=x^2(t)$</td><td>No</td><td>Yes</td><td>Yes</td><td>No</td><td>$(x_1+x_2)^2\ne x_1^2+x_2^2$</td></tr>
+<tr><td>$y=t\,x(t)$</td><td>Yes</td><td><b>No</b></td><td>Yes</td><td>No</td><td>Delayed input gives $t\,x(t-t_0)$; delayed output is $(t-t_0)x(t-t_0)$</td></tr>
+<tr><td>$y=x(t)\cos(2\pi f_ct)$</td><td>Yes</td><td><b>No</b></td><td>Yes</td><td>No</td><td>The <em>modulator</em> is linear but time-varying: that is why it can shift frequencies, which no LTI system can</td></tr>
+<tr><td>$y=x(t-2)$</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>A pure delay</td></tr>
+<tr><td>$y=x(t+2)$</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>Looks into the future</td></tr>
+<tr><td>$y=x(2t)$</td><td>Yes</td><td><b>No</b></td><td>No</td><td>Yes</td><td>Time scaling is not time-invariant; at $t=1$ it needs $x(2)$</td></tr>
+<tr><td>$y=x(-t)$</td><td>Yes</td><td><b>No</b></td><td>No</td><td>Yes</td><td>Time reversal</td></tr>
+<tr><td>$y=\int_{-\infty}^tx(\tau)d\tau$</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Integrator: <b>unstable</b> (bounded $u(t)$ gives the unbounded ramp)</td></tr>
+<tr><td>$y=\dfrac{dx}{dt}$</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Differentiator: <b>unstable</b> (a bounded step gives an impulse)</td></tr>
+<tr><td>$y=2x+3$</td><td>No</td><td>Yes</td><td>Yes</td><td>No</td><td>Affine: zero input gives non-zero output</td></tr>
+<tr><td>$y=|x|$</td><td>No</td><td>Yes</td><td>Yes</td><td>No</td><td>A rectifier: the envelope-detector idea (Chapter 6)</td></tr>
+</table>
+<div class="box trap"><span class="tag">Two traps</span>
+<p>(1) <b>Linear ≠ “straight line on a graph”.</b> $y=2x+3$ is a straight line but fails the linearity test. (2) <b>A linear system cannot create new frequencies.</b> If an input contains only $f_1$ and $f_2$, an LTI system output contains only $f_1$ and $f_2$. New frequencies need a non-linear or time-varying element: the square-law diode, the multiplier. The whole of modulation theory is about exploiting exactly this.</p></div>
+
+<h2>Linear time-invariant (LTI) systems: one function tells you everything</h2>
+<h3>Deriving the convolution integral</h3>
+<div class="box derive"><span class="tag">From sifting property to convolution</span>
+<ol class="steps">
+<li>Any input can be written as a continuum of impulses: by the sifting property, $x(t)=\int_{-\infty}^{\infty}x(\tau)\,\delta(t-\tau)\,d\tau$ (a weighted sum of delayed impulses, weight $x(\tau)d\tau$).</li>
+<li>Define the <b>impulse response</b> $h(t)=\mathcal S\{\delta(t)\}$: what the system does when kicked once at $t=0$.</li>
+<li>By <em>time-invariance</em> the response to $\delta(t-\tau)$ is $h(t-\tau)$.</li>
+<li>By <em>linearity</em> the response to the weighted sum is the same weighted sum of responses (the integral is a limit of sums):
+$$\boxed{\,y(t)=\int_{-\infty}^{\infty}x(\tau)\,h(t-\tau)\,d\tau=(x*h)(t)\,}$$</li>
+</ol>
+<p>This is the formal statement of the intuition “output = total of all the delayed, scaled echoes of the input”. The substitution $\tau\to t-\tau$ shows $x*h=h*x$.</p></div>
+<p>A few properties follow directly: convolution is <b>commutative</b>, <b>associative</b> and <b>distributive</b>, so two LTI systems in cascade have $h=h_1*h_2$ (and the order does not matter), and in parallel $h=h_1+h_2$. Convolving with $\delta(t-t_0)$ just delays: $x*\delta(\cdot-t_0)=x(t-t_0)$. The <b>step response</b> is $s(t)=\int_{-\infty}^th(\tau)d\tau$, and so $h=ds/dt$. The widget in Chapter 2 lets you watch the flip–slide–multiply–integrate picture.</p>
+<p><b>Causality</b> in LTI language: $h(t)=0$ for $t<0$ (the system cannot react before it is kicked). <b>Memorylessness</b>: $h(t)=K\delta(t)$.</p>
+
+<div class="box derive"><span class="tag">BIBO stability ⟺ $\int|h|\,dt<\infty$</span>
+<p><em>Sufficiency.</em> If $|x(t)|\le M$ then $|y(t)|=\big|\int x(\tau)h(t-\tau)d\tau\big|\le M\int|h|$. <em>Necessity.</em> Choose the bounded input $x(t)=\sgn[h(-t)]$. Then $y(0)=\int x(\tau)h(-\tau)d\tau=\int|h|$, which is infinite if $h$ is not absolutely integrable. ∎ Example: $h=e^{-at}u(t)$ is stable for $a>0$ ($\int|h|=1/a$); $h=u(t)$ (the integrator) is not.</p></div>
+
+<h3>Why sinusoids are special: the frequency response</h3>
+<div class="box derive"><span class="tag">Complex exponentials are eigenfunctions of every LTI system</span>
+<p>Feed $x(t)=e^{j2\pi ft}$ into the convolution integral:
+$$y(t)=\int h(\tau)\,e^{j2\pi f(t-\tau)}\,d\tau=e^{j2\pi ft}\underbrace{\int h(\tau)\,e^{-j2\pi f\tau}d\tau}_{H(f)}=H(f)\,e^{j2\pi ft}.$$
+The output is the <em>same</em> exponential, multiplied by a (complex) constant $H(f)$ that depends only on $f$ and on the system. An eigenfunction of a matrix is a vector that the matrix merely rescales; $e^{j2\pi ft}$ is the same thing for every LTI system. $H(f)$ is the <b>frequency response</b>, the Fourier transform of $h$ (Chapter 2).</p>
+<p>For a real system ($h$ real) $H(-f)=H^*(f)$, and a real cosine $A\cos(2\pi ft+\theta)=\tfrac A2[e^{j(\cdot)}+e^{-j(\cdot)}]$ passes as
+$$A\cos(2\pi ft+\theta)\ \longmapsto\ A\,|H(f)|\cos\big(2\pi ft+\theta+\angle H(f)\big).$$
+<b>A sinusoid in is a sinusoid out, at the same frequency, with amplitude scaled by $|H(f)|$ and phase shifted by $\angle H(f)$.</b> Since any signal is a sum of sinusoids (Chapter 2), this tells us the output for <em>any</em> input: the foundation of all filter analysis, and the reason we study the world in the frequency domain.</p></div>
+
+<h3>The RC circuit, the “hydrogen atom” of signal processing</h3>
+<p>A resistor $R$ in series with a capacitor $C$, output taken across the capacitor. The current is $i=C\,dy/dt$ and Kirchhoff’s voltage law gives $x=Ri+y$, i.e.
+$$RC\frac{dy}{dt}+y=x .$$
+<b>Frequency response.</b> Put $x=e^{j2\pi ft}$, $y=H(f)e^{j2\pi ft}$, so $dy/dt=j2\pi f\,y$:
+$$H(f)=\frac1{1+j2\pi fRC},\qquad|H|=\frac1{\sqrt{1+(f/f_c)^2}},\quad\angle H=-\arctan\frac f{f_c},\quad f_c=\frac1{2\pi RC}.$$
+At $f=f_c$: $|H|=1/\sqrt2$ (power halved: $-3.01\,\mathrm{dB}$) and phase $-45^\circ$. Below $f_c$ the circuit passes; above, it attenuates at $-20\,\mathrm{dB/decade}$ ($-6\,\mathrm{dB/octave}$), because $|H|\approx f_c/f$.</p>
+<p><b>Impulse and step response.</b> The inverse transform (or direct solution) gives
+$$h(t)=\frac1{RC}e^{-t/RC}u(t),\qquad s(t)=\big(1-e^{-t/RC}\big)u(t).$$
+The step response is the capacitor charging: it reaches 63.2% after one time constant $\tau=RC$ and 99.3% after $5\tau$. $\int h=1$ (unity DC gain).</p>
+<div class="box derive"><span class="tag">Rise time ≈ 0.35 / bandwidth: a rule that works for every low-pass system</span>
+<p>Define the 10–90% rise time $t_r$: from $0.1$ to $0.9$ of the final value. For the RC step response, $1-e^{-t_{10}/\tau}=0.1\Rightarrow t_{10}=\tau\ln\tfrac{1}{0.9}$ and $t_{90}=\tau\ln\tfrac1{0.1}$, so $t_r=\tau\ln9=2.197\,\tau$. The 3 dB bandwidth is $B=f_c=1/(2\pi\tau)$. Eliminating $\tau$:
+$$t_r=\frac{2.197}{2\pi B}=\frac{0.35}{B}.$$
+Surprisingly, this holds approximately for <em>every</em> well-behaved low-pass system (a 2nd-order Butterworth gives $0.34/B$; a Gaussian $0.34/B$). It is the quantitative form of “fast edges need wide bandwidth”. A 100 MHz oscilloscope cannot show edges faster than $3.5$ ns; a digital link of bit rate $R_b$ whose receiver filter has bandwidth $B$ has a rise time $0.35/B$, which must be a fraction of the bit time $1/R_b$, giving the practical rule of thumb $B\gtrsim0.5\,R_b$ (Chapter 13 proves the exact lower bound, $B=R_b/2$).</p></div>
+
+<div class="widget" id="w-filt">Four filters, each in three views. Top: magnitude in dB on a logarithmic frequency axis (frequency in units of $f_0$). Middle: phase. Bottom: time response (step for low-/high-pass, impulse for the band-pass). Switch to the resonant types and increase the quality factor $Q$: the response peaks, the bandwidth shrinks as $f_0/Q$, and the time response <em>rings</em> for about $Q/\pi f_0$ seconds. Narrow in frequency ⇒ long in time: the uncertainty principle again.</div>
+
+<div class="box eng"><span class="tag">Engineering practice · the RC filter at work</span>
+<p><b>Anti-alias and smoothing filters.</b> Every ADC input has an RC (or LC) low-pass in front of it; every PWM audio or DAC output has one behind it. <b>Coupling capacitors</b> are the RC <em>high-pass</em> ($f_c=1/2\pi RC$), blocking DC while passing audio: choose $f_c\ll$ lowest signal frequency, e.g. $f_c=20\,\mathrm{Hz}$ for audio ($R=10\,\mathrm{k\Omega}$, $C=0.8\,\mu$F). <b>The detector in an AM radio</b> is a diode and an RC whose time constant must be long compared to the carrier period but short compared to the modulating signal: that design trade (Chapter 6) is nothing but the step-response of this circuit. <b>Cable and PCB traces</b> are distributed RC lines; Thomson’s transatlantic problem reappears every time you try to drive a long on-chip wire or a long Ethernet run.</p></div>
+
+<h2>Laplace transform, poles and zeros (just enough)</h2>
+<p>The Fourier transform handles steady-state sinusoids. To handle <em>transients</em>, initial conditions and stability, generalise $j2\pi f$ to a complex variable $s=\sigma+j\omega$. The (unilateral) Laplace transform of a causal signal is $X(s)=\int_0^\infty x(t)e^{-st}dt$, defined where the integral converges (the region of convergence, ROC).</p>
+<table>
+<tr><th>$x(t)$, $t\ge0$</th><th>$X(s)$</th><th>$x(t)$</th><th>$X(s)$</th></tr>
+<tr><td>$\delta(t)$</td><td>$1$</td><td>$e^{-at}$</td><td>$\dfrac1{s+a}$</td></tr>
+<tr><td>$u(t)$</td><td>$\dfrac1s$</td><td>$te^{-at}$</td><td>$\dfrac1{(s+a)^2}$</td></tr>
+<tr><td>$t$</td><td>$\dfrac1{s^2}$</td><td>$\cos\omega_0t$</td><td>$\dfrac{s}{s^2+\omega_0^2}$</td></tr>
+<tr><td>$\dot x(t)$</td><td>$sX(s)-x(0^-)$</td><td>$\sin\omega_0t$</td><td>$\dfrac{\omega_0}{s^2+\omega_0^2}$</td></tr>
+<tr><td>$\int_0^tx$</td><td>$X(s)/s$</td><td>$x(t-t_0)u(t-t_0)$</td><td>$e^{-st_0}X(s)$</td></tr>
+</table>
+<p>Convolution becomes multiplication, $Y(s)=H(s)X(s)$, where $H(s)$ is the <b>transfer function</b>; the frequency response is $H(f)=H(s)\big|_{s=j2\pi f}$. A rational $H(s)=K\dfrac{\prod(s-z_i)}{\prod(s-p_i)}$ is described by its <b>zeros</b> $z_i$ and <b>poles</b> $p_i$. Three facts to carry away:</p>
+<ul>
+<li>A causal LTI system is BIBO-stable iff <b>all poles lie in the open left half-plane</b> (each pole $p$ contributes a term $e^{pt}$ to $h$, which decays iff $\mathrm{Re}\,p<0$). The RC circuit has $H(s)=\dfrac{1/RC}{s+1/RC}$, one pole at $s=-1/RC$.</li>
+<li>Magnitude response from the pole–zero plot: $|H(f)|=K\,\dfrac{\prod\text{distances from }j2\pi f\text{ to zeros}}{\prod\text{distances from }j2\pi f\text{ to poles}}$. A pole near the imaginary axis creates a <em>peak</em> in the response at that frequency (resonance); a zero on the axis creates a <em>null</em>.</li>
+<li>Initial/final value theorems: $x(0^+)=\lim_{s\to\infty}sX(s)$, $x(\infty)=\lim_{s\to0}sX(s)$ (if the latter exists).</li>
+</ul>
+
+<h3>The second-order resonant circuit: the tuned circuit of every radio</h3>
+<p>Series RLC driven by $x$; output across $R$. KVL: $x=Ri+L\,di/dt+\frac1C\int i\,dt$, so with $s$:
+$$H(s)=\frac{R}{R+sL+\frac1{sC}}=\frac{(R/L)\,s}{s^2+(R/L)s+\frac1{LC}}.$$
+Match with the standard form $\dfrac{(\omega_0/Q)s}{s^2+(\omega_0/Q)s+\omega_0^2}$:
+$$\omega_0=\frac1{\sqrt{LC}},\qquad Q=\frac{\omega_0L}R=\frac1{\omega_0RC}=\frac1R\sqrt{\frac LC},\qquad\text{bandwidth }B=\frac{f_0}Q=\frac R{2\pi L}.$$
+<b>Magnitude.</b> On the imaginary axis,
+$$|H(f)|^2=\frac1{1+Q^2\big(\frac f{f_0}-\frac{f_0}f\big)^2}\ \approx\ \frac1{1+\big(\frac{2Q\,\Delta f}{f_0}\big)^2}\quad(\Delta f=f-f_0\ll f_0).$$
+Half-power ($|H|^2=\tfrac12$) occurs when $Q\big(\frac f{f_0}-\frac{f_0}f\big)=\pm1$, whose two positive roots $f_{1,2}$ satisfy $f_2-f_1=f_0/Q$ and $f_1f_2=f_0^2$ (the response is symmetric on a <em>log</em> frequency axis, and nearly symmetric on a linear axis if $Q\gg1$).</p>
+<div class="box ex"><span class="tag">Worked example · selectivity of an AM-radio tuned circuit</span>
+<p>An LC tuner at $f_0=1\,\mathrm{MHz}$ with $Q=100$ has $B=10\,\mathrm{kHz}$. A station $9\,\mathrm{kHz}$ away (the adjacent AM channel) is attenuated by $|H|^2=1/(1+Q^2(1.009-0.991)^2)$: here $f/f_0-f_0/f=1.009-0.99107=0.01793$, $Q\times=1.793$, $|H|^2=1/4.21$, i.e. only <b>$-6.2\,\mathrm{dB}$</b>. A single tuned circuit cannot reject an adjacent channel! This is exactly why the superheterodyne receiver (Chapter 8) moves the signal to a fixed intermediate frequency where several coupled, high-$Q$ resonators (ceramic or crystal filters, $Q$ in thousands) provide 40–60 dB of rejection.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · where Q comes from</span>
+<p>Coil resistance, dielectric losses and radiation limit $Q$: an air-core RF coil reaches $Q\approx100$–$300$, a quartz crystal $10^4$–$10^6$ (hence the astonishing frequency stability of crystal oscillators and the sharp filters in communication receivers), a SAW filter in a phone a few hundred, and an optical cavity $10^8$ or more. In a <b>radio-frequency amplifier</b> the tuned load sets both gain and bandwidth, and the gain–bandwidth trade-off is simply $B=f_0/Q$. For a superhet IF of $455\,\mathrm{kHz}$ with a $9\,\mathrm{kHz}$ channel, $Q_{\rm loaded}\approx50$ per stage.</p></div>
+
+<h2>Distortionless transmission</h2>
+<p>When is a system a perfect conduit? A channel that merely amplifies and delays, $y(t)=Kx(t-t_d)$, changes nothing about the <em>shape</em> of the message. Taking the Fourier transform,
+$$H(f)=Ke^{-j2\pi ft_d}\quad\Longleftrightarrow\quad\boxed{|H(f)|=K\ \text{(flat)}\quad\text{and}\quad\angle H(f)=-2\pi ft_d\ \text{(linear in }f)}$$
+over the band that the signal occupies. Two kinds of distortion are possible, and they have different consequences:</p>
+<ul>
+<li><b>Amplitude (frequency) distortion:</b> $|H|$ not flat: some frequencies are boosted or cut (bass-heavy telephones, a coax cable that loses high frequencies). Fixed with an <em>equaliser</em> that has the inverse magnitude.</li>
+<li><b>Phase (delay) distortion:</b> $\angle H$ not linear: different frequencies are delayed by different times, so the waveform shape changes even if all amplitudes are right. The ear is nearly insensitive to this (speech remains intelligible), but a <em>pulse</em> train is wrecked: pulses spread and overlap, which is inter-symbol interference.</li>
+</ul>
+<div class="box derive"><span class="tag">Group delay and phase delay: what a modulated wave actually experiences</span>
+<p>Consider a bandpass signal $x(t)=a(t)\cos(2\pi f_ct)$ whose message $a(t)$ is slow (bandwidth $\ll f_c$). Let the channel have phase $\phi(f)=\angle H(f)$ and near $f_c$ the linear approximation $\phi(f)\approx\phi(f_c)+(f-f_c)\phi'(f_c)$. Write $\phi(f_c)=-2\pi f_ct_p$ and $\phi'(f_c)=-2\pi t_g$. In frequency terms, $X(f)$ has components near $\pm f_c$; the positive-frequency part, multiplied by $H=|H|e^{j\phi}$, is
+$$Y_+(f)\approx|H(f_c)|\,\tfrac12A(f-f_c)\,e^{j[\phi(f_c)+(f-f_c)\phi'(f_c)]}=|H(f_c)|\,\tfrac12A(f-f_c)\,e^{-j2\pi f_ct_p}\,e^{-j2\pi(f-f_c)t_g}.$$
+The factor $e^{-j2\pi(f-f_c)t_g}$ delays the baseband message $a(t)$ by $t_g$; the constant $e^{-j2\pi f_ct_p}$ delays (phase-shifts) the carrier by $t_p$. Therefore
+$$y(t)\approx|H(f_c)|\;a(t-t_g)\cos\!\big(2\pi f_c(t-t_p)\big),$$
+$$\boxed{\,\text{group delay }t_g=-\frac1{2\pi}\frac{d\phi}{d f}=-\frac{d\phi}{d\omega},\qquad\text{phase delay }t_p=-\frac{\phi(f_c)}{2\pi f_c}\,}$$
+<b>The envelope (the information) travels at the group delay; the carrier’s crests travel at the phase delay.</b> They are equal when the phase is exactly linear through the origin (the distortionless case), and different otherwise. In a waveguide or plasma the phase velocity can even exceed $c$, while the group velocity (the speed of information) never does.</p></div>
+<div class="box ex"><span class="tag">Worked example · RC circuit group delay</span>
+<p>$\phi(\omega)=-\arctan(\omega RC)$, so $t_g=\dfrac{RC}{1+(\omega RC)^2}$: the delay equals $RC$ at low frequencies and falls to zero above $f_c$. For a voice signal in $0.3$–$3.4$ kHz through an RC with $f_c=20\,\mathrm{kHz}$, $\omega RC\le0.17$ and $t_g$ varies by only $3\%$ over the band: distortion negligible. For a 1 Mbit/s data stream through the <em>same</em> filter, edges would be smeared noticeably. Same system; whether it distorts depends on what you send through it.</p></div>
+
+<h3>Ideal filters are impossible; real filters are approximations</h3>
+<p>The ideal low-pass filter $H(f)=\rect(f/2B)e^{-j2\pi ft_d}$ has impulse response $h(t)=2B\,\sinc\!\big(2B(t-t_d)\big)$, which starts at $t=-\infty$: <b>non-causal</b>. More generally, the Paley–Wiener criterion says a magnitude response $|H|$ is realisable by a causal filter only if $\int\frac{|\ln|H(f)||}{1+f^2}df<\infty$; in particular $|H|$ can be zero only at isolated frequencies, never over a band. So “brick-wall” filters must be approximated, and real design is a trade between sharpness, ripple, delay and complexity.</p>
+<table>
+<tr><th>Family</th><th>Magnitude</th><th>Character</th></tr>
+<tr><td>Butterworth, order $n$</td><td>$|H|^2=\dfrac1{1+(f/f_c)^{2n}}$</td><td>Maximally flat passband; $-20n$ dB/decade rolloff; $-3$ dB at $f_c$ for every $n$</td></tr>
+<tr><td>Chebyshev I</td><td>Equiripple in passband</td><td>Sharper than Butterworth of the same order, at the cost of ripple and worse phase</td></tr>
+<tr><td>Elliptic</td><td>Ripple in pass and stop bands</td><td>Sharpest for a given order</td></tr>
+<tr><td>Bessel</td><td>Maximally flat <em>group delay</em></td><td>Gentle rolloff but best pulse shape; used where waveform fidelity matters</td></tr>
+</table>
+<div class="box ex"><span class="tag">Worked example · why we oversample (anti-alias filter order)</span>
+<p>Telephone speech is limited to $3.4$ kHz and sampled at $8$ kHz. Suppose the anti-alias filter must be at most $3$ dB down at $3.4$ kHz and at least $40$ dB down at $4.6$ kHz, so that aliases (which fold about $4$ kHz) are suppressed. For a Butterworth filter, $10\log\big[1+(4.6/3.4)^{2n}\big]\ge40$ requires $2n\ge\dfrac{\ln(9999)}{\ln(1.353)}=30.5$, so <b>$n=16$</b>: an unrealistically complex analog circuit. Now sample at $48$ kHz instead: the same 40 dB must be reached by $44.6$ kHz (the alias of 3.4 kHz), and $10\log[1+(44.6/3.4)^{2n}]\ge40$ is met by <b>$n=2$</b> (44.7 dB). The sharp filtering is moved into cheap, perfectly reproducible digital arithmetic (decimation from 48 kHz to 8 kHz). This is how every modern voice codec and audio CD player works (“oversampling”).</p></div>
+
+<h2>Decibels, dBm and level bookkeeping</h2>
+<p>Communication links span absurd ranges: a transmitter of $10^{3}$ W, a received signal of $10^{-13}$ W, noise at $10^{-14}$ W. Multiplicative gains and losses along a chain become additions on a logarithmic scale. The <b>decibel</b> is $10\log_{10}$ of a <em>power ratio</em>:
+$$G_{\rm dB}=10\log_{10}\frac{P_{\rm out}}{P_{\rm in}},\qquad\text{and for voltages (same impedance):}\ \ G_{\rm dB}=20\log_{10}\frac{V_{\rm out}}{V_{\rm in}}.$$
+The factor 20 is just $10\log(V^2)$. Memorise: $3\,\mathrm{dB}\approx\times2$ (exactly $10\log2=3.0103$), $6\,\mathrm{dB}\approx\times4$, $10\,\mathrm{dB}=\times10$, $20\,\mathrm{dB}=\times100$; $-3\,\mathrm{dB}=\times\tfrac12$. Everything else: $7\,\mathrm{dB}\approx\times5$, $13\,\mathrm{dB}=10+3\approx\times20$, $1\,\mathrm{dB}\approx\times1.26$.</p>
+<table>
+<tr><th>Unit</th><th>Reference</th><th>Handy facts</th></tr>
+<tr><td>dBW</td><td>1 W</td><td>$30\,\mathrm{dBW}=1\,\mathrm{kW}$</td></tr>
+<tr><td>dBm</td><td>1 mW</td><td>$0\,\mathrm{dBm}=1\,\mathrm{mW}$; $\mathrm{dBm}=\mathrm{dBW}+30$; phone transmitter $\approx23\,\mathrm{dBm}$ (0.2 W); Wi-Fi AP $\approx20\,\mathrm{dBm}$; GPS at ground $\approx-130\,\mathrm{dBm}$</td></tr>
+<tr><td>dBc</td><td>the carrier</td><td>“Spurious tone at $-60\,\mathrm{dBc}$” = a millionth of the carrier power</td></tr>
+<tr><td>dBi</td><td>an isotropic antenna</td><td>Antenna gain; a half-wave dipole is $2.15\,\mathrm{dBi}$</td></tr>
+<tr><td>dBHz</td><td>1 Hz</td><td>Used for bandwidths and for $C/N_0$ in link budgets</td></tr>
+</table>
+<div class="box ex"><span class="tag">Worked example · a level diagram</span>
+<p>A transmitter outputs $+30\,\mathrm{dBm}$ (1 W). A cable loses $3\,\mathrm{dB/100\,m}$ over $200\,\mathrm{m}$ ($-6$ dB), then a $+12$ dB amplifier, then a $-2$ dB connector loss. Output level: $30-6+12-2=34\,\mathrm{dBm}=2.5\,\mathrm{W}$. Overall gain: $+4\,\mathrm{dB}$ (×2.5). In linear terms you would have multiplied $1\times0.25\times15.8\times0.63=2.5$ W: same answer, three times the work. <b>Never add dB values with linear values</b>, and never add two dBm numbers (adding two $-90\,\mathrm{dBm}$ signals gives $-87\,\mathrm{dBm}$, not $-180$).</p></div>
+
+<h2>Discrete-time systems in one page</h2>
+<p>Digital signal processing works on samples $x[n]$. Everything above has a discrete counterpart: the impulse is the Kronecker delta $\delta[n]$; the convolution sum is $y[n]=\sum_kx[k]h[n-k]$ (the same derivation: write $x[n]$ as a sum of weighted shifted deltas); the eigenfunctions are $e^{j\omega n}$ and the frequency response is $H(e^{j\omega})=\sum_nh[n]e^{-j\omega n}$, periodic in $\omega$ with period $2\pi$ (because sampling replicates spectra, Chapter 3). The z-transform $H(z)=\sum h[n]z^{-n}$ plays the role of Laplace; a causal system is stable iff all poles are <em>inside</em> the unit circle.</p>
+<p>Two families matter in communications. <b>FIR</b> (finite impulse response) filters, $y[n]=\sum_{k=0}^{N-1}b_kx[n-k]$, have no feedback, are always stable and can have <em>exactly linear phase</em> if $b_k$ is symmetric (hence zero phase distortion, group delay $(N-1)/2$ samples). The simplest example, the $N$-point moving average, has
+$$H(e^{j\omega})=\frac1N\sum_{k=0}^{N-1}e^{-j\omega k}=\frac1N\frac{\sin(N\omega/2)}{\sin(\omega/2)}e^{-j\omega(N-1)/2}$$
+(a geometric series; the amplitude is the discrete cousin of the sinc, with nulls at $\omega=2\pi k/N$). <b>IIR</b> filters use feedback, e.g. $y[n]=ay[n-1]+(1-a)x[n]$, the digital RC; they are efficient but can be unstable and have non-linear phase. Equalisers, matched filters, pulse-shaping filters and the interpolators in every modem are FIR filters.</p>
+<div class="box eng"><span class="tag">Engineering practice · what runs inside a modem</span>
+<p>A modern receiver samples the incoming IF or baseband signal, then everything else is FIR/IIR filtering and multiply-accumulate arithmetic: channel-select filter (FIR, ~100 taps), matched filter, equaliser (LMS-adapted FIR, 5–50 taps), timing-recovery interpolator, carrier-recovery loop filter (digital PLL, an IIR of order 1–2). One multiply-accumulate per tap per sample: a $100$-tap filter at 20 Msample/s needs $2\times10^9$ MAC/s, trivial for a modern DSP or FPGA.</p></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks<small>Quick, no calculator. If any of these is shaky, re-read the matching section before going on.</small></p>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+Which system is <b>linear but not time-invariant</b>?
+<ol class="opts"><li>$y(t)=x^2(t)$</li><li>$y(t)=x(t-3)$</li><li>$y(t)=t\,x(t)$</li><li>$y(t)=2x(t)+1$</li></ol>
+<div class="sol"><p>(A) is non-linear. (B) is LTI. (D) is affine, non-linear (zero in gives 1 out). (C): $t\,(ax_1+bx_2)=a\,tx_1+b\,tx_2$ is linear; delaying the input gives $t\,x(t-t_0)$ but delaying the output gives $(t-t_0)x(t-t_0)$: different, so not TI. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C,D" data-marks="1" data-src="Original">
+Select all <b>true</b> statements about an LTI system with impulse response $h(t)$.
+<ol class="opts"><li>It is causal iff $h(t)=0$ for $t<0$.</li><li>It is BIBO stable iff $h(t)\to0$ as $t\to\infty$.</li><li>Its output for $e^{j2\pi ft}$ is $H(f)e^{j2\pi ft}$.</li><li>Cascading two such systems gives $h_1*h_2$, independent of order.</li></ol>
+<div class="sol"><p>(B) is false: $h(t)=\dfrac{1}{1+t}u(t)\to0$ but $\int|h|=\infty$ (logarithmic divergence), so it is not stable. Stability needs absolute integrability. The others are exactly the results derived above.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+A low-pass system’s 3 dB bandwidth is quadrupled. Its 10–90% rise time becomes
+<ol class="opts"><li>4 times as long</li><li>one quarter as long</li><li>unchanged</li><li>half as long</li></ol>
+<div class="sol"><p>$t_r\approx0.35/B$: inversely proportional to bandwidth. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+A channel has $|H(f)|=1$ and $\angle H(f)=-\alpha f^2$ over the signal band. It exhibits
+<ol class="opts"><li>no distortion</li><li>amplitude distortion only</li><li>constant group delay</li><li>delay distortion (dispersion)</li></ol>
+<div class="sol"><p>Group delay $-\frac1{2\pi}\frac{d\phi}{df}=\frac{\alpha f}{\pi}$ grows with $f$: different frequencies arrive at different times. Magnitude is flat, so no amplitude distortion. <b>(D)</b>. (Optical fibre dispersion is the same effect.)</p></div></div>
+
+<p class="pset">Set B · Numerical practice<small>Each takes 1–3 minutes. Every step in the solution uses a result derived above.</small></p>
+
+<div class="prob" data-type="nat" data-ans="18.5" data-tol="0.05" data-marks="1" data-src="Original">
+$x(t)=3\cos(2\pi\cdot100t)+4\sin(2\pi\cdot250t)+\sqrt6$ (volts across $1\,\Omega$). The average power in watts is ______.
+<div class="sol"><p>Sinusoids at different frequencies add in power: $\frac{3^2}2+\frac{4^2}2=12.5$. The DC term contributes $(\sqrt6)^2=6$ (it is orthogonal to both sinusoids). Total $=\mathbf{18.5}$ W. Forgetting the DC term gives 12.5; using peak instead of RMS gives 31.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="795.8" data-tol="1" data-marks="1" data-src="Original">
+An RC low-pass filter has $R=2\,\mathrm{k\Omega}$ and $C=0.1\,\mu$F. Its 3-dB cut-off frequency in Hz is ______.
+<div class="sol"><p>$f_c=\dfrac1{2\pi RC}=\dfrac1{2\pi\cdot2000\cdot10^{-7}}=\dfrac1{1.2566\times10^{-3}}=\mathbf{795.8}$ Hz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.35" data-tol="0.01" data-marks="1" data-src="Original">
+A channel of 3 dB bandwidth 1 MHz is modelled as a first-order low-pass. Its 10–90% rise time for a step input, in microseconds, is ______.
+<div class="sol"><p>$t_r=0.35/B=0.35/10^6\ \mathrm s=\mathbf{0.35}\ \mu$s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="15.9" data-tol="0.2" data-marks="2" data-src="Original">
+A series RLC circuit (output across $R$) has $L=100\,\mu$H, $C=253\,$pF and $R=10\,\Omega$. Its 3-dB bandwidth in kHz is ______.
+<div class="sol"><p>$f_0=\dfrac1{2\pi\sqrt{LC}}=\dfrac1{2\pi\sqrt{2.53\times10^{-14}}}=1.0006$ MHz. $Q=\dfrac{\omega_0L}R=\dfrac{2\pi(1.0006\times10^6)(10^{-4})}{10}=62.9$. $B=f_0/Q=15.9$ kHz, which equals $R/(2\pi L)=10/(2\pi\cdot10^{-4})=\mathbf{15.9}$ kHz (independent of $C$!).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="34" data-tol="0.1" data-marks="1" data-src="Original">
+A signal of $-10\,\mathrm{dBm}$ passes through an amplifier of gain $+30\,\mathrm{dB}$, then a cable of loss $6\,\mathrm{dB}$, then an amplifier of gain $20\,\mathrm{dB}$. The output level in dBm is ______.
+<div class="sol"><p>$-10+30-6+20=\mathbf{34}$ dBm ($\approx2.5$ W).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="18.1" data-tol="0.1" data-marks="1" data-src="Original">
+A third-order Butterworth low-pass filter ($|H|^2=1/[1+(f/f_c)^{6}]$) is used. The attenuation at $f=2f_c$, in dB, is ______.
+<div class="sol"><p>$|H|^2=1/(1+2^6)=1/65$, attenuation $=10\log_{10}65=\mathbf{18.1}$ dB. (Rule of thumb: $6n$ dB per octave in the stopband: $6\times3=18$ dB ✓.)</p></div></div>
+
+<p class="pset">Set C · Exam-style problems<small>The style of the Signals &amp; Systems questions that support the communication syllabus. All original.</small></p>
+
+<div class="prob" data-type="nat" data-ans="1.5" data-tol="0.01" data-marks="1" data-src="Original (GATE-style)">
+The impulse response of an LTI system is $h(t)=3e^{-2t}u(t)$. Its DC gain $H(0)$ is ______.
+<div class="sol"><p>$H(0)=\int_{-\infty}^\infty h(t)dt=\int_0^\infty3e^{-2t}dt=\mathbf{1.5}$. (Equivalently $H(f)=\frac3{2+j2\pi f}$.)</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="Original (GATE-style)">
+$x(t)=\cos(2\pi\cdot5t)$ is applied to a system with $h(t)=e^{-t}u(t)$. The amplitude of the output is closest to
+<ol class="opts"><li>0.32</li><li>0.032</li><li>0.5</li><li>1</li></ol>
+<div class="sol"><p>$H(f)=\dfrac1{1+j2\pi f}$ and $2\pi f=10\pi=31.4$ rad/s, so $|H|=1/\sqrt{1+31.4^2}=0.0318$. <b>(B)</b>. (The trap is using $f=5$ in place of $2\pi f$.)</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="B,C" data-marks="2" data-src="Original (GATE-style)">
+Which of these systems are time-invariant?
+<ol class="opts"><li>$y(t)=x(t)\cos(10t)$</li><li>$y(t)=x(t)+x(t-1)$</li><li>$y(t)=\displaystyle\int_{t-1}^{t}x(\tau)d\tau$</li><li>$y(t)=x(t^2)$</li></ol>
+<div class="sol"><p>(A) multiplies by an explicit function of $t$: time-varying. (B) and (C) are LTI (a two-tap comb and a moving integrator). (D): delaying the input gives $x(t^2-t_0)$, delaying the output gives $x((t-t_0)^2)$: different, so time-varying. <b>B, C</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.02" data-marks="2" data-src="Original (GATE-style)">
+A channel has $|H(f)|=1$ and phase $\phi(f)=-2\pi t_0f-\pi\kappa f^2$ with $t_0=2\,\mu$s and $\kappa=4\times10^{-12}\,\mathrm{s^2}$. The group delay at $f=500$ kHz, in microseconds, is ______.
+<div class="sol"><p>$t_g=-\dfrac1{2\pi}\dfrac{d\phi}{df}=\dfrac1{2\pi}(2\pi t_0+2\pi\kappa f)=t_0+\kappa f=2\,\mu\mathrm s+(4\times10^{-12})(5\times10^5)=2+2=\mathbf4\ \mu$s. The $f^2$ term makes higher frequencies arrive later: dispersion.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="Original (GATE-style)">
+A system has $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,d\tau$. A bounded input $x(t)=u(t)$ is applied. The system is
+<ol class="opts"><li>stable, since $x$ is bounded</li><li>stable, since $h(t)=\delta(t)$</li><li>unstable, since the output is a ramp $t\,u(t)$</li><li>non-causal</li></ol>
+<div class="sol"><p>The integrator has $h(t)=u(t)$, so $\int|h|=\infty$. The bounded step produces $y=t\,u(t)$, which grows without limit. <b>(C)</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 1 in one breath</h3>
+<ul>
+<li>Energy $E=\int|x|^2$, power $P=\overline{|x|^2}$; sinusoid power $A^2/2$; powers of different-frequency components add.</li>
+<li>Linear + time-invariant ⇒ $y=x*h$ (derived from sifting); $h=0$ for $t<0$ ⇔ causal; $\int|h|<\infty$ ⇔ BIBO stable.</li>
+<li>$e^{j2\pi ft}$ is an eigenfunction: $y=H(f)e^{j2\pi ft}$, $H=\mathcal F\{h\}$. Sinusoid in ⇒ sinusoid out, scaled by $|H|$, shifted by $\angle H$. LTI systems cannot create new frequencies.</li>
+<li>RC: $f_c=1/2\pi RC$, $t_r=0.35/B$. RLC: $\omega_0=1/\sqrt{LC}$, $Q=\omega_0L/R$, $B=f_0/Q$.</li>
+<li>Distortionless: flat $|H|$ and linear phase. Envelope delay = group delay $-d\phi/d\omega$; carrier delay = phase delay $-\phi/\omega_c$.</li>
+<li>Real filters approximate ideal ones; Butterworth order $n$ falls $6n$ dB/octave. Oversample to relax analog filters.</li>
+<li>dB is $10\log$ of power ratio; $3\,\mathrm{dB}\approx2$, $\mathrm{dBm}=\mathrm{dBW}+30$; add dB for cascades.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+/* ---------- filter explorer ---------- */
+GB.widget('w-filt',{title:'Filter explorer: magnitude, phase and time response',h:470,hm:520,controls:[
+  {k:'k',type:'select',label:'filter',options:[[0,'RC low-pass (1st order)'],[1,'RC high-pass (1st order)'],[2,'2nd-order low-pass'],[3,'Resonant band-pass (RLC)']],value:0},
+  {k:'Q',label:'quality factor Q (2nd-order types)',min:.55,max:20,step:.05,value:.71,fmt:v=>v.toFixed(2)}],
+ draw(g,p){ const k=p.k, Q=p.Q;
+  const H=x=>{ // x = f/f0 ; returns [mag, phase]
+   if(k===0) return [1/Math.hypot(1,x),-Math.atan(x)];
+   if(k===1) return [x/Math.hypot(1,x),Math.PI/2-Math.atan(x)];
+   const re=1-x*x, im=x/Q, d=Math.hypot(re,im), a=Math.atan2(im,re);
+   if(k===2) return [1/d,-a]; return [(x/Q)/d,Math.PI/2-a]; };
+  const L0=-2,L1=2; const xt=[[-2,'0.01'],[-1,'0.1'],[0,'f₀'],[1,'10'],[2,'100']];
+  const a=g.panel(0,3,{pad:{b:14}}).view(L0,L1,-60,12); a.axes({nox:true,ystep:20}); a.fn(u=>Math.max(-60,20*Math.log10(Math.max(1e-6,H(Math.pow(10,u))[0]))),'blue',2.2,null,500); a.hline(-3,'yellow',[4,4]); a.vline(0,'axis'); a.title('|H| (dB) vs f/f₀ (log axis); dashed: −3 dB','blue');
+  const b=g.panel(1,3,{pad:{b:16}}).view(L0,L1,-190,190); b.axes({xticks:xt,yticks:[[-180,'−180°'],[-90,'−90°'],[0,'0'],[90,'90°'],[180,'180°']]}); b.fn(u=>H(Math.pow(10,u))[1]*180/Math.PI,'purple',2.2,null,500); b.vline(0,'axis'); b.title('phase ∠H (degrees)','purple');
+  // time response in cycles of f0
+  const zeta=1/(2*Q); let tmax=2, step=true, f;
+  if(k===0){ f=u=>1-Math.exp(-TAU*u); }
+  else if(k===1){ f=u=>Math.exp(-TAU*u); }
+  else if(k===2){ tmax=Math.max(2,Q*.8); const z=zeta; f=u=>{ const t=TAU*u; if(Math.abs(z-1)<1e-6) return 1-(1+t)*Math.exp(-t); if(z<1){ const wd=Math.sqrt(1-z*z); return 1-Math.exp(-z*t)*(Math.cos(wd*t)+z/wd*Math.sin(wd*t)); } const r=Math.sqrt(z*z-1), s1=-z+r, s2=-z-r; return 1+Math.exp(s1*t)/(s1*(s1-s2))+Math.exp(s2*t)/(s2*(s2-s1)); }; }
+  else { step=false; tmax=Math.max(2,Q*1.2); const z=zeta, wd=Math.sqrt(Math.max(1e-6,1-z*z)); f=u=>{ const t=TAU*u; return (1/Q)*Math.exp(-z*t)*(Math.cos(wd*t)-z/wd*Math.sin(wd*t)); }; }
+  const c=g.panel(2,3).view(0,tmax,k===3?-1.1/Q:-0.1,k===3?1.1/Q:Math.max(1.3,1.1*(k===2?1+Math.exp(-Math.PI*zeta/Math.sqrt(Math.max(1e-6,1-zeta*zeta))):1))); c.axes({xl:'f₀·t'}); c.fn(f,'green',2.2,null,800);
+  if(k===3){ c.fn(u=>(1/Q)*Math.exp(-zeta*TAU*u),'yellow',1.2,[4,3],300); c.fn(u=>-(1/Q)*Math.exp(-zeta*TAU*u),'yellow',1.2,[4,3],300); } else { c.hline(1,'axis'); }
+  c.title(step?'step response':'impulse response (envelope dashed)','green');
+  let info='';
+  if(k===0) info='f₋₃dB = f₀ · rise time 10–90% = 0.35/f₀ = <b>'+(0.35).toFixed(2)+'</b>/f₀ · slope −20 dB/decade';
+  if(k===1) info='high-pass: blocks DC; tilt (droop) of a flat-topped pulse = t/RC';
+  if(k===2){ const os=zeta<1?Math.exp(-Math.PI*zeta/Math.sqrt(1-zeta*zeta)):0; info='ζ = 1/(2Q) = <b>'+zeta.toFixed(2)+'</b> · overshoot = <b>'+(100*os).toFixed(1)+'%</b> · '+(Q<0.7?'over-damped / Bessel-like (best pulse shape)':Math.abs(Q-0.707)<0.03?'Butterworth: maximally flat':'peaking by '+(Q>0.707?(20*Math.log10(Q/Math.sqrt(1-1/(4*Q*Q)))).toFixed(1)+' dB':'—')); }
+  if(k===3) info='bandwidth = f₀/Q = <b>'+(1/Q).toFixed(3)+'</b> f₀ · ring-down time constant = Q/(π f₀) = <b>'+(Q/Math.PI).toFixed(2)+'</b>/f₀ · cycles to decay to 1/e ≈ <b>'+(Q/Math.PI).toFixed(1)+'</b>';
+  return info; }});
+</script>

@@ -1,0 +1,335 @@
+<!--meta {"id":"ch07","num":"7","part":"Part II · Analog Communication","title":"Wiggling the Phase: FM, PM and the Phase-Locked Loop","lede":"Amplitude is the first thing noise attacks. So hide the message somewhere else: in <em>when</em> the waves cross zero, not how tall they are."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Define instantaneous frequency and write PM and FM signals; find $\Delta f$, $\beta$ and the instantaneous-frequency range for any message, including sawtooth and multi-tone messages.</li>
+<li><b>Derive</b> the narrowband-FM approximation, the Bessel-function spectrum of a single-tone FM wave and the properties $\sum J_n^2=1$, carrier nulls, and the origin of Carson’s rule.</li>
+<li>Design an Armstrong indirect-FM transmitter chain (multipliers and mixers) and predict what a non-linearity does to an FM signal.</li>
+<li>Analyse FM demodulators: the differentiator/discriminator and the <b>phase-locked loop</b> (nonlinear and linearised models, lock range, steady-state error).</li>
+<li>Design a PLL frequency synthesizer; explain stereo multiplexing, pre/de-emphasis and the capture effect.</li>
+<li>Compare FM with AM honestly: bandwidth, noise, power efficiency, interference.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapters 2–3 (Fourier series, instantaneous frequency, complex envelope), Chapter 6.</p></div>
+
+<div class="box story"><span class="tag">History · the man who would not stop</span>
+<p>Static. Every AM listener in the 1920s knew it: lightning, car ignitions and electric motors all add random <em>amplitude</em> spikes, and an AM receiver hears them all. Edwin Howard Armstrong had already given the world the regenerative receiver (1912) and the superheterodyne (1918), but static bothered him. If the message rides on the amplitude, noise will always corrupt it. What if it rode on the <em>frequency</em> instead, and the receiver simply ignored amplitude?</p>
+<p>The conventional wisdom came from John R. Carson of AT&amp;T, who analysed FM in 1922 and concluded that it could never beat AM: its spectrum was wider, and “this type of modulation inherently distorts without any compensating advantages.” Carson’s reasoning was right for <em>narrow</em> deviations. Armstrong guessed what Carson’s analysis missed: if you swing the frequency <em>very widely</em>, you pay in bandwidth but the noise suppression grows even faster. In 1933 he demonstrated wide-band FM, static-free; his first FM station, W2XMN at Alpine, New Jersey, went on air in 1938. Powerful interests (RCA, who owned the AM networks and television plans) fought him for years, and the patent suits drained his fortune. Armstrong died in 1954. His widow won the lawsuits.</p>
+<p>The irony: the rule for the bandwidth of an FM signal that every engineer uses today ($B\approx2(\Delta f+f_m)$) is called <strong>Carson’s rule</strong>.</p></div>
+
+<div class="box real"><span class="tag">Real world · where FM lives</span>
+<p>FM broadcast (88–108 MHz; in India the AIR FM stations), the sound carrier of analog TV, two-way police and taxi radios (narrow-band FM, $\pm5$ kHz), Bluetooth and GSM (both use a <em>smoothed</em> frequency-shift keying, GFSK/GMSK, which is digital FM), satellite TV (the video is frequency-modulated onto the microwave carrier), the “chirp” of radar, LiDAR and LoRa, and the <b>phase-locked loops</b> inside <em>every</em> processor, phone and radio (clock generation, synthesisers, clock recovery).</p></div>
+
+<h2>Phase, frequency, and the spinning arrow again</h2>
+<p>Write any sinusoid as $s(t)=A_c\cos\theta(t)$. The <strong>instantaneous frequency</strong> is the speed at which the phase angle $\theta$ advances, $f_i(t)=\dfrac1{2\pi}\dfrac{d\theta}{dt}$ (Chapter 3). For an unmodulated carrier $\theta=2\pi f_ct$ and $f_i=f_c$. There are two ways to impose a message:
+$$\textbf{PM:}\quad\theta(t)=2\pi f_ct+k_p\,m(t)\ \Rightarrow\ f_i=f_c+\frac{k_p}{2\pi}\frac{dm}{dt},$$
+$$\textbf{FM:}\quad\theta(t)=2\pi f_ct+2\pi k_f\!\int_{-\infty}^{t}\!m(\tau)d\tau\ \Rightarrow\ f_i=f_c+k_f\,m(t).$$
+<strong>In FM the instantaneous frequency follows the message; in PM it follows the <em>derivative</em> of the message.</strong> They are therefore the same thing in disguise: FM is PM of the integral of $m$, PM is FM of the derivative of $m$. The envelope $A_c$ is constant for both, so the transmitted power is $A_c^2/2$ <em>whatever the message does</em>. (Contrast AM, Chapter 6, where power depends on the depth.)</p>
+<p>Why the integral? Think of an arrow spinning at angular speed $\omega(t)$: the angle it has turned is the <em>integral</em> of the speed. To make the speed follow $m(t)$ the angle must be $\int m$; just as the odometer is the integral of the speedometer.</p>
+<div class="widget" id="w-pmfm">Same message, same carrier, PM vs FM. The bottom plot shows the <em>instantaneous frequency</em>: for FM (yellow) it is a copy of the message; for PM (orange) it is the message’s slope. Choose the triangle: the FM frequency ramps smoothly up and down, while the PM frequency <em>jumps</em> between two values, exactly the sawtooth situation of GATE 2019 Q.22.</div>
+<div class="box key"><span class="tag">Deviation and index for a tone $m(t)=A_m\cos2\pi f_mt$</span>
+<table>
+<tr><th></th><th>FM</th><th>PM</th></tr>
+<tr><td>Peak frequency deviation</td><td>$\Delta f=k_fA_m$ (independent of $f_m$)</td><td>$\Delta f=\dfrac{k_pA_m}{2\pi}\cdot2\pi f_m=k_pA_mf_m$ (grows with $f_m$)</td></tr>
+<tr><td>Modulation index $\beta$</td><td>$\beta=\dfrac{\Delta f}{f_m}=\dfrac{k_fA_m}{f_m}$ (falls with $f_m$)</td><td>$\beta=k_pA_m$ (independent of $f_m$)</td></tr>
+</table>
+<p>Memory trick: <em>double the message frequency and FM’s $\Delta f$ stays put while $\beta$ halves; PM’s $\beta$ stays put while $\Delta f$ doubles.</em> Double the message amplitude and both $\Delta f$ and $\beta$ double, in either scheme. For a general message the <b>deviation ratio</b> is $D=\Delta f/W$ with $\Delta f=k_f\max|m|$.</p></div>
+<div class="box ex"><span class="tag">Worked examples · from real GATE papers</span>
+<p><b>(1) GATE 2025 Q.14.</b> $f(t)=A_c\cos(2\pi f_ct+3\sin2\pi f_1t+4\sin6\pi f_1t)$. The phase deviation is $\varphi(t)=3\sin2\pi f_1t+4\sin2\pi(3f_1)t$, so $f_i-f_c=\frac1{2\pi}\dot\varphi=3f_1\cos2\pi f_1t+12f_1\cos2\pi(3f_1)t$. Both cosines equal 1 at $t=0$: peak deviation $=3f_1+12f_1=15f_1$. In general $\Delta f=\sum\beta_if_i$ (GATE 2014 Set 3 Q.23).</p>
+<p><b>(2) GATE 2019 Q.22.</b> $m(t)$ is a sawtooth that rises $-1\to+1$ in 1 ms (slope $+2000$ s$^{-1}$) and falls $+1\to-1$ in 2 ms (slope $-1000$ s$^{-1}$). PM with $k=10\pi$: $f_i=f_c+\frac k{2\pi}\dot m=50\ \text{kHz}+5\dot m$. Rising: $50+10=60$ kHz. Falling: $50-5=45$ kHz. Ratio min/max $=45/60=\mathbf{0.75}$.</p>
+<p><b>(3) GATE 2021 Q.49.</b> RMS message 4 V ⇒ peak $4\sqrt2=5.657$ V; $k_p=2$ rad/V ⇒ phase swing $\beta=11.31$ rad at $f_m=1$ kHz. $\Delta f=\beta f_m=11.31$ kHz. Max instantaneous frequency $=10^6+11\,313.7=\mathbf{1\,011\,313.7}$ Hz.</p></div>
+
+<h2>Narrowband FM: the small-angle special case</h2>
+<p>When $\beta\ll1$ we can linearise. For $m(t)=A_m\cos\omega_mt$ the FM signal is $s=A_c\cos(\omega_ct+\beta\sin\omega_mt)$. Expand the cosine of a sum and use $\cos x\approx1$, $\sin x\approx x$ for small $x=\beta\sin\omega_mt$:
+$$s=A_c\big[\cos\omega_ct\cos(\beta\sin\omega_mt)-\sin\omega_ct\sin(\beta\sin\omega_mt)\big]\approx A_c\cos\omega_ct-A_c\beta\sin\omega_mt\,\sin\omega_ct.$$
+Using $\sin a\sin b=\frac12[\cos(a-b)-\cos(a+b)]$: $s\approx A_c\cos\omega_ct-\dfrac{\beta A_c}2\cos(\omega_c-\omega_m)t+\dfrac{\beta A_c}2\cos(\omega_c+\omega_m)t$. Compare with single-tone AM from Chapter 6, $A_c\cos\omega_ct+\frac{\mu A_c}2\cos(\omega_c-\omega_m)t+\frac{\mu A_c}2\cos(\omega_c+\omega_m)t$. <b>Same three spectral lines, and the same $2f_m$ bandwidth, but the lower sideband has the opposite sign.</b> In phasor language: AM’s sidebands add <em>in line</em> with the carrier (the resultant grows and shrinks); NBFM’s sidebands add in <em>quadrature</em> to the carrier (the resultant swings back and forth in angle with almost constant length). Hence the 90° of Chapter 3: AM moves the tip of the complex envelope along a radius; FM moves it along a circle. (The small residual amplitude variation $\sqrt{1+\beta^2\sin^2\omega_mt}$ is the price of the linearisation, and disappears as more sidebands are included.)</p>
+<div class="box eng"><span class="tag">Engineering practice · why narrowband FM is still used</span>
+<p>Two-way radios, marine VHF, taxi and police radios, and pagers use NBFM with $\Delta f=2.5$–$5$ kHz and $f_m\le3$ kHz (so $B\approx2(5+3)=16$ kHz in a $25$ kHz channel; modern 12.5 kHz channels use $\Delta f=2.5$ kHz). The combination is a good compromise: much better noise performance and interference resistance than AM, constant envelope (so cheap, efficient class-C power amplifiers can be used; <em>very</em> important for battery handsets), and a receiver as simple as a discriminator.</p></div>
+
+<h2>The spectrum of a frequency-modulated tone</h2>
+<p>AM was easy because multiplication shifts the spectrum. FM is non-linear: $\cos(\omega_ct+\beta\sin\omega_mt)$ is the real part of $e^{j\omega_ct}\cdot e^{j\beta\sin\omega_mt}$, and the second factor is <em>periodic</em> in time with period $1/f_m$, so it has a Fourier series.</p>
+<div class="box derive"><span class="tag">Derivation · the Bessel spectrum</span>
+<p>The complex Fourier series of $g(t)=e^{j\beta\sin\omega_mt}$ (Chapter 2, with $x=\omega_mt$ so the period is $2\pi$) has coefficients
+$$c_n=\frac1{2\pi}\int_{-\pi}^{\pi}e^{j\beta\sin x}\,e^{-jnx}\,dx\ \overset{\rm def}{=}\ J_n(\beta),$$
+the <b>Bessel function of the first kind</b> of order $n$ (Friedrich Bessel, 1824, who invented it for planetary perturbations, not radio). Since $g(t)$ is the sum of its harmonics,
+$$e^{j\beta\sin\omega_mt}=\sum_{n=-\infty}^{\infty}J_n(\beta)\,e^{jn\omega_mt}\quad\Longrightarrow\quad s(t)=\mathrm{Re}\{A_ce^{j\omega_ct}g(t)\}=A_c\sum_{n=-\infty}^{\infty}J_n(\beta)\cos\big[(\omega_c+n\omega_m)t\big].$$
+So a single-tone FM wave is a <strong>carrier plus an infinite ladder of sidebands</strong> at $f_c\pm nf_m$, with amplitudes $J_n(\beta)$. Properties, each easy to prove from the integral:</p>
+<ul>
+<li>$\sum_nJ_n^2(\beta)=1$ for every $\beta$: Parseval for the series, because $|g(t)|=1$ so its average power is 1. Hence the total power is constant, $A_c^2/2$ ✓ (the algebraic version of “constant envelope”). The power in the $n$th line is $\frac{A_c^2}2J_n^2(\beta)$.</li>
+<li>$J_{-n}(\beta)=(-1)^nJ_n(\beta)$ (substitute $x\to-x$), so the sidebands are symmetric in magnitude.</li>
+<li>Recurrence $J_{n-1}(\beta)+J_{n+1}(\beta)=\frac{2n}\beta J_n(\beta)$, which lets you fill in a table from two values.</li>
+<li>For small $\beta$: $J_0\approx1-\beta^2/4$, $J_1\approx\beta/2$, $J_{n\ge2}\approx(\beta/2)^n/n!$. This reproduces <strong>narrow-band FM</strong> above.</li>
+<li><strong>The carrier amplitude $J_0(\beta)$ goes to zero</strong> at $\beta=2.405,\ 5.520,\ 8.654,\ 11.79,\dots$: at those values <em>all</em> the power is in the sidebands. This is used to calibrate deviation (set $f_m$ and raise the audio level until the carrier vanishes on a spectrum analyser; then $\Delta f=2.405f_m$) and is a favourite exam trick. Similarly $J_1=0$ at $\beta=3.832,7.016,\dots$.</li>
+<li>For large $\beta$ the sidebands are significant out to $|n|\approx\beta+1$: the spectrum spreads over about $2\beta f_m=2\Delta f$.</li>
+</ul></div>
+<div class="widget" id="w-bessel">Drag $\beta$. The stems are $|J_n(\beta)|$ at $f_c+nf_m$. The yellow bracket is Carson’s bandwidth $2(\beta+1)f_m$. Find the carrier nulls at $\beta=2.405$ and $5.52$. The readout checks that the Bessel powers still add to one.</div>
+<table>
+<tr><th>$\beta$</th><th>$J_0$</th><th>$J_1$</th><th>$J_2$</th><th>$J_3$</th><th>$J_4$</th><th>$J_5$</th><th>$J_6$</th></tr>
+<tr><td>0.2</td><td>0.990</td><td>0.100</td><td>0.005</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>0.5</td><td>0.938</td><td>0.242</td><td>0.031</td><td>0.003</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>1</td><td>0.765</td><td>0.440</td><td>0.115</td><td>0.020</td><td>0.002</td><td>—</td><td>—</td></tr>
+<tr><td>2</td><td>0.224</td><td>0.577</td><td>0.353</td><td>0.129</td><td>0.034</td><td>0.007</td><td>0.001</td></tr>
+<tr><td>5</td><td>−0.178</td><td>−0.328</td><td>0.047</td><td>0.365</td><td>0.391</td><td>0.261</td><td>0.131</td></tr>
+</table>
+<p>Here is the whole picture at once: the Bessel waterfall. Each row of lines is the spectrum at one value of $\beta$; walk along $\beta$ and watch the sidebands spread out while the central carrier line breathes in and out, vanishing at the zeros of $J_0$.</p>
+<div class="widget" id="w-bessel3d">Spectral lines $|J_n(\beta)|$ for $n=-12\dots12$ (left–right), as $\beta$ grows from 0 (front) to 10 (back). Each coloured ridge is one sideband. The slice marked by the white bars is the current $\beta$.</div>
+<div class="box note"><span class="tag">Multi-tone messages: no superposition</span>
+<p>FM is non-linear: for a message of two tones the spectrum is <em>not</em> the sum of the two single-tone spectra. Writing $e^{j(\beta_1\sin\omega_1t+\beta_2\sin\omega_2t)}$ as a product of two Bessel series gives lines at $f_c\pm nf_1\pm kf_2$ with amplitudes $J_n(\beta_1)J_k(\beta_2)$: carrier, each tone’s sidebands <em>and</em> cross-product (“intermodulation”) lines. This is the reason noise-like speech, music and stereo multiplex signals (which have a very large number of components) are analysed through Carson’s rule rather than line by line.</p></div>
+
+<h2>How wide is an FM signal? Carson’s rule</h2>
+<p>In theory infinite, in practice more than 98% of the power lies in the sidebands with $|n|\le\beta+1$ (numerically: $\beta=1$: 99.9%, $\beta=2$: 99.8%, $\beta=5$: 99.4%, $\beta=10$: 99.0%). That is Carson’s rule:
+$$\boxed{\,B_T\approx2(\Delta f+f_m)=2f_m(\beta+1)\,}\qquad\text{(general message: }B_T=2(\Delta f+W)=2W(D+1),\ D=\Delta f/W).$$
+Check the extremes: NBFM ($\beta\ll1$): $B_T\approx2f_m$ ✓ same as AM. Wide-band FM ($\beta\gg1$): $B_T\approx2\Delta f$: the bandwidth is just the swing of the frequency, as common sense says (a “quasi-static” picture: the signal just sweeps over $f_c\pm\Delta f$, and the spectrum is the histogram of the instantaneous frequency).</p>
+<div class="box ex"><span class="tag">Worked example · FM broadcast</span>
+<p>Peak deviation $\Delta f=75$ kHz, audio up to $W=15$ kHz: $D=5$, $B_T=2(75+15)=180$ kHz, fitted into a 200 kHz channel. Compare AM broadcast with the same audio: 30 kHz. FM pays <b>6× the bandwidth</b>, and (Chapter 8) buys a large SNR improvement for it. This is the bandwidth-for-noise trade that Armstrong understood and Carson did not. The stereo multiplex (below) extends the baseband to 53 kHz (plus RDS to 60 kHz) but the same $\Delta f=75$ kHz limit still applies, so the effective $D$ falls to $75/53\approx1.4$ for the stereo subchannel, one reason stereo reception is noisier.</p></div>
+<div class="box trap"><span class="tag">Traps</span>
+<ul>
+<li>Carson’s rule uses <em>peak deviation</em> $\Delta f$, not $\beta$ alone; for PM with a tone, $\Delta f=\beta f_m$, so $B_T=2f_m(\beta+1)$ grows with $f_m$.</li>
+<li>If the message amplitude <em>and</em> frequency both change, recompute $\Delta f$ for FM (depends on amplitude only) and $\beta$ (amplitude/frequency).</li>
+<li>FM power does <b>not</b> depend on $\beta$. A common mistake is to apply $P=P_c(1+\mu^2/2)$.</li>
+<li>For a message of several tones, $\Delta f=k_f\max|m|$ is $k_f\times$ the <em>sum</em> of the tone amplitudes (the peaks can coincide), and $W$ is the highest tone.</li>
+</ul></div>
+<div class="box eng"><span class="tag">Engineering practice · the FM chirp: bandwidth × time = processing gain</span>
+<p>Let the frequency sweep linearly, $f_i=f_0+\kappa t$ over a duration $T$ (a <b>chirp</b>, linear FM). The phase is $\theta=2\pi(f_0t+\frac12\kappa t^2)$ and the bandwidth is $B=\kappa T$ (Carson with $\beta\gg1$). A matched filter (Chapter 14) compresses the long pulse of energy $A^2T/2$ into a narrow peak of width $\approx1/B$, giving a <b>pulse-compression gain</b> equal to the time–bandwidth product $BT$. A radar chirp of $B=10$ MHz over $T=100\,\mu$s has $BT=1000$ (30 dB): it detects like a short, very high-power pulse while the transmitter needs only modest peak power. The same chirp, at lower rates, is the modulation of LoRa IoT networks and of FMCW automotive radar.</p></div>
+
+<h2>Making FM, and what non-linearities do to it</h2>
+<h3>Direct FM</h3>
+<p>Make an oscillator whose frequency depends on a voltage: a VCO. In an LC oscillator $f=1/(2\pi\sqrt{LC})$; put a <b>varactor diode</b> (capacitance that varies with reverse voltage) in the tank so $C=C_0+\Delta C\,m(t)$. For small $\Delta C$, $f\approx f_0\big[1-\frac{\Delta C}{2C_0}m(t)\big]$: the frequency follows $m$ linearly. Simple, wide deviation, but the centre frequency drifts with temperature and supply, so direct FM transmitters need <b>automatic frequency control</b> (a PLL locking the average frequency to a crystal, below).</p>
+<h3>Indirect (Armstrong) FM</h3>
+<p>Integrate the message, use it for <em>narrow-band</em> phase modulation of a crystal oscillator (stable but only $\beta\lesssim0.5$), then use <strong>frequency multipliers</strong>.</p>
+<div class="box derive"><span class="tag">Derivation · multipliers multiply the phase, mixers do not</span>
+<p>Pass $A\cos(\omega_ct+\varphi(t))$ through $y=x^n$ (or any strongly non-linear device) and use a band-pass filter tuned to the $n$th harmonic: by $\cos^n\theta\ni\frac{1}{2^{n-1}}\cos n\theta$ the output contains $\cos(n\omega_ct+n\varphi(t))$. <b>The phase deviation is multiplied by $n$, so $f_c$, $\Delta f$ and $\beta$ all multiply by $n$</b>; message frequency is unchanged. A <b>mixer</b> (multiply by $\cos\omega_Lt$ and keep the difference) shifts the carrier to $f_c-f_L$ but leaves $\varphi(t)$, hence $\Delta f$ and $\beta$, <em>unchanged</em>: $\cos(\omega_c t+\varphi)\cos\omega_Lt\to\frac12\cos((\omega_c-\omega_L)t+\varphi)$.</p></div>
+<div class="box ex"><span class="tag">Worked example · an Armstrong transmitter for 91.2 MHz broadcast FM</span>
+<p>Target: carrier $91.2$ MHz, $\Delta f=75$ kHz, audio $50$ Hz–$15$ kHz. The narrowband stage can tolerate $\beta\le0.5$ at the <em>lowest</em> audio frequency, so with $f_{m,\min}=50$ Hz: $\Delta f_1\le25$ Hz. Choose a crystal at $f_1=200$ kHz, $\Delta f_1=25$ Hz. The total multiplication needed is $75\,000/25=3000$. Chain: $\times64$ → $12.8$ MHz, $\Delta f=1.6$ kHz; <b>mix</b> with a $10.9$ MHz crystal and keep the difference → $1.9$ MHz, still $\Delta f=1.6$ kHz; $\times48$ → $91.2$ MHz, $\Delta f=76.8$ kHz (total multiplication $3072$; the deviation is then trimmed to 75 kHz by the audio level). The mixer is the trick that keeps the multiplier chain from needing a 200 kHz × 3000 = 600 MHz first stage: it lets us multiply first, shift down, and multiply again.</p></div>
+<div class="box ex"><span class="tag">Worked example · GATE 2023 Q.45: a non-linearity applied to FM</span>
+<p>$x(t)=A\cos(\omega_ct+k_f\!\int m)$ occupies a band of width $B_T$ around $f_c$. It passes through $y=2x+5x^2$. Since $x^2=\frac{A^2}2[1+\cos(2\omega_ct+2k_f\!\int m)]$, the output contains: <b>(i)</b> a DC term; <b>(ii)</b> the original FM band at $f_c\pm B_T/2$; <b>(iii)</b> a new FM signal at $2f_c$ with doubled phase deviation, so width $\approx2B_T$, spanning $2f_c\pm B_T$. To recover $x$ with a band-pass filter, bands (ii) and (iii) must not overlap: $f_c+\frac{B_T}2\le2f_c-B_T$, i.e. $f_c\ge\frac32B_T$. Answer <b>(B) $\frac32B_T$</b> (the official key). A non-linear amplifier is harmless to FM (the information is in the zero crossings) as long as a filter removes the harmonics: this is why FM transmitters use efficient class-C stages.</p></div>
+
+<h2>Getting the message back</h2>
+<h3>The discriminator</h3>
+<p>Differentiate $s(t)=A_c\cos\theta(t)$: $\dot s=-A_c\dot\theta\sin\theta(t)=-2\pi A_c\,f_i(t)\,\sin\theta(t)$. The result is an AM wave whose <em>envelope is proportional to the instantaneous frequency</em> $f_i=f_c+k_fm$, i.e. to $m(t)$ plus a DC. An envelope detector finishes the job. In the frequency domain this is obvious: a differentiator has $|H|=2\pi f$, a ramp, which turns frequency deviation into amplitude deviation. In practice a tuned circuit’s skirt acts as the differentiator, and a balanced pair of such circuits (tuned slightly above and below $f_c$) cancels the DC and doubles the linear range: the balanced discriminator, whose “S-curve” of output voltage against frequency is linear over about $\pm\Delta f$ and then bends over. Foster–Seeley, ratio and quadrature detectors are refinements; the last, a multiplier fed with the signal and a 90°-delayed copy, dominates in integrated circuits.</p>
+<p>A <b>limiter</b> before the discriminator clips off any amplitude variation: <i>this is the entire secret of FM’s static immunity</i>. Only noise that moves the zero crossings survives.</p>
+<div id="d-fmdet" class="dia">FM demodulator: band-pass filter → limiter (kills amplitude noise) → differentiator (turns frequency into amplitude) → envelope detector → DC block → message.</div>
+
+<h3>The phase-locked loop</h3>
+<p>The workhorse of modern FM receivers, and of far more besides. A voltage-controlled oscillator (VCO) is compared with the input by a phase detector; the error voltage, filtered, steers the VCO until it tracks the input phase. If the input frequency wanders, the control voltage must wander the same way to keep the VCO in step, so <b>the control voltage <em>is</em> the demodulated message</b>.</p>
+<div id="d-pll" class="dia">Phase-locked loop used as an FM demodulator.</div>
+<div class="box derive"><span class="tag">Derivation · the PLL equations, lock range and steady-state error</span>
+<p>Input $A\sin(\omega_ct+\theta_i(t))$, VCO output $\cos(\omega_ct+\theta_o(t))$ with $\dot\theta_o=K_vv_c$ ($K_v$ in rad/s per volt). The multiplier output is $\frac A2\sin(\theta_i-\theta_o)+(\text{terms at }2\omega_c)$; the loop filter removes the $2\omega_c$ terms, leaving $v_d=K_d\sin\theta_e$ with phase error $\theta_e=\theta_i-\theta_o$. For a simple loop with no extra filter ($v_c=v_d$), differentiating $\theta_e$:
+$$\boxed{\ \dot\theta_e=\dot\theta_i-K\sin\theta_e,\qquad K=K_dK_v\ \ (\mathrm{rad/s})\ }$$
+<b>Lock range.</b> If the input frequency is offset by a constant $\Delta\omega$ from the VCO’s free-running frequency, $\dot\theta_i=\Delta\omega$ and a steady state $\dot\theta_e=0$ needs $\sin\theta_e=\Delta\omega/K$: it exists only if $|\Delta\omega|\le K$. So <b>the loop can track offsets up to $\pm K$ rad/s</b>, with a static phase error $\theta_e=\arcsin(\Delta\omega/K)$ that grows from 0 to $90^\circ$ at the edge; beyond it, the loop slips cycles and never locks. <b>Linearised model.</b> For $\theta_e$ small, $\sin\theta_e\approx\theta_e$ and, in the Laplace domain,
+$$H(s)=\frac{\Theta_o(s)}{\Theta_i(s)}=\frac{K}{s+K}:$$
+a first-order low-pass with bandwidth $K$: the VCO phase <em>tracks the input phase</em> for message components below $K/2\pi$ Hz. For an FM input $\theta_i=2\pi k_f\int m$, the control voltage $v_c=\dot\theta_o/K_v\approx\dot\theta_i/K_v=2\pi k_fm(t)/K_v$: a faithful, linear copy of the message, as long as $K$ exceeds $\max|\dot\theta_i|=2\pi\Delta f$ (i.e. the loop is wider than the deviation) and the loop passes the message band. <b>Second-order loop.</b> Insert a proportional–integral filter $F(s)=\frac{1+s\tau_2}{s\tau_1}$: then $H(s)=\dfrac{(K/\tau_1)(1+s\tau_2)}{s^2+(K\tau_2/\tau_1)s+K/\tau_1}$ with natural frequency $\omega_n=\sqrt{K/\tau_1}$ and damping $\zeta=\frac12\tau_2\omega_n$ (typically $\zeta\approx0.7$). The integrator drives the steady-state phase error for a <em>frequency</em> step to <b>zero</b>, and the lock range becomes limited only by the VCO’s tuning range.</p></div>
+<div class="widget" id="w-pll">First-order PLL simulated in baseband. The blue curve is the input phase (an FM tone with swing $\beta=3$ rad at 1 Hz); the loop tries to make the VCO phase (yellow) follow it. The bottom plot is the phase error. With a high loop gain $K$ the error stays small and the control signal reproduces the message; with $K$ below the signal’s fastest phase slope ($2\pi\beta f_m\approx19$ rad/s) the loop <em>cannot keep up</em> and loses lock (“cycle slipping”).</div>
+<div class="box eng"><span class="tag">Engineering practice · the PLL’s five jobs</span>
+<p>(1) <b>FM demodulation</b>, above. (2) <b>Carrier recovery</b> in coherent receivers: a PLL locks to a pilot tone, or (Costas loop, Chapter 16) to the carrier hidden in a DSB-SC or BPSK signal. (3) <b>Clock/data recovery</b> in every serial link (USB, PCIe, Ethernet, optical): the VCO is steered by the transitions of the incoming data (Chapter 16). (4) <b>Frequency synthesis</b>, next. (5) <b>Jitter cleaning and clock multiplication</b> inside every microprocessor: a 100 MHz crystal becomes a 4 GHz core clock. The trade-off in all of them is the same: a <em>narrow</em> loop bandwidth rejects noise on the reference but tracks slowly and has long lock time; a <em>wide</em> loop tracks fast but passes reference noise.</p></div>
+
+<h2>PLL as a frequency synthesizer</h2>
+<p>The same PLL, used backwards, makes the clocks and carriers of every digital device. Put a <b>divide-by-$N$ counter</b> in the feedback path from the VCO to the phase detector. The loop locks when the divided VCO frequency equals the reference: $f_{VCO}/N=f_{ref}$, so
+$$f_{out}=N\,f_{ref}.$$
+A single crystal reference (very stable, but fixed) thereby yields a whole comb of frequencies, selected by changing $N$; the <b>step size</b> is $f_{ref}$. This is how your radio tunes to 94.3 MHz and how a Wi-Fi chip makes 2.4 GHz from a 40 MHz crystal. (GATE 2016: a 5 kHz reference with ÷2, ÷4, ÷8, ÷16 taps in the feedback path gives outputs of 10, 20, 40, 80 kHz.)</p>
+<div id="d-synth" class="dia">Frequency synthesizer: the loop forces $f_{out}/N=f_{ref}$.</div>
+<div class="box eng"><span class="tag">Engineering practice · integer-N, fractional-N and phase noise</span>
+<p>For FM broadcast tuning with 100 kHz steps, $f_{ref}=100$ kHz and $N\approx880$–$1080$. A small $f_{ref}$ forces a narrow loop and a huge $N$, which multiplies the reference’s phase noise by $20\log N$ dB ($N=1000$ costs 60 dB). <b>Fractional-N synthesisers</b> alternate $N$ and $N+1$ with a sigma–delta pattern so the <em>average</em> division ratio is fractional, allowing a high $f_{ref}$ with fine steps. The close-in phase noise of the synthesiser matters directly for digital modulation: random rotation of the constellation limits high-order QAM (Chapter 16).</p></div>
+
+<h2>Stereo, pre-emphasis and the capture effect</h2>
+<p><strong>FM stereo.</strong> A mono receiver must still work, so the baseband sent to the FM modulator is $L+R$ (0–15 kHz) plus a 19 kHz <b>pilot tone</b> plus $L-R$ as a DSB-SC signal on a 38 kHz subcarrier (the second harmonic of the pilot, so the receiver regenerates the subcarrier coherently by doubling the pilot). Chapter 6 in action:
+$$m_{\rm mux}(t)=[L+R]+k_p\cos(2\pi\cdot19\,\mathrm{kHz}\,t)+[L-R]\cos(2\pi\cdot38\,\mathrm{kHz}\,t).$$
+A stereo receiver multiplies by $\cos(2\pi\cdot38\text{ kHz }t)$ and low-pass filters to recover $\frac12(L-R)$, then forms $L=\frac12[(L+R)+(L-R)]$ and $R$ by sum and difference (the “matrix”). A mono receiver’s 15 kHz filter simply never sees the subcarrier. RDS (the station-name display) is a BPSK data stream at $1187.5$ bit/s on a $57$ kHz subcarrier $(=3\times19$ kHz).</p>
+<div class="widget" id="w-stereo">Baseband spectrum of an FM stereo multiplex signal.</div>
+<p><strong>Pre-emphasis / de-emphasis.</strong> After the discriminator, FM noise has a PSD that grows as $f^2$ (derived in Chapter 8), but speech and music energy falls with frequency. The fix: boost the highs before transmission, $H_{pe}(f)=1+j\frac f{f_0}$ ($\tau=\frac1{2\pi f_0}=75\,\mu$s in the USA, $50\,\mu$s in India/Europe), and apply the exact inverse $H_{de}=\dfrac1{1+jf/f_0}$ (an RC low-pass with $RC=\tau$) after detection. The message sees $H_{pe}H_{de}=1$ but the noise is shaped by $H_{de}$ alone: it is attenuated at high frequencies, where it was strongest. (The corner $f_0=2.1$–$3.2$ kHz is chosen where programme energy starts to fall. A transmitter limiter keeps the boosted highs from over-deviating.)</p>
+<div class="box derive"><span class="tag">Derivation · the capture effect and FM’s interference rejection</span>
+<p>Let a wanted FM signal of amplitude $A$ and an interferer of amplitude $a$ on the same channel arrive together. Their phasor sum is $Ae^{j\theta_1(t)}\big[1+\frac aAe^{j(\theta_2-\theta_1)}\big]$. For $a\ll A$, $\ln(1+\epsilon)\approx\epsilon$ gives a total phase $\theta_1+\frac aA\sin(\theta_2-\theta_1)$: the discriminator output is the wanted $\dot\theta_1$ plus an interference term of amplitude only $\propto a/A$, and the amplitude disturbance is removed by the limiter. For $a/A=0.1$ the interference is 20 dB down; as $a/A\to1$ the approximation fails and the receiver abruptly <b>captures</b> the stronger signal: a margin of just 1–3 dB in desired-to-interferer ratio gives a clean output with the weaker signal suppressed almost completely. Contrast AM, where both signals are heard additively. Capture is wonderful for broadcast (neighbouring stations vanish) and dreadful in a pilot–tower radio (a weaker aircraft can be blotted out entirely, so aviation uses AM).</p></div>
+
+<h2>FM versus AM: the honest comparison</h2>
+<table>
+<tr><th></th><th>AM (DSB-FC)</th><th>Wideband FM</th></tr>
+<tr><td>Bandwidth</td><td>$2W$</td><td>$2(\Delta f+W)$: 6–12× more</td></tr>
+<tr><td>Noise performance</td><td>No bandwidth–noise trade</td><td>SNR improves as $\beta^2$ above threshold (Chapter 8)</td></tr>
+<tr><td>Transmitter efficiency</td><td>Linear PA or high-level modulation</td><td>Constant envelope: efficient class-C PA</td></tr>
+<tr><td>Receiver</td><td>Envelope detector: trivial</td><td>Limiter + discriminator/PLL: modest</td></tr>
+<tr><td>Interference</td><td>Adds</td><td>Capture: stronger wins</td></tr>
+<tr><td>Multipath, fading</td><td>Fades audibly</td><td>Limiter hides amplitude fades but multipath <i>distorts</i></td></tr>
+<tr><td>Threshold</td><td>None (degrades gracefully)</td><td>Sharp threshold at low SNR</td></tr>
+</table>
+
+<div class="box gate"><span class="tag">GATE pattern · angle modulation</span>
+<ul>
+<li>Read instantaneous frequency from the phase: <em>differentiate the argument of the cosine</em>, then maximise (2014, 2019, 2021, 2025). The answer is almost always “sum of $\beta_if_i$” or “$k\cdot\max|\dot m|/2\pi$”.</li>
+<li>PM vs FM: which of $\Delta f,\beta,B_T$ changes when $A_m$ or $f_m$ changes.</li>
+<li>Carson bandwidth numbers; Bessel zero for carrier suppression.</li>
+<li>Pre-/de-emphasis circuit values: $RC=1/\omega_0$ (GATE 2022 Q.51).</li>
+<li>Non-linearity on FM: where do the new bands land (GATE 2023 Q.45).</li>
+<li>PLL synthesizer output frequencies (GATE 2016).</li>
+<li>Recognising narrowband signals in the I/Q form: GATE 2026 Q.57 (below).</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which statements about a tone-modulated FM signal are correct?
+<ol class="opts"><li>The transmitted power is independent of $\beta$.</li><li>The carrier line always has the largest amplitude among all lines.</li><li>The sum of the squares of all line amplitudes (normalised to the carrier amplitude) is 1.</li><li>The bandwidth is exactly $2\Delta f$.</li></ol>
+<div class="sol"><p>(A) and (C): constant envelope ⇒ constant power, and $\sum J_n^2=1$. (B) false: at $\beta=2.405$ the carrier vanishes and at $\beta=5$ the largest line is $J_4$. (D) false: Carson is approximate and includes $f_m$: $2(\Delta f+f_m)$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+The component of an FM receiver that removes the effect of amplitude noise is the
+<ol class="opts"><li>discriminator</li><li>limiter</li><li>de-emphasis network</li><li>local oscillator</li></ol>
+<div class="sol"><p>Amplitude noise is clipped off by the limiter; only zero-crossing (phase) noise passes. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A tone $m(t)=A_m\cos2\pi f_mt$ drives an FM modulator. If $f_m$ is doubled (amplitude fixed), then
+<ol class="opts"><li>$\Delta f$ doubles and $\beta$ is unchanged</li><li>both $\Delta f$ and $\beta$ double</li><li>$\Delta f$ is unchanged and $\beta$ halves</li><li>$\Delta f$ halves and $\beta$ doubles</li></ol>
+<div class="sol"><p>FM: $\Delta f=k_fA_m$ is independent of $f_m$; $\beta=\Delta f/f_m$ halves. <b>(C)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="64" data-tol="0.5" data-marks="2" data-src="Original">
+$m(t)=3\cos(2\pi\cdot2000\,t)$ V frequency-modulates a carrier with sensitivity $k_f=10$ kHz/V. The Carson bandwidth in kHz is ______.
+<div class="sol"><p>$\Delta f=10\times3=30$ kHz; $B_T=2(30+2)=\mathbf{64}$ kHz. ($\beta=15$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="12.02" data-tol="0.1" data-marks="2" data-src="Original">
+A single-tone FM signal with $f_m=5$ kHz has zero carrier amplitude. The smallest non-zero frequency deviation (kHz) for which this happens is ______.
+<div class="sol"><p>$J_0(\beta)=0$ at $\beta=2.405$: $\Delta f=2.405\times5=12.02$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="50" data-tol="0.5" data-marks="1" data-src="Original">
+An FM wave $s(t)=10\cos(2\pi\cdot10^6t+7\sin2\pi\cdot10^3t)$ is applied across a $1\,\Omega$ resistor. The power in watts is ______.
+<div class="sol"><p>Constant envelope: $P=A_c^2/2=50$ W, whatever $\beta$ is.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.98" data-tol="0.05" data-marks="2" data-src="Original">
+A narrow-band FM signal has $\beta=0.2$. What percentage of its total power is in the two first-order sidebands? (Use $J_0(0.2)=0.990$, $J_1(0.2)=0.0995$.)
+<div class="sol"><p>$2J_1^2=2(0.0995)^2=0.0198$: about <b>1.98%</b> of the power (the carrier keeps $J_0^2=98\%$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="36" data-tol="0.3" data-marks="2" data-src="Original">
+$m(t)=2\cos(2\pi\cdot1000t)+\cos(2\pi\cdot3000t)$ V frequency-modulates a carrier with $k_f=5$ kHz/V. The Carson bandwidth in kHz is ______.
+<div class="sol"><p>The peaks can coincide: $\max|m|=3$ V, so $\Delta f=5\times3=15$ kHz. The highest message frequency is $W=3$ kHz. $B_T=2(15+3)=\mathbf{36}$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="16" data-tol="0.2" data-marks="1" data-src="Original">
+A narrowband-FM two-way radio has a peak deviation of 5 kHz and a maximum audio frequency of 3 kHz. The Carson bandwidth in kHz is ______.
+<div class="sol"><p>$2(5+3)=\mathbf{16}$ kHz, fitting a 25 kHz channel.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3750" data-tol="1" data-marks="2" data-src="Original">
+An Armstrong FM modulator produces $\Delta f_1=20$ Hz at its narrowband stage. The total frequency-multiplication factor needed to reach $\Delta f=75$ kHz is ______.
+<div class="sol"><p>$75\,000/20=\mathbf{3750}$. (Mixers do not change $\Delta f$; only multipliers do.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="5000" data-tol="5" data-marks="2" data-src="Original">
+A first-order PLL uses a phase detector with $K_d=0.5$ V/rad and a VCO with sensitivity $K_v=2\pi\times10^4$ rad/s per volt. The largest constant frequency offset (in Hz) between input and the free-running VCO that the loop can track is ______.
+<div class="sol"><p>$K=K_dK_v=0.5\times2\pi\times10^4=31\,416$ rad/s, so $|\Delta\omega|\le K\Rightarrow|\Delta f|\le K/2\pi=\mathbf{5000}$ Hz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="23.6" data-tol="0.2" data-marks="2" data-src="Original">
+For the same loop ($K/2\pi=5$ kHz), the input is offset by $2$ kHz. The steady-state phase error in degrees is ______.
+<div class="sol"><p>$\sin\theta_e=\Delta\omega/K=2/5=0.4\Rightarrow\theta_e=\arcsin0.4=\mathbf{23.6}^\circ$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="5.0" data-tol="0.1" data-marks="1" data-src="Original">
+A single-tone FM signal has $\beta=2$. What percentage of the total power is in the carrier? ($J_0(2)=0.224$.)
+<div class="sol"><p>$J_0^2=0.224^2=0.050$: <b>5.0%</b>. The carrier of a wide-band FM signal contains little power: unlike AM, the “carrier” carries no wasted power.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.1" data-tol="0.005" data-marks="1" data-src="Original">
+A wanted FM signal is 10 times stronger in amplitude than a co-channel interferer. The peak phase disturbance the interferer causes in the wanted signal, in radians, is about ______.
+<div class="sol"><p>$a/A=1/10=\mathbf{0.1}$ rad (interference reduced by 20 dB; derivation in the capture-effect box).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="30" data-tol="0.2" data-marks="1" data-src="Original">
+A radar sends a linear FM chirp sweeping 10 MHz in 100 µs. The pulse-compression gain from matched filtering, in dB, is ______.
+<div class="sol"><p>$BT=10^7\times10^{-4}=1000\to10\log_{10}1000=\mathbf{30}$ dB.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2025 · EC · Q.14">
+$f(t)=A_c\cos\big(2\pi f_ct+3\sin(2\pi f_1t)+4\sin(6\pi f_1t)\big)$, $f_c>100f_1$. The peak frequency deviation of the FM signal in Hz is
+<ol class="opts"><li>$15f_1$</li><li>$12f_1$</li><li>$4f_1$</li><li>$2f_1$</li></ol>
+<div class="sol"><p>$\frac1{2\pi}\frac{d}{dt}(3\sin2\pi f_1t+4\sin6\pi f_1t)=3f_1\cos(2\pi f_1t)+12f_1\cos(6\pi f_1t)$; the peak is $15f_1$. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.75" data-tol="0.01" data-marks="1" data-src="GATE 2019 · EC-1 · Q.22">
+The baseband signal $m(t)$ (a periodic sawtooth, rising from $-1$ to $+1$ in 1 ms and falling back in 2 ms) is phase-modulated: $\varphi(t)=\cos(2\pi f_ct+km(t))$, $f_c=50$ kHz, $k=10\pi$. The ratio of the minimum to the maximum instantaneous frequency is ______.
+<div class="sol"><p>Maximum $f_i=50+5\times2=60$ kHz (slope $+2$ per ms $=2000\,\text{s}^{-1}$); minimum $=50-5\times1=45$ kHz. Ratio $=\mathbf{0.75}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1011313.7" data-tol="2" data-marks="2" data-src="GATE 2021 · EC · Q.49">
+A sinusoidal message with RMS value 4 V and frequency 1 kHz is fed to a phase modulator with phase deviation constant 2 rad/V. The carrier is $c(t)=2\cos(2\pi10^6t)$. The maximum instantaneous frequency of the PM signal (in Hz, one decimal) is ______.
+<div class="sol"><p>Peak message $4\sqrt2$ V; $\beta=2\cdot4\sqrt2=11.314$ rad; $\Delta f=\beta f_m=11\,313.7$ Hz; max $f_i=1\,011\,313.7$ Hz.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="GATE 2023 · EC · Q.45">
+$x(t)=A\cos\!\big(\omega_ct+k_f\!\int_{-\infty}^tm(\lambda)d\lambda\big)$ with $m$ band-limited to $W$ is passed through a non-linear system $y=2x+5x^2$. Let $B_T$ be the FM bandwidth. The minimum value of $\omega_c$ required to recover $x(t)$ from $y(t)$ is
+<ol class="opts"><li>$B_T+W$</li><li>$\tfrac32B_T$</li><li>$2B_T+W$</li><li>$\tfrac52B_T$</li></ol>
+<div class="sol"><p>Derived above: $f_c\ge\frac32B_T$ (in the paper's units, $\omega_c\ge\frac32B_T$ with $B_T$ expressed in the same units). <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="GATE 2022 · EC · Q.51 (reworded)">
+An FM broadcast uses the pre-emphasis filter $H_{pe}(\omega)=1+j\omega/\omega_0$ with $\omega_0=10^4$ rad/s. For an RC low-pass network to act as the corresponding de-emphasis filter, an appropriate pair $(R,C)$ is
+<ol class="opts"><li>$R=1\ \mathrm{k\Omega},\ C=0.1\ \mu$F</li><li>$R=2\ \mathrm{k\Omega},\ C=1\ \mu$F</li><li>$R=1\ \mathrm{k\Omega},\ C=2\ \mu$F</li><li>$R=2\ \mathrm{k\Omega},\ C=0.5\ \mu$F</li></ol>
+<div class="sol"><p>$H_{de}=\frac1{1+j\omega RC}$ must equal $\frac1{1+j\omega/\omega_0}$: $RC=10^{-4}$ s. (A): $10^3\cdot10^{-7}=10^{-4}$ ✓. Others give $2\times10^{-3}$, $2\times10^{-3}$, $10^{-3}$. Key A (the paper allowed multiple-select but only A matched).</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,C" data-marks="2" data-src="GATE 2026 · EC · Q.57">
+$x(t)=A(t)\cos[2\pi f_ct+\theta(t)]$ is a real narrowband signal with the maximum frequency components of $A(t)$ and $\theta(t)$ equal to $f_M$, and $f_c=1000f_M$. Which statements are correct?
+<ol class="opts"><li>$x(t)$ represents a PSK-modulated signal for suitable choices of $A(t),\theta(t)$.</li><li>$x(t)$ represents an amplitude-modulated signal for suitable choices of $A(t),\theta(t)$.</li><li>$x(t)$ represents a band-limited Gaussian noise process.</li><li>$x(t)$ never represents a narrowband FM signal.</li></ol>
+<div class="sol"><p>This is the general bandpass form of Chapter 2. PSK: $A$ const, $\theta$ switching (A ✓). AM: $\theta=0$, $A=A_c(1+\mu m)$ (B ✓). Narrowband Gaussian noise is exactly $A\cos(\cdot+\theta)$ with Rayleigh $A$ and uniform $\theta$ (C ✓). With constant $A$ and $\theta=\beta\sin$ with small $\beta$ it <em>is</em> narrowband FM, so (D) is false. Key A, B, C.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2016 · EC (PYQ book)">
+A frequency synthesizer has a PLL whose feedback path contains a divide-by-$N$ counter with selectable $N=2,4,8,16$. It is excited by a 5 kHz reference. The synthesized frequencies for $N=2,4,8,16$ are
+<ol class="opts"><li>10 kHz, 20 kHz, 40 kHz, 80 kHz</li><li>20 kHz, 30 kHz, 80 kHz, 160 kHz</li><li>80 kHz, 40 kHz, 20 kHz, 10 kHz</li><li>160 kHz, 80 kHz, 40 kHz, 20 kHz</li></ol><div class="sol"><p>$f_{out}=Nf_{ref}$: $10,20,40,80$ kHz. <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="GATE 2015 · EC (PYQ book)">
+A message $m(t)=A_m\sin2\pi f_mt$ phase-modulates a carrier: $y(t)=A_c\cos(2\pi f_ct+m(t))$. The bandwidth of $y(t)$
+<ol class="opts"><li>depends on $A_m$ but not on $f_m$</li><li>depends on $f_m$ but not on $A_m$</li><li>depends on both $A_m$ and $f_m$</li><li>does not depend on either</li></ol><div class="sol"><p>Here $\beta=k_pA_m=A_m$ and Carson gives $B=2f_m(\beta+1)=2f_m(A_m+1)$: it depends on <b>both</b> $A_m$ and $f_m$. (C).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="76.8" data-tol="0.3" data-marks="2" data-src="Original (design)">
+In the Armstrong chain of the text, the narrowband stage has $f_1=200$ kHz and $\Delta f_1=25$ Hz; it is followed by $\times64$, a mixer with a 10.9 MHz oscillator (difference frequency kept), then $\times48$. The final peak deviation in kHz is ______.
+<div class="sol"><p>$\Delta f=25\times64\times48=76\,800$ Hz $=\mathbf{76.8}$ kHz (the mixer leaves $\Delta f$ unchanged). Final carrier: $(200\ \mathrm{kHz}\times64-10.9\ \mathrm{MHz})\times48=1.9\times48=91.2$ MHz.</p></div></div>
+
+<div class="summary"><h3>Chapter 7 in one breath</h3>
+<ul>
+<li>$f_i=\frac1{2\pi}\dot\theta$. FM: $f_i=f_c+k_fm(t)$. PM: $f_i=f_c+\frac{k_p}{2\pi}\dot m$. Constant envelope ⇒ power $A_c^2/2$ regardless of $\beta$.</li>
+<li>Tone: FM $\Delta f=k_fA_m$, $\beta=\Delta f/f_m$; PM $\beta=k_pA_m$, $\Delta f=\beta f_m$.</li>
+<li>NBFM ($\beta\ll1$): carrier + two sidebands in <em>quadrature</em>, $B=2f_m$. General: $s=A_c\sum_nJ_n(\beta)\cos(\omega_c+n\omega_m)t$ (derived from the Fourier series of $e^{j\beta\sin x}$); $\sum J_n^2=1$; carrier null at $\beta=2.405,5.52,\dots$</li>
+<li>Carson: $B_T=2(\Delta f+f_m)=2f_m(\beta+1)$ (&gt;98% of the power). NBFM $\approx2f_m$; WBFM $\approx2\Delta f$. Multi-tone messages use $\Delta f=k_f\max|m|$.</li>
+<li>Multipliers multiply $\Delta f$; mixers shift the carrier only. Armstrong: NBFM + multipliers + mixer. A non-linearity creates a band at $2f_c$ of doubled width.</li>
+<li>Demodulation: limiter + differentiator + envelope detector, or PLL: $\dot\theta_e=\dot\theta_i-K\sin\theta_e$, lock range $\pm K$, control voltage = message. Synthesizer: $f_{out}=Nf_{ref}$.</li>
+<li>Stereo: $L+R$, 19 kHz pilot, $L-R$ DSB-SC at 38 kHz. Pre/de-emphasis $RC=1/\omega_0$. Capture: interferer suppressed by $20\log(A/a)$.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+GB.diagram('d-fmdet',{w:780,h:100,items:[['txt',14,50,'s(t)','t','start'],['arr',[44,50,80,50]],['box',80,28,110,44,'BPF\n(around fc)','blue'],['arr',[190,50,230,50]],['box',230,28,100,44,'Limiter','red'],['arr',[330,50,370,50]],['box',370,28,120,44,'Differentiator\n d/dt','purple'],['arr',[490,50,530,50],'AM-like'],['box',530,28,110,44,'Envelope\ndetector','green'],['arr',[640,50,690,50]],['txt',700,50,'m(t)','tb','start']]});
+GB.diagram('d-pll',{w:780,h:140,items:[['txt',14,50,'FM in','t','start'],['arr',[56,50,100,50]],['sum',120,50,18,'×'],['arr',[138,50,200,50],'error'],['box',200,28,110,44,'Loop filter','blue'],['arr',[310,50,360,50]],['box',360,28,120,44,'VCO','orange'],['arr',[480,50,540,50]],['txt',550,50,'(locked carrier)','tm','start'],['ln',[420,72,420,115,120,115],'mute'],['arr',[120,115,120,68]],['txt',270,104,'VCO output fed back to phase detector','tm'],['ln',[335,50,335,18,600,18]],['arr',[600,18,690,18]],['txt',705,18,'m̂(t)  (control voltage)','tb','start']]});
+
+GB.diagram('d-synth',{w:700,h:130,items:[['txt',10,40,'f_ref','tb','start'],['arr',[44,40,86,40]],['box',86,18,100,44,'Phase\ndetector','blue'],['arr',[186,40,220,40]],['box',220,18,90,44,'Loop filter','purple'],['arr',[310,40,350,40]],['box',350,18,80,44,'VCO','orange'],['arr',[430,40,520,40]],['txt',530,40,'f_out = N f_ref','tb','start'],['ln',[470,40,470,100,136,100],'mute'],['box',250,82,100,36,'÷ N','red'],['arr',[136,100,136,62]]]});
+/* ---------- PM vs FM ---------- */
+GB.widget('w-pmfm',{title:'PM vs FM for the same message',h:500,hm:540,controls:[{k:'k',type:'select',label:'message',options:[[0,'sine'],[1,'triangle (sawtooth-like)'],[2,'step-like (smoothed square)']],value:1},{k:'g',label:'strength  (kf and kp scale)',min:.2,max:2.5,step:.05,value:1}],
+ draw(g,p){ const fc=14, T=1; const tri=u=>{ const x=((u%1)+1)%1; return x<.5?4*x-1:3-4*x; }; const sq=u=>Math.tanh(4*Math.sin(TAU*u)); const m_=[u=>Math.sin(TAU*u),tri,sq][p.k];
+  // integral of message numerically
+  const N=2000, I=[0]; for(let i=1;i<=N;i++){ const u=(i-.5)/N*2; I.push(I[i-1]+m_(u)*2/N); }
+  const Iint=u=>{ const x=u/2*N, i=Math.max(0,Math.min(N-1,Math.floor(x))); return I[i]+(I[i+1]-I[i])*(x-i); };
+  const kf=5*p.g, kp=3*p.g; const a=g.panel(0,4,{pad:{b:10}}).view(0,2,-1.5,1.5); a.axes({nox:true,ystep:1}); a.fn(m_,'blue',2,null,500); a.title('message m(t)');
+  const b=g.panel(1,4,{pad:{b:10}}).view(0,2,-1.5,1.5); b.axes({nox:true,ystep:1}); b.fn(u=>Math.cos(TAU*(fc*u+kf*Iint(u))),'yellow',1.1,null,2400); b.title('FM:  cos(2πfc t + 2πkf∫m)','yellow');
+  const c=g.panel(2,4,{pad:{b:10}}).view(0,2,-1.5,1.5); c.axes({nox:true,ystep:1}); c.fn(u=>Math.cos(TAU*fc*u+kp*m_(u)),'orange',1.1,null,2400); c.title('PM:  cos(2πfc t + kp m)','orange');
+  const d=g.panel(3,4).view(0,2,-9,9); d.axes({xl:'t',ystep:5}); const dm=u=>(m_(u+.001)-m_(u-.001))/.002; d.fn(u=>kf*m_(u),'yellow',2.2,null,600); d.fn(u=>kp/TAU*dm(u),'orange',2.2,[5,3],600); d.title('instantaneous frequency deviation  fi − fc  (yellow: FM ∝ m,  orange: PM ∝ dm/dt)','mute');
+  return 'FM: Δf = kf·max|m| = <b>'+kf.toFixed(1)+'</b> · PM: Δf = (kp/2π)·max|m′| = <b>'+(()=>{ let mx=0; for(let i=0;i<400;i++){ const u=i/200; mx=Math.max(mx,Math.abs(dm(u))); } return kp/TAU*mx; })().toFixed(1)+'</b> (units of the plot)'; }});
+
+/* ---------- Bessel spectrum ---------- */
+GB.widget('w-bessel',{title:'Spectrum of single-tone FM',h:360,hm:380,controls:[{k:'b',label:'modulation index β',min:0,max:10,step:.05,value:2.4}],
+ draw(g,p){ const B=p.b, Nn=14; const J=n=>m.besselJ(n,B); const a=g.panel(0,2,{pad:{b:12}}).view(0,1,-1.8,1.8); a.axes({nox:true,ystep:1}); const fc=24,fm=2; a.fn(u=>Math.cos(TAU*fc*u+B*Math.sin(TAU*fm*u)),'blue',1.3,null,1600); a.title('s(t) = cos(ωc t + β sin ωm t)   (constant envelope)');
+  const v=g.panel(1,2).view(-Nn-.5,Nn+.5,0,1.1); const ticks=[]; for(let n=-Nn;n<=Nn;n+=2) ticks.push([n,n===0?'fc':(n>0?'+':'−')+Math.abs(n)+'fm']); v.axes({xticks:ticks,ystep:.25}); const cb=B+1; v.rect(-cb,0,cb,1.1,'yellow',.1); v.text(0,1.04,'Carson: ±(β+1) fm','yellow','center',11);
+  const ns=[],ys=[]; let pw=0; for(let n=-Nn;n<=Nn;n++){ ns.push(n); ys.push(Math.abs(J(n))); pw+=J(n)**2; } v.stem(ns,ys,'green',2.6,3);
+  let sig=0; for(let n=-Nn;n<=Nn;n++) if(Math.abs(J(n))>.01) sig=Math.max(sig,Math.abs(n)); const inC=ns.filter(n=>Math.abs(n)<=Math.floor(B+1)).reduce((a,n)=>a+J(n)**2,0);
+  return 'carrier J₀ = <b>'+J(0).toFixed(3)+'</b> · Σ Jₙ² = '+pw.toFixed(4)+' · largest |n| with |Jₙ|>0.01: <b>'+sig+'</b> · power inside Carson band: <b>'+(100*inC).toFixed(1)+'%</b>'; }});
+
+/* ---------- Bessel 3D ---------- */
+GB.three('w-bessel3d',{title:'Bessel waterfall',h:380,cam:{r:15,theta:.75,phi:.5},spin:.5,controls:[{k:'b',label:'slice at β',min:0,max:10,step:.1,value:3}],
+ setup(o){ const {THREE,scene,C,G3}=o; const n0=12, nb=70; const grp=new THREE.Group(); scene.add(grp); const rainbow=n=>new THREE.Color().setHSL(0.6-0.6*Math.abs(n)/n0,0.7,0.58);
+  for(let n=-n0;n<=n0;n++){ const pts=[]; for(let i=0;i<=nb;i++){ const b=10*i/nb; pts.push(new THREE.Vector3(n*0.5,Math.abs(m.besselJ(n,b))*3,b*0.5-2.5)); } grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:rainbow(n),transparent:true,opacity:.85}))); }
+  scene.add(G3.line([[-6.5,0,-2.5],[6.5,0,-2.5]],0x888888)); scene.add(G3.line([[-6.5,0,2.5],[6.5,0,2.5]],0x888888)); scene.add(G3.line([[-6.5,0,-2.5],[-6.5,0,2.5]],0x888888)); scene.add(G3.line([[6.5,0,-2.5],[6.5,0,2.5]],0x888888));
+  const l1=G3.label('n (sideband)',C.mute,.8); l1.position.set(0,-.4,3.2); scene.add(l1); const l2=G3.label('β',C.mute,.8); l2.position.set(7.4,0,0); scene.add(l2); const l3=G3.label('|Jn(β)|',C.mute,.8); l3.position.set(-6.8,3.4,-2.5); scene.add(l3);
+  const slice=new THREE.Group(); scene.add(slice); return {THREE,slice,last:-1,G3}; },
+ update(s,p){ if(Math.abs(s.last-p.b)<1e-9) return; s.last=p.b; while(s.slice.children.length){ const c=s.slice.children.pop(); c.geometry&&c.geometry.dispose(); }
+  for(let n=-12;n<=12;n++){ const h=Math.abs(m.besselJ(n,p.b))*3, z=p.b*0.5-2.5; s.slice.add(s.G3.line([[n*0.5,0,z],[n*0.5,h,z]],0xffffff)); } return 'β = '+p.b.toFixed(1)+': carrier |J₀| = '+Math.abs(m.besselJ(0,p.b)).toFixed(3); }});
+
+/* ---------- PLL ---------- */
+GB.widget('w-pll',{title:'Phase-locked loop tracking an FM signal',h:340,hm:360,controls:[{k:'K',label:'loop gain K (rad/s)',min:2,max:120,step:1,value:60}],
+ draw(g,p){ const fm=1, beta=3, N=4000, T=3, dt=T/N; let ph=0; const ts=[],pi_=[],po=[],er=[]; for(let i=0;i<=N;i++){ const t=i*dt, phi=beta*Math.sin(TAU*fm*t); const e=Math.sin(phi-ph); ts.push(t); pi_.push(phi); po.push(ph); er.push(phi-ph); ph+=p.K*e*dt; }
+  const a=g.panel(0,2,{pad:{b:12}}).view(0,T,-5,5); a.axes({nox:true,ystep:2.5}); a.line(ts,pi_,'blue',2); a.line(ts,po,'yellow',2); a.title('input phase φ(t) (blue)  and VCO phase (yellow)'); const b=g.panel(1,2).view(0,T,-6,6); b.axes({xl:'t (s)',ystep:3}); b.line(ts,er,'red',2); b.title('phase error  φ − φ_vco','red');
+  const need=TAU*beta*fm, maxe=Math.max(...er.slice(500).map(Math.abs)); return 'fastest input phase slope = <b>'+need.toFixed(1)+' rad/s</b> · K = '+p.K+' · '+(p.K>need?'<b style="color:#83c167">locked</b> (peak error '+maxe.toFixed(2)+' rad)':'<b style="color:#fc6255">cannot track: loses lock</b>'); }});
+
+/* ---------- stereo multiplex ---------- */
+GB.widget('w-stereo',{title:'FM stereo multiplex baseband',h:220,hm:240,
+ draw(g){ const v=g.full({l:30,b:34}).view(0,60,0,1.4); v.axes({noy:true,xticks:[0,15,19,23,38,53].map(x=>[x,String(x)]),xl:'kHz'}); const tri=(f,c,w,h)=>[f-w,0,f,h,f+w,0];
+  v.poly([[0,0],[0,1],[15,1],[15,0]],'blue',.45); v.text(7.5,.5,'L + R','fg','center',13); v.arrow(19,0,19,1.15,'yellow',2.6,9); v.text(19,1.27,'pilot','yellow','center',11);
+  v.poly([[23,0],[23,.55],[38,.7],[38,0]],'green',.45); v.poly([[38,0],[38,.7],[53,.55],[53,0]],'green',.45); v.text(38,.35,'L − R   (DSB-SC on 38 kHz)','fg','center',12); v.arrow(38,0,38,.25,'mute',0,0);
+  v.poly([[59,0],[59,.2],[60,.2],[60,0]],'purple',.45); }});
+
+</script>

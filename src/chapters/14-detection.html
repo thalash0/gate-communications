@@ -1,0 +1,270 @@
+<!--meta {"id":"ch14","num":"14","part":"Part IV · Digital Communication","title":"The Art of Guessing Right: Detection, Signal Space and the Matched Filter","lede":"The receiver sees a noisy waveform and must decide which of a few possible symbols was sent. How should it decide, and how often will it be wrong?"} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li><b>Derive</b> the MAP and ML decision rules, prove that MAP minimises the error probability, and compute optimum thresholds for Gaussian and non-Gaussian noise, including unequal priors and unequal costs (likelihood-ratio tests).</li>
+<li>Represent signals as vectors (Gram–Schmidt), prove that white noise projects to independent $\mathcal N(0,N_0/2)$ components, and that the optimal receiver is a minimum-distance (correlation) receiver.</li>
+<li>Derive $P_e=Q(d/\sqrt{2N_0})$ for two signals, $\frac{2(M-1)}MQ(d/2\sigma)$ for $M$-PAM; use the union bound and the nearest-neighbour approximation; analyse $M$-ary orthogonal signalling and its link to the Shannon limit.</li>
+<li><b>Derive</b> the matched filter (Cauchy–Schwarz), its equivalence to a correlator, its SNR $2E/N_0$, the effect of timing error, and the generalisation to coloured noise.</li>
+<li>Apply it to radar, GPS and spread spectrum.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 4 (Gaussian, $Q$), Chapter 5 (white noise), Chapter 13 (pulse shaping).</p></div>
+
+<div class="box story"><span class="tag">History · a filter born in the radar war</span>
+<p>In 1943, at RCA Laboratories, D. O. North asked a question that had no answer yet: <em>what is the best possible linear filter for detecting a known pulse buried in noise?</em> His classified report showed that the best filter has an impulse response equal to the pulse <b>time-reversed</b>: the filter is “matched” to the signal. The result was published openly only in 1963, by which time Van Vleck and Middleton had independently named it the <strong>matched filter</strong> (1946) and V. A. Kotelnikov had built the whole theory of optimum reception in his 1947 doctoral thesis. In 1965 John Wozencraft and Irwin Jacobs wrote the textbook that taught engineers to think of signals as <em>points in a space</em>, which is the viewpoint of this chapter.</p></div>
+
+<div class="box real"><span class="tag">Real world · hearing a whisper below the noise</span>
+<p>A GPS satellite’s signal reaches the ground at about $-130$ dBm. The receiver’s own thermal noise in the 2 MHz signal bandwidth is about $-111$ dBm: <b>the signal is 19 dB <em>below</em> the noise</b>, invisible on any oscilloscope. Yet your phone locks on in seconds, because it correlates the received waveform with a stored copy of the satellite’s 1023-chip code, a matched filter whose energy gain $10\log_{10}1023=30$ dB lifts the signal 11 dB <em>above</em> the noise. The same idea is used in radar “pulse compression”, RFID readers, CDMA phones, every Wi-Fi packet preamble, and the LIGO detectors, which found gravitational waves from colliding black holes by matched-filtering the strain data against a bank of predicted waveforms (Chapter 26).</p></div>
+
+<h2>The decision problem</h2>
+<p>One of $M$ messages is sent, using signal $s_i(t)$, $0\le t\le T$. The receiver observes $r(t)=s_i(t)+n(t)$ with $n(t)$ white Gaussian noise of PSD $N_0/2$. It must output a guess $\hat\imath$. The probability of error $P_e$ depends on the decision rule, and the best rule is simple to state.</p>
+<div class="box def"><span class="tag">Two decision rules</span>
+<p><b>MAP</b> (maximum a posteriori): choose the $i$ that maximises the posterior $P(s_i\mid r)\propto P_i\,f(r\mid s_i)$. It minimises the probability of error. <b>ML</b> (maximum likelihood): choose the $i$ that maximises the likelihood $f(r\mid s_i)$. It is MAP with equal priors.</p></div>
+<div class="box derive"><span class="tag">Derivation · MAP minimises the probability of error</span>
+<p>Suppose the observation is a vector (or number) $\mathbf r$ and the receiver partitions the observation space into decision regions $\mathcal R_i$ (“decide $i$ if $\mathbf r\in\mathcal R_i$”). The probability of being <em>correct</em> is
+$$P_c=\sum_iP_i\int_{\mathcal R_i}f(\mathbf r\mid s_i)\,d\mathbf r=\int\Big[\sum_i\mathbf 1\{\mathbf r\in\mathcal R_i\}\,P_if(\mathbf r\mid s_i)\Big]d\mathbf r.$$
+For each $\mathbf r$ the bracket contains exactly one term, and it is largest if we assign $\mathbf r$ to the region whose $P_if(\mathbf r\mid s_i)$ is largest. Hence $P_c$ is maximised, and $P_e$ minimised, by $\hat\imath=\arg\max_iP_if(\mathbf r\mid s_i)$: MAP. $\square$ For two hypotheses this is the <b>likelihood-ratio test</b>
+$$\Lambda(\mathbf r)=\frac{f(\mathbf r\mid s_1)}{f(\mathbf r\mid s_0)}\ \underset{\hat0}{\overset{\hat1}{\gtrless}}\ \frac{P_0}{P_1}$$
+(and with decision costs $C_{ij}$ (decide $i$, truth $j$) the threshold becomes $\frac{P_0(C_{10}-C_{00})}{P_1(C_{01}-C_{11})}$: a missed alarm in a smoke detector costs far more than a false one). Neyman–Pearson’s variant (maximise detection for a fixed false-alarm rate, Chapter 4) is the same test with a different threshold.</p></div>
+<p>The picture for one real number $r=\pm A+n$ with $n\sim\mathcal N(0,\sigma^2)$: two bell curves, one centred at $+A$ (weighted by $P_1$) and one at $-A$ (weighted by $P_0$). The decision threshold sits where the weighted curves cross. Everything to the right is declared “1”. The error is the area of each bell that falls on the wrong side:
+$$P_e=P_0\,Q\!\Big(\frac{A+\tau}{\sigma}\Big)+P_1\,Q\!\Big(\frac{A-\tau}{\sigma}\Big),\qquad\tau^*=\frac{\sigma^2}{2A}\ln\frac{P_0}{P_1}.$$</p>
+<div class="box derive"><span class="tag">Derivation · the optimum threshold for Gaussian noise</span>
+<p>The MAP test $P_1f(r|+A)\gtrless P_0f(r|-A)$ with $f(r|\pm A)=\frac1{\sqrt{2\pi}\sigma}e^{-(r\mp A)^2/2\sigma^2}$: take logarithms, $-\frac{(r-A)^2}{2\sigma^2}+\ln P_1\gtrless-\frac{(r+A)^2}{2\sigma^2}+\ln P_0$. The quadratic terms differ only in the cross term: $\frac{(r+A)^2-(r-A)^2}{2\sigma^2}=\frac{2Ar}{\sigma^2}$, so decide “1” iff $\dfrac{2Ar}{\sigma^2}>\ln\dfrac{P_0}{P_1}$, i.e. $r>\tau^*=\dfrac{\sigma^2}{2A}\ln\dfrac{P_0}{P_1}$. $\square$ For equal priors $\tau^*=0$ and $P_e=Q(A/\sigma)$. If $P_1>P_0$, $\tau^*<0$: <b>the threshold moves towards the unlikely symbol</b>, enlarging the region of the likelier one. The shift grows with the noise ($\sigma^2$) and shrinks with the signal separation $2A$: with high SNR the prior hardly matters; with low SNR the receiver mostly bets on the prior (the Bayes posterior effect of Chapter 4).</p></div>
+<div class="widget" id="w-map">Two weighted pdfs and a threshold. Dragging the threshold changes the shaded error areas; the total is smallest exactly at the MAP threshold (green marker). With equal priors this is the midpoint; with unequal priors it shifts. Try setting the threshold slider to the value shown in the readout as τ*.</div>
+<div class="box ex"><span class="tag">Worked example · GATE 2019 Q.47</span>
+<p>$X=-1$ w.p. 0.2, $X=+1$ w.p. 0.8; $Y=X+N$ with $N\sim U[-2,2]$. Decide $+1$ if $Y>\theta$, $\theta\in[-1,1]$. Then $P(\text{err}\mid X=+1)=P(1+N\le\theta)=\frac{\theta+1}4$, $P(\text{err}\mid X=-1)=P(-1+N>\theta)=\frac{1-\theta}4$. $P_e=0.8\frac{\theta+1}4+0.2\frac{1-\theta}4=\frac{1+0.6\theta}4$, minimised at $\theta=-1$: $P_e=\frac{0.4}{4}=\mathbf{0.1}$. (Uniform noise, so the “tails” are linear, and the optimum threshold goes to the extreme: decide “$+1$” always, which costs only the prior of $-1$ weighted by the overlap.)</p></div>
+<div class="box ex"><span class="tag">Worked example · GATE 2014 Set 4 Q.49, Q.50</span>
+<p>$P(X=+1)=0.75$, $P(X=-1)=0.25$, $Y=X+Z$: the optimum threshold is $\frac{\sigma^2}2\ln\frac{0.25}{0.75}<0$: <b>strictly negative</b> (option C). The Z-channel question: input 0 or 1 equally likely; 0→0 with prob. 1, 1→1 with prob. 0.75, 1→0 with prob. 0.25. $P(\text{out}=0)=0.5+0.125=0.625$; $P(\text{in}=0\mid\text{out}=0)=\frac{0.5}{0.625}=\mathbf{0.8}$ (Bayes, Chapter 4).</p></div>
+
+<h2>Signals as points: the geometry of detection</h2>
+<p>Here is the idea that turns waveform detection into high-school geometry. Choose a set of orthonormal functions $\phi_1(t),\ldots,\phi_N(t)$ that span all the signals ($\int\phi_j\phi_k=\delta_{jk}$). Then each signal is a coefficient vector $\mathbf s_i=(s_{i1},\ldots,s_{iN})$, $s_{ij}=\int s_i(t)\phi_j(t)dt$, and
+$$\text{energy}\ E_i=\|\mathbf s_i\|^2,\qquad\text{inner product}\int s_is_j\,dt=\mathbf s_i\cdot\mathbf s_j,\qquad\text{distance }d_{ij}=\|\mathbf s_i-\mathbf s_j\|.$$
+(Parseval for orthonormal expansions.)</p>
+<div class="box derive"><span class="tag">Gram–Schmidt: building the basis, with an example</span>
+<p>Take $s_1,\dots,s_M$. Set $\phi_1=s_1/\sqrt{E_1}$. For each next signal subtract its projections on the existing basis, $\theta_k(t)=s_k(t)-\sum_{j<k}\langle s_k,\phi_j\rangle\phi_j(t)$, and if $\theta_k\ne0$ normalise it: $\phi_k=\theta_k/\|\theta_k\|$; if $\theta_k=0$, the signal lies in the span already. The number of basis functions $N\le M$ is the dimension of the signal set. <b>Example.</b> $s_1=A$ on $[0,T)$; $s_2=A$ on $[0,T/2)$, $-A$ on $[T/2,T)$ ($\langle s_1,s_2\rangle=0$: orthogonal); $s_3=A$ on $[0,T/2)$, $0$ after. $\phi_1=1/\sqrt T$ on $[0,T)$; $\mathbf s_1=(A\sqrt T,0)$. $\langle s_3,\phi_1\rangle=A\sqrt T/2$; the residue $\theta_3=\frac A2$ on $[0,\frac T2)$, $-\frac A2$ on $[\frac T2,T)$ has energy $A^2T/4$, so $\phi_2=\pm1/\sqrt T$ and $\mathbf s_3=(\frac{A\sqrt T}2,\frac{A\sqrt T}2)$ (check: energy $A^2T/2$ ✓). Three signals live in a two-dimensional space.</p></div>
+<div class="box derive"><span class="tag">Derivation · white noise in signal space is “round”</span>
+<p>The noise projected onto the basis, $n_j=\int n(t)\phi_j(t)dt$, is a linear functional of a Gaussian process, so it is Gaussian with zero mean, and
+$$\E[n_jn_k]=\iint\phi_j(t)\phi_k(u)\,\underbrace{\E[n(t)n(u)]}_{\frac{N_0}2\delta(t-u)}dt\,du=\frac{N_0}2\int\phi_j\phi_k\,dt=\frac{N_0}2\delta_{jk}.$$
+So the noise components are <b>independent $\mathcal N(0,N_0/2)$</b> on <em>every</em> axis (white noise is “equally strong in every direction”, which is why it is white). The part of $n(t)$ that lies <em>outside</em> the signal subspace, $n_\perp(t)=n(t)-\sum n_j\phi_j(t)$, is independent of the $n_j$ and carries no information about which signal was sent: by the <b>theorem of irrelevance</b> the receiver may discard it without loss. So the receiver sees a point $\mathbf r=\mathbf s_i+\mathbf n$: <b>the transmitted point plus a round Gaussian cloud</b> of variance $\sigma^2=N_0/2$ per axis. The likelihood is
+$$f(\mathbf r\mid\mathbf s_i)=(\pi N_0)^{-N/2}\exp\!\Big(-\frac{\|\mathbf r-\mathbf s_i\|^2}{N_0}\Big).$$</p></div>
+<div class="box key"><span class="tag">ML detection = minimum-distance decoding</span>
+<p>With equal priors, maximising the likelihood is minimising $\|\mathbf r-\mathbf s_i\|^2$: choose the signal point nearest to the received point. The decision regions are the <b>Voronoi cells</b> (bounded by perpendicular bisectors). With unequal priors, MAP slides the boundary between $\mathbf s_i$ and $\mathbf s_j$ along the line joining them, <em>towards the less probable point</em>, by $\dfrac{N_0}{2d_{ij}}\ln\dfrac{P_i}{P_j}$ from the midpoint (for antipodal $\pm A$ with $\sigma^2=N_0/2$ this is the $\frac{\sigma^2}{2A}\ln$ formula above). <b>Correlation form:</b> expand $\|\mathbf r-\mathbf s_i\|^2=\|\mathbf r\|^2-2\mathbf r\cdot\mathbf s_i+E_i$, and drop the common $\|\mathbf r\|^2$:
+$$\hat\imath=\arg\max_i\Big[\mathbf r\cdot\mathbf s_i-\frac{E_i}2+\frac{N_0}2\ln P_i\Big]=\arg\max_i\Big[\int_0^Tr(t)s_i(t)dt-\frac{E_i}2+\frac{N_0}2\ln P_i\Big],$$
+a <b>bank of correlators</b> (or matched filters) with bias terms. For equal-energy equiprobable signals the biases are the same and drop out.</p></div>
+<div id="d-corr" class="dia">The optimum receiver for two signals: correlate with each template, subtract the half-energy biases, and pick the larger. For equiprobable signals of equal energy the biases cancel: just compare the two correlator outputs. With unequal priors add $\frac{N_0}2\ln P_i$.</div>
+<div class="widget" id="w-sig2">Choose a constellation. The coloured regions are the ML decision cells; dots are 500 noisy receptions. Raise the noise: dots spill across the boundaries and the measured symbol-error rate goes up. Compare with the exact theoretical value in the readout. Closer points (smaller $d_{\min}$) make errors more likely: <i>the whole game of modulation design is to place points as far apart as possible for a given average energy</i>.</div>
+
+<h3>The key formula</h3>
+<div class="box derive"><span class="tag">Derivation · pairwise error probability</span>
+<p>For two equally likely signals at distance $d$, rotate and shift the axes so that the line joining them is the first axis, with the midpoint at the origin. The decision is made by the sign of the first coordinate of the noise relative to the midpoint: an error occurs if the noise component along this line (a single $\mathcal N(0,N_0/2)$ variable) exceeds half the distance:
+$$\boxed{\,P_e=Q\!\Big(\frac{d/2}{\sqrt{N_0/2}}\Big)=Q\!\Big(\frac{d}{\sqrt{2N_0}}\Big)\,}$$
+(all other noise components are irrelevant to this pair). Writing $d^2=\|\mathbf s_1-\mathbf s_0\|^2=E_1+E_0-2\rho\sqrt{E_0E_1}$ with correlation coefficient $\rho$ gives the three classic cases (with $E_b$ the average energy per bit, $\gamma=E_b/N_0$):</p></div>
+<table>
+<tr><th>Scheme</th><th>Signal points</th><th>$d^2$</th><th>$P_e$</th></tr>
+<tr><td><b>Antipodal</b> (BPSK, polar baseband)</td><td>$\pm\sqrt{E_b}$</td><td>$4E_b$</td><td>$Q\big(\sqrt{2\gamma}\big)$</td></tr>
+<tr><td><b>Orthogonal</b> (coherent BFSK)</td><td>$(\sqrt{E_b},0),(0,\sqrt{E_b})$</td><td>$2E_b$</td><td>$Q\big(\sqrt{\gamma}\big)$ &nbsp;(3 dB worse)</td></tr>
+<tr><td><b>On–off</b> (OOK, ASK)</td><td>$0,\ \sqrt{2E_b}$</td><td>$2E_b$ (average energy $E_b$)</td><td>$Q\big(\sqrt{\gamma}\big)$</td></tr>
+</table>
+<p>The comparison tells you why BPSK is the benchmark: for a given average energy, <em>antipodal signals are as far apart as possible</em> ($\rho=-1$). Orthogonal signals are a factor $\sqrt2$ closer, hence 3 dB worse.</p>
+<div class="box ex"><span class="tag">Worked examples · real questions</span>
+<p><b>GATE 2019 Q.34.</b> Choose $p=\varphi_1,\ q=-\varphi_1$ (antipodal): $d^2=4$. If $p=\varphi_1$ and $q=\sqrt E\,\varphi_2$ (orthogonal, energy $E$): $d^2=1+E$. Same BER ⇔ same $d$: $1+E=4\Rightarrow E=\mathbf3$.</p>
+<p><b>GATE 2014 Set 2 Q.50.</b> Coherent orthogonal BFSK, $s_{1,2}=\alpha\cos2\pi f_{1,2}t$, $\alpha=4$ mV, $N_0/2=0.5\times10^{-12}$ W/Hz ($N_0=10^{-12}$), data rate 500 kbit/s ($T_b=2\,\mu$s). $E_b=\frac{\alpha^2T_b}2=\frac{16\times10^{-6}\cdot2\times10^{-6}}2=16\times10^{-12}$ J. $P_e=Q(\sqrt{E_b/N_0})=Q(\sqrt{16})=\mathbf{Q(4)}$.</p>
+<p><b>GATE 2014 Set 1 Q.51.</b> BPSK gives $Q(\sqrt\gamma)$ in the paper’s notation. The receiver now sees the <em>sum</em> of the outputs of two independent identical AWGN channels: the signal adds coherently (amplitude ×2, power ×4) while the independent noises add in power (×2): SNR doubles, so $P_e=Q(\sqrt{2\gamma})$, $b=\sqrt2=\mathbf{1.41}$. (This is “diversity combining”, Chapter 21.)</p>
+<p><b>GATE 2014 Set 4 Q.52.</b> Noise is signal-dependent: $Z\sim\mathcal N(\beta X,1)$, so $Y=X(1+\beta)+N$. With $\beta=-0.3$ the effective amplitude is $0.7a$. Given $Q(a)=10^{-8}$ and the stated approximation $Q(v)\approx e^{-v^2/2}$: $a^2/2=\ln10^8=18.42$; $Q(0.7a)\approx e^{-0.49\times18.42}=1.2\times10^{-4}$ ⇒ closest to $\mathbf{10^{-4}}$ (key C). (Using the exact $Q$ would give $10^{-5}$, which isn’t an option: <em>use the approximation the question hands you.</em>)</p></div>
+
+<h3>$M$ symbols on a line: GATE’s favourite multi-level detection</h3>
+<div class="box derive"><span class="tag">Derivation · $M$-PAM error probability</span>
+<p>For $M$ equally likely points on a line separated by $d$, thresholds midway ($d/2$ from each point), noise standard deviation $\sigma$. An interior point is misjudged if the noise exceeds $d/2$ in <em>either</em> direction: probability $2Q(\frac d{2\sigma})$. An end point errs only on the inner side: $Q(\frac d{2\sigma})$. There are $M-2$ interior and 2 end points:
+$$P_e=\frac{(M-2)\,2Q+2\,Q}{M}=\frac{2(M-1)}{M}\,Q\!\Big(\frac{d}{2\sigma}\Big).$$
+(Check: $M=2$: $Q(d/2\sigma)$ ✓.) For symmetric levels $\pm\frac d2,\pm\frac{3d}2,\dots$ the average energy is $E_{\rm avg}=\frac{d^2(M^2-1)}{12}$, and with $\sigma^2=N_0/2$ we get $\frac{d^2}{4\sigma^2}=\frac{d^2}{2N_0}=\frac{6E_{\rm avg}}{(M^2-1)N_0}$, so $P_e=\frac{2(M-1)}MQ\Big(\sqrt{\frac{6E_{\rm avg}}{(M^2-1)N_0}}\Big)$: for large $M$ each extra bit ($M\to2M$) costs about $6$ dB more $E/N_0$ at the same error probability.</p></div>
+<p><b>GATE 2024 Q.45:</b> $s\in\{-4,0,4\}$, $\sigma^2=4$ ⇒ $d=4$, $d/2\sigma=1$: $P_e=\frac{2\cdot2}{3}Q(1)=\mathbf{\tfrac43Q(1)}$ (option B). <b>GATE 2025 Q.41:</b> $s\in\{-2,0,2\}$, thresholds at $\pm1$: $P_e=\frac43P(N>1)$, so $\alpha=\mathbf{4/3}$ (option D). <b>GATE 2020 Q.48:</b> symbols $-3,-1,+1,+2$, unit-variance noise, thresholds $-2,0,1.5$. $P_e(s_1)=Q(1)=0.159$; $P_e(s_2)=2Q(1)=0.317$; $P_e(s_3)=Q(1)+Q(0.5)=0.467$; $P_e(s_4)=Q(0.5)=0.309$. The highest is at <b>$i=3$</b> (the symbol with neighbours at distances 2 and 1 has the thinnest cell: width 1.5).</p>
+<div class="box ex"><span class="tag">Worked example · GATE 2022 Q.63: non-Gaussian ML</span>
+<p>$f_{Y|A}(y)=e^{-(y+1)}u(y+1)$, $f_{Y|B}(y)=e^{y-1}[1-u(y-1)]$. ML means: decide for the larger likelihood. For $y<-1$ only $B$ has support, for $y>1$ only $A$. In $-1<y<1$: $e^{-(y+1)}>e^{y-1}\iff y<0$. So decide $A$ on $(-1,0)\cup(1,\infty)$, $B$ on $(-\infty,-1)\cup(0,1)$. Given $A$ (equally likely): error iff $y\in(0,1)$: $\int_0^1e^{-(y+1)}dy=e^{-1}(1-e^{-1})=0.2325$. Given $B$: error iff $y\in(-1,0)$: same $0.2325$. $P_e=\mathbf{0.23}$ (key 0.22–0.25). Lesson: ML is “pick the taller curve at the observed $y$”, whatever the curves look like.</p></div>
+
+<h3>Many signals: the union bound and nearest neighbours</h3>
+<p>With more than two signals the exact $P_e$ needs integrals over Voronoi cells, but a simple bound captures it. An error given $s_i$ means the received point is closer to <em>some</em> $s_j$ than to $s_i$; the probability of a union of events is at most the sum:
+$$P_e\le\frac1M\sum_i\sum_{j\ne i}Q\!\Big(\frac{d_{ij}}{\sqrt{2N_0}}\Big)\qquad\text{(union bound)}.$$
+At useful SNRs the nearest neighbours dominate, because $Q$ falls so fast: $P_e\approx\bar N_{\min}\,Q\big(\frac{d_{\min}}{\sqrt{2N_0}}\big)$ with $\bar N_{\min}$ the average number of nearest neighbours. (QPSK: $\bar N_{\min}=2$, $d_{\min}=\sqrt{2E_s}$: $P_s\approx2Q(\sqrt{E_s/N_0})$; at $E_s/N_0=9$ dB this is $4.7\times10^{-3}$, and the exact value $2Q-Q^2$ differs by $Q^2\approx5\times10^{-6}$.) The union bound is the engine behind coded-modulation analysis (Chapter 17: $d_{\min}$ and the number of minimum-distance neighbours decide the coding gain).</p>
+<h3>Orthogonal signalling: trading bandwidth for power, once more</h3>
+<div class="box derive"><span class="tag">Derivation · $M$-ary orthogonal signals approach the Shannon limit</span>
+<p>$M$ orthogonal signals of energy $E_s$ (e.g. $M$ frequencies spaced by $1/T$, or $M$ Walsh codes) are the vertices $\sqrt{E_s}\mathbf e_i$ of a simplex; all pairs are at distance $\sqrt{2E_s}$. The union bound gives
+$$P_e\le(M-1)\,Q\!\Big(\sqrt{\frac{E_s}{N_0}}\Big)\le(M-1)\tfrac12e^{-E_s/2N_0}<\tfrac12\exp\!\Big[\ln M-\frac{E_s}{2N_0}\Big].$$
+With $M=2^k$ and $E_s=kE_b$: $\ln M-\frac{kE_b}{2N_0}=k\Big[\ln2-\frac{E_b}{2N_0}\Big]$. <b>If $E_b/N_0>2\ln2$ ($1.42$ dB) the bound $\to0$ exponentially in $k$ as $M\to\infty$</b>: the error probability can be made as small as desired by increasing the alphabet size, <em>without raising $E_b/N_0$</em>. (A tighter analysis lowers the threshold to $\ln2$, the Shannon limit of $-1.59$ dB, Chapter 11.) The cost: bandwidth grows as $M/\log_2M$ times the bit rate (each of the $M$ orthogonal signals needs its own dimension). Orthogonal signalling therefore reaches the limiting energy efficiency of the power-limited regime, and shows concretely why the Shannon wall sits at $-1.59$ dB. Deep-space links, 5G NB-IoT, LoRa (an orthogonal set of chirps) and Bluetooth’s FSK use it at low spectral efficiency.</p></div>
+
+<h2>The matched filter</h2>
+<p>For a known pulse $s(t)$ of energy $E$ in white noise, we want the linear filter $h(t)$ that makes the output, sampled at $t=T$, <em>as large as possible compared with the noise</em>. The output signal is $\int h(\tau)s(T-\tau)d\tau$; the output noise variance is $\frac{N_0}2\int h^2d\tau$.</p>
+<div class="box derive"><span class="tag">Derivation · the matched filter and its SNR</span>
+<p>By the Cauchy–Schwarz inequality,
+$$\Big(\int h(\tau)s(T-\tau)d\tau\Big)^2\le\int h^2\,d\tau\cdot\int s^2\,dt=E\!\int h^2\,d\tau,$$
+with equality iff $h(\tau)=k\,s(T-\tau)$. Hence the output SNR, $\dfrac{(\int hs)^2}{\frac{N_0}2\int h^2}\le\dfrac{E}{N_0/2}$, with equality for
+$$\boxed{\,h_{\rm opt}(t)=s(T-t)\quad\Longleftrightarrow\quad H(f)=S^*(f)e^{-j2\pi fT},\qquad\mathrm{SNR}_{\max}=\frac{2E}{N_0}\,}$$
+In the frequency domain the same result reads: choose $H$ to maximise $\frac{|\int HSe^{j2\pi fT}df|^2}{\frac{N_0}2\int|H|^2df}$, and Cauchy–Schwarz gives $H=S^*e^{-j2\pi fT}$: <b>the filter is the complex conjugate of the signal spectrum</b>: it passes the frequencies where the signal is strong and cancels the signal’s phase so that all frequency components add in step at $t=T$. <b>Coloured noise.</b> For noise of PSD $S_n(f)$, the same argument applied after whitening ($1/\sqrt{S_n}$) gives $H(f)=\dfrac{S^*(f)}{S_n(f)}e^{-j2\pi fT}$ and $\mathrm{SNR}_{\max}=\int\dfrac{|S(f)|^2}{S_n(f)}df$: weight each frequency by its signal-to-noise ratio, the Wiener-filter idea again.</p></div>
+<p>The maximum SNR depends only on the signal’s <b>energy</b>, not its shape: that is why long, low-amplitude pulses (spread-spectrum, radar chirps, Barker codes) detect as well as short, high-amplitude ones. The filter output at $T$ equals $\int_0^Tr(t)s(t)dt$: the <b>correlation</b> of the received waveform with the template, so matched filter ≡ correlator (the same number, computed by multiplying and integrating instead of convolving and sampling). For a rectangular pulse the matched filter is simply an <b>integrate-and-dump</b>: integrate $r(t)$ over the symbol and reset.</p>
+<div class="widget" id="w-mf">A Barker-13 code pulse (13 chips, each of height $\pm1$) is buried in noise at an unknown delay. Top: what the antenna sees. Bottom: the output of the matched filter. At $\sigma\approx2$ (6 dB below the noise) the signal is invisible in the raw samples, yet the correlator output has a clear spike (height 52, in the units shown as 1) of width 1 chip: a 17 dB processing gain ($10\log_{10}52$). The little side-lobes are the code’s autocorrelation sidelobes: Barker codes make them as small as possible ($\le1$ chip out of 13).</div>
+<div class="box ex"><span class="tag">Worked example</span>
+<p>Rectangular pulse $A=2$ V, $T=1\,\mu$s, $N_0/2=10^{-9}$ W/Hz. $E=A^2T=4\times10^{-6}$ J. $\mathrm{SNR}_{\max}=\frac{2E}{N_0}=\frac{8\times10^{-6}}{2\times10^{-9}}=4000$ ($36$ dB). The matched filter’s output is a triangle of peak $A^2T$ at $t=T$.</p></div>
+<div class="box derive"><span class="tag">Derivation · sensitivity to timing error (and why clock recovery matters)</span>
+<p>The matched-filter output for a rectangular pulse is a triangle $A^2T(1-|t-T|/T)$. Sampling late or early by $\delta$ reduces the signal sample by the factor $(1-\delta/T)$, i.e. the SNR by $20\log_{10}(1-\delta/T)$ dB: for $\delta=0.1T$, $-0.9$ dB; for $\delta=0.25T$, $-2.5$ dB. For a sinc-type (Nyquist) pulse the matched-filter output is a raised cosine with a peak that is flat to first order, but ISI from neighbouring symbols appears (Chapter 13). Symbol-timing recovery loops (Chapter 16) must hold $|\delta|\lesssim0.05T$ for the loss to be negligible.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · matched filtering across engineering</span>
+<p><b>Radar:</b> a chirp (Chapter 7) of bandwidth $B$ and duration $T$ is compressed to a spike of width $1/B$: gain $BT$ and range resolution $c/2B$, with the filter output sidelobes (the “range sidelobes”) tamed by windowing. <b>Spread spectrum/CDMA:</b> the despreader is a correlator with a pseudo-noise code of $N$ chips; processing gain $N$ (Chapter 19). <b>Wi-Fi/LTE preambles:</b> a known sequence is cross-correlated with the received signal to find the start of a packet and to estimate frequency offset. <b>Sonar and ultrasound:</b> pulse compression with coded excitation. <b>Gravitational waves:</b> the strain of a binary merger is matched-filtered against a template bank of 250,000+ waveforms, pulling signals of SNR $\ll1$ per sample out of the noise (an FFT-based correlator, Chapter 2). <b>Fibre:</b> the same idea underlies optical coherent detection. Wherever the signal shape is known, correlate.</p></div>
+
+<div class="box gate"><span class="tag">GATE pattern · detection (the highest-yield topic in digital)</span>
+<ul>
+<li>Nearly every year contains a “symbol received with Gaussian noise; find the error probability or the optimum threshold” question: 2014 (×4), 2019, 2020, 2022, 2024, 2025, 2026. Method: draw the points, put thresholds midway (or at the MAP location), count neighbours, use $Q(\text{half-distance}/\sigma)$.</li>
+<li>Know which $\sigma$ is given: variance (square-root it), PSD $N_0/2$ ($\sigma^2=N_0/2$ per correlator output with unit-energy basis).</li>
+<li>BPSK $Q(\sqrt{2E_b/N_0})$; BFSK $Q(\sqrt{E_b/N_0})$; matched-filter SNR $2E/N_0$.</li>
+<li>Expect “unequal priors ⇒ threshold direction” (2014) and non-Gaussian ML (2022) occasionally.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+Two equally likely signals $\pm A$ in Gaussian noise. If the prior of $+A$ is raised to 0.9, the MAP threshold moves
+<ol class="opts"><li>towards $+A$</li><li>towards $-A$</li><li>does not move</li><li>to $+A$ exactly</li></ol>
+<div class="sol"><p>$\tau^*=\frac{\sigma^2}{2A}\ln\frac{P_0}{P_1}<0$: it moves toward the <em>less</em> likely symbol $-A$, enlarging the region in which we decide $+A$. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which statements about the matched filter are correct?
+<ol class="opts"><li>Its impulse response is the time-reversed, delayed pulse.</li><li>Its maximum output SNR depends on the pulse shape as well as the energy.</li><li>It is equivalent to a correlator followed by a sampler.</li><li>It maximises the output SNR only if the noise is non-Gaussian.</li></ol>
+<div class="sol"><p>(A), (C). (B) false: only the energy $E$ matters. (D) false: it maximises SNR for white noise of any distribution and is the ML receiver for Gaussian noise.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+White Gaussian noise of PSD $N_0/2$ is projected onto three orthonormal basis functions. The three components are
+<ol class="opts"><li>correlated with variance $N_0$</li><li>independent with variance $N_0$</li><li>independent, each with variance $N_0/2$</li><li>identical</li></ol>
+<div class="sol"><p>$\E[n_jn_k]=\frac{N_0}2\delta_{jk}$. <b>(C)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="36" data-tol="0.2" data-marks="1" data-src="Original">
+A rectangular pulse of amplitude 2 V and duration 1 μs is detected in white noise of two-sided PSD $10^{-9}$ W/Hz by a matched filter. The maximum output SNR in dB is ______.
+<div class="sol"><p>$E=4\times10^{-6}$; $2E/N_0=\frac{8\times10^{-6}}{2\times10^{-9}}=4000\to36.0$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0024" data-tol="0.0004" data-marks="1" data-src="Original">
+BPSK with $E_b/N_0=6$ dB. The bit error probability ($Q(2.82)\approx0.0024$) is ______.
+<div class="sol"><p>$E_b/N_0=3.98$; $\sqrt{2\cdot3.98}=2.82$; $Q(2.82)=0.0024$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.05" data-marks="1" data-src="Original">
+For the same bit error probability, coherent orthogonal BFSK requires how many dB more $E_b/N_0$ than BPSK? ______
+<div class="sol"><p>$Q(\sqrt{2\gamma_{PSK}})=Q(\sqrt{\gamma_{FSK}})\Rightarrow\gamma_{FSK}=2\gamma_{PSK}$: 3 dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0047" data-tol="0.0003" data-marks="2" data-src="Original">
+A QPSK symbol is detected with $E_s/N_0=9$ dB ($=8$). Using the nearest-neighbour approximation $P_s\approx2Q(\sqrt{E_s/N_0})$ and $Q(2.83)=0.00234$, the symbol error probability is ______.
+<div class="sol"><p>$2\times0.00234=\mathbf{0.0047}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.004" data-tol="0.0003" data-marks="2" data-src="Original">
+Four orthogonal signals with $E_s/N_0=9$ (9.5 dB) are detected optimally. The union bound $(M-1)Q(\sqrt{E_s/N_0})$ on the symbol error probability, with $Q(3)=0.00135$, is ______.
+<div class="sol"><p>$3\times0.00135=\mathbf{0.00405}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-0.92" data-tol="0.05" data-marks="1" data-src="Original">
+A rectangular-pulse matched filter is sampled $0.1T$ too early. The loss in output SNR (a negative number in dB) is ______.
+<div class="sol"><p>The signal sample falls to $0.9$ of its peak: $20\log_{10}0.9=\mathbf{-0.92}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.21" data-tol="0.01" data-marks="2" data-src="Original">
+Antipodal $\pm1$ V signals are sent in Gaussian noise of variance $\sigma^2=0.5$ V², with priors $P(+1)=0.7$ and $P(-1)=0.3$. The magnitude (in volts) of the optimum threshold $\tau^*=\frac{\sigma^2}{2A}\ln\frac{P_0}{P_1}$ is ______. (Use $\ln\frac{0.3}{0.7}=-0.847$.)
+<div class="sol"><p>$\tau^*=\dfrac{0.5}{2\cdot1}(-0.847)=-0.212$ V: negative, i.e. shifted towards the less likely symbol $-1$. Magnitude $\mathbf{0.21}$ V.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="nat" data-ans="1.41" data-tol="0.02" data-marks="2" data-src="GATE 2014 · Set 1 · Q.51 (reworded)">
+BPSK over an AWGN channel has BER $Q(\sqrt\gamma)$. Now the demodulator receives the <em>sum</em> of the outputs of two independent identical AWGN channels, each with PSD $N_0/2$, both carrying the same modulated signal. The new BER is $Q(b\sqrt\gamma)$. The value of $b$ is ______.
+<div class="sol"><p>Signal amplitudes add: ×2 (power ×4). Independent noise powers add: ×2. SNR ×2 ⇒ $b=\sqrt2=1.41$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="GATE 2014 · Set 2 · Q.50">
+Coherent orthogonal binary FSK transmits equiprobable $s_1(t)=\alpha\cos2\pi f_1t$, $s_2(t)=\alpha\cos2\pi f_2t$, $\alpha=4$ mV, AWGN with two-sided PSD $N_0/2=0.5\times10^{-12}$ W/Hz, data rate 500 kbps, optimal receiver. The bit error probability is
+<ol class="opts"><li>$Q(2)$</li><li>$Q(2\sqrt2)$</li><li>$Q(4)$</li><li>$Q(4\sqrt2)$</li></ol>
+<div class="sol"><p>$E_b=\alpha^2T_b/2=16\times10^{-12}$, $N_0=10^{-12}$: $Q(\sqrt{E_b/N_0})=Q(4)$. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="GATE 2014 · Set 4 · Q.49">
+$X=+1$ with probability 0.75 and $-1$ with probability 0.25; $Y=X+Z$, $Z$ zero-mean Gaussian. A threshold detector outputs $+1$ if $Y>\tau$, else $-1$. To minimise the error probability the threshold $\tau$ should be
+<ol class="opts"><li>strictly positive</li><li>zero</li><li>strictly negative</li><li>strictly positive, zero, or strictly negative depending on $\sigma^2$</li></ol>
+<div class="sol"><p>$\tau^*=\frac{\sigma^2}{2}\ln\frac{P_0}{P_1}=\frac{\sigma^2}2\ln\frac13<0$. (C).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="2" data-src="GATE 2014 · Set 4 · Q.52">
+$Y=X+Z$, $X\in\{-a,+a\}$ equiprobable, $Z\sim\mathcal N(\beta X,1)$, threshold detector with zero threshold. When $\beta=0$ the BER is $Q(a)=10^{-8}$ (use $Q(v)\approx e^{-v^2/2}$ for $v>1$). When $\beta=-0.3$ the BER is closest to
+<ol class="opts"><li>$10^{-7}$</li><li>$10^{-6}$</li><li>$10^{-4}$</li><li>$10^{-2}$</li></ol>
+<div class="sol"><p>$Y=0.7X+N$: $Q(0.7a)\approx e^{-0.49a^2/2}$, $a^2/2=18.42$ ⇒ $e^{-9.03}\approx1.2\times10^{-4}$. (C).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="GATE 2019 · EC-1 · Q.34">
+A single equally likely bit is sent over AWGN (PSD $N_0/2$) with $0\mapsto p(t)$, $1\mapsto q(t)$ and an optimal receiver. $\varphi_1,\varphi_2$ are orthonormal. With $p=\varphi_1,\ q=-\varphi_1$ the bit-error probability is $P_b$. If $p=\varphi_1$ and $q=\sqrt E\varphi_2$, for what value of $E$ is the bit-error probability the same?
+<ol class="opts"><li>0</li><li>1</li><li>2</li><li>3</li></ol>
+<div class="sol"><p>Same distance: $4=1+E$ ⇒ $E=3$. (D).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.1" data-tol="0.01" data-marks="2" data-src="GATE 2019 · EC-1 · Q.47">
+$X=-1$ and $+1$ with probabilities 0.2 and 0.8 is sent through a channel adding noise $N\sim U[-2,2]$, independent of $X$. $Y=X+N$; the receiver decides $+1$ if $Y>\theta$, $\theta\in[-1,1]$ chosen to minimise $P(\hat X\ne X)$. The minimum error probability (one decimal) is ______.
+<div class="sol"><p>$P_e(\theta)=\frac{1+0.6\theta}{4}$, minimal at $\theta=-1$: $0.1$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="2" data-src="GATE 2020 · EC · Q.48">
+A symbol $S$ chosen from $\{s_1,s_2,s_3,s_4\}=\{-3,-1,+1,+2\}$ (equally likely) is sent. The received symbol is $Y=S+W$, $W\sim\mathcal N(0,1)$ independent of $S$. $P_i$ is the conditional symbol-error probability of ML decoding when $S=s_i$. The index $i$ for which $P_i$ is the highest is ______.
+<div class="sol"><p>Thresholds $-2,0,1.5$. $P_1=Q(1)=0.159$, $P_2=2Q(1)=0.317$, $P_3=Q(1)+Q(0.5)=0.467$, $P_4=Q(0.5)=0.309$. Highest: $i=3$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.23" data-tol="0.03" data-marks="2" data-src="GATE 2022 · EC · Q.63">
+Either $x_A$ or $x_B$ is sent (equally likely); $Y$ is the input to an ML detector. $f_{Y|x_A}(y)=e^{-(y+1)}u(y+1)$ and $f_{Y|x_B}(y)=e^{(y-1)}(1-u(y-1))$, $u(\cdot)$ the unit step. The probability of symbol error (two decimals) is ______.
+<div class="sol"><p>$e^{-1}(1-e^{-1})=0.2325$ (derived above).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="GATE 2024 · EC · Q.45">
+A symbol $s\in\{-4,0,4\}$ (equal probabilities) is sent over AWGN, $r=s+w$, $w$ zero-mean with variance 4, independent of $s$. The optimum symbol-error probability is
+<ol class="opts"><li>$\frac23Q(2)$</li><li>$\frac43Q(1)$</li><li>$\frac23Q(1)$</li><li>$\frac43Q(2)$</li></ol>
+<div class="sol"><p>Thresholds $\pm2$, $\sigma=2$, $d/2\sigma=1$. $P_e=\frac13[Q(1)+2Q(1)+Q(1)]=\frac43Q(1)$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="GATE 2025 · EC · Q.41">
+$S$ is uniformly random from $\{-2,0,2\}$; the receiver gets $Y=S+N$, $N$ zero-mean Gaussian independent of $S$, and uses the ML decoder. $P_e=\alpha P(N>1)$. The value of $\alpha$ is
+<ol class="opts"><li>$1/3$</li><li>1</li><li>$2/3$</li><li>$4/3$</li></ol>
+<div class="sol"><p>Thresholds at $\pm1$. $P_e=\frac13[P(N>1)+2P(N>1)+P(N>1)]=\frac43P(N>1)$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="GATE 2026 · EC · Q.44">
+A QPSK signal in AWGN is received with $E_b/N_0=8.4$ dB at a coherent ML demodulator. Take $\erfc(u)\approx\frac1{u\sqrt\pi}e^{-u^2}$. The nearest BER is
+<ol class="opts"><li>$10^{-3}$</li><li>$10^{-4}$</li><li>$10^{-5}$</li><li>$10^{-6}$</li></ol>
+<div class="sol"><p>QPSK BER $=\frac12\erfc(\sqrt{E_b/N_0})$; $E_b/N_0=10^{0.84}=6.92$, $u=2.63$: $\erfc\approx\frac{e^{-6.92}}{2.63\sqrt\pi}=2.1\times10^{-4}$, BER $\approx1.06\times10^{-4}$. (B).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.8" data-tol="0.02" data-marks="2" data-src="GATE 2014 · Set 4 · Q.50">
+A Z-channel: input 0 → output 0 with probability 1; input 1 → output 1 with probability 0.75 and output 0 with probability 0.25. Inputs are equally likely. Given the output is 0, the probability that the input is also 0 is ______.
+<div class="sol"><p>$P(\text{out}=0)=0.5+0.5(0.25)=0.625$; $P(\text{in}=0\mid\text{out}=0)=0.5/0.625=0.8$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-0.5" data-tol="0.01" data-marks="2" data-src="GATE 2018 · EC (PYQ book)">
+$X\in\{-0.5,+0.5\}$ with probabilities $\frac14,\frac34$. The observation is $Y=X+Z$ with $Z$ uniform on $(-1,1)$, independent of $X$. The MAP detector outputs $\hat X=-0.5$ if $Y<\alpha$ and $+0.5$ if $Y\ge\alpha$. The value of $\alpha$ is ______.
+<div class="sol"><p>If $X=-0.5$ then $Y\in(-1.5,0.5)$; if $X=+0.5$, $Y\in(-0.5,1.5)$. For $Y<-0.5$ only $X=-0.5$ is possible; for $Y>0.5$ only $+0.5$. In the overlap $(-0.5,0.5)$ the two likelihoods are equal ($\frac12$ each), so the priors decide: $\frac34>\frac14$ ⇒ choose $+0.5$. The decision switches at $\alpha=\mathbf{-0.5}$. (With uniform noise the MAP boundary sits at the edge of the overlap, not at the midpoint.)</p></div></div>
+
+<div class="summary"><h3>Chapter 14 in one breath</h3>
+<ul>
+<li>MAP maximises $P_if(r|s_i)$ (proved: maximises $P_c$); ML is MAP with equal priors; LRT threshold $P_0/P_1$ (with costs: $\frac{P_0(C_{10}-C_{00})}{P_1(C_{01}-C_{11})}$). Unequal priors shift the threshold toward the less likely symbol: $\tau^*=\frac{\sigma^2}{2A}\ln\frac{P_0}{P_1}$.</li>
+<li>Signal space: Gram–Schmidt basis; noise per axis independent $\mathcal N(0,N_0/2)$; irrelevance of out-of-space noise; ML = nearest point (Voronoi), or max of $\mathbf r\cdot\mathbf s_i-E_i/2+\frac{N_0}2\ln P_i$.</li>
+<li>$P_e^{\rm pair}=Q\big(d/\sqrt{2N_0}\big)$. BPSK $Q(\sqrt{2E_b/N_0})$; BFSK/OOK $Q(\sqrt{E_b/N_0})$ (3 dB worse). $M$ points on a line: $\frac{2(M-1)}MQ\big(\frac d{2\sigma}\big)$. Union bound; $P_e\approx\bar N_{\min}Q(d_{\min}/\sqrt{2N_0})$.</li>
+<li>Orthogonal signalling: $P_e\to0$ as $M\to\infty$ if $E_b/N_0>\ln2$ ($-1.59$ dB) at the cost of bandwidth.</li>
+<li>Matched filter $h(t)=s(T-t)$ ≡ correlator; $\mathrm{SNR}_{\max}=2E/N_0$ (only energy matters); coloured noise: $H=S^*/S_n$; timing error $\delta$ costs $20\log(1-\delta/T)$ dB.</li>
+</ul></div>
+
+<script>
+
+const m=GB.m, TAU=2*Math.PI;
+GB.diagram('d-corr',{w:800,h:190,alt:'correlation receiver',items:[
+ ['txt',10,95,'r(t)','t','start'],['arr',[44,95,90,95]],['ln',[90,95,90,40]],['ln',[90,95,90,150]],['arr',[90,40,130,40]],['arr',[90,150,130,150]],
+ ['sum',148,40,16,'×'],['sum',148,150,16,'×'],['arr',[148,6,148,24]],['txt',148,0,'s₁(t)','tm'],['arr',[148,184,148,166]],['txt',148,190,'s₂(t)','tm'],
+ ['arr',[164,40,220,40]],['arr',[164,150,220,150]],['box',220,20,86,40,'∫₀ᵀ dt','blue'],['box',220,130,86,40,'∫₀ᵀ dt','blue'],['arr',[306,40,360,40],'r·s₁'],['arr',[306,150,360,150],'r·s₂'],
+ ['sum',380,40,15,'+'],['sum',380,150,15,'+'],['arr',[380,8,380,25]],['txt',380,0,'−E₁/2 + (N₀/2)ln P₁','tm'],['arr',[380,184,380,165]],['txt',380,190,'−E₂/2 + (N₀/2)ln P₂','tm'],
+ ['arr',[395,40,470,40,470,85]],['arr',[395,150,470,150,470,105]],['box',430,85,120,22,'choose largest','green'],['arr',[550,96,610,96]],['txt',618,96,'î','tb','start']]});
+
+/* ---------- MAP threshold ---------- */
+GB.widget('w-map',{title:'Two bells, one threshold',h:340,hm:360,controls:[{k:'P1',label:'prior P(+A) = P₁',min:.05,max:.95,step:.01,value:.75},{k:'s',label:'noise σ (A = 1)',min:.25,max:1.5,step:.01,value:.6},{k:'tau',label:'threshold τ',min:-1.5,max:1.5,step:.01,value:0}],
+ draw(g,p){ const A=1, s=p.s, P1=p.P1, P0=1-P1; const tmap=s*s/(2*A)*Math.log(P0/P1); const f0=x=>P0*m.gauss(x,-A,s), f1=x=>P1*m.gauss(x,A,s); const top=Math.max(f0(-A),f1(A))*1.25;
+  const v=g.full({b:28}).view(-3.2,3.2,0,top); v.axes({xl:'received value r',nox:false,ystep:top>.5?.2:.1}); v.fill(x=>x>p.tau?f0(x):0,null,'red',.55,500); v.fill(x=>x<=p.tau?f1(x):0,null,'orange',.55,500); v.fn(f0,'blue',2.2,null,500); v.fn(f1,'yellow',2.2,null,500);
+  v.vline(p.tau,'fg',null,1.8); v.vline(tmap,'green',[3,3],1.8); v.text(tmap,top*.95,'MAP threshold','green','center',11); v.text(-A,f0(-A)+top*.05,'P₀·f(r|−A)','blue','center',11); v.text(A,f1(A)+top*.05,'P₁·f(r|+A)','yellow','center',11);
+  const pe=t=>P0*m.Q((t+A)/s)+P1*m.Q((A-t)/s); return 'P<sub>e</sub>(τ) = <b>'+pe(p.tau).toFixed(4)+'</b> · P<sub>e</sub> at MAP τ* = '+tmap.toFixed(3)+': <b>'+pe(tmap).toFixed(4)+'</b> · ML (τ = 0): '+pe(0).toFixed(4); }});
+
+/* ---------- 2D signal space ---------- */
+(function(){ const r=m.rng(23), NS=500, Z=Array.from({length:NS},()=>[m.randn(r),m.randn(r)]);
+ const C=[{n:'BPSK  (antipodal)',pts:[[-1,0],[1,0]],th:s=>m.Q(1/s)},{n:'Orthogonal BFSK',pts:[[1,0],[0,1]],th:s=>m.Q(Math.SQRT1_2/s)},{n:'QPSK',pts:[[.7071,.7071],[-.7071,.7071],[-.7071,-.7071],[.7071,-.7071]],th:s=>1-(1-m.Q(.7071/s))**2},{n:'3-level PAM (−1, 0, +1)',pts:[[-1,0],[0,0],[1,0]],th:s=>4/3*m.Q(.5/s)},{n:'8-PSK',pts:Array.from({length:8},(_,k)=>[Math.cos(TAU*k/8),Math.sin(TAU*k/8)]),th:null},{n:'16-QAM',pts:[-3,-1,1,3].flatMap(a=>[-3,-1,1,3].map(b=>[a/3.162,b/3.162])),th:null}];
+ GB.widget('w-sig2',{title:'Signal space, noise and decision regions',h:380,hm:400,controls:[{k:'c',type:'select',label:'constellation',options:C.map((c,i)=>[i,c.n]),value:2},{k:'s',label:'noise σ per axis',min:.05,max:.8,step:.01,value:.3}],
+  draw(g,p){ const c=C[p.c], v=g.full({l:30,b:24}).view(-1.8,1.8,-1.8,1.8,{equal:true}); const ctx=g.ctx, cols=[g.C.blue,g.C.orange,g.C.green,g.C.purple,g.C.pink,g.C.teal,g.C.yellow,g.C.red]; const near=(x,y)=>{ let b=0,bd=1e9; c.pts.forEach((q,i)=>{ const d=(x-q[0])**2+(y-q[1])**2; if(d<bd){ bd=d; b=i; } }); return b; };
+   const gx=70, gy=Math.round(gx*v.ph/v.pw); ctx.save(); ctx.beginPath(); ctx.rect(v.px,v.py,v.pw,v.ph); ctx.clip(); ctx.globalAlpha=.16; for(let i=0;i<gx;i++)for(let j=0;j<gy;j++){ const x=v.x0+(i+.5)/gx*(v.x1-v.x0), y=v.y1-(j+.5)/gy*(v.y1-v.y0); ctx.fillStyle=cols[near(x,y)%8]; ctx.fillRect(v.px+i*v.pw/gx,v.py+j*v.ph/gy,v.pw/gx+1,v.ph/gy+1); } ctx.restore(); v.axes({xstep:1,ystep:1,xl:'φ₁',yl:'φ₂'});
+   let err=0,tot=0; c.pts.forEach((q,i)=>{ for(let k=0;k<NS;k++){ const x=q[0]+p.s*Z[(k+i*37)%NS][0], y=q[1]+p.s*Z[(k+i*37)%NS][1]; if(k<70) v.dot(x,y,['blue','orange','green','purple','pink','teal','yellow','red'][i%8],2); if(near(x,y)!==i) err++; tot++; } }); c.pts.forEach(q=>v.dot(q[0],q[1],'fg',5));
+   let dmin=1e9; c.pts.forEach((a,i)=>c.pts.forEach((b,j)=>{ if(i<j) dmin=Math.min(dmin,Math.hypot(a[0]-b[0],a[1]-b[1])); })); const Es=c.pts.reduce((s,q)=>s+q[0]**2+q[1]**2,0)/c.pts.length; return 'measured symbol-error rate = <b>'+(err/tot).toFixed(4)+'</b>'+(c.th?' · theory = <b>'+c.th(p.s).toFixed(4)+'</b>':'')+' · d<sub>min</sub> = '+dmin.toFixed(3)+' · average symbol energy = '+Es.toFixed(2); }}); })();
+
+/* ---------- matched filter ---------- */
+(function(){ const barker=[1,1,1,1,1,-1,-1,1,1,-1,1,-1,1], sps=4, L=barker.length*sps, N=520, r=m.rng(4), nz=Array.from({length:N},()=>m.randn(r)); const s=[]; barker.forEach(b=>{ for(let i=0;i<sps;i++) s.push(b); });
+ GB.widget('w-mf',{title:'Matched filter pulling a pulse out of noise',h:360,hm:380,controls:[{k:'sig',label:'noise σ per sample (pulse chips are ±1)',min:.1,max:6,step:.1,value:2},{k:'d',label:'delay of the hidden pulse',min:40,max:400,step:5,value:220}],
+  draw(g,p){ const x=new Array(N).fill(0); for(let i=0;i<L;i++) x[p.d+i]=s[i]; const rr=x.map((v,i)=>v+p.sig*nz[i]); const y=[]; for(let n=0;n<=N-L;n++){ let a=0; for(let k=0;k<L;k++) a+=rr[n+k]*s[k]; y.push(a/L); }
+   const ts=m.linspace(0,N-1,N), a=g.panel(0,2,{pad:{b:12}}).view(0,N,-18,18); a.axes({nox:true,ystep:10}); a.line(ts,rr,'mute',1); a.line(ts,x,'blue',1.6); a.title('received samples r[n] (grey) — hidden clean pulse (blue)'); const b=g.panel(1,2).view(0,N,-.4,1.3); b.axes({xl:'n',ystep:.5}); b.line(y.map((_,i)=>i),y,'yellow',1.6); b.title('matched-filter (correlator) output / 52','yellow'); b.vline(p.d,'green');
+   let mx=-9,at=0; y.forEach((v,i)=>{ if(v>mx){ mx=v; at=i; } }); const noise=y.filter((_,i)=>Math.abs(i-p.d)>2*sps*2); const sd=Math.sqrt(noise.reduce((a,v)=>a+v*v,0)/noise.length); return 'peak at n = <b>'+at+'</b> (true '+p.d+') · peak height '+mx.toFixed(2)+' vs rms elsewhere '+sd.toFixed(2)+' · raw per-sample SNR = '+(10*Math.log10(1/(p.sig**2))).toFixed(1)+' dB, after correlation +'+(10*Math.log10(L)).toFixed(1)+' dB'; }}); })();
+
+</script>

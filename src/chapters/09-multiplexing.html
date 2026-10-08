@@ -1,0 +1,203 @@
+<!--meta {"id":"ch09","num":"9","part":"Part II · Analog Communication","title":"Sharing the Wire: Multiplexing and Pulse Modulation","lede":"A cable or a slice of sky is expensive. The art of multiplexing is to make one channel carry hundreds of conversations without any of them hearing the others, and the secret is always the same: give each conversation its own <em>orthogonal</em> slot."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>State the unifying principle of multiplexing (orthogonality in frequency, time, code, space, polarisation or wavelength) and the degrees-of-freedom count $2WT$ that limits any channel.</li>
+<li>Design a frequency-division multiplex: channel spacing, guard bands, group/supergroup hierarchy; list the sources of crosstalk.</li>
+<li><b>Derive</b> the spectrum of naturally- and flat-top-sampled PAM, the aperture effect, and the minimum bandwidth of a TDM-PAM system; show that TDM and FDM need the same bandwidth.</li>
+<li>Describe PWM and PPM, generate them, and explain why they resist amplitude noise; know their modern uses (class-D amplifiers, motor drives, servos).</li>
+<li>Compute frame structures and bit rates of digital TDM (T1/E1, SDH/SONET), explain framing and bit-stuffing, and size a trunk group with the Erlang-B formula.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapters 2, 3 (sampling, transforms), 6 (SSB).</p></div>
+
+<div class="box story"><span class="tag">History · the baud, and the rotating arm</span>
+<p>In 1874 the French telegraph engineer <strong>Émile Baudot</strong> built a telegraph in which several operators shared one wire. A rotating brush (the <em>distributor</em>) connected each operator’s keyboard to the line for a few milliseconds in turn, and an identical brush rotating in step at the far end connected the line to the right printer. Each operator got a fixed slot, many times a second, so fast that each felt he had the line to himself. It was the first <b>time-division multiplex</b>, and its unit of signalling speed, the <i>baud</i>, still carries his name. Bell’s “harmonic telegraph” (Chapter 2) had attempted the same trick in <em>frequency</em>; carrier telephony, from the 1910s, made it practical. In 1962 the Bell System’s T1 carrier put 24 digitised calls on a single copper pair, and time-division multiplexing took over the world’s telephone trunks.</p></div>
+
+<div class="box real"><span class="tag">Real world · multiplexing everywhere</span>
+<p>The stereo signal of an FM station (Chapter 7) is a frequency-division multiplex. The 24 subcarriers of a cable-TV system, the 600 voice channels on a 1960s coaxial cable and the dozens of colours in a fibre-optic backbone (WDM) are FDM. The 2.048 Mbit/s E1 line from an Indian telephone exchange, the SDH links that connect cities, and the frames of a GSM radio carrier are TDM. Your phone’s radio uses both: a 200 kHz GSM carrier (FDM) divided into 8 time slots (TDM) and many carriers reused in different cells (SDM, Chapter 21). A servo motor in a model aircraft is commanded by pulse-position modulation, and the class-D amplifier in your phone’s speaker driver is a pulse-width modulator.</p></div>
+
+<h2>The unifying principle: orthogonality and degrees of freedom</h2>
+<p>Several users can share a channel and still be separated at the receiver if their signals are <b>orthogonal</b>: $\int x_1(t)x_2(t)\,dt=0$. Then a correlator (matched filter, Chapter 14) tuned to user 1 sees nothing of user 2. There are only a few ways to be orthogonal:</p>
+<table>
+<tr><th>Technique</th><th>Orthogonal in</th><th>Examples</th></tr>
+<tr><td><b>FDM / FDMA</b></td><td>frequency (non-overlapping spectra)</td><td>Radio and TV stations, cable TV, telephone carrier systems, AMPS, GSM carriers</td></tr>
+<tr><td><b>TDM / TDMA</b></td><td>time (non-overlapping slots)</td><td>T1/E1, SDH, GSM time slots, satellite TDMA</td></tr>
+<tr><td><b>CDM / CDMA</b></td><td>code (orthogonal spreading sequences)</td><td>GPS, CDMA2000, WCDMA (Chapter 19)</td></tr>
+<tr><td><b>OFDM / OFDMA</b></td><td>overlapping but orthogonal subcarriers</td><td>Wi-Fi, LTE, 5G, DVB-T (Chapter 20)</td></tr>
+<tr><td><b>SDM</b></td><td>space (beams, cells, antennas)</td><td>Cell reuse, MIMO (Chapter 21)</td></tr>
+<tr><td><b>PDM</b></td><td>polarisation</td><td>Satellite dual-polar, coherent optics</td></tr>
+<tr><td><b>WDM</b></td><td>optical wavelength (= FDM at 193 THz)</td><td>Fibre backbones</td></tr>
+</table>
+<div class="box derive"><span class="tag">Derivation · how many signals fit? The $2WT$ theorem</span>
+<p>A signal strictly limited to bandwidth $W$ (low-pass) is determined by its samples at rate $2W$ (Chapter 3). Observed over a time $T$ it is therefore determined by $2WT$ numbers. Conversely any $2WT$ numbers can be sent: the channel has <b>$2WT$ real degrees of freedom</b> (equivalently $WT$ complex dimensions for a bandpass channel of bandwidth $W$), whatever its centre frequency. (Strictly, no signal is both time-limited and band-limited; the statement is asymptotically exact for large $WT$, by Landau–Pollak–Slepian.) Multiplexing is nothing but <em>dividing these dimensions among users</em>: FDM gives each user a sub-band $W_k$ for all the time ($2W_kT$ dimensions), TDM gives each user the whole band for a fraction $T_k$ of the time ($2WT_k$), CDM gives each a set of orthogonal waveforms spanning all of both. No scheme can beat $\sum_k(\text{dimensions of user }k)\le2WT$. This one counting argument is the origin of the “no free lunch” results of Chapters 11 and 15 (symbol rate $\le2W$ per real dimension).</p></div>
+
+<h2>Frequency-division multiplexing</h2>
+<p>Each message $m_k(t)$ modulates its own <b>subcarrier</b> $f_k$ (by SSB for efficiency, Chapter 6; or DSB-SC, or FM); band-pass filters limit each to its slot, and the modulated signals are added. The receiver separates them with band-pass filters and demodulates each. The total bandwidth is $B_{\rm tot}=\sum_k(B_k+B_{g})$ with guard bands $B_g$ to accommodate the finite roll-off of the filters.</p>
+<div id="d-fdm" class="dia">FDM transmitter and receiver for $N$ channels. The sum is a wideband signal that could in turn be translated to a higher carrier (a second modulation, e.g. FM of the composite) for transmission.</div>
+<div class="box ex"><span class="tag">Worked example · the telephone hierarchy</span>
+<p>A voice channel is limited to $0.3$–$3.4$ kHz and given a 4 kHz slot (Chapter 3 anti-alias logic: a 600 Hz guard gap between sidebands). With SSB, 12 channels fit in $48$ kHz (60–108 kHz): a <b>group</b>. Five groups form a <b>supergroup</b> of 60 channels (312–552 kHz, $240$ kHz), five supergroups a <b>mastergroup</b> of 300 channels, and so on up to the 10,800 channels carried by the last coaxial systems (L5, 60 MHz). Each translation stage uses a single carrier frequency and an SSB filter; reusing the same group modulators in every system keeps costs down. If DSB-SC were used, 12 channels would need $96$ kHz, twice as much copper.</p></div>
+<div class="box derive"><span class="tag">Sources of crosstalk and how big they are</span>
+<ul>
+<li><b>Linear crosstalk</b>: the band-pass filter of channel $k$ does not fully reject its neighbours. With guard bands the adjacent-channel rejection is 50–60 dB (SSB crystal/mechanical filters).</li>
+<li><b>Intermodulation crosstalk</b>: a non-linear amplifier (the cable repeater) creates $f_i\pm f_j$ and $f_i+f_j-f_k$ products (Chapter 8). With $N$ channels the number of third-order products grows roughly as $N^3$, and they pile up in the middle of the band. The composite of many independent voice channels behaves like Gaussian noise with peaks far above its average, so the permitted average power per channel (the <i>system loading</i>) is set from the repeater’s intercept point and falls by a few dB per decade of channel count.</li>
+<li><b>Carrier leak and pilot</b>: a residual carrier or pilot tone is reserved at a few specific frequencies to regulate gain and frequency of the repeaters.</li>
+<li><b>Frequency error</b> of the demodulating carriers: for SSB each channel is shifted by $\Delta f$; a 2 Hz allowance is typical in the carrier telephone network, enforced by locking all carriers to a master crystal.</li>
+</ul></div>
+
+<h2>Pulse-amplitude modulation and time-division multiplexing</h2>
+<p>FDM spreads users over frequency; TDM interleaves <em>samples</em> in time. The first step is <b>pulse-amplitude modulation</b> (PAM): sampling a message $m(t)$ and transmitting each sample as the amplitude of a short pulse. We saw ideal impulse sampling in Chapter 3; real PAM uses pulses of finite width $\tau$. There are two ways to do it.</p>
+<div class="box derive"><span class="tag">Derivation · natural sampling (gating)</span>
+<p>Multiply $m(t)$ by a periodic train $p(t)$ of rectangular pulses of width $\tau$ and period $T_s$. $p(t)$ has the Fourier series $p(t)=\sum_nc_ne^{j2\pi nf_st}$ with $c_n=\frac\tau{T_s}\sinc\!\big(\frac{n\tau}{T_s}\big)$ (Chapter 2). So $m_\delta(t)=m(t)p(t)$ has the spectrum
+$$M_\delta(f)=\sum_{n=-\infty}^{\infty}c_n\,M(f-nf_s)=\frac\tau{T_s}\Big[M(f)+\sum_{n\ne0}\sinc\!\big(\tfrac{n\tau}{T_s}\big)M(f-nf_s)\Big].$$
+Replicas appear at every $nf_s$ (as with impulse sampling), now weighted by a sinc envelope, and the baseband copy is scaled by the duty cycle $\tau/T_s$ but is <b>otherwise undistorted</b>. A low-pass filter of cut-off $W$ (with $f_s>2W$) recovers $m(t)$ exactly, with a gain $T_s/\tau$.</p></div>
+<div class="box derive"><span class="tag">Derivation · flat-top sampling and the aperture effect</span>
+<p>In practice a sample-and-hold circuit keeps the amplitude of $m(nT_s)$ constant for a time $\tau$ (to give the multiplexer and converter time to work). This is impulse sampling followed by a filter $h(t)=\rect\big((t-\tau/2)/\tau\big)$, $H(f)=\tau\sinc(f\tau)e^{-j\pi f\tau}$. So
+$$S(f)=\underbrace{f_s\sum_nM(f-nf_s)}_{\text{ideal sampled spectrum}}\times\tau\sinc(f\tau)e^{-j\pi f\tau}.$$
+The baseband copy is $M(f)\cdot f_s\tau\,\sinc(f\tau)e^{-j\pi f\tau}$: the message is multiplied by $\sinc(f\tau)$, a gentle roll-off. This <b>aperture effect</b> attenuates the high-frequency end of the message by $20\log\sinc(W\tau)$ dB; it is corrected by an <b>equaliser</b> with response $1/\sinc(f\tau)$ after the demodulating low-pass filter. For $\tau=T_s/4$ and $f=f_s/2=W$: $\sinc(1/8)=0.9745$, a loss of just $0.22$ dB; with $\tau=T_s$ (a full-width hold) the loss is $3.9$ dB.</p></div>
+<h3>Time-division multiplexing of PAM</h3>
+<p>Take $N$ messages, each band-limited to $W$ and sampled at $f_s\ge2W$. A <b>commutator</b> (an electronic switch) selects each sampler in turn, interleaving the pulses into one train of period $T_s$ (<b>frame</b>), divided into $N$ <b>slots</b> of duration $T_s/N$. The receiver’s <b>decommutator</b>, synchronised with the transmitter, sends each slot’s pulse to the right low-pass filter.</p>
+<div class="widget" id="w-tdm">TDM of $N$ analog channels (top: the messages; bottom: the interleaved PAM train, one colour per channel). Each frame holds one sample of every channel; the slot width shrinks as $N$ grows. The readout gives the bandwidth you need. Raise the sampling rate to see more samples per cycle of the message.</div>
+<div class="box derive"><span class="tag">Derivation · TDM needs the same bandwidth as FDM</span>
+<p>With $f_s=2W$, one frame lasts $T_s=1/2W$ and each slot $T_s/N=\dfrac1{2NW}$. The pulses cannot be wider than a slot, $\tau\le\dfrac1{2NW}$. A rectangular pulse of width $\tau$ has its first spectral null at $1/\tau$; to send such pulses with <em>little interference</em> from neighbouring slots the channel needs roughly the Nyquist bandwidth for a pulse rate of $N f_s=2NW$ pulses per second:
+$$B_{\rm TDM}\ \ge\ \frac{N f_s}{2}=\frac{1}{2\tau_{\max}}=NW.$$
+FDM-SSB of the same $N$ messages needs exactly $N\cdot W$. <b>The two schemes use the same bandwidth</b>: in the language of the previous section, both occupy $2NWT$ degrees of freedom for $N$ signals of $2WT$ each. (The rule $B\ge R/2$ for a pulse rate $R$ is derived in Chapter 13.) TDM wins in practice not because of bandwidth but because (i) it needs only digital timing circuits and a single non-linear-sensitive device at a time (no intermodulation between channels), and (ii) it is naturally compatible with digital switching and regeneration.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · what TDM must get right</span>
+<p><b>Synchronisation.</b> The decommutator must know where each frame starts. Analog TDM reserves a marker pulse; digital TDM uses a <b>frame-alignment word</b> (Chapter 16). <b>Crosstalk from pulse tails</b> is controlled by the filter shapes (ISI, Chapter 13): if the channel bandwidth is just $NW$, the tail of one pulse spills into the next slot unless the pulses are shaped to have zero crossings at the neighbouring sampling instants. <b>Flatness at low frequencies</b> matters too: a high-pass characteristic (an AC-coupled channel) makes the tails of pulses depend on the earlier pulses, again a crosstalk mechanism. <b>Amplitude noise and non-linearity</b> are the weaknesses of PAM; PCM (Chapter 12) removes them by transmitting numbers instead of amplitudes.</p></div>
+
+<h2>Pulse-width and pulse-position modulation</h2>
+<p>PAM carries information in amplitude, so noise and non-linearity corrupt it directly. Two alternatives carry it in <em>timing</em>.</p>
+<ul>
+<li><b>Pulse-width (duration) modulation, PWM/PDM</b>: the width of each pulse is proportional to the sample value.</li>
+<li><b>Pulse-position modulation, PPM</b>: pulses have constant width and amplitude but their <em>position</em> within the slot is proportional to the sample.</li>
+</ul>
+<div class="widget" id="w-pwm">A PWM signal is made by comparing the message with a sawtooth: the output is high while $m(t)$ exceeds the ramp. The duty cycle is $(1+m)/2$ for a ramp that sweeps $-1$ to $+1$. A moving average over one switching period (green) recovers the message, which is why a simple low-pass filter demodulates PWM. PPM is obtained by differentiating the trailing edge of each PWM pulse (a short pulse at the falling edge).</div>
+<div class="box derive"><span class="tag">Derivation · why PWM is easy to demodulate, and why timing modulation resists noise</span>
+<p><b>Demodulation.</b> In each switching period $T_s$ the PWM output is $+A$ for a fraction $d=\frac{1+m}2$ of the time and $0$ otherwise (taking $m$ constant over one period). The average value $\frac1{T_s}\int_{\rm period}=Ad=\frac A2(1+m)$: a low-pass filter returns the message plus a DC offset. (The PWM spectrum also contains harmonics of $f_s$ with sidebands, as in FM, and a little in-band distortion unless the sampling is “uniform”; high switching frequency pushes them away.) <b>Noise.</b> Noise changes the amplitude of the pulse; the receiver thresholds it and measures the <em>time</em> of the crossings. Noise of amplitude $n$ on an edge with rise time $t_r$ shifts the crossing by $\delta t\approx n\,t_r/A$, so for fast edges the timing error is tiny. The price is bandwidth: a pulse of rise time $t_r$ needs $\approx0.35/t_r$ (Chapter 1) and the whole system $B\gtrsim1/2\tau$, where the position resolution of PPM is a fraction of the slot. The output SNR of PPM grows as $\mathrm{SNR}_o\propto(B/W)^2\,\mathrm{SNR}_i$ above a threshold: a bandwidth-for-SNR trade of exactly the same type as FM (Chapter 8), and as with FM there is a <b>threshold</b> below which noise causes pulses to be missed or spurious pulses to be detected.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · PWM today: class-D amplifiers, motor drives and radio-control</span>
+<p>The phone speaker driver, the amplifier in a soundbar and the inverter in an electric vehicle all switch a transistor fully on or fully off at 300 kHz–2 MHz (class D), with a duty cycle following the audio or torque command: a transistor that is either fully on (no voltage drop) or fully off (no current) dissipates almost nothing, so efficiency reaches 90% vs 50–70% for linear (class AB) amplifiers. The LC filter at the output is the PWM demodulator. The switching frequency must be well above the audio band ($\ge10\times20$ kHz) to keep the harmonics and the in-band distortion low. Hobby servos and speed controllers are commanded by a PPM/PWM signal: a 1–2 ms pulse repeated every 20 ms, so a pulse of 1.5 ms means “centre”. In optical wireless (TV remote controls, IrDA, free-space optics) PPM is used because a LED/laser is power-limited in average power: positions cost nothing in average energy.</p></div>
+
+<h2>Digital time-division multiplexing</h2>
+<p>If each sample is first digitised into $n$ bits (PCM, Chapter 12) the multiplexer interleaves <em>bits</em> or <em>words</em> rather than analog pulses, and everything above applies with $\tau$ now the bit duration. A <b>frame</b> comprises one word from every channel plus overhead for alignment and signalling.</p>
+<div class="box ex"><span class="tag">Worked example · T1 and E1: the numbers every telecom engineer knows</span>
+<p><b>T1 (DS1, North America/Japan):</b> 24 voice channels, each sampled at $8$ kHz with 8 bits ($64$ kbit/s, the “DS0”). A frame is $24\times8=192$ bits plus 1 framing bit $=193$ bits, repeating every $125\,\mu$s ($f_s^{-1}$). Line rate $=193\times8000=\mathbf{1.544\ Mbit/s}$; framing overhead $1/193=0.5\%$. <b>E1 (ITU, India/Europe):</b> 32 time slots of 8 bits $=256$ bits per $125\,\mu$s $=\mathbf{2.048\ Mbit/s}$: slot 0 carries the frame-alignment word, slot 16 signalling (CAS), leaving 30 voice channels (slot duration $125/32=3.9\,\mu$s). Higher orders are built by multiplexing four lower ones with extra overhead: E2 $8.448$, E3 $34.368$, E4 $139.264$ Mbit/s ($4\times2.048=8.192$, so 3% overhead in E2); DS2 $6.312$ and DS3 $44.736$ Mbit/s in the North American hierarchy.</p></div>
+<h3>Plesiochronous multiplexing and bit-stuffing</h3>
+<p>Different tributaries have their own clocks, which differ slightly (E1: $\pm50$ ppm). To combine four of them, the multiplexer must run each tributary at a common higher rate. The solution is <b>justification (bit-stuffing)</b>: the output has a rate somewhat above the sum of the input rates; whenever a tributary’s elastic buffer is about to run empty, a dummy bit is inserted into a reserved position and flagged in the overhead, so the demultiplexer knows to discard it. Rates that are almost but not exactly the same are called <b>plesiochronous</b> (“nearly together”), and the PDH hierarchy (T-carrier, E-carrier) works this way. Its flaw: to extract one 64 kbit/s channel from a 140 Mbit/s stream you must demultiplex every layer.</p>
+<p>The <b>synchronous</b> digital hierarchy solved it: SONET (America, 1985) and SDH (ITU, 1988) use a single master clock throughout the network, frames of 125 µs, and <i>pointers</i> that locate each container within the frame, so a tributary can be added or dropped without unpacking the rest. The basic unit is $\mathrm{STS\text{-}1}=51.84$ Mbit/s, i.e. $810$ bytes per $125\,\mu$s ($9$ rows × $90$ columns); SDH’s $\mathrm{STM\text{-}1}=155.52=3\times51.84$ Mbit/s, then STM-4 (622.08), STM-16 (2.488 Gbit/s), STM-64 (9.95 Gbit/s). Every metropolitan fibre ring in India runs SDH or its successor, Ethernet over OTN.</p>
+
+<h3>Statistical multiplexing and trunk sizing</h3>
+<p>Synchronous TDM wastes a slot when its owner is idle. <b>Statistical (asynchronous) multiplexing</b> gives slots on demand and labels each with a header (packet switching): the total capacity can be less than the sum of the peak rates, because users rarely transmit simultaneously. The central question is how many circuits $m$ are needed to carry a given offered traffic with an acceptable blocking probability. If calls arrive as a Poisson stream with mean rate $\lambda$ and last a mean time $h$, the <b>offered traffic</b> is $E=\lambda h$ <b>Erlangs</b> (the average number of simultaneous calls). The blocked-calls-cleared model gives the <b>Erlang-B formula</b>
+$$B(E,m)=\frac{E^m/m!}{\sum_{k=0}^{m}E^k/k!}.$$
+It is the stationary probability that all $m$ circuits are busy in an $M/M/m/m$ queue (derivation: detailed balance for the birth–death chain with arrival rate $\lambda$ and departure rate $k/h$ in state $k$ gives $P_k\propto E^k/k!$; the blocking probability is $P_m$).</p>
+<div class="box ex"><span class="tag">Worked example · sizing a trunk</span>
+<p>$E=1$ Erlang offered to $m=2$ trunks: $B=\frac{1/2}{1+1+1/2}=0.2$. A rural exchange sees $E=10$ Erlangs in the busy hour. For $B\le1\%$ it needs $m=18$ trunks ($B(10,18)=0.71\%$), while $m=10$ would block 21% of calls. A typical subscriber generates about $0.05$ Erlang in the busy hour, so these 18 trunks serve some $200$ subscribers. This <b>trunking gain</b>, using fewer channels than users because they do not all talk at once, is why cellular base stations, call centres and the Internet work at all. The same formula sizes the number of channels in each cell (Chapter 21).</p></div>
+
+<h2>Wavelength-division multiplexing: FDM at 193 THz</h2>
+<p>Optical WDM is frequency-division multiplexing with lasers instead of oscillators and arrayed-waveguide gratings or thin-film filters as the band-pass filters. The ITU grid places channels $100$ GHz (or 50 GHz, or 12.5 GHz “flex grid”) apart around $193.1$ THz: at $\lambda=1550$ nm, $\Delta\lambda=\dfrac{\lambda^2\Delta f}c=\dfrac{(1550\ \mathrm{nm})^2\times100\ \mathrm{GHz}}{3\times10^8}=0.80$ nm. The erbium-doped fibre amplifier (EDFA) amplifies the whole C-band (1530–1565 nm, about 4.4 THz) at once, so a single fibre carries 40–96 channels, each at 10–400 Gbit/s: a total of tens of terabits per second per fibre. Every tool of this chapter reappears: guard bands, crosstalk from the filter skirts, and intermodulation (four-wave mixing) from the fibre non-linearity.</p>
+
+<div class="box gate"><span class="tag">GATE pattern · multiplexing</span>
+<p>Multiplexing is the part of the communication syllabus that GATE has used least in its recent papers, but the questions are always the same kinds: (i) “minimum bandwidth to multiplex $N$ channels of bandwidth $W$” (FDM-SSB: $NW$; TDM-PAM: $NW$; DSB: $2NW$); (ii) T1/E1 bit rates and frame durations; (iii) sampling-rate and frame calculations for a TDM-PAM-PCM system. Know the numbers 8000 samples/s, 125 µs, 64 kbit/s, 193 and 256 bits.</p></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+Which statement about FDM and TDM of $N$ band-limited message signals is correct?
+<ol class="opts"><li>TDM always needs far less bandwidth than FDM</li><li>Their minimum bandwidths are the same ($N$ times the single-channel bandwidth) for SSB-FDM and TDM-PAM</li><li>FDM needs time synchronisation, TDM does not</li><li>TDM suffers from intermodulation between channels, FDM does not</li></ol>
+<div class="sol"><p>Both occupy $2NWT$ degrees of freedom. TDM needs synchronisation (C false) and has no intermodulation between channels since only one is on at a time (D false). <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+In a PWM system, the main reason the output is less sensitive to additive amplitude noise than PAM is that
+<ol class="opts"><li>PWM uses more power</li><li>the pulses are wider</li><li>information is in the time of the pulse edges, which are recovered by thresholding</li><li>PWM does not need a filter</li></ol>
+<div class="sol"><p>Noise shifts the threshold-crossing time only by $\approx n\,t_r/A$; amplitude errors are removed by the thresholding. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which statements about flat-top PAM are correct?
+<ol class="opts"><li>The baseband copy is multiplied by $\sinc(f\tau)$.</li><li>The message is recovered exactly by an ideal low-pass filter alone.</li><li>An equaliser $1/\sinc(f\tau)$ can correct the distortion.</li><li>Natural sampling has the same distortion.</li></ol>
+<div class="sol"><p>(A) and (C) as derived. (B) false: the aperture droop remains. (D) false: natural sampling only scales the baseband copy by $\tau/T_s$.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="96" data-tol="0.5" data-marks="2" data-src="Original">
+24 voice channels, each limited to 4 kHz, are TDM-PAM multiplexed with sampling at 8 kHz. The minimum bandwidth of the multiplexed channel (kHz) is ______.
+<div class="sol"><p>Frame $=125\,\mu$s, slot $=125/24=5.208\,\mu$s; $B\ge\dfrac1{2\tau}=\dfrac{1}{2\times5.208\,\mu\mathrm s}=96$ kHz $=24\times4$ kHz $=\mathbf{96}$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.544" data-tol="0.001" data-marks="1" data-src="Original">
+The T1 line rate in Mbit/s (24 channels × 8 bits + 1 framing bit, every 125 µs) is ______.
+<div class="sol"><p>$193\times8000=\mathbf{1.544}$ Mbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3.906" data-tol="0.01" data-marks="1" data-src="Original">
+In an E1 frame of 32 time slots every 125 µs, the duration of one time slot in microseconds is ______.
+<div class="sol"><p>$125/32=\mathbf{3.906}\ \mu$s (8 bits per slot, so one bit lasts $488$ ns at $2.048$ Mbit/s).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.256" data-tol="0.001" data-marks="2" data-src="Original">
+Four E1 streams (2.048 Mbit/s each) are multiplexed into an E2 stream of 8.448 Mbit/s. The rate of the overhead (framing, signalling and justification bits) in Mbit/s is ______.
+<div class="sol"><p>$8.448-4\times2.048=8.448-8.192=\mathbf{0.256}$ Mbit/s (3%).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.2" data-tol="0.005" data-marks="1" data-src="Original">
+An offered traffic of 1 Erlang is carried by two trunks (blocked calls cleared). The blocking probability is ______.
+<div class="sol"><p>$B=\dfrac{E^2/2}{1+E+E^2/2}=\dfrac{0.5}{2.5}=\mathbf{0.2}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.8" data-tol="0.01" data-marks="1" data-src="Original">
+Wavelength spacing in nm of a 100 GHz WDM grid at 1550 nm is ______.
+<div class="sol"><p>$\Delta\lambda=\lambda^2\Delta f/c=(1.55\times10^{-6})^2\times10^{11}/(3\times10^8)=0.80$ nm.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.7" data-tol="0.01" data-marks="1" data-src="Original">
+A PWM modulator compares the message with a sawtooth sweeping from $-1$ to $+1$. When $m=0.4$, the duty cycle of the output is ______.
+<div class="sol"><p>$d=(1+m)/2=0.7$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6000" data-tol="1" data-marks="1" data-src="Original">
+The number of real degrees of freedom of a 3 kHz low-pass channel used for one second is ______.
+<div class="sol"><p>$2WT=2\times3000\times1=\mathbf{6000}$.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="nat" data-ans="12" data-tol="0.1" data-marks="2" data-src="Original (GATE-style)">
+Four signals, each band-limited to 3 kHz, are sampled at their Nyquist rate and time-division multiplexed. The minimum bandwidth (kHz) of an ideal low-pass channel that can carry the multiplexed samples without interference is ______.
+<div class="sol"><p>Each signal: $f_s=6$ kHz; composite pulse rate $24$ kpulses/s; Nyquist bandwidth $=24/2=\mathbf{12}$ kHz $=4\times3$ kHz.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="Original (GATE-style)">
+Twenty-four telephone channels (each 300–3400 Hz) are to be FDM-multiplexed with SSB and 4 kHz channel spacing in the range 60–156 kHz. The sidebands used and the total bandwidth are
+<ol class="opts"><li>both sidebands, 192 kHz</li><li>one sideband, 48 kHz</li><li>one sideband, 12 kHz</li><li>one sideband, 96 kHz</li></ol>
+<div class="sol"><p>SSB uses one sideband per channel; $24\times4=96$ kHz (the range 60–156). <b>(D)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.088" data-tol="0.002" data-marks="2" data-src="Original (GATE-style)">
+A TDM system multiplexes 16 PCM voice channels (8 kHz sampling, 8 bits/sample). Each frame also carries 8 additional overhead bits. The line rate in Mbit/s is ______.
+<div class="sol"><p>Frame $=16\times8+8=136$ bits, repeating every $125\,\mu$s: $136\times8000=\mathbf{1.088}$ Mbit/s. (The overhead is added once per frame, not once per channel.)</p></div></div>
+
+<div class="summary"><h3>Chapter 9 in one breath</h3>
+<ul>
+<li>Multiplexing = orthogonality in frequency, time, code, space, polarisation or wavelength. Channel has $2WT$ real dimensions; no scheme beats that.</li>
+<li>FDM: subcarriers + filters + guard bands; SSB-FDM of $N$ channels needs $NW$; group 12×4 kHz = 48 kHz at 60–108 kHz. Crosstalk from filter skirts and intermodulation.</li>
+<li>PAM: natural sampling scales the baseband copy by $\tau/T_s$ (no distortion); flat-top gives $\sinc(f\tau)$ aperture droop (equalise). TDM-PAM needs $B\ge NW$, the <em>same</em> as FDM-SSB.</li>
+<li>PWM: duty $=(1+m)/2$, demodulated by averaging; PPM: edge position; both resist amplitude noise at the cost of bandwidth (threshold effect). Class-D amplifiers use PWM.</li>
+<li>Digital TDM: T1 = $193\times8000=1.544$ Mbit/s (24 ch), E1 = $256\times8000=2.048$ Mbit/s (30+2 slots); bit-stuffing for plesiochronous streams; SDH STM-1 $=155.52$ Mbit/s $=3\times51.84$.</li>
+<li>Erlang-B: $B=\frac{E^m/m!}{\sum E^k/k!}$; 10 E at 1% needs 18 trunks. WDM is FDM at 193 THz: 100 GHz $\leftrightarrow$ 0.8 nm.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+GB.diagram('d-fdm',{w:820,h:210,alt:'FDM transmitter and receiver',items:[
+ ['txt',10,28,'m₁(t)','t','start'],['arr',[48,28,92,28]],['sum',112,28,16,'×'],['arr',[112,90,112,44],'',null],['txt',112,102,'f₁','tm'],['arr',[130,28,170,28]],['box',170,10,70,36,'BPF₁','blue'],['arr',[240,28,300,28]],
+ ['txt',10,98,'m₂(t)','t','start'],['arr',[48,98,92,98]],['sum',112,98,16,'×'],['txt',112,138,'f₂','tm'],['arr',[112,130,112,114]],['arr',[130,98,170,98]],['box',170,80,70,36,'BPF₂','blue'],['arr',[240,98,300,98]],
+ ['txt',10,168,'m_N(t)','t','start'],['arr',[52,168,92,168]],['sum',112,168,16,'×'],['arr',[130,168,170,168]],['box',170,150,70,36,'BPF_N','blue'],['arr',[240,168,300,168]],
+ ['sum',320,98,16,'Σ'],['ln',[300,28,320,28,320,82]],['ln',[300,168,320,168,320,114]],['arr',[336,98,420,98],'composite'],['box',420,76,110,44,'Channel','orange'],['arr',[530,98,570,98]],
+ ['box',570,10,60,36,'BPF₁','green'],['box',570,80,60,36,'BPF₂','green'],['box',570,150,60,36,'BPF_N','green'],['ln',[570,98,556,98,556,28,570,28]],['ln',[556,98,556,168,570,168]],['arr',[630,28,672,28]],['box',672,10,66,36,'Demod','purple'],['arr',[738,28,780,28]],['txt',786,28,'m̂₁','t','start'],['arr',[630,98,672,98]],['box',672,80,66,36,'Demod','purple'],['arr',[738,98,780,98]],['txt',786,98,'m̂₂','t','start'],['arr',[630,168,672,168]],['box',672,150,66,36,'Demod','purple'],['arr',[738,168,780,168]],['txt',786,168,'m̂_N','t','start']]});
+
+/* ---------- TDM of PAM ---------- */
+GB.widget('w-tdm',{title:'Time-division multiplexing of PAM channels',h:380,hm:420,controls:[{k:'N',label:'number of channels N',min:2,max:6,step:1,value:3,fmt:v=>String(v|0)},{k:'spc',label:'samples per message cycle (fs / fmax)',min:2.5,max:8,step:.5,value:5}],
+ draw(g,p){ const N=p.N|0, cols=['blue','orange','green','pink','purple','teal']; const fm=[1,1.4,.8,1.8,.6,1.2]; const nfr=Math.round(p.spc*2); const fs=p.spc, Tw=nfr/fs; // window of nfr frames
+  const msg=(k,t)=>Math.sin(TAU*fm[k]*t*.5+k*1.1);
+  const a=g.panel(0,2,{pad:{b:10}}).view(0,Tw,-1.4,1.4); a.axes({nox:true,ystep:1}); for(let k=0;k<N;k++){ a.fn(t=>msg(k,t),cols[k],1.6,null,400); } a.title('messages  m₁ … m_N  (each sampled once per frame)','mute');
+  const b=g.panel(1,2).view(0,Tw,-1.4,1.4); b.axes({xl:'t',ystep:1}); const Ts=1/fs; for(let f=0;f<nfr;f++){ for(let k=0;k<N;k++){ const t0=f*Ts+k*Ts/N, t1=t0+Ts/N*.85, v=msg(k,f*Ts); b.rect(t0,0,t1,v,cols[k],.85); } b.vline(f*Ts,'axis',[2,3],1); }
+  b.title('TDM train: frame = '+N+' slots, one sample from each channel','mute');
+  return 'one frame = one sample from each of the <b>'+N+'</b> channels · slot = frame/'+N+' · pulse rate = N·fs · minimum bandwidth ≈ N·fs/2 = <b>'+N+' × (fs/2)</b>; with fs = 2W this is <b>N·W</b>'; }});
+
+/* ---------- PWM / PPM ---------- */
+GB.widget('w-pwm',{title:'Pulse-width modulation: comparator against a ramp',h:420,hm:460,controls:[{k:'A',label:'message amplitude',min:.1,max:1,step:.05,value:.7},{k:'fs',label:'switching frequency (cycles per message cycle)',min:4,max:24,step:1,value:12},{k:'ppm',type:'check',label:'show PPM (edge pulses) instead of PWM',value:false}],
+ draw(g,p){ const fs=p.fs; const msg=t=>p.A*Math.sin(TAU*t); const ramp=t=>{ const u=((t*fs)%1+1)%1; return -1+2*u; }; const pwm=t=>msg(t)>ramp(t)?1:0;
+  const a=g.panel(0,3,{pad:{b:10}}).view(0,1,-1.3,1.3); a.axes({nox:true,ystep:1}); a.fn(msg,'blue',2,null,400); a.fn(ramp,'mute',1,null,1500); a.title('message (blue) vs sawtooth reference','mute');
+  const b=g.panel(1,3,{pad:{b:10}}).view(0,1,-.2,1.3); b.axes({nox:true,ystep:1}); const N=3000; const xs=[],ys=[]; for(let i=0;i<=N;i++){ const t=i/N; xs.push(t); let v=pwm(t); if(p.ppm){ const dt=1/(N*1.0); v=(pwm(t)===1&&pwm(t+1/(fs*60))===0)?1:0; } ys.push(v); } if(p.ppm){ const pk=[],hv=[]; for(let c=0;c<fs;c++){ const tt=(c+((msg(c/fs)+1)/2))/fs; pk.push(tt); hv.push(1); } b.stem(pk,hv,'orange',2,2.5); } else b.line(xs,ys,'orange',1.6); b.title(p.ppm?'PPM: one short pulse per period, position ∝ message':'PWM: width ∝ message','orange');
+  const c=g.panel(2,3).view(0,1,-1.3,1.3); c.axes({xl:'t',ystep:1}); c.fn(msg,'mute',1.4,[4,3],400); const out=[],tt=[]; for(let i=0;i<=400;i++){ const t=i/400; // average over one switching period
+   let s=0; const K=24; for(let j=0;j<K;j++){ s+=pwm(t-(j/K)/fs); } out.push(2*s/K-1); tt.push(t); } if(!p.ppm) c.line(tt,out,'green',2); c.title(p.ppm?'(PPM is demodulated by converting position back to width)':'moving average over one period (green) ≈ message','green');
+  return 'duty cycle at the message peak = (1+A)/2 = <b>'+((1+p.A)/2).toFixed(2)+'</b> · switching frequency = '+fs+'× message frequency'; }});
+</script>
