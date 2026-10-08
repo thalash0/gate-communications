@@ -1,21 +1,31 @@
-<!--meta {"id": "ch13", "num": "13", "part": "Part IV · Digital Communication", "title": "Pulses Without Collisions: Line Codes and ISI", "lede": "A bit is an idea. To send it down a wire you must make it a voltage pulse, and pulses, like waves in a bathtub, smear into each other. Nyquist told us exactly how to stop them from doing it."} -->
+<!--meta {"id":"ch13","num":"13","part":"Part IV · Digital Communication","title":"Pulses Without Collisions: Line Codes, ISI and Equalisation","lede":"A bit is an idea. To send it down a wire you must make it a voltage pulse, and pulses, like waves in a bathtub, smear into each other. Nyquist told us exactly how to stop them from doing it."} -->
 
-<div class="box story"><span class="tag">History · a cable, a mirror and a fried insulator</span>
-<p>The first transatlantic telegraph cable (1858) carried Queen Victoria's message to President Buchanan — 98 words, taking sixteen hours. The signal arrived as a slow, smeared blob: the cable's resistance and capacitance made it a giant low-pass filter, so each dot spread into the next. The project's electrician, Wildman Whitehouse, responded by raising the voltage to about 2000 V; the cable failed within weeks. William Thomson (later Lord Kelvin) had warned that the right answer was <em>less</em> voltage, a sensitive detector (his mirror galvanometer), and slower signalling. In effect he had discovered <strong>inter-symbol interference</strong>.</p>
-<p>The mathematics of how fast one can signal over a band-limited channel without the symbols overlapping came from <strong>Harry Nyquist</strong> in 1928. His two answers (a limit of $2B$ pulses per second, and a family of pulse shapes that attains it with <em>zero</em> interference at the sampling instants) are the backbone of every modem, every Ethernet link, every DSL line.</p></div>
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Compute the PSD of any line code from $S_X=\frac{|G|^2}TS_b(f)$ and choose a code for a given channel (DC, bandwidth, timing); describe AMI/HDB3/B8ZS, Manchester, NRZI, 4B5B, 8B10B and scramblers.</li>
+<li>Write the ISI model, compute peak distortion and the worst-case eye opening.</li>
+<li><b>Derive</b> Nyquist’s first criterion in time and frequency, the minimum bandwidth $R_s/2$, the raised-cosine and root-raised-cosine pulses, and the spectral efficiency $2\log_2M/(1+\alpha)$.</li>
+<li><b>Derive</b> duobinary (partial-response) signalling and its precoder.</li>
+<li>Design zero-forcing and MMSE equalisers, compute noise enhancement, and understand LMS adaptation, decision-feedback equalisation and where equalisers live in real systems.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 2 (Fourier), Chapter 5 (PSD of a pulse train), Chapter 12.</p></div>
+
+<div class="box story"><span class="tag">History · a cable, a mirror and the 1928 paper</span>
+<p>In 1858 the first transatlantic telegraph cable arrived at its destination as a slow, smeared blob (Chapter 1): its resistance and capacitance made it a giant low-pass filter, so each dot spread into the next. The electrician Whitehouse fried the cable with 2000 V; William Thomson’s answer was less voltage, a sensitive detector (his mirror galvanometer) and slower signalling. In effect he had discovered <strong>inter-symbol interference</strong>.</p>
+<p>The mathematics of how fast one can signal over a band-limited channel without the symbols overlapping came from <strong>Harry Nyquist</strong> in 1928 (<i>Certain topics in telegraph transmission theory</i>). His two answers (a limit of $2B$ pulses per second, and a family of pulse shapes that attains it with <em>zero</em> interference at the sampling instants) are the backbone of every modem, every Ethernet link, every DSL line. Nyquist worked from telegraph experience; the generalisation to Gaussian noise (the matched filter of the next chapter) came 15 years later.</p></div>
 
 <div class="box real"><span class="tag">Real world · which line code is in your wire?</span>
-<p><b>10BASE-T Ethernet</b>: Manchester (self-clocking, no DC, needs 20 MHz for 10 Mbit/s). <b>100BASE-TX</b>: 4B5B + MLT-3. <b>USB</b>: NRZI with bit stuffing. <b>T1 lines</b>: AMI with B8ZS; <b>E1 lines (India's telephone trunks)</b>: HDB3. <b>Magnetic tape/disk</b>: run-length-limited codes. <b>Gigabit Ethernet over copper</b>: 5-level PAM with heavy equalisation and error coding. Every one of these is a trade-off among bandwidth, DC content, timing information and cost.</p></div>
+<p><b>10BASE-T Ethernet</b>: Manchester (self-clocking, no DC, needs 20 MHz for 10 Mbit/s). <b>100BASE-TX</b>: 4B5B + MLT-3. <b>USB</b>: NRZI with bit stuffing. <b>T1 lines</b>: AMI with B8ZS; <b>E1 lines (India’s telephone trunks)</b>: HDB3. <b>Magnetic tape/disk</b>: run-length-limited codes. <b>Gigabit Ethernet over copper</b>: 5-level PAM with heavy equalisation and error coding. <b>PCIe 3.0</b>: 128b/130b with scrambling; <b>USB 3.0</b>: 8b/10b. Every one of these is a trade-off among bandwidth, DC content, timing information and cost.</p></div>
 
 <h2>From bits to pulses</h2>
 <p>A digital baseband signal is a train of pulses whose amplitudes carry the data:
 $$s(t)=\sum_{k}a_k\,p(t-kT),$$
-where $a_k$ is the $k$-th symbol amplitude, $p(t)$ the pulse shape, $T$ the symbol interval. The <b>symbol rate</b> is $R_s=1/T$ (baud). With $M$ amplitude levels, each symbol carries $\log_2M$ bits: $R_b=R_s\log_2M$. In the PSD formula we met in Chapter 3, with symbols of mean $\mu_a$ and variance $\sigma_a^2$ (uncorrelated),
+where $a_k$ is the $k$-th symbol amplitude, $p(t)$ the pulse shape, $T$ the symbol interval. The <b>symbol rate</b> is $R_s=1/T$ (baud, after Baudot, Chapter 9). With $M$ amplitude levels, each symbol carries $\log_2M$ bits: $R_b=R_s\log_2M$. In the PSD formula derived in Chapter 5, with symbols of mean $\mu_a$ and variance $\sigma_a^2$ (uncorrelated),
 $$S_s(f)=\frac{\sigma_a^2}{T}|P(f)|^2+\frac{\mu_a^2}{T^2}\sum_{k=-\infty}^{\infty}\Big|P\!\Big(\frac kT\Big)\Big|^2\delta\!\Big(f-\frac kT\Big).$$
-The continuous part comes from the randomness, the impulses from any non-zero mean (DC and clock lines). For correlated symbols (AMI) replace $\sigma_a^2$ by the transform of the symbol autocorrelation.</p>
+The continuous part comes from the randomness, the impulses from any non-zero mean (DC and clock lines). For correlated symbols (AMI) replace $\sigma_a^2$ by the transform $S_b(f)=\sum_mR_b[m]e^{-j2\pi fmT}$ of the symbol autocorrelation.</p>
 
 <h2>Line codes: choosing the shape of the bit</h2>
-<p>What properties do we want from a line code? (1) <b>No DC</b> (transformers and AC-coupled cables block it, and DC wander ruins thresholds). (2) <b>Self-clocking</b>: enough transitions that the receiver can recover timing. (3) <b>Narrow bandwidth</b>. (4) Some built-in error detection. (5) Transparency (works for any bit pattern). No code wins on all.</p>
+<p>What properties do we want from a line code? (1) <b>No DC</b> (transformers and AC-coupled cables block it, and DC wander ruins thresholds). (2) <b>Self-clocking</b>: enough transitions that the receiver can recover timing (Chapter 16). (3) <b>Narrow bandwidth</b>. (4) Some built-in error detection. (5) Transparency (works for any bit pattern). No code wins on all.</p>
 <div class="widget" id="w-lines">Pick a line code and a bit pattern. The waveform is on top; the lower plot is its power spectral density against $fT$ (selected code in yellow; other codes faint for comparison). Notice: <b>polar NRZ</b> puts most power below $1/T$; <b>RZ</b> doubles the bandwidth; <b>Manchester</b> and <b>AMI</b> have a spectral null at DC but Manchester spends twice the bandwidth.</div>
 <table>
 <tr><th>Code</th><th>Rule</th><th>PSD ($T$ = bit time, amplitude $A$)</th><th>DC?</th><th>First-null BW</th></tr>
@@ -26,51 +36,148 @@ The continuous part comes from the randomness, the impulses from any non-zero me
 <tr><td>Bipolar (AMI)</td><td>0→0; 1→ alternately $+A,-A$</td><td>$A^2T\,\sinc^2(fT)\sin^2(\pi fT)$</td><td><b>null at DC</b></td><td>$R_b$ (main lobe $0$–$R_b$)</td></tr>
 <tr><td>Manchester</td><td>1→ high→low, 0→ low→high (or opposite)</td><td>$A^2T\,\sinc^2\!\frac{fT}2\sin^2\!\frac{\pi fT}2$</td><td><b>null at DC</b></td><td>$2R_b$</td></tr>
 </table>
+<div class="box derive"><span class="tag">Derivation · the AMI and Manchester spectra from $S_b(f)$ and $|G(f)|^2$</span>
+<p><b>AMI.</b> Equiprobable independent bits: a “1” (probability $\frac12$) is $\pm A$ with alternating sign. Then $R_b[0]=\frac12A^2$. For adjacent symbols: $a_ka_{k+1}$ is nonzero only if both are 1s (probability $\frac14$), and then their signs are opposite, so $R_b[\pm1]=-\frac14A^2$; for $|m|\ge2$ the alternation makes the correlation average to zero. Hence $S_b(f)=\frac{A^2}2-\frac{A^2}{4}\cdot2\cos2\pi fT=\frac{A^2}2(1-\cos2\pi fT)=A^2\sin^2\pi fT$. With a rectangular pulse of width $T$, $|G|^2=T^2\sinc^2(fT)$: $S=\frac{|G|^2}TS_b=A^2T\sinc^2(fT)\sin^2(\pi fT)$ ✓. The factor $\sin^2\pi fT$ vanishes at $f=0$: <b>alternate inversion kills the DC</b> (the running digital sum stays bounded). <b>Manchester.</b> Each bit is a pulse pair $\pm A$ (first half) and $\mp A$ (second half); the pulse $g(t)=A\,\mathrm{rect}\big(\frac{t+T/4}{T/2}\big)-A\,\mathrm{rect}\big(\frac{t-T/4}{T/2}\big)$ has $|G(f)|^2=A^2T^2\sinc^2\!\frac{fT}2\sin^2\!\frac{\pi fT}2$; symbols $\pm1$ are independent, so $S_b=1$ and $S=A^2T\sinc^2\frac{fT}2\sin^2\frac{\pi fT}2$ ✓. It vanishes at DC because every bit has zero net area.</p></div>
 <div class="box trap"><span class="tag">Traps</span>
 <ul>
-<li>"No DC component" (no impulse at $f=0$, i.e. zero mean) is not the same as "PSD is zero at DC". Polar NRZ has zero mean but $S(0)=A^2T>0$. Only AMI and Manchester have $S(0)=0$.</li>
+<li>“No DC component” (no impulse at $f=0$, i.e. zero mean) is not the same as “PSD is zero at DC”. Polar NRZ has zero mean but $S(0)=A^2T>0$. Only AMI and Manchester have $S(0)=0$.</li>
 <li>Unipolar NRZ PSD has an impulse at 0 <em>and</em> at no other multiples of $1/T$ (since $\sinc(k)=0$): only the DC line survives. Unipolar RZ also has impulses at $\pm1/T,\pm3/T,\ldots$: a <em>clock line</em>, which is why RZ gives timing recovery easily.</li>
 <li>Bandwidth is quoted as the first null of the PSD (main lobe) unless stated otherwise.</li>
 </ul></div>
 
+<h3>Keeping the long runs of zeros and ones in check</h3>
+<p>AMI solves DC but a long string of zeros gives no transitions: the receiver’s clock drifts. Two fixes:</p>
+<ul>
+<li><b>Zero substitution</b> (bipolar with $n$-zero substitution): T1’s <b>B8ZS</b> replaces eight consecutive zeros by $000VB0VB$, where $V$ is a deliberate <em>bipolar violation</em> (same polarity as the previous pulse) and $B$ a normal pulse of opposite polarity; E1’s <b>HDB3</b> replaces four zeros by $000V$ or $B00V$, choosing so that successive violations alternate in polarity (keeping the DC null). The receiver recognises the violations and puts the zeros back: transparent coding with at most 3 (HDB3) or 7 (B8ZS) consecutive zeros on the line.</li>
+<li><b>Block codes and scramblers.</b> 4B5B (Fast Ethernet): each 4-bit nibble is mapped to a 5-bit code word chosen so that no word has more than three consecutive zeros; overhead 25%. 8B10B (Gigabit Ethernet, SATA, PCIe 1–2, Fibre Channel): 8 bits → 10 with <i>running disparity</i> control: each 10-bit word has 4–6 ones, and the encoder picks between two forms to keep the long-run DC balance; run length ≤ 5; overhead 25%. 64B/66B and 128B/130B (10G Ethernet, PCIe 3+) add only 3% overhead and rely on a <b>scrambler</b>: the data is XORed with a long pseudo-random sequence from a linear-feedback shift register (e.g. $x^{58}+x^{39}+1$), which statistically gives enough transitions and a flat spectrum; the receiver’s self-synchronising descrambler is the exact inverse.</li>
+</ul>
+<div class="box eng"><span class="tag">Engineering practice · differential encoding: NRZI and polarity ambiguity</span>
+<p>NRZI (used by USB) sends a transition for a “0” and no transition for a “1” (or the reverse), i.e. the data is carried by <em>changes</em>: $w_k=w_{k-1}\oplus b_k$. Then the receiver does not need to know the absolute polarity (twisted pair wired backwards still works). The same differential trick in the modulator is DPSK (Chapter 15). The price is that a single bit error causes two data errors.</p></div>
+
 <h2>Inter-symbol interference</h2>
 <p>Send the pulse train through a channel with impulse response $h(t)$ and receive filter; the overall pulse becomes $g(t)=p*h*h_r$. At the receiver we sample at $t=mT$ (plus a delay):
 $$y(mT)=a_m\,g(0)\;+\;\underbrace{\sum_{k\ne m}a_k\,g\big((m-k)T\big)}_{\textstyle\text{inter-symbol interference}}\;+\;n(mT).$$
-The first term is what we want; the second is leftover tails of neighbouring symbols. A band-limited channel necessarily has a spread-out $g(t)$, so ISI is the rule, not the exception. The question: <em>can we shape $g(t)$ so that the tails vanish exactly at the other sampling instants?</em></p>
-<div class="box key"><span class="tag">Nyquist's first criterion for zero ISI</span>
-<p><b>In time:</b> $g(nT)=\begin{cases}1&n=0\\0&n\ne0\end{cases}$. (The pulse passes through zero at every other sampling instant.)<br>
-<b>In frequency:</b> sampling $g(t)$ at rate $1/T$ gives the spectrum $\frac1T\sum_mG(f-\frac mT)$; this must equal the transform of $\delta(t)$, i.e. a constant. Therefore
+The first term is what we want; the second is leftover tails of neighbouring symbols. A band-limited channel necessarily has a spread-out $g(t)$, so ISI is the rule, not the exception. <b>Peak distortion</b> is the worst-case ISI normalised to the signal: $D=\dfrac{\sum_{k\ne0}|g(kT)|}{g(0)}$, so with antipodal $\pm A$ symbols the worst-case eye opening at the sampler is $2A\,g(0)(1-D)$, and the noise margin shrinks by the factor $1-D$ (a 3 dB loss when $D=0.3$). The question: <em>can we shape $g(t)$ so that the tails vanish exactly at the other sampling instants?</em></p>
+
+<h2>Nyquist’s first criterion for zero ISI</h2>
+<div class="box derive"><span class="tag">Derivation · zero ISI in time and in frequency</span>
+<p><b>In time:</b> $g(nT)=\begin{cases}1&n=0\\0&n\ne0\end{cases}$: the pulse passes through zero at every other sampling instant. <b>In frequency:</b> multiply $g(t)$ by the impulse train $\sum_n\delta(t-nT)$ (sampling): the result is $\sum_ng(nT)\delta(t-nT)=\delta(t)$ iff the condition above holds. Transform both sides, using the sampling result of Chapter 3 ($\sum_n g(nT)\delta(t-nT)\leftrightarrow\frac1T\sum_mG(f-\frac mT)$) and $\delta(t)\leftrightarrow1$:
 $$\boxed{\ \sum_{m=-\infty}^{\infty}G\!\Big(f-\frac mT\Big)=T\quad\text{for all }f\ }$$
 the shifted copies of $G(f)$ add up to a flat line.</p></div>
-<p>Consequence 1 (<b>minimum bandwidth</b>): the flat sum can be achieved with $G(f)=T\,\rect(fT)$, a brick of width $1/T$, whose pulse is $g(t)=\sinc(t/T)$ (zero at all nonzero multiples of $T$). So the minimum bandwidth is $B_{\min}=\dfrac1{2T}=\dfrac{R_s}2$, i.e. <strong>at most $2B$ symbols/s through a channel of bandwidth $B$</strong> (the Nyquist rate: GATE 2026 Q.22). The ideal pulse is unrealisable (non-causal brick wall) and its $1/t$ tails make it hypersensitive to timing error: a slight sampling jitter adds an alternating, slowly-converging sum of tails.</p>
+<p>Consequence 1 (<b>minimum bandwidth</b>): the flat sum can be achieved with $G(f)=T\,\rect(fT)$, a brick of width $1/T$, whose pulse is $g(t)=\sinc(t/T)$ (zero at all nonzero multiples of $T$). If $G(f)$ were band-limited to less than $\frac1{2T}$ the copies could not overlap to fill the gaps: so the minimum bandwidth is $B_{\min}=\dfrac1{2T}=\dfrac{R_s}2$, i.e. <strong>at most $2B$ symbols/s through a channel of bandwidth $B$</strong> (the Nyquist rate: GATE 2026 Q.22). The ideal pulse is unrealisable (non-causal brick wall) and its $1/t$ tails make it hypersensitive to timing error: a slight sampling jitter $\delta$ adds the alternating, slowly-converging sum $\sum_k(-1)^k a_k\delta/(kT)$, which diverges logarithmically in the worst case.</p>
 <h3>The raised-cosine compromise</h3>
 <p>Use a smoother edge. The <b>raised-cosine</b> spectrum with roll-off $\alpha\in[0,1]$:
 $$G(f)=\begin{cases}T&|f|\le\frac{1-\alpha}{2T}\\[1mm]\frac T2\Big[1+\cos\frac{\pi T}{\alpha}\big(|f|-\frac{1-\alpha}{2T}\big)\Big]&\frac{1-\alpha}{2T}<|f|\le\frac{1+\alpha}{2T}\\[1mm]0&\text{otherwise}\end{cases}$$
 $$g(t)=\sinc\!\Big(\frac tT\Big)\frac{\cos(\pi\alpha t/T)}{1-4\alpha^2t^2/T^2}.$$
-The edge is a half-cosine that is <em>odd-symmetric about the Nyquist frequency $\frac1{2T}$</em>, which is exactly what the flat-sum condition requires. Bandwidth (baseband): $B=\dfrac{1+\alpha}{2T}=\dfrac{(1+\alpha)R_s}2$; for a bandpass (modulated) signal the double-sided bandwidth is $(1+\alpha)R_s$. The tails fall like $1/t^3$ instead of $1/t$: far less jitter sensitivity. $\alpha=0$ is the brick; $\alpha=1$ doubles the bandwidth ($B=1/T$).</p>
+The edge is a half-cosine that is <em>odd-symmetric about the Nyquist frequency $\frac1{2T}$</em>: if $f_N=\frac1{2T}$ then $G(f_N+x)+G(f_N-x)=T$, because $\cos$ of the two arguments are negatives of each other ($\cos\theta+\cos(\pi-\theta)=0$), which is exactly what the flat-sum condition requires. Bandwidth (baseband): $B=\dfrac{1+\alpha}{2T}=\dfrac{(1+\alpha)R_s}2$; for a bandpass (modulated) signal the double-sided bandwidth is $(1+\alpha)R_s$. The tails fall like $1/t^3$ instead of $1/t$: far less jitter sensitivity. $\alpha=0$ is the brick; $\alpha=1$ doubles the bandwidth ($B=1/T$). The <b>excess bandwidth</b> is $100\alpha\%$.</p>
 <div class="widget" id="w-rc">Drag the roll-off. Top: the pulse $g(t)$, with <span class="c-yellow">dots</span> at the sampling instants $kT$: it equals 1 at $t=0$ and exactly 0 at every other $kT$, for every $\alpha$. Bottom: $G(f)$ and its two neighbouring copies (faint); their sum (thick yellow) is perfectly flat. Larger $\alpha$ means a wider spectrum and faster-decaying tails.</div>
+<div class="box key"><span class="tag">Spectral efficiency of Nyquist signalling</span>
+<p>Baseband $M$-level PAM at the zero-ISI symbol rate: $R_s=\dfrac{2B}{1+\alpha}$, $R_b=R_s\log_2M$, so $\eta=\dfrac{R_b}B=\dfrac{2\log_2M}{1+\alpha}$ bit/s/Hz. Passband (PSK/QAM with bandwidth $B=(1+\alpha)R_s$): $\eta=\dfrac{\log_2M}{1+\alpha}$. Examples: 64-QAM with $\alpha=0.35$: $\frac6{1.35}=4.44$ bit/s/Hz; QPSK with $\alpha=0.35$ (DVB-S): $1.48$ bit/s/Hz; the 3G WCDMA chip pulse uses $\alpha=0.22$, LTE and Wi-Fi use windowed OFDM instead (Chapter 20).</p></div>
 <div class="box ex"><span class="tag">Worked examples</span>
 <p><b>Rate and bandwidth.</b> A channel of bandwidth 4 kHz is used with raised-cosine pulses, $\alpha=0.5$: $R_s=\frac{2B}{1+\alpha}=5333$ symbols/s. With 16-level PAM ($4$ bits/symbol): $R_b=21.3$ kbit/s.</p>
 <p><b>GATE 2014 Set 4 Q.51.</b> M-ary PSK carries 200 kbit/s through a band-pass channel of 100 kHz with a raised-cosine spectrum of 100% excess bandwidth ($\alpha=1$). Passband bandwidth $=(1+\alpha)R_s=2R_s=100$ kHz ⇒ $R_s=50$ ksym/s ⇒ $\log_2M=\frac{200}{50}=4$ ⇒ $M=\mathbf{16}$.</p>
-<p><b>GATE 2026 Q.22.</b> A source emits $10^4$ symbols/s using four levels $(-1,0,1,2)$. The Nyquist (minimum) bandwidth is $R_s/2=\mathbf5$ kHz: the number of levels is irrelevant for the <em>symbol</em> rate. <b>GATE 2026 Q.32.</b> 16-QAM at 4 Mbit/s: $R_s=\frac4{\log_216}=1$ Msym/s; a QAM signal's minimum (Nyquist) double-sided bandwidth is $R_s=\mathbf1$ MHz.</p></div>
+<p><b>GATE 2026 Q.22.</b> A source emits $10^4$ symbols/s using four levels $(-1,0,1,2)$. The Nyquist (minimum) bandwidth is $R_s/2=\mathbf5$ kHz: the number of levels is irrelevant for the <em>symbol</em> rate. <b>GATE 2026 Q.32.</b> 16-QAM at 4 Mbit/s: $R_s=\frac4{\log_216}=1$ Msym/s; a QAM signal’s minimum (Nyquist) double-sided bandwidth is $R_s=\mathbf1$ MHz.</p></div>
+
+<h3>Root-raised cosine: splitting the filter between transmitter and receiver</h3>
+<p>The end-to-end response $G(f)=P(f)H_c(f)H_r(f)$ must be Nyquist. In AWGN, the receiver filter should also be matched to the transmitted pulse (Chapter 14), $H_r=P^*$. For an ideal flat channel, then, $G=|P|^2$, so
+$$|P(f)|=\sqrt{G_{RC}(f)}\quad\Longrightarrow\quad\text{each end uses a root-raised-cosine (RRC) filter.}$$
+The transmitted pulse is then the RRC, which has a slightly larger peak-to-average ratio than RC (its tails overshoot) but a transmit spectrum that decays quickly, and the <em>matched-filter output</em> is exactly raised-cosine: ISI-free at the sampling instants and with the noise samples <b>uncorrelated</b> (because the RRC response is orthogonal to its $T$-shifts). That is the arrangement of every modern modem: RRC at the transmitter, RRC at the receiver, symbol-rate sampling after it.</p>
+<div class="box eng"><span class="tag">Engineering practice · implementing a pulse-shaping filter</span>
+<p>A digital transmitter upsamples the symbol stream by $L=4$–$8$ (inserting zeros) and filters it with a finite-impulse-response (FIR) approximation of the RRC, typically spanning $\pm4$ to $\pm8$ symbols (e.g. 33–65 taps at 4 samples/symbol), then a DAC and analog reconstruction filter. The truncation of the infinite tails sets the out-of-band emission floor (typically $-40$ to $-60$ dBc), controlled by the window and the length: spectral masks of the regulator (e.g. the DVB-S or Wi-Fi mask) directly determine the number of taps. Increasing $\alpha$ makes the filter shorter and the spectrum wider; a typical compromise is $\alpha=0.2$–$0.35$. In optical, microwave and satellite links where the power amplifier is non-linear, spectral regrowth restores the sidelobes that the filter suppressed: this is why constant-envelope schemes (MSK, GMSK, Chapter 15) exist.</p></div>
+
+<h2>Partial-response signalling: duobinary</h2>
+<p>Nyquist’s criterion demands zero ISI. <b>Partial response</b> (correlative coding, Lender 1963; Kretzmer 1966) turns the idea around: allow a <em>controlled, known</em> amount of ISI that the receiver can remove, and in return achieve the minimum bandwidth $R_s/2$ <em>with a realisable, fast-decaying pulse</em>.</p>
+<div class="box derive"><span class="tag">Derivation · duobinary</span>
+<p>Use $g(t)=\sinc\!\big(\frac tT\big)+\sinc\!\big(\frac{t-T}T\big)$: nonzero only at $t=0$ and $t=T$ (value 1 each) at the sampling instants. Its spectrum is $G(f)=T\rect(fT)\,[1+e^{-j2\pi fT}]=2T\cos(\pi fT)e^{-j\pi fT}\rect(fT)$: a smooth cosine roll-off to zero at $f=\frac1{2T}$, bandwidth exactly $R_s/2$, and far less sensitive to timing than the sinc (tails $\propto1/t^2$). With binary $a_k=\pm1$ the samples are $y_k=a_k+a_{k-1}\in\{-2,0,+2\}$: <b>three levels</b>. To avoid error propagation (decoding $a_k=y_k-a_{k-1}$ would carry any mistake forward), <b>precode</b>: $w_k=b_k\oplus w_{k-1}$, $a_k=2w_k-1$. Then $y_k=0$ exactly when $w_k\ne w_{k-1}$, i.e. when $b_k=1$, and $|y_k|=2$ when $b_k=0$, so the decision rule is memoryless:
+$$\hat b_k=\begin{cases}1&y_k=0\\0&|y_k|=2.\end{cases}$$
+Example: $b=1,0,1,1,0$ with $w_{-1}=0$ ($a_{-1}=-1$): $w=1,1,0,1,1$; $a=+,+,-,+,+$; $y=0,+2,0,0,+2$; decoded $1,0,1,1,0$ ✓. The modified duobinary $y_k=a_k-a_{k-2}$ (class IV, response $1-D^2$) also has a null at DC: it is the basis of the PRML read channels of every hard disk and of 1000BASE-T.</p></div>
+<div class="box note"><span class="tag">The price</span>
+<p>Three levels instead of two: the distance between adjacent levels is $A$ rather than $2A$ (with the same peak amplitude), so noise immunity is 3 dB worse in amplitude terms (and the error rate is higher), but this is more than recovered by the savings in bandwidth when the channel is the limiting factor.</p></div>
 
 <h2>Seeing ISI: the eye diagram</h2>
-<p>Put a random bit stream through the system, then <strong>overlay every symbol-length-two segment on an oscilloscope</strong>, triggering on the symbol clock. The traces form an "eye". The vertical opening at the sampling instant is the margin against noise; the horizontal opening is the tolerance to timing error; the thickness of the traces at the crossing is the jitter. ISI closes the eye; noise blurs it.</p>
+<p>Put a random bit stream through the system, then <strong>overlay every symbol-length-two segment on an oscilloscope</strong>, triggering on the symbol clock. The traces form an “eye”. The vertical opening at the sampling instant is the margin against noise; the horizontal opening is the tolerance to timing error; the thickness of the traces at the crossing is the jitter. ISI closes the eye; noise blurs it. For an $M$-level system there are $M-1$ stacked eyes.</p>
 <div class="widget" id="w-eye">Eye diagram of a binary signal after a channel. Choose a raised-cosine system (no ISI at the centre, for any $\alpha$, but wider eye for larger $\alpha$) or a plain RC low-pass channel (ISI grows as bandwidth drops). Add noise to see the margin shrink. The readout shows the vertical eye opening at the centre, relative to 2 (perfect).</div>
 
 <h2>Equalisation: undoing the channel</h2>
-<p>If the channel is not ideal, a <strong>transversal (FIR) equaliser</strong> can approximately undo it. A <b>zero-forcing</b> equaliser chooses its taps so that the combined response has zeros at all other sampling instants (exactly Nyquist's condition), at the price of amplifying noise at frequencies where the channel is weak. The <b>MMSE</b> equaliser balances ISI against noise. Equalisers are made adaptive (LMS algorithm) so that they learn the channel from a known training sequence: the "training tones" you hear in the dial-up modem handshake, and the preambles in every Wi-Fi packet.</p>
-<div class="box ex"><span class="tag">Worked example · zero-forcing</span>
-<p>Sampled channel pulse $p(0)=1$, $p(1)=0.5$, zero elsewhere. A 2-tap equaliser $c_0,c_1$ gives output $y(n)=c_0p(n)+c_1p(n-1)$. Force $y(0)=1,\ y(1)=0$: $y(0)=c_0\Rightarrow c_0=1$; $y(1)=0.5c_0+c_1=0\Rightarrow c_1=-0.5$. Residual: $y(2)=c_1p(1)=-0.25$ (a 2-tap equaliser cannot kill every tail; an infinite one would use $c_k=(-0.5)^k$).</p></div>
+<p>If the channel is not ideal, a <strong>transversal (FIR) equaliser</strong> $c_0,\dots,c_{N-1}$ can approximately undo it. The equalised response is $y[n]=\sum_kc_kp[n-k]$ where $p[n]$ are the samples of the channel pulse.</p>
+<div class="box derive"><span class="tag">Derivation · zero-forcing equaliser and noise enhancement</span>
+<p><b>Zero forcing.</b> Choose $C(z)=1/P(z)$ so that $Y(z)=1$: all ISI cancelled (Nyquist’s condition imposed by brute force). For $P(z)=1+az^{-1}$ ($|a|<1$): $C(z)=\sum_k(-a)^kz^{-k}$, an infinite FIR with taps $c_k=(-a)^k$. <b>Cost.</b> The noise passes through the equaliser too, and its power is multiplied by $\sum_kc_k^2=\dfrac1{1-a^2}$ (<b>noise enhancement</b>): for $a=0.5$: $1.33$ ($1.25$ dB); $a=0.9$: $5.26$ ($7.2$ dB); as $a\to1$ (a spectral null at $f=\frac1{2T}$ where $|P|\to0$) it diverges. The equaliser is inverting the channel exactly where the channel has the least signal, boosting noise there. Truncating to $N$ taps leaves one residual tail of size $|a|^N$ and the noise gain $\frac{1-a^{2N}}{1-a^2}$.</p>
+<p><b>MMSE (Wiener) equaliser.</b> Minimise $\E|y_k-a_k|^2$ (ISI plus noise together). In the frequency domain, for a channel $P(f)$, white noise $N_0/2$ and unit-power symbols, the optimum is
+$$C_{\rm MMSE}(f)=\frac{P^*(f)}{|P(f)|^2+1/\mathrm{SNR}},$$
+a regularised inverse: where $|P|^2\gg1/\mathrm{SNR}$ it is the zero-forcing inverse $1/P$, where $|P|^2\ll1/\mathrm{SNR}$ it rolls off to $\mathrm{SNR}\cdot P^*$ (it gives up on frequencies where the channel is buried in noise). This is the Wiener filter of Chapter 5 with $S_s=1$ and $S_n=1/\mathrm{SNR}$. At high SNR it equals ZF.</p></div>
+<div class="widget" id="w-eq">Zero-forcing equaliser for the two-path channel $P(z)=1+az^{-1}$ with $N$ taps. Top: channel pulse (grey) and the equalised response (yellow): the first $N$ samples are exactly $[1,0,0,\dots]$ and one residual tail $|a|^N$ remains at index $N$. The readout gives the noise enhancement $\sum c_k^2$: the closer $a$ is to 1 (a deeper notch in the channel), the more noise the equaliser amplifies.</div>
+<div class="box derive"><span class="tag">Adaptation: the LMS algorithm</span>
+<p>The channel is unknown and varies. Let the equaliser input vector be $\mathbf x_k$ (the last $N$ received samples), output $y_k=\mathbf c^T\mathbf x_k$, and error $e_k=d_k-y_k$ where $d_k$ is a known training symbol (or the receiver’s own decision, “decision-directed”). The stochastic-gradient descent on $\E e_k^2$ is the <b>least-mean-square (LMS) algorithm</b>
+$$\mathbf c_{k+1}=\mathbf c_k+\mu\,e_k\,\mathbf x_k,$$
+using the instantaneous estimate $-2e_k\mathbf x_k$ of the gradient. It converges in the mean if $0<\mu<\dfrac2{\lambda_{\max}}$ ($\lambda_{\max}$ the largest eigenvalue of the input autocorrelation matrix; since $\lambda_{\max}\le\mathrm{tr}\,\mathbf R=N\sigma_x^2$, $\mu<\frac2{N\sigma_x^2}$ is a safe bound). Small $\mu$ gives slow, accurate adaptation, large $\mu$ fast and noisy: the same bandwidth–variance trade-off as in a PLL (Chapter 7). A <b>decision-feedback equaliser (DFE)</b> adds a feedback filter that subtracts the <em>post-cursor</em> ISI of already-decided symbols: it removes the tail without amplifying noise (the feedback uses clean decisions), at the risk of <em>error propagation</em> when a decision is wrong. The optimum, <b>maximum-likelihood sequence estimation</b> by the Viterbi algorithm (Chapter 18), searches the sequences of symbols directly.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · where equalisers live</span>
+<p>The dial-up modem handshake’s hissing is the equaliser training (a known sequence lets $\mathbf c$ converge in a second or two). GSM burst: a 26-bit training sequence in the middle of every 148-bit burst lets the receiver estimate a channel with echoes of up to about 16 µs (some 4–5 symbol periods) and run a Viterbi equaliser. Ethernet over copper (1000BASE-T and 10GBASE-T) use five-level PAM, echo cancellers and DFEs per pair. Disk drives use PRML. High-speed serial links (PCIe 5/6, 56–112 Gb/s SerDes) combine a transmit FIR (pre-emphasis), a receiver continuous-time linear equaliser (CTLE) and a DFE, all adapted at power-up (“link training”). Wi-Fi and LTE avoid the problem by using OFDM (Chapter 20): the equaliser becomes one complex multiplication per sub-carrier.</p></div>
 
 <div class="box gate"><span class="tag">GATE pattern · baseband</span>
 <ul>
 <li>Nyquist bandwidth $R_s/2$; raised-cosine bandwidth $(1+\alpha)R_s/2$ (baseband) or $(1+\alpha)R_s$ (passband); solving for $M$ or $R_s$ given $B$, $\alpha$ (2014, 2026).</li>
 <li>Statement-type questions on the Nyquist criterion (2024 Q.14, which asked for the frequency-domain zero-ISI condition) and on line-code properties (DC content, bandwidth).</li>
-<li>PSD of a random binary wave $=A^2T\sinc^2(fT)$ from Chapter 3.</li>
+<li>PSD of a random binary wave $=A^2T\sinc^2(fT)$ from Chapter 5; correlated-symbol PSD (GATE 2016).</li>
 </ul></div>
 
 <h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="msq" data-ans="B,D" data-marks="1" data-src="Original">
+Which line codes have <em>zero power spectral density at $f=0$</em> (for equiprobable independent bits)?
+<ol class="opts"><li>Polar NRZ</li><li>Manchester</li><li>Unipolar NRZ</li><li>Bipolar AMI</li></ol>
+<div class="sol"><p>Manchester: $\sin^2(\pi fT/2)$ factor; AMI: $\sin^2(\pi fT)$ factor. Polar NRZ has $S(0)=A^2T$; unipolar NRZ has an impulse at DC.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original (inspired by GATE 2024 Q.14)">
+For zero inter-symbol interference with symbol interval $T$, the overall pulse spectrum $G(f)$ must satisfy
+<ol class="opts"><li>$\sum_{m}G\!\left(f-\tfrac mT\right)=T$ (constant)</li><li>$G(f)=T\rect(fT)$ only</li><li>$\sum_m G(f-mT)=1/T$</li><li>$G(f)$ must be zero for $|f|>\frac1{2T}$</li></ol>
+<div class="sol"><p>(A): the periodised spectrum must be flat. (B) is just one solution (the minimum-bandwidth one). (D) is not required (raised-cosine violates it).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+The main advantage of duobinary signalling over ideal Nyquist (sinc) signalling at the same symbol rate is
+<ol class="opts"><li>a larger noise margin</li><li>a smaller bandwidth than $R_s/2$</li><li>a realisable pulse with a smooth roll-off and tolerance to timing error, at the minimum bandwidth $R_s/2$</li><li>no need for a precoder</li></ol>
+<div class="sol"><p>Duobinary needs bandwidth $R_s/2$ (not less), has 3 levels (worse noise margin) and needs a precoder to avoid error propagation. Its pulse decays as $1/t^2$ and its spectrum is a smooth cosine. <b>(C)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="6.25" data-tol="0.05" data-marks="1" data-src="Original">
+A baseband system sends 10 000 symbols/s with raised-cosine pulses of roll-off $\alpha=0.25$. The minimum bandwidth in kHz is ______.
+<div class="sol"><p>$B=(1+\alpha)R_s/2=1.25\times10\,000/2=6.25$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="21.33" data-tol="0.1" data-marks="2" data-src="Original">
+A channel of bandwidth 4 kHz carries 16-level PAM with raised-cosine pulses ($\alpha=0.5$) at the maximum zero-ISI symbol rate. The bit rate in kbit/s is ______.
+<div class="sol"><p>$R_s=2B/(1+\alpha)=5333$ sym/s; $\times4$ bits $=21.33$ kbit/s.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2" data-tol="0.02" data-marks="1" data-src="Original">
+Manchester-coded data at 1 Mbit/s: the first-null bandwidth of its PSD in MHz is ______.
+<div class="sol"><p>$\sinc^2(fT/2)$ has its first null at $f=2/T=2R_b=2$ MHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4.44" data-tol="0.03" data-marks="1" data-src="Original">
+64-QAM with a root-raised-cosine pulse of roll-off 0.35 has a spectral efficiency (bit/s/Hz) of ______.
+<div class="sol"><p>$\eta=\log_2M/(1+\alpha)=6/1.35=\mathbf{4.44}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.7" data-tol="0.005" data-marks="2" data-src="Original">
+A channel+receiver response has samples $g(0)=1$, $g(-T)=0.1$, $g(T)=0.2$, zero elsewhere. The worst-case eye opening, as a fraction of the ISI-free opening, is ______.
+<div class="sol"><p>$D=(0.1+0.2)/1=0.3$; opening $=1-D=\mathbf{0.7}$ (a $3.1$ dB loss of noise margin).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-0.25" data-tol="0.01" data-marks="2" data-src="Original">
+A channel has sampled pulse response $p(0)=1$, $p(1)=0.5$ (zero elsewhere). A two-tap zero-forcing equaliser is designed so that $y(0)=1$, $y(1)=0$. The residual ISI $y(2)$ is ______.
+<div class="sol"><p>$c_0=1$, $c_1=-0.5$, $y(2)=c_1p(1)=-0.25$. (Zero-forcing tap-by-tap: $c_k=(-a)^k$ for the channel $1+az^{-1}$, $a=0.5$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="7.2" data-tol="0.1" data-marks="2" data-src="Original">
+The channel $P(z)=1+0.9z^{-1}$ is equalised by an (infinitely long) zero-forcing filter. The noise enhancement in dB is ______.
+<div class="sol"><p>$\sum c_k^2=\frac1{1-0.81}=5.26\to\mathbf{7.2}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="Original">
+A binary $\pm1$ sequence is sent through duobinary signalling ($y_k=a_k+a_{k-1}$). The number of distinct noiseless levels of $y_k$ is ______.
+<div class="sol"><p>$y_k\in\{-2,0,+2\}$: <b>3</b> levels.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.4" data-tol="0.01" data-marks="2" data-src="Original">
+An LMS equaliser with $N=10$ taps has input power $\sigma_x^2=0.5$. The upper bound on the step size $\mu$ (using $\lambda_{\max}\le N\sigma_x^2$) for convergence in the mean is ______.
+<div class="sol"><p>$\mu<\dfrac2{N\sigma_x^2}=\dfrac2{10\times0.5}=\mathbf{0.4}$.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
 <div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2026 · EC · Q.22 (reworded)">
 A discrete memoryless source emits $10^4$ symbols per second from a four-symbol alphabet, represented by a multi-level signal taking values $(-1,0,+1,+2)$. The equivalent Nyquist bandwidth of the signal is
 <ol class="opts"><li>10 kHz</li><li>64 kHz</li><li>5 kHz</li><li>20 kHz</li></ol>
@@ -84,32 +191,6 @@ A wireless link uses 16-QAM with an ML receiver over AWGN. The information rate 
 An M-level PSK modulation scheme is used to transmit independent binary digits over a band-pass channel with bandwidth 100 kHz. The bit rate is 200 kbps and the system characteristic is a raised-cosine spectrum with 100% excess bandwidth. The minimum value of $M$ is ______.
 <div class="sol"><p>$(1+\alpha)R_s=100$ kHz with $\alpha=1$: $R_s=50$ k; $R_b/R_s=4$ bits ⇒ $M=16$.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="6.25" data-tol="0.05" data-marks="1" data-src="Original">
-A baseband system sends 10 000 symbols/s with raised-cosine pulses of roll-off $\alpha=0.25$. The minimum bandwidth in kHz is ______.
-<div class="sol"><p>$B=(1+\alpha)R_s/2=1.25\times10\,000/2=6.25$ kHz.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="21.33" data-tol="0.1" data-marks="2" data-src="Original">
-A channel of bandwidth 4 kHz carries 16-level PAM with raised-cosine pulses ($\alpha=0.5$) at the maximum zero-ISI symbol rate. The bit rate in kbit/s is ______.
-<div class="sol"><p>$R_s=2B/(1+\alpha)=5333$ sym/s; $\times4$ bits $=21.33$ kbit/s.</p></div></div>
-
-<div class="prob" data-type="msq" data-ans="B,D" data-marks="1" data-src="Original">
-Which line codes have <em>zero power spectral density at $f=0$</em> (for equiprobable independent bits)?
-<ol class="opts"><li>Polar NRZ</li><li>Manchester</li><li>Unipolar NRZ</li><li>Bipolar AMI</li></ol>
-<div class="sol"><p>Manchester: $\sin^2(\pi fT/2)$ factor; AMI: $\sin^2(\pi fT)$ factor. Polar NRZ has $S(0)=A^2T$; unipolar NRZ has an impulse at DC.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="2" data-tol="0.02" data-marks="1" data-src="Original">
-Manchester-coded data at 1 Mbit/s: the first-null bandwidth of its PSD in MHz is ______.
-<div class="sol"><p>$\sinc^2(fT/2)$ has its first null at $f=2/T=2R_b=2$ MHz.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original (inspired by GATE 2024 Q.14)">
-For zero inter-symbol interference with symbol interval $T$, the overall pulse spectrum $G(f)$ must satisfy
-<ol class="opts"><li>$\sum_{m}G\!\left(f-\tfrac mT\right)=T$ (constant)</li><li>$G(f)=T\rect(fT)$ only</li><li>$\sum_m G(f-mT)=1/T$</li><li>$G(f)$ must be zero for $|f|>\frac1{2T}$</li></ol>
-<div class="sol"><p>(A): the periodised spectrum must be flat. (B) is just one solution (the minimum-bandwidth one). (D) is not required (raised-cosine violates it).</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="-0.25" data-tol="0.01" data-marks="2" data-src="Original">
-A channel has sampled pulse response $p(0)=1$, $p(1)=0.5$ (zero elsewhere). A two-tap zero-forcing equaliser is designed so that $y(0)=1$, $y(1)=0$. The residual ISI $y(2)$ is ______.
-<div class="sol"><p>$c_0=1$, $c_1=-0.5$, $y(2)=c_1p(1)=-0.25$.</p></div></div>
-
 <div class="prob" data-type="nat" data-ans="16" data-tol="0.1" data-marks="1" data-src="GATE 2016 · EC (PYQ book)">
 A speech signal is sampled at 8 kHz and encoded with 8 bits per sample. The PCM bit stream is sent over a baseband channel using 4-level PAM. The minimum bandwidth (kHz) required is ______.
 <div class="sol"><p>$R_b=64$ kbit/s; 4-level PAM carries 2 bits/symbol: $R_s=32$ ksym/s; Nyquist minimum bandwidth $R_s/2=\mathbf{16}$ kHz.</p></div></div>
@@ -118,16 +199,18 @@ A speech signal is sampled at 8 kHz and encoded with 8 bits per sample. The PCM 
 Symbols are transmitted at 2000 symbols/s. The overall pulse spectrum $P(f)$ at the sampler input is one of the four shapes below (all of unit height at $f=0$). Which one gives zero inter-symbol interference?
 <ol class="opts"><li>rectangle to 1.2 kHz</li><li>trapezoid: flat to 0.8 kHz, linear to 0 at 1.2 kHz</li><li>flat to 1 kHz, then linear to 0 at 1.2 kHz</li><li>triangle to 1.2 kHz</li></ol><div class="sol"><p>Nyquist: $\sum_kP(f-kR_s)=$ const with $R_s=2$ kHz; the roll-off must be odd-symmetric about $R_s/2=1$ kHz. Only (B) (a trapezoid centred on the Nyquist frequency, i.e. a linear-roll-off Nyquist pulse) satisfies this; the shape (C) rolls off entirely above 1 kHz and leaves a dip where the shifted copies overlap.</p></div></div>
 
-<div class="summary"><h3>Chapter 9 in one breath</h3>
+<div class="summary"><h3>Chapter 13 in one breath</h3>
 <ul>
-<li>$s(t)=\sum a_kp(t-kT)$; $R_s=1/T$; $R_b=R_s\log_2M$.</li>
-<li>Line codes: NRZ BW $=R_b$; RZ and Manchester BW $=2R_b$; AMI and Manchester null at DC; polar NRZ PSD $A^2T\sinc^2(fT)$.</li>
-<li>ISI = tails of other symbols at the sampling instant. Nyquist: $g(nT)=\delta_n$ ⇔ $\sum_mG(f-m/T)=T$.</li>
-<li>Minimum bandwidth $R_s/2$ (brick, sinc pulse). Raised cosine: $B=(1+\alpha)R_s/2$ baseband; $(1+\alpha)R_s$ passband.</li>
-<li>Eye diagram: vertical opening = noise margin; horizontal = timing margin. Equalisers (ZF, MMSE, adaptive) fight ISI.</li>
+<li>$s(t)=\sum a_kp(t-kT)$; $R_s=1/T$; $R_b=R_s\log_2M$; PSD $=\frac{|G|^2}TS_b(f)$ (lines if non-zero mean).</li>
+<li>Line codes: NRZ BW $=R_b$; RZ and Manchester BW $=2R_b$; AMI ($A^2T\sinc^2\sin^2\pi fT$) and Manchester null at DC; HDB3/B8ZS limit runs of zeros; 4B5B, 8B10B, scramblers.</li>
+<li>ISI = tails of other symbols at the sampling instant; peak distortion $D=\sum|g(kT)|/g(0)$. Nyquist: $g(nT)=\delta_n$ ⇔ $\sum_mG(f-m/T)=T$.</li>
+<li>Minimum bandwidth $R_s/2$ (sinc). Raised cosine: $B=(1+\alpha)R_s/2$ baseband; $(1+\alpha)R_s$ passband; $\eta=\log_2M/(1+\alpha)$ passband. RRC at both ends = matched filter + Nyquist.</li>
+<li>Duobinary: $y_k=a_k+a_{k-1}$, three levels, precode $w_k=b_k\oplus w_{k-1}$; decode $b_k=1$ iff $y_k=0$.</li>
+<li>Equalisers: ZF ($C=1/P$; noise gain $\sum c_k^2=\frac1{1-a^2}$), MMSE ($C=P^*/(|P|^2+1/\mathrm{SNR})$), LMS $\mathbf c\leftarrow\mathbf c+\mu e\mathbf x$, DFE, MLSE.</li>
 </ul></div>
 
 <script>
+
 const m=GB.m, TAU=2*Math.PI, S=m.sinc;
 /* ---------- line codes ---------- */
 GB.widget('w-lines',{title:'Line codes: waveform and spectrum',h:430,hm:470,controls:[{k:'c',type:'select',label:'line code',options:[[0,'Unipolar NRZ'],[1,'Polar NRZ'],[2,'Unipolar RZ (50%)'],[3,'Polar RZ (50%)'],[4,'Bipolar AMI'],[5,'Manchester']],value:5},{k:'b',type:'select',label:'bit pattern',options:[['10110010','1 0 1 1 0 0 1 0'],['11110000','1 1 1 1 0 0 0 0'],['10101010','1 0 1 0 1 0 1 0'],['11100111','1 1 1 0 0 1 1 1']],value:'10110010'}],
@@ -155,4 +238,11 @@ GB.widget('w-rc',{title:'Raised-cosine pulse and spectrum',h:380,hm:410,controls
    y=y.map((v,i)=>v+p.n*nz[i]); const v=g.full({b:26}).view(-1,1,-1.9,1.9); v.axes({xl:'t/T (centre = sampling instant)',xticks:[[-1,'−1'],[-.5,'−½'],[0,'0'],[.5,'½'],[1,'1']],ystep:1}); const ctx=g.ctx; ctx.save(); ctx.beginPath(); ctx.rect(v.px,v.py,v.pw,v.ph); ctx.clip(); ctx.strokeStyle=g.C.blue; ctx.globalAlpha=.16; ctx.lineWidth=1.3;
    const off=Math.round(sp/2); let mn1=9,mx0=-9; for(let k=6;k<NB-6;k++){ ctx.beginPath(); for(let i=-sp;i<=sp;i++){ const n=k*sp+off+i; const X=v.X(i/sp), Y=v.Y(y[n]); i===-sp?ctx.moveTo(X,Y):ctx.lineTo(X,Y); } ctx.stroke(); const c=y[k*sp+off]; if(bits[k]>0) mn1=Math.min(mn1,c); else mx0=Math.max(mx0,c); } ctx.restore(); v.vline(0,'yellow');
    const open=mn1-mx0; return 'vertical eye opening at the sampling instant: <b>'+open.toFixed(2)+'</b> of 2.00'+(open<=0?'  <b style="color:#fc6255">— eye closed: errors even without noise</b>':open>1.8?'  (wide open)':''); }}); })();
+
+/* ---------- zero-forcing equaliser ---------- */
+GB.widget('w-eq',{title:'Zero-forcing equaliser for a two-path channel',h:330,hm:350,controls:[{k:'a',label:'echo strength a  (channel 1 + a z⁻¹)',min:.05,max:.97,step:.01,value:.6,fmt:v=>v.toFixed(2)},{k:'N',label:'equaliser taps N',min:1,max:12,step:1,value:4,fmt:v=>String(v|0)}],
+ draw(g,p){ const a=p.a, N=p.N|0, K=16; const pch=Array.from({length:K},(_,n)=>n===0?1:n===1?a:0); const c=Array.from({length:N},(_,k)=>Math.pow(-a,k)); const y=Array.from({length:K},(_,n)=>{ let s=0; for(let k=0;k<N;k++){ const j=n-k; if(j>=0&&j<K) s+=c[k]*pch[j]; } return s; });
+  const v=g.panel(0,2,{pad:{b:12}}).view(-.5,K-.5,-1.1,1.4); v.axes({nox:true,ystep:.5}); v.stem(Array.from({length:K},(_,i)=>i),pch,'mute',3,3); v.title('channel pulse samples p[n]','mute');
+  const u=g.panel(1,2).view(-.5,K-.5,-1.1,1.4); u.axes({xl:'n',ystep:.5}); u.stem(Array.from({length:K},(_,i)=>i),y,'yellow',3,3); u.title('equalised response y[n] = (c * p)[n]','yellow');
+  const gain=(1-Math.pow(a,2*N))/(1-a*a), res=Math.pow(a,N); return 'taps cᵏ = (−a)ᵏ · residual tail at n = N: <b>'+res.toFixed(3)+'</b> · noise enhancement Σcₖ² = <b>'+gain.toFixed(2)+'</b> (<b>'+(10*Math.log10(gain)).toFixed(1)+' dB</b>); ideal infinite equaliser: 1/(1−a²) = '+(1/(1-a*a)).toFixed(2); }});
 </script>
