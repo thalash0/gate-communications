@@ -322,6 +322,56 @@ A CRC uses the generator $x^3+x^2+1$ ($1101$). The data $101101$ is sent. The 3-
 A receiver chase-combines (maximum-ratio adds) $N=4$ identical copies of a packet in a HARQ process. The SNR gain over a single copy is ______ dB.
 <div class="sol"><p>The signal amplitudes add coherently ($4A$) while independent noise powers add ($4\sigma^2$): SNR $\times4^2/4=4$, i.e. $10\log_{10}4=6.02$ dB. (After 2 copies: 3.01 dB; after 3: 4.77 dB.)</p></div></div>
 
+<p class="pset">Set C · Previous-year questions and exam-style problems</p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="GATE 2019 · EC-1 · Q.7">
+A linear Hamming code maps 4-bit messages to 7-bit code words. The encoder mapping is linear. If message 0001 is mapped to 0000111 and message 0011 is mapped to 1100110, then message 0010 is mapped to
+<ol class="opts"><li>0010011</li><li>1100001</li><li>1111000</li><li>1111111</li></ol>
+<div class="sol"><p>$0010=0001\oplus0011\Rightarrow0000111\oplus1100110=1100001$. (B).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2021 · EC · Q.34">
+A (7,4) systematic linear Hamming code. Three message–codeword pairs $(m_i;c_i)$ are $(1100;0101100)$, $(1110;0011110)$, $(0110;1000110)$. Which is a valid codeword?
+<ol class="opts"><li>1101001</li><li>1011010</li><li>0001011</li><li>0110100</li></ol>
+<div class="sol"><p>Derived above: parity patterns $P_1=101,P_2=111,P_3=011,P_4=110$ ⇒ $m=1011$ gives parity 000 ⇒ 0001011. Check (A): $m=1001$: $P_1\oplus P_4=011$, word 0111001 ≠ 1101001. So (C).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.85" data-tol="0.01" data-marks="2" data-src="GATE 2022 · EC · Q.62">
+Communication over a memoryless BSC uses a (7,4) Hamming code. Each bit is received correctly with probability $1-\epsilon$ and flipped with probability $\epsilon$. The receiver does minimum-Hamming-distance decoding and correctly decodes the message bits iff the channel introduces at most one bit error. For $\epsilon=0.1$, the probability that a transmitted code word is decoded correctly is ______ (two decimals).
+<div class="sol"><p>$0.9^7+7(0.1)(0.9)^6=0.4783+0.3720=0.85$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.15" data-tol="0.05" data-marks="2" data-src="GATE 2026 · EC · Q.63">
+The average bit error rate at the input of a (7,4,1) Hamming decoder is 0.10. The probability that the decoder will fail to decode a received word correctly is ______ (two decimals).
+<div class="sol"><p>$1-0.8503=0.1497\approx0.15$ (key 0.10–0.20).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="GATE 2025 · EC · Q.33">
+The generator matrix of a (6,3) binary linear block code is $G=\begin{bmatrix}1&0&0&1&0&1\\0&1&0&0&1&1\\0&0&1&1&1&0\end{bmatrix}$. The minimum Hamming distance $d_{\min}$ is ______.
+<div class="sol"><p>Row weights 3,3,3; pair sums weights 4,4,4; triple sum 111000 weight 3. $d_{\min}=3$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="GATE 2024 · EC · Q.47">
+The information bit sequence $\{1\,1\,1\,0\,1\,0\,1\,0\,1\}$ is encoded with a CRC-4 code with generator polynomial $C(x)=x^4+x+1$. The encoded sequence of bits is
+<ol class="opts"><li>{1 1 1 0 1 0 1 0 1 1 1 0 0}</li><li>{1 1 1 0 1 0 1 0 1 1 1 0 1}</li><li>{1 1 1 0 1 0 1 0 1 1 1 1 0}</li><li>{1 1 1 0 1 0 1 0 1 0 1 0 0}</li></ol>
+<div class="sol"><p>Remainder of $x^4M(x)/G(x)$ is $1100$ (see the CRC widget). (A).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.028" data-tol="0.001" data-marks="2" data-src="GATE 2016 · EC (PYQ book)">
+A repetition code sends each bit three times (0→000, 1→111) over a BSC with crossover $p=0.1$. The decoder takes a majority vote. The average probability of error is ______.
+<div class="sol"><p>Error iff at least 2 of 3 bits flip: $P_e=3p^2(1-p)+p^3=3(0.01)(0.9)+0.001=\mathbf{0.028}$. (Compare the uncoded $0.1$: a 3.6× improvement at a 3× bandwidth cost.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="16" data-tol="0.01" data-marks="2" data-src="GATE 2018 · EC (PYQ book)">
+A binary block code has fixed length 5 and the Hamming distance between any two distinct code words is at least 2. The maximum number of code words is ______.
+<div class="sol"><p>The (5,4) single-parity-check code (all even-weight words) has $d_{\min}=2$ and $2^4=16$ words. No larger code exists: puncturing one coordinate leaves a code of length 4 with all words distinct (distance $\ge1$), so at most $2^4=16$ words. (The Singleton bound $2^{n-d+1}$ gives the same.)</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="B,C" data-marks="1" data-src="Original">
+A block code has $d_{\min}=5$. Which of the following can it do?
+<ol class="opts"><li>Correct all 3-bit errors</li><li>Correct all 2-bit errors</li><li>Detect all 4-bit errors</li><li>Detect all 5-bit errors</li></ol>
+<div class="sol"><p>$t=\lfloor4/2\rfloor=2$; detects $d_{\min}-1=4$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="2" data-src="Original">
+For the (7,4) Hamming code of this chapter (columns of $H$: 110, 101, 011, 111, 100, 010, 001), a received word is $\mathbf r=1001010$ (at most one bit in error). The position (1 to 7) of the erroneous bit is ______.
+<div class="sol"><p>$s_1=r_1\oplus r_2\oplus r_4\oplus r_5=1\oplus0\oplus1\oplus0=0$; $s_2=r_1\oplus r_3\oplus r_4\oplus r_6=1\oplus0\oplus1\oplus1=1$; $s_3=r_2\oplus r_3\oplus r_4\oplus r_7=0\oplus0\oplus1\oplus0=1$. Syndrome $011$ equals column 3 of $H$: bit 3 is wrong. The corrected word is $1011010$ (data 1011).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6" data-tol="0.01" data-marks="1" data-src="Original">
+A CRC uses generator $x^3+x+1$ ($1011$). The data $1001$ is sent. The 3-bit remainder, read as a decimal number (0 to 7), is ______.
+<div class="sol"><p>Divide $1001\,000$ by $1011$. Leading 1 at bit 0: XOR $1011$ → $0010\,000$. Next 1 is at bit 2: XOR $1011$ aligned there → $0000\,110$. No more leading ones among the data bits; the remainder is $110$ = <b>6</b>. Transmitted frame: $1001\,110$. (Try it in the widget with generator 1011 — set the data to 1101 for another example: remainder 001.)</p></div></div>
+
 <div class="prob" data-type="nat" data-ans="0.0086" data-tol="0.0003" data-marks="2" data-src="Original">
 A (5,1) repetition code is used on a BSC with $p=0.1$ and decoded by majority vote. The decoded-bit error probability is ______.
 <div class="sol"><p>Error iff at least 3 of 5 bits flip: $\binom53p^3q^2+\binom54p^4q+p^5=10(0.001)(0.81)+5(0.0001)(0.9)+0.00001=0.0081+0.00045+0.00001=0.00856$. (Compare the 3-fold code's 0.028: more repetition, much lower error, rate 1/5.)</p></div></div>
