@@ -1,119 +1,374 @@
-<!--meta {"id": "ch17", "num": "17", "part": "Part IV · Digital Communication", "title": "Spare Bits That Heal: Error-Control Coding", "lede": "A single flipped bit can crash a computer or ruin a bank transfer. By adding a few carefully chosen redundant bits, a receiver can not only notice the error but fix it, without asking for a resend."} -->
+<!--meta {"id": "ch17", "num": "17", "part": "Part IV · Digital Communication", "title": "Spare Bits That Heal: Error-Control Coding", "lede": "A single flipped bit can crash a computer or ruin a bank transfer. By adding a few carefully chosen redundant bits, a receiver can not only notice the error but fix it, without asking for a resend. This chapter builds the algebra of block codes from the ground up: distance, syndromes, Hamming, cyclic, BCH, Reed–Solomon and CRC codes, the coding gain they buy, and the retransmission protocols that finish the job."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Use Hamming distance to state exactly how many errors a code detects, corrects and fills in as erasures, and <b>derive</b> the Singleton and sphere-packing bounds.</li>
+<li>Build a linear block code from a generator matrix, <b>derive</b> $H$ from $G$, prove $d_{\min}=$ minimum weight $=$ smallest set of dependent columns of $H$, and decode by syndrome and coset leaders.</li>
+<li>Design Hamming, extended Hamming (SECDED) and Golay codes; compute their weight enumerators and the exact probabilities of correct and wrong decoding on a BSC.</li>
+<li><b>Derive</b> the asymptotic coding gain of hard- and soft-decision decoding ($R_cd_{\min}$ and $R_c(t+1)$) and explain why soft decisions are worth about 2–3 dB.</li>
+<li>Work with polynomials over GF(2): cyclic codes, generator polynomials, systematic encoding by division, shift-register circuits; understand BCH and Reed–Solomon codes (finite fields, the design-distance argument, symbol, burst and erasure correction) and interleaving.</li>
+<li>Explain why a CRC detects what it detects (single bits, bursts, odd weights, double errors) and pick the standard polynomial for Ethernet, USB, Bluetooth and LTE.</li>
+<li>Derive and compare the efficiency of stop-and-wait, go-back-$N$ and selective-repeat ARQ; explain hybrid ARQ with soft combining.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 10 (entropy), Chapter 11 (channel capacity, BSC, the coding theorem), Chapter 14–15 (Q-function, BPSK error probability).</p></div>
 
 <div class="box story"><span class="tag">History · a weekend of frustration</span>
 <p>1947. Richard Hamming, a mathematician at Bell Labs, ran his computation jobs on the lab's relay computer over the weekend, when no operators were present. The machine could detect an error (via a parity check) but when it did, it simply <em>stopped</em> and the job was lost until Monday. After two weekends of ruined runs Hamming grew angry: <em>"If the machine can tell that something is wrong, why can't it tell where, and correct it?"</em> By 1950 he had the answer, a family of codes that carry his name: put a few parity bits at the right positions so that the pattern of failed checks <em>spells out the address of the error</em>.</p>
-<p>The field Shannon opened two years earlier (Chapter 7) had promised that good codes exist; Hamming and Marcel Golay (1949) built the first ones. Then came Reed–Solomon (1960, now in every CD, DVD, QR code and deep-space link), convolutional codes with Viterbi decoding (1967, GSM and Voyager), and the capacity-approaching turbo (1993), LDPC and polar codes (2008) of today's phones. Meanwhile W. Wesley Peterson invented the <b>cyclic redundancy check</b> (1961), a cheap way to detect errors, now in every Ethernet frame, hard disk and ZIP file.</p></div>
+<p>The field Shannon opened two years earlier (Chapter 11) had promised that good codes exist; Hamming and Marcel Golay (1949) built the first ones. Then came BCH codes (Bose–Chaudhuri 1960, Hocquenghem 1959), Reed–Solomon (1960, now in every CD, DVD, QR code and deep-space link), convolutional codes with Viterbi decoding (1967, GSM and Voyager; Chapter 18), and the capacity-approaching turbo (1993), LDPC and polar codes of today's phones. Meanwhile W. Wesley Peterson invented the <b>cyclic redundancy check</b> (1961), a cheap way to detect errors, now in every Ethernet frame, hard disk and ZIP file.</p></div>
 
 <div class="box real"><span class="tag">Real world</span>
-<p><b>ECC memory</b> in servers: Hamming(72,64) corrects any single and detects any double bit flip (cosmic rays do flip bits). <b>QR codes</b> and <b>CDs</b>: Reed–Solomon (a scratched disc or a ripped-corner QR code still reads). <b>Wi-Fi, 5G, flash drives</b>: LDPC, polar and BCH codes. <b>Ethernet, USB, PNG, ZIP, Bluetooth</b>: CRC-32/16 for detection with retransmission on failure. <b>Voyager</b>: Golay and convolutional codes plus Reed–Solomon.</p></div>
+<p><b>ECC memory</b> in servers: Hamming-type SECDED (72,64) corrects any single and detects any double bit flip (cosmic rays do flip bits). <b>QR codes</b> and <b>CDs</b>: Reed–Solomon (a scratched disc or a ripped-corner QR code still reads). <b>Flash drives, SSDs</b>: BCH, then LDPC as cells shrink. <b>Wi-Fi, 5G</b>: LDPC and polar codes (Chapter 18). <b>Ethernet, USB, PNG, ZIP, Bluetooth</b>: CRC-32/16 for detection with retransmission on failure. <b>Voyager</b>: Golay and convolutional codes plus Reed–Solomon. <b>100G/400G Ethernet</b>: RS(528,514) and RS(544,514) over 10-bit symbols. Everything in this chapter is not a museum piece: it is in your pocket right now.</p></div>
 
 <h2>The idea: distance between code words</h2>
-<p>Send 4 data bits and every one of the 16 patterns is a legitimate message: a single flip turns one valid message into another valid message, so the error is invisible. Redundancy fixes this: use only a <em>subset</em> of the $2^n$ possible $n$-bit words as <b>code words</b>, chosen far apart from each other. The <b>Hamming distance</b> $d(\mathbf x,\mathbf y)$ is the number of positions in which two words differ; the <b>minimum distance</b> $d_{\min}$ of the code is the smallest distance between two distinct code words. Then:
-$$\boxed{\ \text{detect up to }d_{\min}-1\text{ errors},\qquad\text{correct up to }t=\Big\lfloor\frac{d_{\min}-1}2\Big\rfloor\text{ errors},\qquad\text{correct up to }d_{\min}-1\text{ erasures}\ }$$
-The proof is a picture: draw a sphere of radius $t$ around every code word; if $d_{\min}\ge2t+1$ the spheres do not overlap, so a received word with $\le t$ errors lies in exactly one sphere: decode to its centre (minimum-distance decoding, the geometric version of the ML rule of Chapter 10 for the BSC).</p>
+<p>Send 4 data bits and every one of the 16 patterns is a legitimate message: a single flip turns one valid message into another valid message, so the error is invisible. Redundancy fixes this: use only a <em>subset</em> of the $2^n$ possible $n$-bit words as <b>code words</b>, chosen far apart from each other. The <b>Hamming distance</b> $d(\mathbf x,\mathbf y)$ is the number of positions in which two words differ; it is a true metric (non-negative, symmetric, and it obeys the triangle inequality $d(\mathbf x,\mathbf z)\le d(\mathbf x,\mathbf y)+d(\mathbf y,\mathbf z)$). The <b>minimum distance</b> $d_{\min}$ of the code is the smallest distance between two distinct code words.</p>
+<div class="box derive"><span class="tag">Derivation · what $d_{\min}$ buys</span>
+<p><b>Detection.</b> An error pattern of weight $e$ moves the sent word to distance $e$. If $e<d_{\min}$ the result cannot be another code word, so the error is noticed: a code detects up to $d_{\min}-1$ errors.</p>
+<p><b>Correction.</b> Draw a sphere of radius $t$ around every code word. If $d_{\min}\ge2t+1$ the spheres are disjoint (if a word lay in two spheres the triangle inequality would give $d(\mathbf c_1,\mathbf c_2)\le2t<d_{\min}$, a contradiction). A received word with at most $t$ errors lies in exactly one sphere, and decoding to its centre (minimum-distance decoding, the ML rule for a BSC with $p<\tfrac12$) is right. Conversely, if $d_{\min}\le2t$ two code words can be pulled to a common midpoint at distance $\le t$ from both, so $t$ errors cannot always be corrected. Hence $t=\big\lfloor\frac{d_{\min}-1}{2}\big\rfloor$.</p>
+<p><b>Erasures.</b> An erasure is an error whose position is known (a lost packet, a deep-faded symbol). Erase $\varepsilon$ positions: what remains is a code of length $n-\varepsilon$ whose minimum distance is at least $d_{\min}-\varepsilon$, which stays positive as long as $\varepsilon\le d_{\min}-1$. Mixing both: with $e$ errors and $\varepsilon$ erasures the code still decodes correctly provided
+$$\boxed{\ 2e+\varepsilon\le d_{\min}-1\ }$$
+because each erasure costs one unit of distance but each unknown-position error costs two (one to locate, one to repair). Likewise a code can <em>correct $t_c$ and detect $t_d\ge t_c$</em> errors simultaneously iff $d_{\min}\ge t_c+t_d+1$ (e.g. $d_{\min}=4$: correct 1 and detect 2, which is the SECDED code below).</p></div>
 <div class="widget" id="w-cube">The three-bit cube. Vertices are all 3-bit words; edges join words differing in one bit. <b>Repetition code</b> $\{000,111\}$ ($d_{\min}=3$, rate 1/3): each code word owns the vertex plus its 3 neighbours, and together the two spheres tile all 8 vertices: <i>a perfect code</i>. <b>Single-parity code</b> (even-weight words, $d_{\min}=2$, rate 2/3): any single flip lands on a vertex that is <i>not</i> a code word, so errors are detected but there is no way to tell which neighbouring code word was meant. Send a word, flip bits with the checkboxes, and see what the decoder concludes.</div>
-<p>Code rate $R_c=k/n$ (data bits per transmitted bit). A good code has large $d_{\min}$ and rate not too small. Limits: the <b>Singleton bound</b> $d_{\min}\le n-k+1$ and the <b>Hamming (sphere-packing) bound</b> for a $t$-error-correcting code: $2^k\sum_{i=0}^{t}\binom ni\le2^n$. Equality (the spheres tile everything) is called a <b>perfect code</b>: Hamming codes, the Golay (23,12,7) code and odd-length repetition codes.</p>
+<h3>Two bounds</h3>
+<div class="box derive"><span class="tag">Derivation · Singleton and Hamming (sphere-packing) bounds</span>
+<p>Code rate $R_c=k/n$. A good code has large $d_{\min}$ and rate not too small; how large can both be at once?</p>
+<p><b>Singleton bound.</b> Delete the last $d_{\min}-1$ coordinates of every code word. Two distinct code words differ in at least $d_{\min}$ positions, so they still differ in the remaining $n-d_{\min}+1$; the $2^k$ shortened words are all distinct. Therefore $2^k\le2^{n-d_{\min}+1}$, i.e.
+$$d_{\min}\le n-k+1.$$
+Codes that meet it are <b>MDS</b> (maximum distance separable): Reed–Solomon codes (below) and, trivially, repetition and single-parity codes.</p>
+<p><b>Hamming bound.</b> The spheres of radius $t$ are disjoint and each holds $V(n,t)=\sum_{i=0}^{t}\binom ni$ words, all of which lie among the $2^n$ possible words:
+$$2^k\sum_{i=0}^{t}\binom ni\le2^n\quad\Longleftrightarrow\quad\sum_{i=0}^{t}\binom ni\le2^{\,n-k}.$$
+Equality means the spheres tile the whole space and no received word is wasted: a <b>perfect code</b>. For $t=1$ this reads $1+n\le2^{n-k}$, i.e. $2^r\ge n+1$ with $r=n-k$ parity bits: the existence condition for single-error-correcting codes. Only a few perfect binary codes exist: repetition codes of odd length, Hamming codes ($t=1$) and the Golay (23,12,7) code: $1+23+\binom{23}2+\binom{23}3=1+23+253+1771=2048=2^{11}$ ✓.</p>
+<p><b>Example:</b> what is the largest $k$ for a length-15 code with $t=2$? $1+15+105=121$ and $2^{15}/121=270.8$, so $2^k\le270$, $k\le8$. The best code actually known is the BCH (15,7), so the bound is not always attainable: perfect codes are rare.</p></div>
 
 <h2>Linear block codes</h2>
-<p>A binary $(n,k)$ <b>linear block code</b> is a $k$-dimensional subspace of $\{0,1\}^n$ under modulo-2 addition: the sum of any two code words is a code word (so the all-zero word is always a code word). It is specified by a <b>generator matrix</b> $G$ ($k\times n$): codeword $\mathbf c=\mathbf mG$. In <b>systematic form</b> $G=[I_k\mid P]$, the first $k$ bits are the message itself and the last $n-k$ are parity bits. The <b>parity-check matrix</b> $H=[P^T\mid I_{n-k}]$ ($(n-k)\times n$) satisfies $\mathbf cH^T=\mathbf 0$ for every code word. Because of linearity,
-$$d_{\min}=\min\text{ weight of a nonzero codeword}=\text{smallest number of linearly dependent columns of }H.$$
-This is a huge simplification: no need to compare all pairs. (GATE 2025 Q.33: $G=\begin{bmatrix}1&0&0&1&0&1\\0&1&0&0&1&1\\0&0&1&1&1&0\end{bmatrix}$: the three rows have weight 3; sums of two rows have weight 4 (110110, 101011, 011101); the sum of all three is 111000, weight 3. So $d_{\min}=\mathbf3$.)</p>
+<p>A binary $(n,k)$ <b>linear block code</b> is a $k$-dimensional subspace of $\{0,1\}^n$ under modulo-2 addition: the sum of any two code words is a code word (so the all-zero word is always a code word). It has $2^k$ words and is specified by a <b>generator matrix</b> $G$ ($k\times n$): codeword $\mathbf c=\mathbf mG$, where the rows of $G$ are a basis. In <b>systematic form</b> $G=[I_k\mid P]$ the first $k$ bits are the message itself and the last $n-k$ are parity bits $\mathbf p=\mathbf mP$.</p>
+<div class="box derive"><span class="tag">Derivation · the parity-check matrix and $d_{\min}$</span>
+<p><b>$H$ from $G$.</b> The parity bits obey $\mathbf p=\mathbf mP$, so $\mathbf c=(\mathbf m,\mathbf p)$ satisfies $\mathbf mP+\mathbf p=\mathbf 0$ (addition and subtraction coincide mod 2), that is
+$$\mathbf c\begin{bmatrix}P\\ I_{n-k}\end{bmatrix}=\mathbf 0\quad\Longrightarrow\quad \mathbf cH^{T}=\mathbf 0,\qquad H=[P^{T}\mid I_{n-k}]\ \ \big((n-k)\times n\big).$$
+So the code is the <em>null space</em> of $H$, and $GH^T=P+P=0$. Each row of $H$ is a parity check: the positions where it has a 1 must hold an even number of 1s. ($H$ itself generates the <b>dual code</b>, an $(n,n-k)$ code.)</p>
+<p><b>Minimum distance equals minimum weight.</b> By linearity $\mathbf c_1+\mathbf c_2$ is a code word, and $d(\mathbf c_1,\mathbf c_2)=w(\mathbf c_1+\mathbf c_2)$. So the set of distances from any code word to all the others is the set of weights of nonzero code words: $d_{\min}=\min_{\mathbf c\ne0}w(\mathbf c)$. One needs to check $2^k-1$ words, not $\binom{2^k}{2}$ pairs. Moreover the distance structure looks the same from every code word, which is why the all-zero word can be assumed sent when computing error probabilities.</p>
+<p><b>Minimum distance from $H$.</b> A word $\mathbf c$ of weight $w$ is a code word iff the sum of the $w$ columns of $H$ at its 1-positions is zero, i.e. iff those $w$ columns are linearly dependent. Hence
+$$d_{\min}=\text{the smallest number of linearly dependent columns of }H.$$
+So $d_{\min}\ge2$ iff no column of $H$ is zero; $d_{\min}\ge3$ iff all columns are nonzero and distinct (no two columns are equal, which would give a dependent pair); $d_{\min}\ge4$ iff in addition no three columns sum to zero.</p></div>
+<p>(GATE 2025 Q.33: $G=\begin{bmatrix}1&0&0&1&0&1\\0&1&0&0&1&1\\0&0&1&1&1&0\end{bmatrix}$: the three rows have weight 3; sums of two rows have weight 4 (110110, 101011, 011101); the sum of all three is 111000, weight 3. So $d_{\min}=\mathbf3$. Equivalently $H=\begin{bmatrix}1&0&1&1&0&0\\0&1&1&0&1&0\\1&1&0&0&0&1\end{bmatrix}$ has six distinct nonzero columns, so $d\ge3$, and columns 1, 2, 3 sum to zero: $101\oplus011\oplus110=000$, three dependent columns, so $d=3$.)</p>
 <h3>Syndrome decoding</h3>
-<p>Receive $\mathbf r=\mathbf c+\mathbf e$. Compute the <b>syndrome</b> $\mathbf s=\mathbf rH^T=\mathbf eH^T$ (the code word cancels!). If $\mathbf s=\mathbf0$: assume no error. Otherwise find the most likely (lowest-weight) error pattern with that syndrome, and subtract it. For a code that corrects single errors, the syndrome of an error in position $j$ is simply the $j$-th column of $H$.</p>
+<div class="box derive"><span class="tag">Derivation · syndromes, cosets and the standard array</span>
+<p>Receive $\mathbf r=\mathbf c+\mathbf e$. Compute the <b>syndrome</b> $\mathbf s=\mathbf rH^T=\mathbf cH^T+\mathbf eH^T=\mathbf eH^T$: <em>the code word cancels, the syndrome depends only on the error pattern</em>. It has $n-k$ bits, so there are only $2^{n-k}$ different syndromes, while there are $2^n$ possible error patterns. Two patterns $\mathbf e_1,\mathbf e_2$ give the same syndrome iff $\mathbf e_1+\mathbf e_2$ is a code word, so each syndrome corresponds to a <b>coset</b> $\mathbf e+\mathcal C$ of the code (the set of all words $\mathbf e+\mathbf c$), and the $2^n$ words are partitioned into $2^{n-k}$ cosets of $2^k$ words each (the rows of the <em>standard array</em>). If $\mathbf s=\mathbf 0$: assume no error. Otherwise the ML decoder for a BSC picks the <b>coset leader</b>, the minimum-weight member $\hat{\mathbf e}$ of the coset indicated by $\mathbf s$, and outputs $\mathbf r+\hat{\mathbf e}$. A table of $2^{n-k}$ (syndrome, leader) pairs is the whole decoder. For a single-error-correcting code the syndrome of an error in position $j$ is simply the $j$-th column of $H$.</p>
+<p><b>Example: the (6,3) code above.</b> There are $2^{3}=8$ syndromes: $000$ (no error), six syndromes equal to the six columns of $H$ (single errors) and one left over, $111$. That coset has no weight-1 member; its weight-2 members are $\{c_1+c_5,\ c_2+c_4,\ c_3+c_6\}=\{100010,\ 010100,\ 001001\}$, and the decoder picks one of them arbitrarily. So the code corrects all 6 single errors and exactly <em>one</em> of the 15 double-error patterns, and
+$$P_{\rm correct}=(1-p)^6+6p(1-p)^5+p^2(1-p)^4;$$
+for $p=0.1$ this is $0.5314+0.3543+0.0066=0.892$.</p></div>
 <div class="box ex"><span class="tag">Worked example · GATE 2019 Q.7 and GATE 2021 Q.34</span>
 <p><b>2019:</b> a linear (7,4) code maps $0001\to0000111$ and $0011\to1100110$. Since $0010=0001\oplus0011$, linearity gives $0010\to0000111\oplus1100110=\mathbf{1100001}$.</p>
 <p><b>2021:</b> A systematic (7,4) Hamming code (parity bits first) has $(m;c)=(1100;0101100),\ (1110;0011110),\ (0110;1000110)$. Let $P_1..P_4$ be the parity patterns contributed by message bits $m_1..m_4$ (each a 3-bit row). From the three examples: $P_1\oplus P_2=010$; $P_1\oplus P_2\oplus P_3=001\Rightarrow P_3=011$; $P_2\oplus P_3=100\Rightarrow P_2=111,\ P_1=101$. For a Hamming code all columns of $H$ (the $P_i$ and the unit vectors) must be distinct and nonzero: the only weight-$\ge2$ vector left is $P_4=110$. Now test the options: message $1011\to P_1\oplus P_3\oplus P_4=101\oplus011\oplus110=000$: code word $000\,1011=\mathbf{0001011}$, which is option (C) ✓. (The others fail in the same way.)</p></div>
 
 <h2>The Hamming code</h2>
-<p>Take $r$ parity bits. There are $2^r-1$ nonzero syndromes; let each be the "address" of one bit position. That gives an $(n,k)=(2^r-1,\ 2^r-1-r)$ code with $d_{\min}=3$: $(7,4)$, $(15,11)$, $(31,26)$, $(63,57)$, ... The requirement for a single-error-correcting code to exist is $2^r\ge n+1=k+r+1$. With $r=3$:
+<div class="box derive"><span class="tag">Derivation · construction of the Hamming code</span>
+<p>Take $r$ parity bits. There are $2^r-1$ nonzero syndromes; let each be the "address" of one bit position, so a single error in position $j$ produces the syndrome that labels position $j$. Choosing $H$ to have <em>all</em> $2^r-1$ nonzero columns makes the columns distinct and nonzero, hence $d_{\min}\ge3$; since three columns can be dependent ($001+010+011=0$), $d_{\min}=3$. The length is $n=2^r-1$ and $k=n-r$: $(7,4),\ (15,11),\ (31,26),\ (63,57),\dots$, and each meets the Hamming bound with equality: every one of the $2^r$ syndromes is used (zero = no error, the rest = a single error), so there are no unused cosets. With $r=3$:
 $$p_1=d_1\oplus d_2\oplus d_4,\quad p_2=d_1\oplus d_3\oplus d_4,\quad p_3=d_2\oplus d_3\oplus d_4,\qquad H=\begin{bmatrix}1&1&0&1&1&0&0\\1&0&1&1&0&1&0\\0&1&1&1&0&0&1\end{bmatrix}.$$
-The seven columns of $H$ are the seven nonzero 3-bit numbers; each syndrome points to exactly one bit. The classic picture: three overlapping circles; each circle must contain an even number of 1s. A single bit error makes exactly the circles that contain it fail, and the pattern of failed circles <b>identifies the bit</b>.</p>
+The seven columns of $H$ are the seven nonzero 3-bit numbers; each syndrome points to exactly one bit. The classic picture: three overlapping circles; each circle must contain an even number of 1s. A single bit error makes exactly the circles that contain it fail, and the pattern of failed circles <b>identifies the bit</b>.</p></div>
 <div class="widget" id="w-hamming">Choose 4 data bits, then <em>flip</em> some of the 7 transmitted bits (error injection). Each circle should contain an even number of ones; a circle with odd parity glows red. The syndrome is the vector of failed checks; the decoder flips the unique bit whose column of $H$ equals the syndrome. Try one flip: always corrected. Two flips: the decoder "corrects" a third bit and produces a <em>wrong</em> code word (a miscorrection): the price of $d_{\min}=3$.</div>
 <div class="box key"><span class="tag">Extended Hamming (8,4) = SECDED</span>
-<p>Append one more overall parity bit. Now $d_{\min}=4$: single errors are corrected and <em>double errors are detected</em> (syndrome ≠ 0 but overall parity OK ⇒ even number of errors ⇒ cannot correct). This is the code in ECC memory.</p></div>
+<p>Append one more overall parity bit. Now $d_{\min}=4$: single errors are corrected and <em>double errors are detected</em> (the overall parity is the sum of all bits, which is unchanged by an even number of flips: syndrome ≠ 0 but overall parity OK ⇒ even number of errors ⇒ cannot correct). Syndrome table: ($s\ne0$, parity fails) → single error, correct it; ($s\ne0$, parity OK) → double error, flag; ($s=0$, parity fails) → the parity bit itself is wrong. Memory modules use (72,64) and (39,32) versions of this: 8 check bits for 64 data bits, a 12.5% overhead.</p></div>
+<h3>Weight enumerators</h3>
+<p>The <b>weight enumerator</b> $A(x)=\sum_wA_wx^w$ counts the code words of each weight; it is what soft-decision performance depends on. For the (7,4) Hamming code, the 16 words have weights $A_0=1,\ A_3=7,\ A_4=7,\ A_7=1$, i.e. $A(x)=1+7x^3+7x^4+x^7$ (check: $1+7+7+1=16$ ✓). Note $A_7=1$ means the all-ones word is in the code, so complementing a code word gives another code word. The (15,11) Hamming code has $A_3=35$, $A_4=105$, $A_5=168$, $\dots$; the Golay (23,12) code has $A_7=253$, $A_8=506$, $A_{11}=A_{12}=1288$, $A_{15}=506$, $A_{16}=253$, $A_{23}=1$; the extended Golay (24,12,8) has only weights $0,8,12,16,24$ with $A_8=759$, $A_{12}=2576$, $A_{16}=759$ (all weights divisible by 4: a "doubly-even" code, and the code used by Voyager for its colour pictures of Jupiter and Saturn).</p>
 <h3>How good is it? Block-error probabilities</h3>
-<p>Over a BSC with crossover $p$, a $t$-error-correcting code decodes correctly iff at most $t$ of the $n$ bits are flipped:
-$$P_{\rm correct}=\sum_{i=0}^{t}\binom ni p^i(1-p)^{n-i}.$$
+<p>Over a BSC with crossover $p$, a bounded-distance decoder for a $t$-error-correcting code decodes correctly iff at most $t$ of the $n$ bits are flipped:
+$$P_{\rm correct}=\sum_{i=0}^{t}\binom ni p^i(1-p)^{n-i},\qquad P_w=1-P_{\rm correct}\quad(\text{exact for perfect codes}).$$
 For the (7,4) Hamming code, $t=1$: $P_{\rm correct}=(1-p)^7+7p(1-p)^6$, and for $p=0.1$: $0.4783+0.3720=\mathbf{0.8503}$ (GATE 2022 Q.62, key 0.84–0.86), so the probability of failing is $\mathbf{0.1497\approx0.15}$ (GATE 2026 Q.63, key 0.10–0.20). For small $p$ the failure probability is $\approx\binom72p^2=21p^2$, quadratic in $p$ instead of the linear $p$ of uncoded transmission: that is the whole benefit.</p>
+<div class="box derive"><span class="tag">Derivation · from word errors to bit errors</span>
+<p>When a perfect code fails, the decoder usually "corrects" to a <em>wrong code word</em> that differs from the sent one in $d_{\min}$ positions (for a double error in a Hamming code the decoder adds a third bit and lands on a weight-3 code word). Those $d_{\min}$ errors are spread over all $n$ coordinates in a systematic code, so a fraction $\approx d_{\min}/n$ of the transmitted bits, hence of the data bits, are wrong:
+$$P_b\approx\frac{d_{\min}}{n}\,P_w\quad\Longrightarrow\quad P_b^{\rm Hamming(7,4)}\approx\frac37\cdot21p^2=9p^2.$$
+At $p=10^{-2}$: $P_w=2.0\times10^{-3}$ and $P_b\approx8.7\times10^{-4}$, an order-of-magnitude gain over $10^{-2}$ for 75% more bits sent. (Exact enumeration over the 128 error patterns, done in the widget, confirms the $9p^2$ law at small $p$.)</p></div>
 <div class="widget" id="w-hamperf">Left of the dotted line: probability of a data-bit error after decoding the (7,4) Hamming code (computed <em>exactly</em> by enumerating all 128 error patterns), versus uncoded transmission, against the BSC crossover $p$. Switch to the AWGN view to map $p=Q(\sqrt{2R_cE_b/N_0})$: coding wins only above a threshold $E_b/N_0$, because the extra parity bits cost energy ($E_c=R_cE_b$ per transmitted bit) and the weaker code bits are more often wrong.</div>
 <div class="box trap"><span class="tag">Coding gain is not automatic</span>
-<p>At low $E_b/N_0$ the rate-4/7 code spends 43% of the energy on parity bits and the resulting loss in $p$ outweighs the correction capability: coded BER is <em>worse</em>. Coding gain appears only above a crossover. Hard-decision decoding of the (7,4) code gains roughly 0.5 dB at $10^{-5}$ BER; soft-decision decoding gains a further 2 dB.</p></div>
+<p>At low $E_b/N_0$ the rate-4/7 code spends 43% of the energy on parity bits and the resulting loss in $p$ outweighs the correction capability: coded BER is <em>worse</em>. Coding gain appears only above a crossover. Hard-decision decoding of the (7,4) code gains roughly 0.5 dB at $10^{-5}$ BER; soft-decision decoding gains a further 2 dB (derived next).</p></div>
+
+<h2>Coding gain: hard versus soft decisions</h2>
+<div class="box derive"><span class="tag">Derivation · asymptotic coding gain</span>
+<p>Each code bit carries energy $E_c=R_cE_b$. We compare with uncoded BPSK, whose bit error probability is $Q\big(\sqrt{2E_b/N_0}\big)\approx e^{-E_b/N_0}$ (using $Q(\sqrt x)\lesssim e^{-x/2}$, accurate in the exponent).</p>
+<p><b>Soft decisions</b> (ML decoding on the unquantised matched-filter outputs). The pair-wise error probability between two code words at Hamming distance $d$ is the probability that the received vector in $\mathbb R^n$ is closer to the other word. Their Euclidean distance (BPSK, $\pm\sqrt{E_c}$ per coordinate) is $2\sqrt{dE_c}$, so by the two-point result of Chapter 14,
+$$P(\mathbf c_1\to\mathbf c_2)=Q\!\left(\sqrt{\frac{2\,d\,E_c}{N_0}}\right)=Q\!\left(\sqrt{2\,dR_c\,\frac{E_b}{N_0}}\right).$$
+The union bound gives the word error probability $P_w\le\sum_{w\ge d_{\min}}A_w\,Q\big(\sqrt{2wR_cE_b/N_0}\big)$ and at high SNR the $d_{\min}$ term dominates. Comparing exponents with $Q(\sqrt{2E_b/N_0})$: the same error probability is obtained when $E_b/N_0$ is reduced by the factor $dR_c$:
+$$\boxed{\ G_{\rm soft}=10\log_{10}(R_c\,d_{\min})\ \text{dB}\ }$$
+<b>Hard decisions</b>. Each code bit is first decided on its own, with $p=Q(\sqrt{2R_cE_b/N_0})\approx e^{-R_cE_b/N_0}$, then a bounded-distance decoder fails when at least $t+1$ bits are wrong; the leading term is $\binom n{t+1}p^{t+1}\approx e^{-(t+1)R_cE_b/N_0}$. Comparing exponents again,
+$$\boxed{\ G_{\rm hard}=10\log_{10}\big(R_c\,(t+1)\big)\ \text{dB}\ }$$
+Since $t+1=\lfloor(d_{\min}+1)/2\rfloor\approx d_{\min}/2$, <b>asymptotically, hard decisions lose about 3 dB (a factor 2 in the exponent) against soft decisions</b>; at practical error rates the measured loss is nearer 2 dB.</p>
+<table>
+<tr><th>Code</th><th>$n,k,d_{\min}$</th><th>$R_c$</th><th>$G_{\rm hard}$</th><th>$G_{\rm soft}$</th></tr>
+<tr><td>Hamming</td><td>7, 4, 3</td><td>0.571</td><td>0.58 dB</td><td>2.34 dB</td></tr>
+<tr><td>Hamming</td><td>15, 11, 3</td><td>0.733</td><td>1.66 dB</td><td>3.42 dB</td></tr>
+<tr><td>BCH</td><td>15, 7, 5</td><td>0.467</td><td>1.46 dB</td><td>3.68 dB</td></tr>
+<tr><td>Golay</td><td>23, 12, 7</td><td>0.522</td><td>3.20 dB</td><td>5.63 dB</td></tr>
+<tr><td>Extended Golay</td><td>24, 12, 8</td><td>0.5</td><td>3.01 dB</td><td>6.02 dB</td></tr>
+</table>
+<p>These are <em>asymptotic</em> numbers, reached only at very low error rates; at a word error rate of $10^{-4}$ the actual gain is smaller (the many words at distance just above $d_{\min}$ still count). The widget draws the whole curves.</p>
+<div class="widget" id="w-gain">Word-error probability of a block code on the AWGN channel with BPSK, compared with sending the same $k$ information bits uncoded. <b>Hard</b>: demodulate each bit, then bounded-distance decoding (exact for the perfect codes). <b>Soft</b>: ML decoding, union bound $\sum_wA_wQ(\sqrt{2wR_cE_b/N_0})$ (loose and clipped at 1 at low SNR, tight where it matters). Choose the code and see the $E_b/N_0$ needed for a word error rate of $10^{-4}$, and the gains over uncoded transmission: soft decoding of the Golay code wins about 4 dB, hard decoding about 2.5 dB, both below the asymptotic figures of the table.</div>
+<div class="box eng"><span class="tag">Engineering practice · why soft decisions matter, and how much they cost</span>
+<p>A hard-decision demodulator throws away the <em>reliability</em> of each bit (a sample at $+0.05$ and one at $+1.0$ both become "1"). Soft-decision decoding keeps 3–4 bits of reliability per code bit (<i>soft values</i> or log-likelihood ratios, LLRs). The price is a wider data path inside the receiver and, for block codes of non-trivial length, an exhaustive or iterative decoder; the benefit is 2–3 dB, equivalent to 1.6–2 times the transmit power, or 26–41% more free-space range. Quantising to 3 bits already recovers all but 0.25 dB of the infinite-precision gain; this is why every modern code (convolutional with Viterbi, turbo, LDPC, polar: Chapter 18) is decoded with soft inputs. Hard-decision algebraic decoding (BCH, Reed–Solomon) survives where the channel is naturally binary (optical transport, flash with few reads, memory) or where speed matters more than the last dB.</p></div>
+
+<h2>Cyclic codes: algebra that builds encoders from shift registers</h2>
+<p>Linear codes need a $k\times n$ matrix and a syndrome table: fine for $n=7$, hopeless for $n=1023$. <b>Cyclic codes</b> add a structure that turns encoding and syndrome computation into division by a single polynomial, implemented with a few flip-flops. A linear code is <b>cyclic</b> if every cyclic shift of a code word is a code word. Write a word as the polynomial $c(x)=c_0+c_1x+\dots+c_{n-1}x^{n-1}$ over GF(2). Multiplying by $x$ and reducing with $x^n=1$ (that is, working modulo $x^n+1$) moves $c_{n-1}$ to position 0, i.e. it <em>is</em> the cyclic shift.</p>
+<div class="box derive"><span class="tag">Derivation · every cyclic code has a generator polynomial</span>
+<p>Let $g(x)$ be the non-zero code polynomial of <em>lowest degree</em> $r$ (we can take it monic). (1) Every code polynomial is a multiple of $g$: divide, $c(x)=q(x)g(x)+\rho(x)$ with $\deg\rho<r$; since $q(x)g(x)$ is a sum of shifts of $g$ it is a code word, so $\rho=c+qg$ is a code word of degree $<r$, hence $\rho=0$. (2) The number of multiples of $g$ of degree $<n$ is $2^{n-r}$, so $k=n-r$. (3) $g$ divides $x^n+1$: write $x^n+1=h(x)g(x)+\rho(x)$; modulo $x^n+1$ this says $\rho\equiv h g$, a code word of degree $<r$, so $\rho=0$. Conversely <em>every</em> factor of $x^n+1$ generates a cyclic code. So cyclic codes of length $n$ correspond to the divisors of $x^n+1$:
+$$x^7+1=(x+1)(x^3+x+1)(x^3+x^2+1).$$
+$g(x)=x^3+x+1$ gives a (7,4) code which is equivalent to the Hamming code ($d_{\min}=3$, same weight enumerator $1+7x^3+7x^4+x^7$); $g=(x+1)(x^3+x+1)=x^4+x^3+x^2+1$ gives a (7,3) code with all non-zero weights equal to 4. The check polynomial $h(x)=(x^n+1)/g(x)$ plays the role of $H$.</p>
+<p><b>Systematic encoding.</b> Multiply the message by $x^r$ to move it to the high-order positions, then add the remainder to make the result divisible by $g$:
+$$c(x)=x^{r}m(x)+\big[x^{r}m(x)\bmod g(x)\big].$$
+(The sum is divisible by $g$ because $x^rm=q\,g+\rho$ and $\rho+\rho=0$.) This is <em>exactly</em> the CRC operation of the next section. <b>Syndrome.</b> $s(x)=r(x)\bmod g(x)=e(x)\bmod g(x)$ since $c(x)$ is divisible by $g$. A one-bit error $x^i$ has syndrome $x^i\bmod g$; for the Hamming code with a primitive $g$ these are all distinct for $i=0..n-1$, so the syndrome identifies the error position (Meggitt decoder).</p></div>
+<div id="d-lfsr" class="dia">Division circuit for $g(x)=x^3+x+1$ (taps $g_0=g_1=1$, $g_2=0$). Message bits enter highest degree first; after $k$ clocks the three flip-flops hold the remainder, i.e. the parity bits. Hardware cost: 3 flip-flops and 2 XOR gates, at any data rate the logic can clock.</div>
+<div class="box eng"><span class="tag">Engineering practice · why cyclic structure is used everywhere</span>
+<p>An LFSR (linear-feedback shift register) divider needs $n-k$ flip-flops and a handful of XOR gates and processes one bit per clock; a parallel version processes 8, 64 or 512 bits per clock by unrolling the recursion (a matrix of XORs). The same register run with feedback only (no input) generates the PN sequences of Chapter 19; run on the received word it computes the syndrome. Cyclic structure is thus what makes CRC-32 feasible in a 100 Gb/s network card and BCH encoding feasible inside a flash-memory controller.</p></div>
+
+<h2>BCH codes: choosing $g(x)$ to guarantee $t$ errors</h2>
+<p>Hamming's code corrects one error. How do we construct a cyclic code that provably corrects $t$? The answer needs the field GF($2^m$).</p>
+<h3>Finite fields in one page</h3>
+<p>Take a degree-$m$ <em>primitive</em> polynomial $p(x)$ over GF(2) (irreducible, and $x$ generates all non-zero residues). Declare $\alpha$ to be a root: $p(\alpha)=0$. Every element of GF($2^m$) is a polynomial in $\alpha$ of degree $<m$ (an $m$-bit vector, added by XOR), and the $2^m-1$ non-zero elements are the powers $\alpha^0,\dots,\alpha^{2^m-2}$ (multiplied by adding exponents modulo $2^m-1$). For $m=3$, $p(x)=x^3+x+1$, so $\alpha^3=\alpha+1$:</p>
+<table>
+<tr><th>power</th><td>$0$</td><td>$\alpha^0$</td><td>$\alpha^1$</td><td>$\alpha^2$</td><td>$\alpha^3$</td><td>$\alpha^4$</td><td>$\alpha^5$</td><td>$\alpha^6$</td></tr>
+<tr><th>bits $\alpha^2\alpha^1\alpha^0$</th><td>000</td><td>001</td><td>010</td><td>100</td><td>011</td><td>110</td><td>111</td><td>101</td></tr>
+</table>
+<p>(e.g. $\alpha^2\cdot\alpha^5=\alpha^7=\alpha^0=1$; $\alpha+\alpha^2=110=\alpha^4$.) Squaring is linear in characteristic 2, $(a+b)^2=a^2+b^2$, so if $\alpha$ is a root of a binary polynomial $f$ then so is $\alpha^2$ (and $\alpha^4,\dots$): the <b>conjugates</b> of $\alpha^j$ are $\alpha^{2j},\alpha^{4j},\dots$, and the <b>minimal polynomial</b> $m_j(x)$ of $\alpha^j$ is the binary polynomial having exactly these as roots. For GF(16) with $x^4+x+1$: $m_1=x^4+x+1$, $m_3=x^4+x^3+x^2+x+1$, $m_5=x^2+x+1$. The field of 16 elements is the one used by the (15,k) BCH codes below.</p>
+<div class="box derive"><span class="tag">Derivation · the BCH bound</span>
+<p>Let $n=2^m-1$ and require every code polynomial to vanish at $\alpha,\alpha^2,\dots,\alpha^{2t}$: $c(\alpha^j)=0$ for $j=1..2t$. Written as a matrix condition, the parity-check matrix has the rows $\big(1,\alpha^j,\alpha^{2j},\dots,\alpha^{(n-1)j}\big)$, $j=1,\dots,2t$. Take any $2t$ columns, at positions $i_1,\dots,i_{2t}$ and call $X_l=\alpha^{i_l}$ (distinct). The $2t\times2t$ submatrix has entries $X_l^{\,j}$: a Vandermonde matrix times a diagonal one, with determinant $\prod_lX_l\prod_{a<b}(X_a+X_b)\ne0$ because the $X_l$ are distinct and non-zero. So any $2t$ columns are linearly independent; by the column characterisation of $d_{\min}$ we get
+$$d_{\min}\ge2t+1\qquad(\textbf{BCH bound}).$$
+Because $c$ is binary, $c(\alpha^{2j})=c(\alpha^j)^2$, so conditions at even $j$ are automatic; the generator polynomial is $g(x)=\mathrm{lcm}\,[m_1(x),m_3(x),\dots,m_{2t-1}(x)]$ with degree $\le mt$, giving $k\ge n-mt$. Examples: $t=1$: $g=m_1$, the Hamming code (15,11). $t=2$: $g=m_1m_3=x^8+x^7+x^6+x^4+1$, the (15,7) code with $d_{\min}=5$. $t=3$: $g=m_1m_3m_5$ of degree 10, the (15,5) code with $d_{\min}=7$. Larger: (31,21,5), (31,16,7), (63,51,5), (63,45,7).</p></div>
+<p><b>Decoding</b> follows the same algebra. Form the syndromes $S_j=r(\alpha^j)=e(\alpha^j)=\sum_l X_l^{\,j}$ over the error locations $X_l=\alpha^{i_l}$; the unknowns $X_l$ are the roots of the <i>error-locator polynomial</i> $\Lambda(x)=\prod_l(1+X_lx)$, whose coefficients follow from the $S_j$ by solving a set of linear (Newton) equations. The Berlekamp–Massey algorithm does this in $O(t^2)$ operations, and a <b>Chien search</b> tries all $\alpha^{-i}$ to find the roots. For $t=1$ it collapses to $S_1=\alpha^i$: the syndrome <em>is</em> the location, which is Hamming's decoder.</p>
+
+<h2>Reed–Solomon codes: symbols, bursts and erasures</h2>
+<p>The same construction with <b>non-binary symbols</b> gives the most widely used code family in history. A Reed–Solomon (RS) code of length $n=2^m-1$ over GF($2^m$) has symbols of $m$ bits. Its generator is
+$$g(x)=\prod_{j=1}^{2t}(x+\alpha^j),\qquad\deg g=n-k=2t,$$
+whose coefficients are field elements, not bits. The BCH bound gives $d_{\min}\ge2t+1=n-k+1$, and the Singleton bound gives $d_{\min}\le n-k+1$: so <b>every RS code is MDS with $d_{\min}=n-k+1$ exactly</b>, the best any code of that length and dimension can do. It corrects $t=\lfloor(n-k)/2\rfloor$ <em>symbol</em> errors and, by the mixed rule of the first section, any combination of $e$ errors and $\varepsilon$ erasures with $2e+\varepsilon\le n-k$.</p>
+<div class="box ex"><span class="tag">Worked example · decoding RS(7,5) over GF(8) from first principles</span>
+<p>$n=7$, $k=5$, $n-k=2$, $t=1$. Use the table above. $g(x)=(x+\alpha)(x+\alpha^2)=x^2+(\alpha+\alpha^2)x+\alpha^3=x^2+\alpha^4x+\alpha^3$. Encode $m(x)=\alpha^3+x+\alpha^5x^2+\alpha x^3+\alpha^6x^4$: $c(x)=m(x)g(x)=\alpha^6+\alpha x+\alpha^5x^2+\alpha^3x^3+\alpha^2x^4+x^5+\alpha^6x^6$ (one can check $c(\alpha)=c(\alpha^2)=0$). Suppose the channel adds $e(x)=\alpha^2x^4$: the value $\alpha^2$ lands at position 4 (and note the symbol could have been wrong in any of its 3 bits: the decoder doesn't care). The receiver computes
+$$S_1=r(\alpha)=e(\alpha)=\alpha^2\cdot\alpha^4=\alpha^6,\qquad S_2=r(\alpha^2)=e(\alpha^2)=\alpha^2\cdot\alpha^8=\alpha^{10}=\alpha^3.$$
+For one error of value $y$ at location $X=\alpha^i$: $S_1=yX$, $S_2=yX^2$. Dividing, $X=S_2/S_1=\alpha^{3-6}=\alpha^{-3}=\alpha^4$: <b>position 4</b> ✓; then $y=S_1/X=S_1^2/S_2=\alpha^{12-3}=\alpha^9=\alpha^2$ ✓. The decoder subtracts (XORs) $\alpha^2$ from symbol 4. This is the whole of the idea: syndromes are power sums of the unknown locations, weighted by the unknown error values, and $2t$ syndromes give $2t$ equations for $t$ locations and $t$ values. Real decoders (Berlekamp–Massey for the locator, Chien search for its roots, Forney’s formula for the values) solve the same system for $t$ up to 16 or more.</p></div>
+<h3>Why RS codes suit bursts</h3>
+<p>An error burst of $b$ consecutive bits touches at most $\lceil(b+m-1)/m\rceil$ symbols, so an RS code with symbol size $m$ and capability $t$ is <em>guaranteed</em> to repair any burst of up to $(t-1)m+1$ bits and many longer ones. RS(255,223) with $m=8$, $t=16$: guaranteed $15\times8+1=121$ bits; RS codes are the right tool when errors come in lumps (scratches, fades, the output of a Viterbi decoder). For an <em>independent</em> bit error probability $p$ the symbol error probability is $P_s=1-(1-p)^m$ and the word error probability is $\sum_{i>t}\binom niP_s^i(1-P_s)^{n-i}$.</p>
+<table>
+<tr><th>System</th><th>Code</th><th>Notes</th></tr>
+<tr><td>Compact disc</td><td>CIRC: RS(32,28) and RS(28,24) over GF(256), with a delay interleaver between them</td><td>repairs a burst of about 4000 bits (≈2.5 mm of track); the rest is concealed by interpolation</td></tr>
+<tr><td>DVD</td><td>RS product code RS(208,192) × RS(182,172)</td><td>rows and columns of a 2-D block</td></tr>
+<tr><td>QR code</td><td>RS over GF(256), 4 levels: L, M, Q, H</td><td>recovers about 7%, 15%, 25%, 30% of the codewords</td></tr>
+<tr><td>Deep space (CCSDS)</td><td>RS(255,223), $t=16$, concatenated with a rate-1/2 $K=7$ convolutional code</td><td>inner Viterbi output is bursty; outer RS cleans it (Voyager, Mars landers)</td></tr>
+<tr><td>DVB-T, DVB-S</td><td>RS(204,188), $t=8$ (shortened from (255,239)) + interleaver + convolutional code</td><td>digital TV</td></tr>
+<tr><td>Ethernet 100G–400G</td><td>RS(528,514) and RS(544,514) over 10-bit symbols</td><td>forward error correction for PAM-4 lanes</td></tr>
+<tr><td>RAID-6, cloud storage</td><td>RS erasure codes: any $k$ of $n$ disks recover the data</td><td>two parity disks survive any two disk failures</td></tr>
+</table>
+<div class="box derive"><span class="tag">Interleaving and shortening</span>
+<p><b>Interleaving.</b> A burst longer than $t$ defeats a code that expects scattered errors. Write $I$ code words as the <i>rows</i> of an $I\times n$ array and transmit it <i>column by column</i>. A channel burst of length $b$ then hits each code word in at most $\lceil b/I\rceil$ symbols: the code survives bursts up to $b\le It$. The cost is memory $I\,n$ and latency of about $2In$ symbols (a convolutional interleaver halves both): fine for a CD, unacceptable for a telephone call, which is why speech links use short interleaving depth. <b>Shortening.</b> To fit a shorter frame, fix the first $s$ message symbols to zero and do not transmit them: an $(n-s,\,k-s)$ code with the same $d_{\min}$ and the same decoder. That is how RS(204,188) is cut from (255,239), and how CRC-32 is used on frames of any length.</p></div>
+<div class="box key"><span class="tag">Erasures are cheaper than errors</span>
+<p>An erasure costs one unit of distance, an error two. With $n-k=32$ parity symbols, RS(255,223) corrects 16 unknown errors <em>or</em> 32 erasures. This is why modern receivers pass a reliability flag with each symbol, why a CRC failure on a packet can be turned into an erasure for an outer code, and why a lost packet, which has a known location, is far cheaper to repair than a corrupted one. The Internet’s <i>fountain</i> and erasure codes (Raptor, RaptorQ in 3GPP MBMS and ATSC 3.0) build on this.</p></div>
 
 <h2>CRC: detection that costs almost nothing</h2>
-<p>For long frames we usually want <em>detection</em> only (and retransmit on failure: ARQ). The <b>cyclic redundancy check</b> treats the message bits as the coefficients of a polynomial $M(x)$ over GF(2). Pick a <b>generator polynomial</b> $G(x)$ of degree $r$. The sender appends $r$ bits chosen so that the transmitted polynomial is divisible by $G(x)$:
+<p>For long frames we usually want <em>detection</em> only (and retransmit on failure: ARQ). The <b>cyclic redundancy check</b> is the systematic cyclic encoder above, used purely as a detector. Treat the message bits as the coefficients of a polynomial $M(x)$ over GF(2). Pick a <b>generator polynomial</b> $G(x)$ of degree $r$. The sender appends $r$ bits chosen so that the transmitted polynomial is divisible by $G(x)$:
 $$R(x)=x^rM(x)\bmod G(x),\qquad T(x)=x^rM(x)+R(x)\ (\text{divisible by }G).$$
-Division over GF(2) is long division with XOR instead of subtraction (no carries). The receiver divides $T'(x)$ by $G(x)$; a nonzero remainder means "error". Properties of a CRC with a degree-$r$ generator whose constant term is 1: detects <b>all single-bit errors</b>; <b>all burst errors of length $\le r$</b>; all odd-numbered error counts if $(x+1)$ divides $G$; and a random error pattern goes undetected with probability $2^{-r}$. A CRC is a (shortened) cyclic code, so it can be built with a simple shift register.</p>
+Division over GF(2) is long division with XOR instead of subtraction (no carries). The receiver divides $T'(x)=T(x)+E(x)$ by $G(x)$; a nonzero remainder means "error". <b>An error is missed iff $G(x)$ divides $E(x)$</b>, so the detection properties are properties of the divisors of $G$.</p>
+<div class="box derive"><span class="tag">Derivation · what a CRC provably detects</span>
+<p>Let $G$ have degree $r$ and a non-zero constant term ($G_0=1$).</p>
+<ul>
+<li><b>All single-bit errors.</b> $E=x^i$. Since $G_0=1$, $x\nmid G$, and $G$ has degree $\ge1$, so $G\nmid x^i$.</li>
+<li><b>All bursts of length $\le r$.</b> A burst is $E=x^ib(x)$ with $b_0=1$ and $\deg b\le r-1$. $G$ is coprime to $x^i$ and has larger degree than $b$, so it cannot divide $b\ne0$. <b>Bursts of length $r+1$:</b> undetected only if $b=G$, i.e. the $r-1$ interior bits all match: probability $2^{-(r-1)}$; <b>longer bursts</b>: $2^{-r}$.</li>
+<li><b>All odd numbers of errors, if $(x+1)\mid G$.</b> Evaluating at $x=1$: $E(1)=$ (number of error bits) mod 2. If that is odd, $E(1)=1$, so $(x+1)\nmid E$, hence $G\nmid E$. (CRC-16-CCITT, CRC-16-IBM and USB’s CRC-16 contain the factor $x+1$; CRC-32 does not.)</li>
+<li><b>Double errors.</b> $E=x^i(1+x^j)$; undetected iff $G\mid1+x^j$. Let $\rho$ be the smallest $j$ with $G\mid1+x^j$ (the <i>period</i> or order of $G$). Then every pair of errors spaced less than $\rho$ apart is detected. For a primitive degree-$r$ polynomial $\rho=2^r-1$; CRC-16-CCITT $=(x+1)\times$ (primitive degree-15) has $\rho=32767$: all double errors in frames up to 32,767 bits are caught.</li>
+<li><b>Random errors.</b> Of the $2^N$ error patterns on an $N$-bit frame, a fraction $2^{-r}$ are multiples of $G$: undetected probability $\approx2^{-r}$ (CRC-32: $2.3\times10^{-10}$).</li>
+</ul></div>
 <div class="widget" id="w-crc">Binary long division by $G(x)$. The generator is aligned under the leading 1 of the running remainder at each step (blue) and XORed in (white row shows the result). After all the data bits are consumed, the last $r$ bits are the CRC. Tick "flip bit" to corrupt the transmitted frame and watch the receiver's remainder turn non-zero.</div>
 <div class="box ex"><span class="tag">Worked example · GATE 2024 Q.47</span>
 <p>Data $111010101$, $G(x)=x^4+x+1\ (=10011)$. Append 4 zeros: $1110101010000$ and divide:<br>
 <code>11101 ⊕ 10011 = 01110</code> → bring down → ... After all nine data bits are processed, the 4-bit remainder is $1100$. Transmitted word: $111010101\,\mathbf{1100}$, option (A) (key A). Check: the receiver dividing $1110101011100$ by $10011$ gets remainder 0.</p></div>
+<table>
+<tr><th>Name</th><th>Polynomial</th><th>Used in</th></tr>
+<tr><td>CRC-5-USB</td><td>$x^5+x^2+1$</td><td>USB token packets</td></tr>
+<tr><td>CRC-8</td><td>$x^8+x^2+x+1$</td><td>ATM cell header (HEC), many sensors</td></tr>
+<tr><td>CRC-16-CCITT</td><td>$x^{16}+x^{12}+x^5+1$ (0x1021)</td><td>HDLC/X.25, Bluetooth, SD cards, XMODEM</td></tr>
+<tr><td>CRC-16-IBM</td><td>$x^{16}+x^{15}+x^2+1$ (0x8005)</td><td>USB data, Modbus</td></tr>
+<tr><td>CRC-24A</td><td>0x864CFB</td><td>LTE/5G transport blocks</td></tr>
+<tr><td>CRC-32</td><td>0x04C11DB7: $x^{32}+x^{26}+x^{23}+x^{22}+x^{16}+x^{12}+x^{11}+x^{10}+x^8+x^7+x^5+x^4+x^2+x+1$</td><td>Ethernet FCS, ZIP, PNG, gzip, SATA</td></tr>
+<tr><td>CRC-32C</td><td>0x1EDC6F41</td><td>iSCSI, SCTP, ext4, Btrfs; hardware instruction in x86 SSE4.2</td></tr>
+</table>
+<div class="box eng"><span class="tag">Engineering practice · CRC details that trip people up</span>
+<p>(1) Practical CRCs <b>preset the register to all ones</b> and <b>invert the result</b>: otherwise leading zeros or a frame of all zeros would have remainder zero and prepending/dropping zeros would go unnoticed. The standard check value: the ASCII string "123456789" has CRC-32 = <code>0xCBF43926</code> and CRC-16-CCITT (init <code>0xFFFF</code>) = <code>0x29B1</code>. (2) Serial links transmit the least significant bit first, so implementations use "reflected" shift registers; the algebra is unchanged. (3) <b>The residue trick</b>: if the CRC is appended and the receiver runs the <em>whole frame</em> (data + CRC) through the same register, it ends in a fixed constant for every error-free frame (zero if the final inversion is omitted). (4) A CRC detects accidental errors; it is a linear code, so an attacker can alter a frame and fix up its CRC. Never use it for security. (5) Ethernet’s CRC-32 detects every 1-, 2- and 3-bit error in a maximum-length frame (12 kbit). (6) A frame with a bad CRC is simply dropped; TCP or the link-layer ARQ below asks for it again.</p></div>
+
+<h2>Retransmission: ARQ and hybrid ARQ</h2>
+<p>With error detection one can ask the sender to try again: <b>automatic repeat request</b> (ARQ). FEC (forward error correction) spends parity bits on every transmission; ARQ spends nothing until a frame fails, but it needs a return channel and adds delay. The question is how much throughput is lost.</p>
+<div class="box derive"><span class="tag">Derivation · throughput of the three ARQ protocols</span>
+<p>Let the frame take $T_f$ seconds to send, the one-way propagation delay be $T_p$, and $a=T_p/T_f$. The earliest an acknowledgement can arrive after the start of a frame is $T_f+2T_p=T_f(1+2a)$ (ignoring ACK length and processing time). Let $P$ be the probability that a frame (or its ACK) is lost or corrupted, independently. <i>Efficiency</i> $\eta$ is the fraction of time the transmitter sends new, useful frames.</p>
+<p><b>Stop-and-wait.</b> Send one frame, then wait for the ACK. Each attempt occupies $(1+2a)T_f$ and carries one frame; a frame needs on average $1/(1-P)$ attempts. $$\eta_{\rm SW}=\frac{1-P}{1+2a}.$$ On a satellite hop ($a\gg1$) this is crippling: at $a=10$ it is below 5%.</p>
+<p><b>Go-back-$N$.</b> The sender keeps up to $N\ge1+2a$ frames in flight, so the pipe is full. When a frame fails, the sender discards everything it sent after it and starts again from that frame: one failure wastes a whole round trip, $1+2a$ frame times. Let $E$ be the expected number of frame times per delivered frame. With probability $1-P$ the frame is delivered at a cost of one slot; with probability $P$ we pay $1+2a$ slots and are back where we started:
+$$E=(1-P)\cdot1+P\,[(1+2a)+E]\ \Rightarrow\ E=\frac{1+2aP}{1-P},\qquad\eta_{\rm GBN}=\frac1E=\frac{1-P}{1+2aP}.$$
+(Stop-and-wait is the same recursion with a cost of $1+2a$ in <em>both</em> branches: $E=(1+2a)/(1-P)$.)</p>
+<p><b>Selective repeat.</b> Only the damaged frame is re-sent (the receiver buffers the later ones): $E=1/(1-P)$ and
+$$\eta_{\rm SR}=1-P\qquad(N\ge1+2a).$$
+With a small window ($N<1+2a$) the pipe is not full and each throughput is limited by the window: $\eta_{\rm SR}=\frac{N(1-P)}{1+2a}$ and $\eta_{\rm GBN}=\frac{N(1-P)}{(1+2a)(1-P+NP)}$. Window sizes: selective repeat needs sequence numbers $\ge2N$ (otherwise old and new frames are confused), go-back-$N$ needs only $N+1$.</p></div>
+<div class="widget" id="w-arq">Link efficiency versus the frame-loss probability $P$ for the three ARQ schemes. $a=T_p/T_f$ is the one-way delay measured in frame times; $N$ is the window. For $a=0.5$ (a terrestrial link) all three are close; at $a=10$ (a geostationary satellite with short frames) stop-and-wait collapses to a few percent while selective repeat holds $1-P$. With too small a window ($N<1+2a$) every sliding-window scheme becomes window-limited.</div>
+<div class="box eng"><span class="tag">Engineering practice · hybrid ARQ (HARQ)</span>
+<p>Plain ARQ throws away the corrupted copy. <b>Hybrid ARQ</b> combines FEC and ARQ and <em>keeps</em> the soft values of the failed transmission. <b>Type I</b>: FEC on every packet, retransmit the same packet on CRC failure. <b>Chase combining</b>: the receiver adds the LLRs of the repeated copies; with $N$ copies of the identical packet the SNR adds, a gain of $10\log_{10}N$ dB (3 dB at the first retransmission, 4.8 dB at the second: this is the maximum-ratio combining of Chapter 21 in time). <b>Incremental redundancy</b> (type II): send first a high-rate punctured version; on failure send <em>different</em> parity bits, so the combined code gets progressively stronger and lower-rate: the code adapts its own rate to the channel. LTE/5G use IR-HARQ with a target of about 10% block error on the first transmission, 8 parallel stop-and-wait processes (one subframe is 1 ms, the round-trip is 8 ms), and a CRC-24 on every transport block. Running at a 10% first-transmission BLER lets the link adaptation choose a higher-order modulation than a design that must succeed first time, which raises the average throughput. The cost is latency (+8 ms per retransmission), which ultra-reliable low-latency services in 5G therefore avoid by using robust first transmissions.</p></div>
+
+<h2>Choosing a code</h2>
+<table>
+<tr><th>Situation</th><th>Typical choice</th><th>Why</th></tr>
+<tr><td>Memory (DRAM) bit flips</td><td>SECDED Hamming (72,64)</td><td>low latency, single-cycle decode, rare errors</td></tr>
+<tr><td>Packet networks (detection)</td><td>CRC-32 + ARQ</td><td>tiny overhead; errors rare</td></tr>
+<tr><td>Bursty media, erasures (disc, QR, storage)</td><td>Reed–Solomon (+ interleaving)</td><td>symbol-level, MDS, erasure-friendly</td></tr>
+<tr><td>Flash memory</td><td>BCH → LDPC</td><td>BCH while raw BER $\sim10^{-4}$; LDPC with soft reads as cells wear</td></tr>
+<tr><td>Satellite / deep space</td><td>concatenated conv + RS; now LDPC, turbo</td><td>power-limited, needs coding gain</td></tr>
+<tr><td>Mobile data</td><td>LDPC (data), polar (control), HARQ</td><td>near capacity, flexible rates (Chapter 18)</td></tr>
+<tr><td>Voice</td><td>convolutional, unequal protection</td><td>low latency, soft Viterbi</td></tr>
+</table>
 
 <div class="box gate"><span class="tag">GATE pattern · coding appears almost every year since 2019</span>
 <ul>
 <li>Linearity tricks (2019 Q.7), find a valid code word from partial data (2021 Q.34), $d_{\min}$ from $G$ (2025 Q.33), CRC encoding (2024 Q.47), probability of correct/incorrect decoding on a BSC (2022 Q.62, 2026 Q.63).</li>
-<li>Formulas: $t=\lfloor(d_{\min}-1)/2\rfloor$; detect $d_{\min}-1$; Hamming $2^r\ge n+1$; $P_{\rm correct}=\sum_{i\le t}\binom nip^i(1-p)^{n-i}$; syndrome $=\mathbf eH^T$.</li>
+<li>Formulas: $t=\lfloor(d_{\min}-1)/2\rfloor$; detect $d_{\min}-1$; Hamming $2^r\ge n+1$; $P_{\rm correct}=\sum_{i\le t}\binom nip^i(1-p)^{n-i}$; syndrome $=\mathbf eH^T$; $d_{\min}$ = min weight = fewest dependent columns of $H$; Singleton $d\le n-k+1$; $G_{\rm soft}=10\log R_cd_{\min}$; cyclic: $g\mid x^n+1$; RS: $d=n-k+1$, $t=(n-k)/2$; CRC: remainder of $x^rM/G$; ARQ: $\eta_{\rm SW}=\frac{1-P}{1+2a}$, $\eta_{\rm GBN}=\frac{1-P}{1+2aP}$, $\eta_{\rm SR}=1-P$.</li>
+<li>Typical traps: forgetting the zero code word in the weight count; using $d_{\min}/2$ instead of $\lfloor(d_{\min}-1)/2\rfloor$; reading the CRC bits MSB/LSB the wrong way; counting $t=1$ failure as "$\ge1$" errors instead of "$\ge2$".</li>
 </ul></div>
 
 <h2>Practice</h2>
-<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="GATE 2019 · EC-1 · Q.7">
-A linear Hamming code maps 4-bit messages to 7-bit code words. The encoder mapping is linear. If message 0001 is mapped to 0000111 and message 0011 is mapped to 1100110, then message 0010 is mapped to
-<ol class="opts"><li>0010011</li><li>1100001</li><li>1111000</li><li>1111111</li></ol>
-<div class="sol"><p>$0010=0001\oplus0011\Rightarrow0000111\oplus1100110=1100001$. (B).</p></div></div>
+<p class="pset">Set A · Concept checks</p>
 
-<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2021 · EC · Q.34">
-A (7,4) systematic linear Hamming code. Three message–codeword pairs $(m_i;c_i)$ are $(1100;0101100)$, $(1110;0011110)$, $(0110;1000110)$. Which is a valid codeword?
-<ol class="opts"><li>1101001</li><li>1011010</li><li>0001011</li><li>0110100</li></ol>
-<div class="sol"><p>Derived above: parity patterns $P_1=101,P_2=111,P_3=011,P_4=110$ ⇒ $m=1011$ gives parity 000 ⇒ 0001011. Check (A): $m=1001$: $P_1\oplus P_4=011$, word 0111001 ≠ 1101001. So (C).</p></div></div>
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+A block code has minimum distance 4. Which statement is correct?
+<ol class="opts"><li>It can correct any 2 errors</li><li>It can simultaneously correct any 1 error and detect any 2 errors</li><li>It can correct any 2 errors and detect any 1 error</li><li>It can correct any 3 errors</li></ol>
+<div class="sol"><p>Correcting $t_c$ and detecting $t_d$ errors simultaneously needs $d_{\min}\ge t_c+t_d+1$: $1+2+1=4$ ✓ (this is the SECDED extended Hamming code). Correcting 2 would need $d_{\min}\ge5$. <b>(B)</b>.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="0.85" data-tol="0.01" data-marks="2" data-src="GATE 2022 · EC · Q.62">
-Communication over a memoryless BSC uses a (7,4) Hamming code. Each bit is received correctly with probability $1-\epsilon$ and flipped with probability $\epsilon$. The receiver does minimum-Hamming-distance decoding and correctly decodes the message bits iff the channel introduces at most one bit error. For $\epsilon=0.1$, the probability that a transmitted code word is decoded correctly is ______ (two decimals).
-<div class="sol"><p>$0.9^7+7(0.1)(0.9)^6=0.4783+0.3720=0.85$.</p></div></div>
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Which of the following binary codes are <em>perfect</em> (meet the Hamming bound with equality)?
+<ol class="opts"><li>Hamming (15,11)</li><li>Golay (23,12)</li><li>Extended Hamming (8,4)</li><li>Repetition code (5,1)</li></ol>
+<div class="sol"><p>(15,11): $1+15=16=2^4$ ✓. Golay: $1+23+253+1771=2048=2^{11}$ ✓. (8,4), $t=1$: $1+8=9\ne2^4$ ✗. Repetition (5,1), $t=2$: $1+5+10=16=2^4$ ✓. <b>A, B, D</b>.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="0.15" data-tol="0.05" data-marks="2" data-src="GATE 2026 · EC · Q.63">
-The average bit error rate at the input of a (7,4,1) Hamming decoder is 0.10. The probability that the decoder will fail to decode a received word correctly is ______ (two decimals).
-<div class="sol"><p>$1-0.8503=0.1497\approx0.15$ (key 0.10–0.20).</p></div></div>
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+For a linear block code with parity-check matrix $H$ the syndrome $\mathbf s=\mathbf rH^T$ of the received word $\mathbf r=\mathbf c+\mathbf e$ depends on
+<ol class="opts"><li>only the transmitted code word $\mathbf c$</li><li>both $\mathbf c$ and $\mathbf e$</li><li>only the error pattern $\mathbf e$</li><li>only the weight of $\mathbf e$</li></ol>
+<div class="sol"><p>$\mathbf s=\mathbf cH^T+\mathbf eH^T=\mathbf eH^T$. <b>(C)</b>. (Different patterns of equal weight generally give different syndromes.)</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="GATE 2025 · EC · Q.33">
-The generator matrix of a (6,3) binary linear block code is $G=\begin{bmatrix}1&0&0&1&0&1\\0&1&0&0&1&1\\0&0&1&1&1&0\end{bmatrix}$. The minimum Hamming distance $d_{\min}$ is ______.
-<div class="sol"><p>Row weights 3,3,3; pair sums weights 4,4,4; triple sum 111000 weight 3. $d_{\min}=3$.</p></div></div>
+<div class="prob" data-type="mcq" data-ans="D" data-marks="1" data-src="Original">
+A CRC generator polynomial of degree 16 that contains the factor $(x+1)$ is used. Which error class is <em>guaranteed</em> to be detected?
+<ol class="opts"><li>All errors of weight 2</li><li>All errors of weight 4</li><li>All bursts of length 20</li><li>All error patterns with an odd number of bit errors</li></ol>
+<div class="sol"><p>$E(1)\equiv$ (number of errors) mod 2; if odd, $E(1)=1\ne0$, so $(x+1)\nmid E$ and $G\nmid E$. Weight-2 errors are guaranteed only within the period of $G$; a burst of length 20 $>r=16$ is missed with probability $2^{-16}$. <b>(D)</b>.</p></div></div>
 
-<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="GATE 2024 · EC · Q.47">
-The information bit sequence $\{1\,1\,1\,0\,1\,0\,1\,0\,1\}$ is encoded with a CRC-4 code with generator polynomial $C(x)=x^4+x+1$. The encoded sequence of bits is
-<ol class="opts"><li>{1 1 1 0 1 0 1 0 1 1 1 0 0}</li><li>{1 1 1 0 1 0 1 0 1 1 1 0 1}</li><li>{1 1 1 0 1 0 1 0 1 1 1 1 0}</li><li>{1 1 1 0 1 0 1 0 1 0 1 0 0}</li></ol>
-<div class="sol"><p>Remainder of $x^4M(x)/G(x)$ is $1100$ (see the CRC widget). (A).</p></div></div>
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Which statements about Reed–Solomon codes are correct?
+<ol class="opts"><li>An $(n,k)$ RS code has $d_{\min}=n-k+1$ (it is MDS)</li><li>It corrects up to $\lfloor(n-k)/2\rfloor$ symbol errors</li><li>It corrects only $\lfloor(n-k)/2\rfloor$ <em>bit</em> errors</li><li>It can correct up to $n-k$ erasures</li></ol>
+<div class="sol"><p>(A) BCH bound plus Singleton. (B) $t=(d_{\min}-1)/2$. (C) false: a symbol is wrong whether one or all of its $m$ bits are in error, so RS corrects many more bit errors when they are clustered. (D) $2e+\varepsilon\le n-k$ with $e=0$. <b>A, B, D</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+The main purpose of a block <em>interleaver</em> placed between the encoder and the channel is to
+<ol class="opts"><li>increase the minimum distance of the code</li><li>reduce the number of parity bits</li><li>spread a burst of channel errors over many code words so that each sees only a few</li><li>make the code systematic</li></ol>
+<div class="sol"><p>Interleaving does not change $d_{\min}$ or the rate; it converts bursts into scattered errors that a random-error-correcting code can handle. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+Which ARQ scheme requires the <em>receiver</em> to buffer frames that arrive out of order?
+<ol class="opts"><li>Stop-and-wait</li><li>Go-back-$N$</li><li>Selective repeat</li><li>None of them</li></ol>
+<div class="sol"><p>In go-back-$N$ the receiver discards everything after a lost frame (window size 1 at the receiver); selective repeat accepts and stores later frames until the missing one is retransmitted. <b>(C)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
 
 <div class="prob" data-type="nat" data-ans="4" data-tol="0.01" data-marks="1" data-src="Original">
 The minimum number of parity bits needed in a single-error-correcting block code carrying 11 data bits is ______.
 <div class="sol"><p>$2^r\ge11+r+1$: $r=4$ ($16\ge16$): the (15,11) Hamming code.</p></div></div>
 
-<div class="prob" data-type="msq" data-ans="B,C" data-marks="1" data-src="Original">
-A block code has $d_{\min}=5$. Which of the following can it do?
-<ol class="opts"><li>Correct all 3-bit errors</li><li>Correct all 2-bit errors</li><li>Detect all 4-bit errors</li><li>Detect all 5-bit errors</li></ol>
-<div class="sol"><p>$t=\lfloor4/2\rfloor=2$; detects $d_{\min}-1=4$.</p></div></div>
+<div class="prob" data-type="nat" data-ans="5" data-tol="0.01" data-marks="1" data-src="Original">
+The minimum number of parity bits for a single-error-correcting code that carries 26 data bits is ______.
+<div class="sol"><p>$2^r\ge k+r+1=26+r+1$. $r=4$: $16<31$. $r=5$: $32\ge32$ ✓. It is the (31,26) Hamming code.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="2" data-src="Original">
-For the (7,4) Hamming code of this chapter (columns of $H$: 110, 101, 011, 111, 100, 010, 001), a received word is $\mathbf r=1001010$ (at most one bit in error). The position (1 to 7) of the erroneous bit is ______.
-<div class="sol"><p>$s_1=r_1\oplus r_2\oplus r_4\oplus r_5=1\oplus0\oplus1\oplus0=0$; $s_2=r_1\oplus r_3\oplus r_4\oplus r_6=1\oplus0\oplus1\oplus1=1$; $s_3=r_2\oplus r_3\oplus r_4\oplus r_7=0\oplus0\oplus1\oplus0=1$. Syndrome $011$ equals column 3 of $H$: bit 3 is wrong. The corrected word is $1011010$ (data 1011).</p></div></div>
+<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="1" data-src="Original">
+By the Singleton bound, the largest possible minimum distance of a binary $(15,9)$ block code is ______.
+<div class="sol"><p>$d_{\min}\le n-k+1=15-9+1=7$.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="6" data-tol="0.01" data-marks="1" data-src="Original">
-A CRC uses generator $x^3+x+1$ ($1011$). The data $1001$ is sent. The 3-bit remainder, read as a decimal number (0 to 7), is ______.
-<div class="sol"><p>Divide $1001\,000$ by $1011$. Leading 1 at bit 0: XOR $1011$ → $0010\,000$. Next 1 is at bit 2: XOR $1011$ aligned there → $0000\,110$. No more leading ones among the data bits; the remainder is $110$ = <b>6</b>. Transmitted frame: $1001\,110$. (Try it in the widget with generator 1011 — set the data to 1101 for another example: remainder 001.)</p></div></div>
+<div class="prob" data-type="nat" data-ans="8" data-tol="0.01" data-marks="2" data-src="Original">
+Using the Hamming bound, the largest dimension $k$ that a binary length-15 code correcting $t=2$ errors could have is ______.
+<div class="sol"><p>$\sum_{i\le2}\binom{15}i=1+15+105=121$; $2^k\le2^{15}/121=270.8$ so $k\le\lfloor\log_2270.8\rfloor=8$. (The best code known, the BCH (15,7), has $k=7$.)</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="0.028" data-tol="0.001" data-marks="2" data-src="GATE 2016 · EC (PYQ book)">
-A repetition code sends each bit three times (0→000, 1→111) over a BSC with crossover $p=0.1$. The decoder takes a majority vote. The average probability of error is ______.
-<div class="sol"><p>Error iff at least 2 of 3 bits flip: $P_e=3p^2(1-p)+p^3=3(0.01)(0.9)+0.001=\mathbf{0.028}$. (Compare the uncoded $0.1$: a 3.6× improvement at a 3× bandwidth cost.)</p></div></div>
+<div class="prob" data-type="nat" data-ans="7" data-tol="0.01" data-marks="1" data-src="Original">
+The number of code words of weight 4 in the (7,4) Hamming code of this chapter is ______.
+<div class="sol"><p>The weight enumerator is $1+7x^3+7x^4+x^7$ (the 4 information-weight patterns plus parity are tabulated by listing the 16 words; or note that the complement of a weight-3 word is a weight-4 word because the all-ones word is a code word). <b>7</b>.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="16" data-tol="0.01" data-marks="2" data-src="GATE 2018 · EC (PYQ book)">
-A binary block code has fixed length 5 and the Hamming distance between any two distinct code words is at least 2. The maximum number of code words is ______.
-<div class="sol"><p>The (5,4) single-parity-check code (all even-weight words) has $d_{\min}=2$ and $2^4=16$ words. No larger code exists: puncturing one coordinate leaves a code of length 4 with all words distinct (distance $\ge1$), so at most $2^4=16$ words. (The Singleton bound $2^{n-d+1}$ gives the same.)</p></div></div>
+<div class="prob" data-type="nat" data-ans="5.63" data-tol="0.03" data-marks="2" data-src="Original">
+The asymptotic soft-decision coding gain of the Golay (23,12,7) code over uncoded BPSK is ______ dB.
+<div class="sol"><p>$10\log_{10}(R_cd_{\min})=10\log_{10}(12\cdot7/23)=10\log_{10}3.652=5.63$ dB. (Hard decisions: $10\log_{10}[12\cdot4/23]=3.20$ dB.)</p></div></div>
 
-<div class="summary"><h3>Chapter 12 in one breath</h3>
+<div class="prob" data-type="nat" data-ans="1.66" data-tol="0.03" data-marks="2" data-src="Original">
+The asymptotic <em>hard-decision</em> coding gain of the (15,11) Hamming code over uncoded BPSK is ______ dB.
+<div class="sol"><p>$t=1$: $G_{\rm hard}=10\log_{10}[R_c(t+1)]=10\log_{10}(11\cdot2/15)=10\log_{10}1.467=1.66$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.00087" data-tol="0.00005" data-marks="2" data-src="Original">
+A (7,4) Hamming code is used on a BSC with $p=0.01$. Using $P_b\approx(d_{\min}/n)P_w$, the post-decoding data-bit error probability is ______ (as a decimal, e.g. 0.0010).
+<div class="sol"><p>$P_w=1-0.99^7-7(0.01)(0.99)^6=2.03\times10^{-3}$; $P_b\approx\frac37\cdot2.03\times10^{-3}=8.7\times10^{-4}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.969" data-tol="0.002" data-marks="2" data-src="Original">
+The (6,3) code of GATE 2025 Q.33 is used on a BSC with $p=0.05$ with syndrome (coset-leader) decoding. Its decoder corrects all 6 single errors and exactly one double-error pattern. The probability of correct decoding is ______.
+<div class="sol"><p>$(0.95)^6+6(0.05)(0.95)^5+(0.05)^2(0.95)^4=0.7351+0.2321+0.00204=0.9693$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="10" data-tol="0.01" data-marks="1" data-src="Original">
+A binary BCH code of length 15 is designed to correct $t=3$ errors using $g(x)=m_1(x)m_3(x)m_5(x)$, where $\deg m_1=\deg m_3=4$ and $\deg m_5=2$. The number of parity bits $n-k$ is ______.
+<div class="sol"><p>$\deg g=4+4+2=10$; this is the (15,5) BCH code with $d_{\min}=7$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6" data-tol="0.01" data-marks="2" data-src="Original">
+A Reed–Solomon code RS(255,239) must correct 5 symbol errors at unknown positions. The additional number of erasures it can correct in the same word is ______.
+<div class="sol"><p>$n-k=16$, so $2e+\varepsilon\le16$: with $e=5$, $\varepsilon\le6$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="121" data-tol="0.5" data-marks="2" data-src="Original">
+The RS(255,223) code over GF($2^8$) has $t=16$. The longest burst of consecutive <em>bit</em> errors that it is guaranteed to correct is ______ bits.
+<div class="sol"><p>Worst case the burst starts at the last bit of a symbol: $(t-1)m+1=15\cdot8+1=121$ bits touch at most $16$ symbols.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="20" data-tol="0.01" data-marks="2" data-src="Original">
+A code corrects up to 3 symbol errors per word. Channel bursts of up to 60 consecutive symbols must be survived by a block interleaver. The minimum interleaving depth is ______.
+<div class="sol"><p>A burst of $b$ symbols hits each of the $I$ words at most $\lceil b/I\rceil$ times; need $\lceil60/I\rceil\le3$, so $I\ge20$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2" data-tol="0.01" data-marks="2" data-src="Original">
+A CRC uses the generator $x^3+x^2+1$ ($1101$). The data $101101$ is sent. The 3-bit remainder, read as a decimal number, is ______.
+<div class="sol"><p>Divide $101101\,000$ by $1101$, aligning the divisor under each leading 1: at bit 0, $1011\oplus1101=0110$ gives $011001000$; at bit 1, $1100\oplus1101=0001$ gives $000011000$; at bit 4, $1100\oplus1101=0001$ gives $000000010$. The last three bits $010$ are the remainder: <b>2</b>. The frame sent is $101101\,010$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="6.02" data-tol="0.05" data-marks="1" data-src="Original">
+A receiver chase-combines (maximum-ratio adds) $N=4$ identical copies of a packet in a HARQ process. The SNR gain over a single copy is ______ dB.
+<div class="sol"><p>The signal amplitudes add coherently ($4A$) while independent noise powers add ($4\sigma^2$): SNR $\times4^2/4=4$, i.e. $10\log_{10}4=6.02$ dB. (After 2 copies: 3.01 dB; after 3: 4.77 dB.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.0086" data-tol="0.0003" data-marks="2" data-src="Original">
+A (5,1) repetition code is used on a BSC with $p=0.1$ and decoded by majority vote. The decoded-bit error probability is ______.
+<div class="sol"><p>Error iff at least 3 of 5 bits flip: $\binom53p^3q^2+\binom54p^4q+p^5=10(0.001)(0.81)+5(0.0001)(0.9)+0.00001=0.0081+0.00045+0.00001=0.00856$. (Compare the 3-fold code's 0.028: more repetition, much lower error, rate 1/5.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="4" data-tol="0.01" data-marks="2" data-src="Original">
+A systematic (7,4) cyclic code uses $g(x)=x^3+x+1$. The message $m=1110$ (highest power first) is encoded as $c(x)=x^3m(x)+\rho(x)$. The parity bits $\rho$, read as a decimal number (0 to 7), are ______.
+<div class="sol"><p>$x^3m(x)=x^6+x^5+x^4$. Use $x^3\equiv x+1$: $x^4\equiv x^2+x$, $x^5\equiv x^3+x^2\equiv x^2+x+1$, $x^6\equiv x^3+x^2+x\equiv x^2+1$. Sum: $(x^2+1)+(x^2+x+1)+(x^2+x)=x^2$, i.e. $\rho=100=\mathbf4$. Codeword $1110\,100$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1" data-tol="0.01" data-marks="2" data-src="Original">
+For the cyclic (7,4) code with $g(x)=x^3+x+1$ the word $\mathbf r=0110011$ (coefficients of $x^6\dots x^0$) is received with at most one bit in error. The power of $x$ of the erroneous bit is ______.
+<div class="sol"><p>$r(x)=x^5+x^4+x+1$. With the reductions $x^4\equiv x^2+x$, $x^5\equiv x^2+x+1$: $s(x)=(x^2+x+1)+(x^2+x)+x+1=x$. The syndrome equals $x^1$, so the error is the coefficient of $x$ (power <b>1</b>); corrected word $0110001$, which is $x^3(x^2+x)+1$ with parity from $m=0110$: a valid code word.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="5" data-tol="0.01" data-marks="2" data-src="Original">
+An RS(7,5) code over GF(8) (as in the worked example, $\alpha^3=\alpha+1$) is received with a single symbol error. The syndromes are $S_1=r(\alpha)=\alpha^5$ and $S_2=r(\alpha^2)=\alpha^3$. The position $i$ (coefficient of $x^i$, $0\le i\le6$) of the erroneous symbol is ______.
+<div class="sol"><p>$X=\alpha^i=S_2/S_1=\alpha^{3-5}=\alpha^{-2}=\alpha^{5}$, so $i=\mathbf5$. The error value is $y=S_1^2/S_2=\alpha^{10-3}=\alpha^7=1$: the received symbol 5 has its least significant bit flipped.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.0" data-tol="0.05" data-marks="2" data-src="Original">
+A deep-space transmitter needs 8 W with uncoded BPSK to meet a target BER. Replacing it by the extended Golay (24,12,8) code with soft decisions, and taking the asymptotic coding gain as the achievable gain, the transmit power required (for the same data rate) is ______ W.
+<div class="sol"><p>$G=10\log_{10}(R_cd_{\min})=10\log_{10}(0.5\cdot8)=6.02$ dB, a factor 4. $8/4=2$ W. (At a realistic word error rate the gain is nearer 4–5 dB, so 2.5–3 W. The price is a doubling of the bandwidth for a given data rate.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.817" data-tol="0.005" data-marks="2" data-src="Original">
+A link has one-way delay equal to $a=5$ frame times and a frame error probability $P=0.02$. With a window large enough to keep the pipe full, the efficiency of go-back-$N$ ARQ is ______.
+<div class="sol"><p>$\eta=\frac{1-P}{1+2aP}=\frac{0.98}{1+0.2}=0.817$. (Selective repeat would give 0.98; stop-and-wait $0.98/11=0.089$.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="51" data-tol="0.01" data-marks="2" data-src="Original">
+A 1 Mbit/s satellite link carries 1000-bit frames with a one-way propagation delay of 25 ms. The smallest window (in frames) that lets a sliding-window protocol transmit continuously is ______.
+<div class="sol"><p>$T_f=1$ ms, so $a=25$ and the window must cover $1+2a=\mathbf{51}$ frames. (Stop-and-wait would achieve only $1/51=1.96\%$ of the line rate, error-free.)</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="Original (GATE-style)">
+A linear block code has parity-check matrix $H=\begin{bmatrix}1&0&1&1&0&0\\0&1&1&0&1&0\\1&1&0&0&0&1\end{bmatrix}$. A word is received with syndrome $\mathbf s=(1,1,1)^T$. Which statement about the most likely error pattern is correct?
+<ol class="opts"><li>It has weight 2, and there are three equally likely candidates</li><li>It has weight 1 (bit 3)</li><li>It has weight 1 (bit 6)</li><li>The word is a valid code word</li></ol>
+<div class="sol"><p>The columns of $H$ are $101,011,110,100,010,001$; $111$ is not among them, so no single error produces it. Weight-2 patterns with this syndrome: $c_1+c_5$, $c_2+c_4$, $c_3+c_6$ (three of them, all equally likely): <b>(A)</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="Original (GATE-style)">
+A designer compares (i) the (7,4) Hamming code and (ii) uncoded transmission at the same $E_b/N_0$ with BPSK and hard decisions. At a very low $E_b/N_0$ of 0 dB the coded system has a <em>higher</em> data-bit error probability, but at 10 dB it is lower. The reason is
+<ol class="opts"><li>the Hamming code has smaller $d_{\min}$ at low SNR</li><li>the code rate is lower at low SNR</li><li>the syndrome decoder fails when the SNR is low</li><li>the code bits have only $4/7$ of the energy per bit, so the raw error rate is higher, and correcting one error cannot make up for it until the raw error rate is small</li></ol>
+<div class="sol"><p>Coded bits carry $E_c=\frac47E_b$ and so the channel error rate $p=Q(\sqrt{2E_c/N_0})$ is larger; the code corrects single errors only, so when $p$ is large (several errors per word are common) the net effect is negative. The widget shows the crossover. <b>(D)</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 17 in one breath</h3>
 <ul>
-<li>$d_{\min}$ rules: detect $d_{\min}-1$, correct $\lfloor(d_{\min}-1)/2\rfloor$. Rate $k/n$. Singleton $d\le n-k+1$; Hamming bound; perfect codes (Hamming, Golay, odd repetition).</li>
-<li>Linear block code: $\mathbf c=\mathbf mG$, $G=[I|P]$, $H=[P^T|I]$, $\mathbf cH^T=0$; $d_{\min}$ = min nonzero weight; syndrome $\mathbf s=\mathbf rH^T=\mathbf eH^T$.</li>
-<li>Hamming $(2^r-1,2^r-1-r)$, $d=3$; syndrome = column of $H$ = error position; extended Hamming $d=4$ (SECDED).</li>
-<li>BSC: $P_{\rm correct}=\sum_{i\le t}\binom nip^i(1-p)^{n-i}$; (7,4) at $p=0.1$: 0.85 correct, 0.15 fail.</li>
-<li>CRC: $R(x)=x^rM(x)\bmod G(x)$; detects all single, all bursts $\le r$, misses random patterns with prob. $2^{-r}$.</li>
+<li>$d_{\min}$ rules: detect $d_{\min}-1$, correct $\lfloor(d_{\min}-1)/2\rfloor$, errors+erasures $2e+\varepsilon\le d_{\min}-1$. Rate $k/n$. Singleton $d\le n-k+1$; Hamming bound $\sum_{i\le t}\binom ni\le2^{n-k}$; perfect codes: Hamming, Golay, odd repetition.</li>
+<li>Linear block code: $\mathbf c=\mathbf mG$, $G=[I|P]$, $H=[P^T|I]$, $\mathbf cH^T=0$; $d_{\min}$ = min nonzero weight = fewest dependent columns of $H$; syndrome $\mathbf s=\mathbf rH^T=\mathbf eH^T$ ↔ coset leader.</li>
+<li>Hamming $(2^r-1,2^r-1-r)$, $d=3$; extended Hamming $d=4$ (SECDED); $P_b\approx(d_{\min}/n)P_w$, e.g. $9p^2$ for (7,4).</li>
+<li>Coding gain: soft $10\log_{10}(R_cd_{\min})$, hard $10\log_{10}(R_c(t+1))$: soft decisions are worth 2–3 dB.</li>
+<li>Cyclic codes: $g(x)\mid x^n+1$, $c(x)=x^rm(x)+[x^rm(x)\bmod g]$, $s(x)=r(x)\bmod g$; LFSR hardware. BCH bound: roots $\alpha..\alpha^{2t}$ ⇒ $d\ge2t+1$. Reed–Solomon over GF($2^m$): $d=n-k+1$ (MDS), $t=(n-k)/2$ symbols, bursts, erasures; interleaving spreads bursts.</li>
+<li>CRC: undetected iff $G\mid E(x)$; catches all single bits, all bursts $\le r$, all odd weights if $(x+1)\mid G$, random errors with $1-2^{-r}$.</li>
+<li>ARQ: $\eta_{\rm SW}=\frac{1-P}{1+2a}$, $\eta_{\rm GBN}=\frac{1-P}{1+2aP}$, $\eta_{\rm SR}=1-P$; HARQ combines soft values (chase $10\log N$ dB, or incremental redundancy).</li>
 </ul></div>
 
 <script>
@@ -162,4 +417,42 @@ GB.widget('w-crc',{title:'CRC by long division over GF(2)',h:430,hm:460,controls
    if(rows.length>maxRows){ ctx.fillStyle=C.mute; ctx.textAlign='left'; ctx.fillText('… ('+(rows.length-maxRows)+' more steps)',x0,y); y+=18; }
    ctx.fillStyle=C.green; ctx.textAlign='left'; ctx.fillText('CRC remainder = '+rem.join('')+'    transmitted frame = '+data.join('')+' | '+rem.join(''),x0,Math.min(y+10,g.h-22));
    const chk=rcv.slice(); for(let i=0;i<N;i++) if(chk[i]) for(let j=0;j<gen.length;j++) chk[i+j]^=gen[j]; const rr=chk.slice(N); const bad=rr.some(Boolean); return 'receiver divides '+rcv.join('')+' by '+gen.join('')+' → remainder <b>'+rr.join('')+'</b> → '+(p.f===0?'<b style="color:#83c167">frame accepted</b>':(bad?'<b style="color:#83c167">error DETECTED</b> (remainder ≠ 0)':'<b style="color:#fc6255">error NOT detected</b>')); }});
+
+/* ---------- CRC / cyclic division circuit ---------- */
+GB.diagram('d-lfsr',{w:720,h:190,alt:'LFSR division by x^3+x+1',items:[
+ ['txt',8,86,'m','tm','start'],['arr',[30,80,104,80]],['sum',120,80,16,'⊕'],['arr',[136,80,176,80]],['box',176,60,60,40,'r₀','blue'],
+ ['arr',[236,80,274,80]],['sum',290,80,16,'⊕'],['arr',[306,80,346,80]],['box',346,60,60,40,'r₁','blue'],['arr',[406,80,446,80]],['box',446,60,60,40,'r₂','blue'],
+ ['ln',[506,80,540,80]],['ln',[540,80,540,24,120,24]],['arr',[120,24,120,64]],['txt',330,16,'feedback  (gated off while parity bits are shifted out)','tm'],
+ ['ln',[156,80,156,140,290,140]],['arr',[290,140,290,96]],['txt',225,158,'g₁ = 1','tm'],['txt',140,48,'g₀ = 1','tm','start'],['txt',478,112,'g₂ = 0: no adder','tm'],['txt',560,86,'parity out','tb','start']]});
+
+/* ---------- coding gain on AWGN ---------- */
+(function(){
+ const CODES={
+  h74:{n:7,k:4,t:1,A:{3:7,4:7,7:1},nm:'Hamming (7,4)'},
+  h1511:{n:15,k:11,t:1,A:{3:35,4:105,5:168,6:280,7:435,8:435,9:280,10:168,11:105,12:35,15:1},nm:'Hamming (15,11)'},
+  bch157:{n:15,k:7,t:2,A:{5:18,6:30,7:15,8:15,9:30,10:18,15:1},nm:'BCH (15,7)'},
+  g2312:{n:23,k:12,t:3,A:{7:253,8:506,11:1288,12:1288,15:506,16:253,23:1},nm:'Golay (23,12)'},
+  g2412:{n:24,k:12,t:3,A:{8:759,12:2576,16:759,24:1},nm:'Golay (24,12) extended'}};
+ const binom=(n,k)=>{ let r=1; for(let i=1;i<=k;i++) r=r*(n-k+i)/i; return r; };
+ const pu=(g,k)=>{ const q=m.Q(Math.sqrt(2*g)); return 1-Math.pow(1-q,k); };
+ const phard=(c,g)=>{ const p=m.Q(Math.sqrt(2*g*c.k/c.n)); let s=0; for(let i=c.t+1;i<=c.n;i++) s+=binom(c.n,i)*Math.pow(p,i)*Math.pow(1-p,c.n-i); return Math.min(s,1); };
+ const psoft=(c,g)=>{ let s=0; for(const w in c.A) s+=c.A[w]*m.Q(Math.sqrt(2*(+w)*g*c.k/c.n)); return Math.min(s,1); };
+ const need=(f,target)=>{ let lo=-2,hi=20; for(let i=0;i<60;i++){ const mid=(lo+hi)/2; if(f(Math.pow(10,mid/10))>target) lo=mid; else hi=mid; } return (lo+hi)/2; };
+ GB.widget('w-gain',{title:'Coding gain on the AWGN channel (vertical axis: log₁₀ of word-error probability)',h:380,hm:400,controls:[{k:'c',type:'select',label:'code',options:Object.keys(CODES).map(k=>[k,CODES[k].nm]),value:'g2312'}],
+  draw(g,p){ const c=CODES[p.c]; const v=g.full({l:48,b:32}); v.view(0,12,-8,0); v.axes({xl:'Eb/N0 (dB)',ystep:1,xstep:2});
+   const xs=[],a=[],b=[],d=[]; for(let x=0;x<=12.001;x+=.1){ const gg=Math.pow(10,x/10); xs.push(x); a.push(Math.log10(Math.max(pu(gg,c.k),1e-12))); b.push(Math.log10(Math.max(phard(c,gg),1e-12))); d.push(Math.log10(Math.max(psoft(c,gg),1e-12))); }
+   v.line(xs,a,'mute',2); v.line(xs,b,'orange',2.4); v.line(xs,d,'yellow',2.4); v.hline(-4,'axis'); g.legend([['uncoded','mute'],['hard','orange'],['soft (union bound)','yellow']],60,g.h*.8);
+   const T=1e-4, u=need(x=>pu(x,c.k),T), h=need(x=>phard(c,x),T), s=need(x=>psoft(c,x),T);
+   const R=c.k/c.n, dm=+Object.keys(c.A)[0];
+   return c.nm+' · word error 10⁻⁴ needs Eb/N0: uncoded <b>'+u.toFixed(2)+' dB</b>, hard <b>'+h.toFixed(2)+' dB</b> (gain '+(u-h).toFixed(2)+'), soft <b>'+s.toFixed(2)+' dB</b> (gain '+(u-s).toFixed(2)+') · asymptotic: hard '+(10*Math.log10(R*(c.t+1))).toFixed(2)+', soft '+(10*Math.log10(R*dm)).toFixed(2)+' dB'; }});
+})();
+
+/* ---------- ARQ efficiency ---------- */
+GB.widget('w-arq',{title:'ARQ efficiency η (vertical) against frame loss probability',h:360,hm:380,controls:[{k:'a',label:'a = T_prop / T_frame',min:.1,max:50,step:.1,value:5,fmt:v=>v.toFixed(1)},{k:'N',label:'window N (frames)',min:1,max:127,step:1,value:63}],
+ draw(g,p){ const a=p.a, N=p.N, cyc=1+2*a; const sw=P=>(1-P)/cyc;
+  const gbn=P=>N>=cyc?(1-P)/(1+2*a*P):N*(1-P)/(cyc*(1-P+N*P)); const sr=P=>N>=cyc?(1-P):N*(1-P)/cyc;
+  const v=g.full({l:46,b:30}); v.view(0,.3,0,1); v.axes({xl:'frame loss probability P',ystep:.2,xstep:.05});
+  const xs=[],A=[],B=[],C=[]; for(let P=0;P<=.3001;P+=.005){ xs.push(P); A.push(sw(P)); B.push(gbn(P)); C.push(sr(P)); }
+  v.line(xs,A,'red',2.2); v.line(xs,B,'orange',2.4); v.line(xs,C,'green',2.4); g.legend([['stop-and-wait','red'],['go-back-N','orange'],['selective repeat','green']],g.w-400,14);
+  return 'cycle = 1+2a = <b>'+cyc.toFixed(1)+'</b> frame times · window '+(N>=cyc?'<b style="color:#83c167">fills the pipe</b>':'<b style="color:#fc6255">too small: window-limited</b>')+' · at P = 0.02: SW <b>'+sw(.02).toFixed(3)+'</b>, GBN <b>'+gbn(.02).toFixed(3)+'</b>, SR <b>'+sr(.02).toFixed(3)+'</b>'; }});
 </script>
