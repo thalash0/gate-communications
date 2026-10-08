@@ -1,0 +1,302 @@
+<!--meta {"id":"ch19","num":"19","part":"Part V · Systems","title":"Hiding in the Noise: Spread Spectrum and CDMA","lede":"Every chapter so far tried to use bandwidth sparingly. Spread spectrum deliberately wastes it: a signal smeared across a thousand times its natural bandwidth sits below the noise floor, survives jammers, shares a band with other users, resolves multipath, and measures distance to a metre. GPS, 3G phones, Bluetooth and LoRa all work this way."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Describe direct-sequence (DSSS), frequency-hopping (FHSS) and chirp spread spectrum, and <b>derive</b> the processing gain $G_p=W/R_b$ and the jamming margin.</li>
+<li>Generate maximal-length sequences with an LFSR; <b>derive</b> their balance, run and two-valued autocorrelation properties; build Gold codes; know why Walsh–Hadamard codes are orthogonal only when synchronised.</li>
+<li><b>Derive</b> the multiple-access interference model for CDMA, the capacity formula, and the near–far problem that makes power control essential.</li>
+<li>Explain the Rake receiver and why a wide spread bandwidth turns multipath from a nuisance into diversity.</li>
+<li><b>Derive</b> the worst-case partial-band jamming result for frequency hopping and compute Bluetooth collision probabilities.</li>
+<li>Do the signal arithmetic of GPS and LoRa: how a signal 19 dB below the noise is recovered, and what a chip means in metres.</li>
+</ul>
+<p><b>Prerequisites:</b> Chapter 5 (PSD, PN-like processes), Chapter 14–15 (BPSK, matched filter), Chapter 16 (frame/code sync), Chapter 17 (LFSRs, cyclic codes).</p></div>
+
+<div class="box story"><span class="tag">History · an actress, a pianist and a patent</span>
+<p>In 1941 the film actress <strong>Hedy Lamarr</strong>, born Hedwig Kiesler in Vienna, who had left an Austrian arms manufacturer’s household for Hollywood, and the avant-garde composer <strong>George Antheil</strong> filed US patent 2,292,387, “Secret Communication System”: a radio-guided torpedo whose transmitter and receiver would hop together among 88 frequencies (the number of keys on a piano) in a pattern programmed on a perforated paper roll like a player-piano’s, so that no jammer could follow. The Navy did not build it. Spread spectrum was developed in secret through the Cold War, in Sylvania’s and MIT’s laboratories and in the Rake receiver of <strong>Price and Green</strong> (1958) for multipath, and reached civilian life through the US Navy’s <strong>GPS</strong> (first satellite 1978, full operation 1995) and through <strong>Qualcomm</strong>, whose Irwin Jacobs, Andrew Viterbi and Klein Gilhousen made the case, against nearly all the industry’s expert opinion, that a cellular phone system in which <em>every user shared the same frequency</em> would have several times the capacity of FDMA/TDMA. The resulting <strong>IS-95</strong> (1995) and its descendants CDMA2000 and WCDMA carried 3G. The FCC opened the 2.4 GHz band to spread-spectrum devices in 1985, giving us Wi-Fi and Bluetooth. Lamarr’s patent expired before it was used by anyone; she received the Electronic Frontier Foundation’s Pioneer Award in 1997.</p></div>
+
+<div class="box real"><span class="tag">Real world</span>
+<p><b>GPS</b>: the C/A signal arrives 19 dB <em>below</em> the thermal noise and is dug out by a 1023-chip correlator. <b>3G phones</b> (WCDMA, CDMA2000): everybody transmits on the same 5 MHz at the same time, distinguished by codes. <b>Wi-Fi 802.11b</b>: an 11-chip Barker code (the 1 and 2 Mbit/s modes; 5.5 and 11 use complementary-code keying). <b>Bluetooth</b>: frequency hopping over 79 channels, 1600 hops per second. <b>LoRa and Sigfox-type IoT</b>: chirp spread spectrum, receiving signals 20 dB below the noise floor over many kilometres. <b>Military radios</b>: hop thousands of times per second to resist jamming. <b>Ultra-wideband</b> positioning in a phone or car key: nanosecond pulses measure range to centimetres. <b>Deep-space ranging</b>: PN codes give range to the nearest metre across the Solar System.</p></div>
+
+<h2>The principle: spreading and processing gain</h2>
+<p>Take a BPSK signal at data rate $R_b$ and bandwidth $\approx R_b$. Multiply the data waveform $d(t)=\pm1$ (bit duration $T_b$) by a much faster pseudo-random $\pm1$ waveform $c(t)$ whose symbols (<b>chips</b>) last $T_c=T_b/N$. The product $d(t)c(t)$ has the same amplitude but changes sign at the chip rate: its bandwidth is $W\approx1/T_c=N R_b$. The <b>processing gain</b> is
+$$G_p=\frac{W}{R_b}=\frac{T_b}{T_c}=N\ \text{chips per bit}.$$
+The receiver, knowing $c(t)$ and in step with it, multiplies the received signal by $c(t)$ again: since $c^2(t)=1$, the data are restored to their narrow bandwidth, while anything <em>not</em> correlated with $c(t)$ — a jammer, another user’s signal, noise — is multiplied by $c(t)$ and so <b>spread</b> to bandwidth $W$.</p>
+<div id="d-dsss" class="dia">Direct-sequence spread-spectrum link. Spreading and despreading are the same multiplication by the code: the wanted signal is squeezed back to $R_b$ and the interferer is smeared across $W$; the low-pass filter then rejects most of its power.</div>
+<div class="box derive"><span class="tag">Derivation · processing gain, jamming margin and why “below the noise” still works</span>
+<p>Let the received signal be $r(t)=\sqrt{2P}\,d(t)c(t)\cos\omega_ct+j(t)+n(t)$ with signal power $P$, a narrowband jammer of power $J$ at $f_c$ and white noise of density $N_0/2$. After despreading with $c(t)\cos\omega_ct$ and low-pass filtering to the data bandwidth $\approx R_b$, the integrator output over one bit is
+$$Z=\underbrace{\sqrt{E_b}\,d}_{\text{signal}}+\underbrace{\int_0^{T_b}j(t)c(t)\cos\omega_ct\,dt}_{\text{jammer}}+\underbrace{n_0}_{\text{noise}},\qquad E_b=PT_b.$$
+The product $j(t)c(t)$ has the <b>power spectral density of the code</b>, a flat spectrum of width $W$: the jammer’s power $J$ is spread uniformly, giving it an effective one-sided density $J_0=J/W$ in the band. The integrator sees only the fraction $R_b/W$ of it, so the jammer behaves like additional white noise of density $J_0$ and
+$$\frac{E_b}{N_0+J_0}\approx\frac{E_b}{J_0}=\frac{PT_b}{J/W}=\frac{W}{R_b}\cdot\frac PJ=G_p\,\frac PJ.$$
+So the receiver tolerates a jammer $G_p$ times stronger than the signal in power, for the same performance as a jammer-free link. The <b>jamming margin</b> in dB, with $(E_b/J_0)_{\rm req}$ the value needed for the target BER and $L_s$ the implementation losses, is
+$$\boxed{\ M_j=G_p|_{\rm dB}-\Big(\frac{E_b}{J_0}\Big)_{\rm req,dB}-L_s\ }\qquad\Big(\text{max tolerable }J/P\text{ in dB}\Big).$$
+<b>Example.</b> $W=10$ MHz, $R_b=10$ kbit/s: $G_p=1000$ (30 dB). Required $E_b/J_0=10$ dB, losses 2 dB: $M_j=18$ dB: a jammer 63 times stronger than the signal can be tolerated. <b>“Below the noise.”</b> The signal-to-noise ratio <em>at the antenna</em> is $P/(N_0W)=(E_b/N_0)/G_p$: with $E_b/N_0=10$ dB and $G_p=1000$, that is $-20$ dB: the signal is invisible to a spectrum analyser (hence <i>low probability of intercept</i>), yet decodes after despreading.</p></div>
+<div class="widget" id="w-dsss">Power spectra at the receiver before and after despreading (analytic: rectangular chips give a $\mathrm{sinc}^2(fT_c)$ envelope). Top: the received spread signal (wide, low) and a narrowband jammer (tall, narrow). Bottom: after multiplying by the code, the data are narrow and tall and the jammer is spread wide and low; the shaded band is the data filter. Increase $N$ (chips per bit) and the jammer’s residual power inside the filter shrinks as $1/N$: the readout gives the resulting $E_b/J_0=G_p\cdot P/J$ and the bit error probability for BPSK.</div>
+<div class="box trap"><span class="tag">Processing gain is not coding gain, and spreading does not beat Shannon</span>
+<p>On a white-noise channel with no jammer, spreading buys <em>nothing</em>: the $E_b/N_0$ needed for a given BER is the same for BPSK with or without the spreading code (the matched filter output is identical). The gain appears only against interference that is <i>not spread</i> (narrowband jammers, other systems), against <i>other spread users</i> (that is multiple access), and against multipath. A spreading code is a repetition code: it is inefficient in bandwidth, which is why it is used when bandwidth is plentiful and power or robustness is the constraint. Real systems add a channel code <em>on top</em> of spreading (convolutional, turbo: Chapter 18) to get coding gain.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · processing gains in real systems</span>
+<table>
+<tr><th>System</th><th>Chip rate</th><th>Data rate</th><th>$G_p$</th></tr>
+<tr><td>802.11b (1 Mbit/s, Barker-11)</td><td>11 Mchip/s</td><td>1 Mbit/s</td><td>11 (10.4 dB)</td></tr>
+<tr><td>IS-95 forward link</td><td>1.2288 Mchip/s</td><td>9.6 kbit/s</td><td>128 (21 dB)</td></tr>
+<tr><td>GPS C/A</td><td>1.023 Mchip/s</td><td>50 bit/s</td><td>20 460 (43.1 dB)</td></tr>
+<tr><td>WCDMA, 12.2 kbit/s voice</td><td>3.84 Mchip/s</td><td>12.2 kbit/s</td><td>315 (25 dB), counting channel coding and spreading together</td></tr>
+</table>
+<p>In WCDMA the <em>spreading factor</em> is chosen per channel, 4 to 512, from orthogonal variable spreading factor (OVSF) codes: a high-rate data user takes few chips per bit, a low-rate one many.</p></div>
+
+<h2>Pseudo-noise sequences</h2>
+<p>The spreading code must look random (so that the spread signal is noise-like and uncorrelated interferers stay uncorrelated) but be reproducible exactly at the receiver. The standard generator is a <b>linear-feedback shift register</b> (LFSR), the same circuit as the CRC divider of Chapter 17, run <em>autonomously</em> with feedback only. With $m$ stages and feedback from a primitive polynomial $p(x)$ it cycles through all $2^m-1$ non-zero states: an <b>m-sequence</b> (maximal-length sequence) of period $N=2^m-1$. For $p(x)=x^3+x+1$ the recurrence $a_{n+3}=a_{n+1}\oplus a_n$ with initial state $100$ produces $1001011\,1001011\dots$ (period 7).</p>
+<div class="box derive"><span class="tag">Derivation · why m-sequences are the best possible spreading codes</span>
+<p><b>Balance.</b> Every non-zero $m$-bit state appears exactly once per period, and the zero state never: the number of 1s is $2^{m-1}$, the number of 0s $2^{m-1}-1$. <b>Runs.</b> Half of the runs have length 1, a quarter length 2, and so on: the statistics of a fair coin. <b>Shift-and-add.</b> The XOR of an m-sequence with a cyclic shift of itself is another cyclic shift of the same sequence (the sequence satisfies a linear recurrence, hence so does the sum, and the all-ones-state argument shows it is non-zero): $c[n]\oplus c[n-k]=c[n-j]$ for some $j(k)$. <b>Autocorrelation.</b> Map bits to $\pm1$ ($0\to+1$, $1\to-1$). The periodic autocorrelation at shift $k\ne0$ is $R[k]=\sum_nc[n]c[n-k]=(\text{agreements})-(\text{disagreements})$. Disagreements occur where $c[n]\oplus c[n-k]=1$, i.e. at the 1s of another shift of the sequence: $2^{m-1}$ of them; agreements: $N-2^{m-1}=2^{m-1}-1$. Therefore
+$$R[k]=\begin{cases}N=2^m-1,&k=0\\-1,&k\ne0\end{cases}$$
+an almost ideal, delta-like autocorrelation: normalised sidelobes of $-1/N$ (for $m=10$: $-60$ dB). That is what lets the receiver find the code phase (sync, Chapter 16) and reject delayed copies of the signal (multipath): a delayed copy is despread to a noise-like level $1/N$ of the main signal. <b>Spectrum.</b> A periodic sequence has a line spectrum with spacing $1/(NT_c)$ and an envelope $\mathrm{sinc}^2(fT_c)$; for large $N$ it is indistinguishable from continuous noise.</p></div>
+<h3>Gold codes and Walsh codes</h3>
+<p>One m-sequence has perfect autocorrelation but a family of users needs many codes with <em>low cross-correlation</em>. Taking two m-sequences $a,b$ of the same period that form a <b>preferred pair</b> and XOR-ing $a$ with every cyclic shift of $b$ produces $2^m+1$ <b>Gold codes</b> (including the two originals) whose cross-correlations take only three values:
+$$\{-1,\ -t(m),\ t(m)-2\},\qquad t(m)=\begin{cases}2^{(m+1)/2}+1,&m\text{ odd}\\2^{(m+2)/2}+1,&m\text{ even, }m\not\equiv0\ (4)\end{cases}$$
+For $m=10$ (GPS): $t=2^6+1=65$, so the correlation never exceeds $65/1023=-23.9$ dB relative to the peak. <b>GPS C/A codes</b> are Gold codes built from the registers $G_1:\ x^{10}+x^3+1$ and $G_2:\ x^{10}+x^9+x^8+x^6+x^3+x^2+1$, both started in the all-ones state; the 32 satellites are distinguished by which two stages of $G_2$ are XORed before combining with $G_1$ (PRN1 uses stages 2 and 6; its first ten chips are 1100100000). Period $1023$ chips at 1.023 Mchip/s: exactly 1 ms.</p>
+<div class="widget" id="w-pn">Periodic correlation of spreading codes against cyclic shift (normalised by the length $N$). <b>m-sequences</b>: a spike of $N$ at zero shift and exactly $-1$ elsewhere. <b>Gold</b>: autocorrelation and cross-correlation of the Gold pair take the three values $\{-1,-t,t-2\}$ (dashed levels). <b>GPS PRN1/PRN2</b>: the real C/A codes, with auto/cross-correlation limited to $-65,-1,63$ out of 1023. Compare the sidelobe level (readout, in dB below the peak) with what 1-bit random sequences would give.</div>
+<p><b>Walsh–Hadamard codes</b>: the rows of $H_{2N}=\begin{bmatrix}H_N&H_N\\H_N&-H_N\end{bmatrix}$, $H_1=[1]$, are $N$ <em>exactly orthogonal</em> $\pm1$ sequences of length $N$ (any two rows agree in half the positions). For $N=8$, rows 1 and 5 are $[+,-,+,-,+,-,+,-]$ and $[+,-,+,-,-,+,-,+]$ with inner product $0$. Used with <em>time-aligned</em> users (the downlink of IS-95: 64 Walsh codes per cell; WCDMA OVSF codes), they give zero interference between users. But their cross-correlation at non-zero shifts is large and their autocorrelation sidelobes are poor, so they are unusable when users are not synchronised (the uplink), where Gold-like or long scrambling codes are used on top.</p>
+
+<h2>CDMA: sharing one band by code</h2>
+<p>In <b>code-division multiple access</b> every user transmits over the whole band $W$ at the same time, each with a different code. Receiver $1$ despreads with $c_1$; the other users’ signals, not correlated with $c_1$, emerge as noise-like <b>multiple-access interference</b> (MAI).</p>
+<div class="box derive"><span class="tag">Derivation · MAI as noise and the user capacity</span>
+<p>Consider $K$ BPSK users with equal received power $P$ and independent random $\pm1$ codes of length $N$. Chip-synchronous first: the correlator output for user 1 is
+$$Z=\sqrt{E_b}\,d_1+\sum_{k=2}^{K}\sqrt{E_b}\,d_k\,\underbrace{\tfrac1N\sum_{n=1}^{N}c_1[n]c_k[n]}_{\rho_{1k}}+n_0.$$
+For independent random chips the sum of $N$ products of independent $\pm1$ is a sum of $N$ independent $\pm1$’s: zero-mean, variance $N$. So $\rho_{1k}$ has variance $1/N$, and each interferer contributes variance $E_b/N$ to $Z$. By the central limit theorem the sum of $K-1$ such terms is Gaussian with variance $(K-1)E_b/N$; the thermal noise has variance $N_0/2$. The decision statistic has SINR $E_b/\big[(K-1)E_b/N+N_0/2\big]$; for BPSK $P_b=Q(\sqrt{\rm SINR})$:
+$$\boxed{\ P_b=Q\!\left(\Big[\frac{K-1}{N}+\frac{N_0}{2E_b}\Big]^{-1/2}\right)\ }\ \ (\text{chip-synchronous}).$$
+For <b>asynchronous</b> users (random delays, the normal uplink) the partial-chip overlaps average to $\tfrac13$: $(K-1)/N\to(K-1)/(3N)$ (Pursley 1977), giving a threefold better figure for random codes. The interference has the same structure as noise: <b>CDMA capacity is interference-limited, not fixed</b>: adding user $K+1$ degrades every other user a little. Capacity from the requirement $E_b/I_0\ge\gamma_{\rm req}$ with thermal noise negligible:
+$$K-1\;\le\;\frac{3N}{\gamma_{\rm req}}\quad(\text{async, random codes}).$$
+With $N=128$ and $\gamma_{\rm req}=7$ dB $=5.0$: $K\le78$. Practical cellular CDMA improves on this by exploiting the <b>voice-activity factor</b> $\alpha\approx0.4$ (silent users do not transmit: capacity $\times1/\alpha$) and <b>sectorisation</b> ($\times G_s\approx2.5$ for three sectors) and is cut by <b>other-cell interference</b> (a fraction $f\approx0.5$ of the in-cell interference: capacity $\div(1+f)$):
+$$K\approx\frac{G_p}{\gamma_{\rm req}}\cdot\frac{G_s}{\alpha(1+f)}\ \ \Big(\text{e.g. }\frac{128}{5}\cdot\frac{2.5}{0.4\times1.5}\approx106\Big)$$
+and, because of the sensitivity of the loading to the interference level, operators run well below the theoretical pole capacity. With loading $\eta=K/K_{\max}$ the interference rise over thermal noise is $1/(1-\eta)$: 3 dB at 50% loading, 6 dB at 75%, unbounded as $\eta\to1$. <b>Soft capacity:</b> unlike FDMA/TDMA, a CDMA cell can accept one more user at the price of slightly lower quality for everybody: a feature for busy hours.</p></div>
+<div class="widget" id="w-cdma">Bit error probability against the number of simultaneous users $K$ for chip-asynchronous random-code CDMA (Gaussian MAI model derived above). Choose the spreading factor $N$ and $E_b/N_0$. The <b>near–far</b> slider makes one interferer stronger than all the others by the chosen number of dB: with a 20 dB stronger user the error rate leaps up by orders of magnitude even with only a few users, which is why every CDMA system needs power control. The readout lists the largest $K$ with BER below $10^{-3}$ (voice target) and $10^{-5}$.</div>
+<h3>The near–far problem and power control</h3>
+<p>The formula assumed equal received powers. But received power falls as $d^{-n}$ ($n\approx3$–4 in cities, Chapter 21): a handset 100 m from the base station and another 1 km away differ by $40$ dB (for $n=4$) in received power. After despreading, an interferer 40 dB stronger than the desired user, with a code cross-correlation of only $-1/N=-21$ dB for $N=128$, leaves interference 19 dB <em>above</em> the wanted signal: it is unusable. The cure is <b>power control</b>: each mobile’s transmit power is adjusted (open loop from the downlink strength, then closed loop with 1-dB up/down commands from the base station at 800 Hz in IS-95 and 1500 Hz in WCDMA) so that every signal arrives with the <em>same</em> power. A control loop at 1500 Hz tracks fading up to about 50–100 km/h. A well-power-controlled CDMA uplink is the situation in which each handset’s interference to its neighbours is minimal: the uplink capacity formula above is then reached.</p>
+<h3>The Rake receiver</h3>
+<p>A reflected path arriving $\tau$ later than the direct one is, after despreading, correlated with the code shifted by $\tau$: if $\tau>T_c$ the autocorrelation is $\approx-1/N$ and the delayed copy looks like noise. A wideband DS signal therefore <b>resolves</b> multipath components whose delay differs by more than a chip: 244 m for IS-95 ($T_c=0.81\ \mu$s), 78 m for WCDMA ($T_c=0.26\ \mu$s). Each resolved path is a separate, nearly independent observation of the same bit. The <b>Rake</b> receiver (Price–Green) runs several correlators (“fingers”) in parallel, each aligned to one path’s delay, and combines them weighted by the conjugate channel gains (<b>maximal-ratio combining</b>, Chapter 21):
+$$Z=\sum_{l=1}^{L}\alpha_l^{*}\,y_l,\qquad\mathrm{SNR}_{\rm out}=\sum_{l=1}^L\gamma_l,\ \ \gamma_l=\frac{|\alpha_l|^2E_b}{N_0}.$$
+The sum of $L$ independent faded branches has far fewer deep fades than one (diversity order $L$). Multipath, the plague of narrowband radio, becomes <em>diversity gain</em>. Mobile phones typically use 3–4 Rake fingers, a base station more; the same hardware tracks the paths from two or three base stations at once in <b>soft handover</b> (the signals of both base stations are combined), a gain not available to FDMA.</p>
+<div id="d-rake" class="dia">Rake receiver. A delay line (or independent code-tracking loops) provides the received signal at the delays of the strongest paths; each finger correlates with the spreading code and is rotated and weighted by its channel estimate; the combiner adds them (maximum-ratio combining).</div>
+
+<h2>Frequency hopping</h2>
+<p>Instead of multiplying by a fast code, <b>frequency hopping</b> (FHSS) keeps the narrowband signal but changes its carrier frequency every $T_h$ seconds among $M$ channels in a pseudo-random pattern known to the receiver (as in the Lamarr–Antheil patent). The spread bandwidth is $W=M\Delta f$. <b>Slow hopping</b> ($T_h\gg T_s$: several symbols per hop; Bluetooth, GSM optional hopping) is easy to implement with noncoherent detection; <b>fast hopping</b> ($T_h<T_s$: several hops per symbol) gives frequency diversity within each symbol, and is used in military links.</p>
+<div class="box derive"><span class="tag">Derivation · the worst-case partial-band jammer</span>
+<p>A smart jammer with total power $J$ chooses to spread it uniformly over a fraction $\rho\in(0,1]$ of the hopping band, giving density $J_0/\rho$ in the jammed fraction ($J_0=J/W$). The signal hops through jammed and clean channels at random; for noncoherent binary FSK the error probability in a jammed channel is $\tfrac12\exp\big[-\tfrac{E_b}{2(J_0/\rho)}\big]=\tfrac12e^{-\rho\gamma/2}$ with $\gamma=E_b/J_0$, and the average is
+$$P_b(\rho)=\rho\cdot\tfrac12e^{-\rho\gamma/2}.$$
+Full-band jamming ($\rho=1$) gives $\frac12e^{-\gamma/2}$: exponentially small in $\gamma$. But the jammer can do much better: $\partial P_b/\partial\rho=\tfrac12e^{-\rho\gamma/2}(1-\rho\gamma/2)=0$ at $\rho^*=2/\gamma$ ($\gamma>2$), where
+$$\boxed{\ P_{b,\max}=\frac{1}{e\,\gamma}\ }$$
+<em>inversely proportional</em> to $E_b/J_0$, not exponential. For $\gamma=20$ (13 dB): full-band $2.3\times10^{-5}$, worst-case partial band $1.8\times10^{-2}$, with $\rho^*=0.1$. The jammer has turned an exponential law into a power law, and the defence is <b>coding with interleaving</b> (Chapter 17): the jammed hops are then treated as erasures or bursts of errors, restoring most of the lost robustness.</p></div>
+<p><b>Collisions in Bluetooth.</b> With $M=79$ channels and $K-1$ other piconets hopping independently and uniformly at random, the probability that a given packet suffers a collision is $1-(1-1/M)^{K-1}$; for $K-1=10$ it is $1-(78/79)^{10}=0.12$. Bluetooth’s <i>adaptive frequency hopping</i> marks channels that suffer from Wi-Fi interference as bad and hops only over the rest (a minimum of 20 channels): the practical answer to coexistence with Wi-Fi. Packets are sent in 625 µs slots with a hop per slot (1600 hops/s), with a CRC and ARQ (Chapter 17).</p>
+<div class="widget" id="w-pbj">Error probability of noncoherent FH/BFSK against a partial-band jammer as a function of the fraction $\rho$ of the band jammed (log vertical axis), for the chosen $E_b/J_0$. The curve peaks at $\rho^*=2/\gamma$ with $P_{b,\max}=1/(e\gamma)$ (dot); the right end of the curve is the full-band jammer. The worst-case $P_b$ is nowhere near the full-band value.</div>
+
+<h2>Chirp spread spectrum and LoRa</h2>
+<p>A <b>chirp</b> is a signal whose frequency sweeps linearly across the band $B$ in time $T$. Its matched filter compresses it into a pulse of width $\approx1/B$ with gain $BT$ (the time-bandwidth product): the principle of pulse-compression radar and of <b>LoRa</b>. LoRa sends $SF$ bits per symbol by cyclically shifting the starting frequency of an up-chirp among $2^{SF}$ values; a symbol lasts $T_s=2^{SF}/B$ and the receiver finds the shift with an FFT after de-chirping (multiplying by a conjugate chirp): processing gain $2^{SF}$ chips per $SF$ bits. With $B=125$ kHz:</p>
+<table>
+<tr><th>$SF$</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
+<tr><th>raw bit rate $SF\cdot B/2^{SF}$ (bit/s)</th><td>6836</td><td>3906</td><td>2197</td><td>1221</td><td>671</td><td>366</td></tr>
+<tr><th>demodulation SNR limit (dB)</th><td>−7.5</td><td>−10</td><td>−12.5</td><td>−15</td><td>−17.5</td><td>−20</td></tr>
+</table>
+<p>Each step up in $SF$ halves the rate and buys 2.5 dB of sensitivity. <b>Link budget at $SF=12$:</b> thermal noise in 125 kHz is $-174+10\log125\,000=-123$ dBm; add a 6 dB receiver noise figure ($-117$ dBm) and the $-20$ dB limit: sensitivity $-137$ dBm. With 14 dBm transmit power and 0 dBi antennas the allowable path loss is $151$ dB, a free-space range of hundreds of kilometres, and in practice 5–15 km in towns and many tens of kilometres line-of-sight: a coin-cell sensor can report once an hour for a decade.</p>
+
+<h2>GPS: spread spectrum that measures distance</h2>
+<p>The GPS C/A signal is DSSS BPSK at 1.023 Mchip/s with 50 bit/s navigation data (20 ms per bit = 20 code periods), centred at 1575.42 MHz. It arrives at the ground at about $-130$ dBm: with noise density $-174$ dBm/Hz, $C/N_0=44$ dB-Hz, and in the 2 MHz signal bandwidth the noise is $-111$ dBm: <b>the signal is 19 dB below the noise</b>. The receiver correlates with a local copy of the satellite’s code: over one code period (1 ms) the gain is $10\log1023=30.1$ dB, giving $+11$ dB; over a 20 ms data bit, $E_b/N_0=C/N_0-10\log50=44-17=27$ dB: an almost error-free data link at a rate where nothing is visible on a spectrum analyser.</p>
+<div class="box derive"><span class="tag">Derivation · how a code correlation becomes a position</span>
+<p><b>Acquisition.</b> The receiver does not know the code phase (1023 values; resolution half a chip, so about 2046) or the Doppler (±5 kHz for a stationary user, steps of $\approx500$ Hz: about 21 values). It searches the two-dimensional grid for a correlation peak, in parallel with FFT-based circular correlation. <b>Tracking.</b> A delay-lock loop (the early–late gate of Chapter 16, with the autocorrelation triangle $\Lambda(\tau/T_c)$) and a Costas/PLL carrier loop (Chapter 16) then follow the code and carrier phase. <b>Ranging.</b> The satellite’s code phase tells the receiver the time of transmission $t_i^{\rm tx}$; the receiver’s own clock gives $t^{\rm rx}$; the <b>pseudorange</b> is $\rho_i=c(t^{\rm rx}-t_i^{\rm tx})=\|\mathbf s_i-\mathbf x\|+c\,b$, the true distance plus $c\,b$ where $b$ is the (unknown) offset of the cheap receiver clock. One chip is $c\,T_c=293$ m; a tracking loop resolves a hundredth of a chip: about 3 m. <b>Navigation solution.</b> With four unknowns $(x,y,z,b)$ four satellites give four equations; linearising around a guess $\hat{\mathbf x}$: $\Delta\boldsymbol\rho=G\,\Delta\mathbf x$ with rows $[-\mathbf u_i^T,\ 1]$ ($\mathbf u_i$ the unit line-of-sight vector). The position error covariance is $\sigma_{\rm UERE}^2(G^TG)^{-1}$, so the error is the user-equivalent range error times a geometric factor: $\sigma_{\rm pos}=\mathrm{PDOP}\cdot\sigma_{\rm UERE}$. With $\sigma_{\rm UERE}\approx3$–5 m (ionosphere, clocks, multipath) and PDOP 1.5–3, a few metres horizontally: what a phone achieves.</p></div>
+
+<div class="box gate"><span class="tag">GATE pattern · spread spectrum</span>
+<ul>
+<li>LFSR questions: output sequence from the initial state; period $2^m-1$; number of 1s $=2^{m-1}$; autocorrelation values $N$ and $-1$ (sometimes the normalised values $1$ and $-1/N$); which polynomials give maximal length (primitive, and at least the tap structure with the constant term).</li>
+<li>Processing gain $W/R_b$ in dB; jamming margin; number of users in CDMA (interference-limited); orthogonality of Walsh codes; chip rate vs bandwidth ($\approx R_c$ for BPSK).</li>
+<li>Statement questions: spreading does not change the AWGN performance, needs synchronisation, near–far effect, power control, Rake receiver and multipath diversity.</li>
+</ul></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A direct-sequence spread-spectrum receiver multiplies the received signal by the same spreading code used at the transmitter. A narrowband interferer at the carrier frequency is, after this multiplication,
+<ol class="opts"><li>unchanged</li><li>cancelled completely</li><li>spread over the wide bandwidth, so most of its power falls outside the data filter</li><li>shifted to baseband and amplified</li></ol>
+<div class="sol"><p>The interferer is multiplied by the wideband code and acquires the code’s flat spectrum: only a fraction $R_b/W=1/G_p$ of its power survives the low-pass data filter. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Which properties hold for a maximal-length sequence of period $N=2^m-1$?
+<ol class="opts"><li>It contains $2^{m-1}$ ones and $2^{m-1}-1$ zeros per period</li><li>Its periodic autocorrelation (with $\pm1$ mapping) is $-1$ at every non-zero shift</li><li>Its periodic autocorrelation is $0$ at every non-zero shift</li><li>The XOR of the sequence with a cyclic shift of itself is another cyclic shift of the same sequence</li></ol>
+<div class="sol"><p>(A) balance; (B) agreements $-$ disagreements $=(2^{m-1}-1)-2^{m-1}=-1$; (C) false (it is $-1$, not 0); (D) shift-and-add. <b>A, B, D</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+In the uplink of a CDMA cellular system the dominant problem if all users transmit at equal power regardless of distance is
+<ol class="opts"><li>frequency-selective fading</li><li>the near–far effect</li><li>Doppler shift</li><li>adjacent-channel interference from FDMA neighbours</li></ol>
+<div class="sol"><p>Nearby users are received much more strongly than distant ones and swamp them, since code cross-correlation protects only by $\approx1/N$. <b>(B)</b>; cured by fast power control.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+Which statements about the Rake receiver are correct?
+<ol class="opts"><li>It combines the outputs of correlators aligned with resolvable multipath components</li><li>It works best in a narrowband system with a long symbol time</li><li>It turns multipath into diversity gain</li><li>It requires the paths to be separated by less than one chip</li></ol>
+<div class="sol"><p>(A), (C). Paths must be separated by <em>more</em> than a chip to be resolved (so (D) is false) and a wideband signal is needed (so (B) is false). <b>A, C</b>.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+Spreading a BPSK signal with a code of processing gain 30 dB, on a channel with only thermal noise and no jammers, changes the $E_b/N_0$ required for a given BER by
+<ol class="opts"><li>nothing</li><li>$-30$ dB</li><li>$-15$ dB</li><li>$+30$ dB</li></ol>
+<div class="sol"><p>The matched-filter output depends only on $E_b/N_0$; the code is removed exactly. Processing gain helps only against interference that is not itself spread. <b>(A)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="10.4" data-tol="0.1" data-marks="1" data-src="Original">
+Processing gain of 802.11b’s 11-chip Barker spreading at 1 Mbit/s, in dB, is ______.
+<div class="sol"><p>$10\log_{10}11=10.41$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="43.1" data-tol="0.1" data-marks="1" data-src="Original">
+The GPS C/A signal has chip rate 1.023 Mchip/s and data rate 50 bit/s. The processing gain in dB is ______.
+<div class="sol"><p>$G_p=1.023\times10^6/50=20460$; $10\log_{10}20460=43.1$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="18" data-tol="0.2" data-marks="2" data-src="Original">
+A DSSS system spreads 10 kbit/s to 10 MHz. It needs $E_b/J_0=10$ dB with 2 dB implementation loss. The jamming margin is ______ dB.
+<div class="sol"><p>$G_p=1000=30$ dB; $M_j=30-10-2=18$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1023" data-tol="0.01" data-marks="1" data-src="Original">
+A 10-stage maximal-length LFSR produces a sequence of period ______.
+<div class="sol"><p>$2^{10}-1=1023$ (the zero state is excluded).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="512" data-tol="0.01" data-marks="1" data-src="Original">
+The number of 1s in one period of the 10-stage m-sequence is ______.
+<div class="sol"><p>$2^{m-1}=2^9=512$ (and 511 zeros).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-1" data-tol="0.01" data-marks="1" data-src="Original">
+For an m-sequence of period 31 mapped to $\pm1$, the periodic autocorrelation at a non-zero cyclic shift is ______.
+<div class="sol"><p>$-1$ (and $+31$ at zero shift).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1" data-tol="0.01" data-marks="2" data-src="Original">
+The 3-stage LFSR with recurrence $a_{n+3}=a_{n+1}\oplus a_n$ starts with $a_0a_1a_2=1\,0\,0$. The value of $a_7$ is ______.
+<div class="sol"><p>The sequence is $1,0,0,1,0,1,1,\ 1,0,0,\dots$ with period 7, so $a_7=a_0=1$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="65" data-tol="0.01" data-marks="2" data-src="Original">
+For the $m=10$ Gold-code family used by GPS, the largest magnitude of the cross-correlation between two different codes (out of a peak of 1023) is ______.
+<div class="sol"><p>$t(10)=2^{(10+2)/2}+1=2^6+1=65$; the three values are $-65,\ -1,\ 63$. In dB below the peak: $20\log(65/1023)=-23.9$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0" data-tol="0.01" data-marks="1" data-src="Original">
+The inner product of rows 2 and 6 (1-indexed) of the $8\times8$ Walsh–Hadamard matrix $H_8$ is ______.
+<div class="sol"><p>Rows 2 and 6 are $[+-+-+-+-]$ and $[+-+--+-+]$: products $+,+,+,+,-,-,-,-$ sum to 0. Walsh rows are orthogonal.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="77" data-tol="2" data-marks="2" data-src="Original">
+An asynchronous random-code CDMA system has $N=128$, ignores thermal noise, and needs $E_b/I_0=7$ dB. Using $K-1\le3N/\gamma_{\rm req}$, the maximum number of users $K$ is ______ (nearest integer).
+<div class="sol"><p>$\gamma_{\rm req}=10^{0.7}=5.01$; $K-1=384/5.01=76.6$, so $K\approx77$–78.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.00015" data-tol="0.00004" data-marks="2" data-src="Original">
+Asynchronous random-code CDMA with $N=127$, $K=11$ users of equal power and $E_b/N_0=10$ dB: using $P_b=Q\big([(K-1)/(3N)+N_0/(2E_b)]^{-1/2}\big)$, the BER is ______ (a decimal like 0.00015).
+<div class="sol"><p>$(K-1)/(3N)=10/381=0.02625$; $N_0/2E_b=0.05$; sum $0.07625$; SINR $=13.1$; $P_b=Q(\sqrt{13.1})=Q(3.62)=1.5\times10^{-4}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.12" data-tol="0.005" data-marks="2" data-src="Original">
+In Bluetooth, 79 channels are used with random hopping. Ten other piconets are in range. The probability that a given packet collides with at least one of them is ______.
+<div class="sol"><p>$1-(78/79)^{10}=1-0.880=0.12$: about one packet in eight.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.018" data-tol="0.002" data-marks="2" data-src="Original">
+Noncoherent FH/BFSK is attacked by a worst-case partial-band jammer with $E_b/J_0=13$ dB ($\gamma=20$). Using $P_{b,\max}=1/(e\gamma)$, the error probability is ______ (decimal).
+<div class="sol"><p>$1/(e\cdot20)=0.0184$ at $\rho^*=2/\gamma=0.1$; full-band jamming would give only $\frac12e^{-10}=2.3\times10^{-5}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="293" data-tol="1" data-marks="1" data-src="Original">
+The length in metres of one GPS C/A chip ($c/f_{\rm chip}$, $f_{\rm chip}=1.023$ MHz) is ______.
+<div class="sol"><p>$3\times10^8/1.023\times10^6=293.3$ m.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-137" data-tol="1" data-marks="2" data-src="Original">
+A LoRa receiver with 125 kHz bandwidth, 6 dB noise figure and a required SNR of $-20$ dB at $SF=12$ has a sensitivity of ______ dBm.
+<div class="sol"><p>$-174+10\log125\,000+6-20=-174+51+6-20=-137$ dBm.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="Original (GATE-style)">
+A CDMA uplink has $K$ users, each with processing gain 128, equal received powers, ideal power control and thermal noise negligible. Which statement is correct?
+<ol class="opts"><li>The number of users is fixed by the number of orthogonal codes, 128</li><li>The BER does not change as $K$ increases because the codes are different</li><li>A new user can never be admitted if any user is already at the minimum BER</li><li>Adding one user raises the interference to all others by roughly $1/(K-1)$ (a relative increase), degrading BER gradually</li></ol>
+<div class="sol"><p>With random or Gold codes, capacity is soft: MAI variance is proportional to $K-1$, so each new user adds a little interference to everyone. The limit 128 holds only for perfectly synchronised orthogonal codes. <b>(D)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="21.07" data-tol="0.1" data-marks="2" data-src="Original (GATE-style)">
+IS-95 spreads a 9.6 kbit/s rate-set-1 voice stream with a chip rate of 1.2288 Mchip/s (after rate-½ convolutional coding the code-symbol rate is 19.2 ksym/s). The processing gain relative to the information rate, in dB, is ______.
+<div class="sol"><p>$1.2288\times10^6/9600=128$; $10\log128=21.07$ dB. (Relative to the code-symbol rate 19.2 ksym/s the spreading factor is 64 = 18.06 dB.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-19" data-tol="0.5" data-marks="2" data-src="Original (GATE-style)">
+A GPS receiver sees $-130$ dBm of signal in a 2 MHz bandwidth. Noise density is $-174$ dBm/Hz (ignore receiver noise figure). The SNR at the antenna, in dB, is ______.
+<div class="sol"><p>Noise power $-174+10\log(2\times10^6)=-174+63=-111$ dBm; SNR $=-130+111=-19$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="27" data-tol="0.5" data-marks="2" data-src="Original (GATE-style)">
+For the same GPS signal ($C/N_0=44$ dB-Hz) with the 50 bit/s data, $E_b/N_0$ in dB is ______.
+<div class="sol"><p>$E_b/N_0=C/N_0-10\log R_b=44-17=27$ dB.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="Original (GATE-style)">
+Two DSSS users with perfectly orthogonal Walsh codes are received time-aligned. If one user’s signal arrives half a chip late, the interference between them
+<ol class="opts"><li>is no longer guaranteed to be zero: orthogonality holds only at zero relative shift</li><li>remains exactly zero</li><li>doubles</li><li>becomes equal to the thermal noise</li></ol>
+<div class="sol"><p>Walsh codes are orthogonal only when aligned; at other shifts their cross-correlations can be large, which is why asynchronous links use PN/Gold scrambling codes. <b>(A)</b>.</p></div></div>
+
+<div class="summary"><h3>Chapter 19 in one breath</h3>
+<ul>
+<li>DSSS: multiply data by a fast PN code, $G_p=W/R_b=T_b/T_c$; despreading squeezes the signal and spreads interference; $E_b/J_0=G_p\,P/J$; jamming margin $M_j=G_p-(E_b/J_0)_{\rm req}-L_s$ (dB). No gain on pure AWGN; the signal can sit below the noise.</li>
+<li>m-sequences: LFSR with primitive polynomial, period $2^m-1$, $2^{m-1}$ ones, autocorrelation $N$ and $-1$ (shift-and-add proof). Gold codes: 3-valued cross-correlation $\{-1,-t,t-2\}$, $t=2^{\lceil(m+1)/2\rceil}+1$ (65 for GPS). Walsh: orthogonal only when aligned.</li>
+<li>CDMA: MAI is noise-like; $P_b=Q\big([(K-1)/(3N)+N_0/2E_b]^{-1/2}\big)$; capacity interference-limited (soft), $K-1\le3N/\gamma_{\rm req}$; near–far needs power control (800–1500 Hz); Rake combines resolved paths (MRC).</li>
+<li>FHSS: hops over $M$ channels; partial-band jammer worst case $P_b=1/(e\gamma)$ at $\rho^*=2/\gamma$ — use coding; Bluetooth: 79 channels, 1600 hops/s, AFH.</li>
+<li>Chirp SS (LoRa): $2^{SF}$ chips per $SF$ bits; −137 dBm at SF12. GPS: 1023-chip Gold code, −130 dBm (19 dB below noise), 293 m chips, 4 satellites → $(x,y,z,b)$, error = DOP × UERE.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+
+/* ---------- diagrams ---------- */
+GB.diagram('d-dsss',{w:780,h:190,alt:'DSSS transmitter and receiver',items:[
+ ['txt',4,70,'d(t)','t','start'],['arr',[40,70,84,70]],['sum',100,70,16,'×'],['arr',[116,70,174,70]],['sum',190,70,16,'×'],['arr',[206,70,284,70]],
+ ['sum',300,70,16,'+'],['arr',[316,70,394,70],'r(t)'],['sum',410,70,16,'×'],['arr',[426,70,494,70]],['sum',510,70,16,'×'],['arr',[526,70,584,70]],['box',584,48,86,44,'LPF / ∫T_b','blue'],['arr',[670,70,730,70]],['txt',740,70,'d̂','t','start'],
+ ['arr',[100,142,100,86]],['txt',100,158,'c(t)','tm'],['arr',[190,142,190,86]],['txt',190,158,'cos ωt','tm'],
+ ['arr',[300,20,300,54]],['txt',300,10,'jammer + noise','tm'],
+ ['arr',[410,142,410,86]],['txt',410,158,'c(t − τ̂)','tm'],['arr',[510,142,510,86]],['txt',510,158,'cos ωt','tm'],
+ ['txt',100,110,'spread','tb'],['txt',410,110,'despread','tb']]});
+GB.diagram('d-rake',{w:780,h:230,alt:'Rake receiver',items:[
+ ['txt',4,115,'r(t)','t','start'],['ln',[44,115,90,115]],['ln',[90,40,90,190]],
+ ['arr',[90,40,130,40]],['box',130,22,80,36,'delay τ₁','blue'],['arr',[210,40,250,40]],['box',250,22,150,36,'× c(t) , ∫ T_b','blue'],['arr',[400,40,484,40]],['txt',500,12,'α₁*','tb'],['sum',500,40,16,'×'],
+ ['arr',[90,115,130,115]],['box',130,97,80,36,'delay τ₂','blue'],['arr',[210,115,250,115]],['box',250,97,150,36,'× c(t) , ∫ T_b','blue'],['arr',[400,115,484,115]],['txt',500,87,'α₂*','tb'],['sum',500,115,16,'×'],
+ ['arr',[90,190,130,190]],['box',130,172,80,36,'delay τ₃','blue'],['arr',[210,190,250,190]],['box',250,172,150,36,'× c(t) , ∫ T_b','blue'],['arr',[400,190,484,190]],['txt',500,162,'α₃*','tb'],['sum',500,190,16,'×'],
+ ['ln',[516,40,620,40,620,115]],['ln',[516,115,620,115]],['ln',[516,190,620,190,620,115]],['box',620,95,60,40,'Σ','orange'],['arr',[680,115,740,115]],['txt',750,115,'Z','t','start']]});
+
+/* ---------- DSSS spectra ---------- */
+GB.widget('w-dsss',{title:'Spectra before and after despreading (dB relative to the spread-signal peak)',h:420,hm:440,controls:[{k:'N',label:'chips per bit  N',min:4,max:128,step:1,value:128,fmt:v=>v.toFixed(0)},{k:'js',label:'jammer / signal  J/P',min:-10,max:50,step:1,value:10,fmt:v=>v.toFixed(0)+' dB'},{k:'eb',label:'Eb/N0 without jammer (dB)',min:4,max:20,step:1,value:12,fmt:v=>v.toFixed(0)+' dB'}],
+ draw(g,p){ const N=p.N, js=p.js, sinc2=x=>{ if(Math.abs(x)<1e-9) return 1; const t=Math.PI*x; return Math.pow(Math.sin(t)/t,2); };
+  const top=Math.max(10*Math.log10(2*N)+js,10*Math.log10(N))+8, db=y=>Math.max(10*Math.log10(Math.max(y,1e-30)),-45);
+  const pa=g.panel(0,2,{pad:{l:48,r:14,t:26,b:22}}), pb=g.panel(1,2,{pad:{l:48,r:14,t:26,b:22}}); [pa,pb].forEach(v=>v.view(-1.6,1.6,-45,top));
+  pa.axes({ystep:20,xstep:.5,xl:'f · T_c'}); pa.title('received: spread signal (blue) + narrowband jammer (orange)');
+  pa.fn(f=>db(sinc2(f)),'blue',2,null,900); const jb=f=>10*Math.log10(2*N)+js-(Math.abs(f)<1/(2*N)?0:(Math.abs(f)-1/(2*N))*60*N); pa.fn(f=>Math.max(jb(f),-45),'orange',2.2,null,1200);
+  pb.axes({ystep:20,xstep:.5,xl:'f · T_c'}); pb.title('after multiplying by c(t): data narrow (blue), jammer spread (orange); shaded = data filter');
+  pb.rect(-1/(2*N)*2,-45,1/(2*N)*2,top,'green',.2); pb.fn(f=>db(N*(Math.abs(f*N)<=1?sinc2(f*N):Math.min(1,1/Math.pow(Math.PI*f*N,2)))),'blue',2,null,1400); pb.fn(f=>db(Math.pow(10,js/10)*sinc2(f)),'orange',2.2,null,900);
+  const ebj=N*Math.pow(10,-js/10), ebn=Math.pow(10,p.eb/10), sinr=1/(1/ebn+1/ebj), pe=m.Q(Math.sqrt(2*sinr));
+  return 'G<sub>p</sub> = '+(10*Math.log10(N)).toFixed(1)+' dB · Eb/J₀ = G<sub>p</sub> − J/P = <b>'+(10*Math.log10(ebj)).toFixed(1)+' dB</b> · Eb/(N₀+J₀) = <b>'+(10*Math.log10(sinr)).toFixed(1)+' dB</b> → BER <b>'+pe.toExponential(1)+'</b> (without jammer: '+m.Q(Math.sqrt(2*ebn)).toExponential(1)+') · spread signal sits '+(js>0?'':'')+'at SNR = '+(p.eb-10*Math.log10(N)).toFixed(1)+' dB in the full bandwidth'; }});
+
+/* ---------- PN correlation ---------- */
+(function(){
+ const seqLF=(poly,mm,N)=>{ let st=Array(mm).fill(1), out=[]; N=N||((1<<mm)-1); for(let i=0;i<N;i++){ out.push(st[0]); let fb=st[0]; poly.forEach(t=>{ fb^=st[t]; }); st=st.slice(1).concat([fb]); } return out; };
+ const gpsCode=(a,b)=>{ let g1=Array(10).fill(1), g2=Array(10).fill(1), out=[]; for(let i=0;i<1023;i++){ out.push(g1[9]^g2[a-1]^g2[b-1]); const f1=g1[2]^g1[9], f2=g2[1]^g2[2]^g2[5]^g2[7]^g2[8]^g2[9]; g1=[f1].concat(g1.slice(0,9)); g2=[f2].concat(g2.slice(0,9)); } return out; };
+ const rot=(a,k)=>a.slice(k).concat(a.slice(0,k)); const xor=(a,b)=>a.map((x,i)=>x^b[i]);
+ const CASES={ m5:{nm:'m-sequence, m = 5 (N = 31)',A:()=>seqLF([2],5),B:null}, m7:{nm:'m-sequence, m = 7 (N = 127)',A:()=>seqLF([3],7),B:null}, m9:{nm:'m-sequence, m = 9 (N = 511)',A:()=>seqLF([4],9),B:null},
+  rnd:{nm:'random ±1 sequence, N = 127',A:()=>{ const r=m.rng(5); return Array.from({length:127},()=>r()<.5?0:1); },B:null,t:0},
+  g7a:{nm:'Gold code m = 7: autocorrelation',A:()=>xor(seqLF([3],7),rot(seqLF([3,2,1],7),11)),B:null,t:17},
+  g7x:{nm:'Gold codes m = 7: cross-correlation of two members',A:()=>xor(seqLF([3],7),rot(seqLF([3,2,1],7),11)),B:()=>xor(seqLF([3],7),rot(seqLF([3,2,1],7),40)),t:17},
+  gps1:{nm:'GPS PRN 1 C/A code: autocorrelation (N = 1023)',A:()=>gpsCode(2,6),B:null,t:65}, gps12:{nm:'GPS PRN 1 × PRN 2: cross-correlation',A:()=>gpsCode(2,6),B:()=>gpsCode(3,7),t:65} };
+ const corr=(a,b)=>{ const N=a.length, A=a.map(x=>1-2*x), B=b.map(x=>1-2*x); const r=new Array(N); for(let k=0;k<N;k++){ let s=0; for(let i=0;i<N;i++) s+=A[i]*B[(i+k)%N]; r[k]=s; } return r; };
+ GB.widget('w-pn',{title:'Periodic correlation of spreading codes',h:400,hm:420,controls:[{k:'c',type:'select',label:'code',options:Object.keys(CASES).map(k=>[k,CASES[k].nm]),value:'m7'}],
+  draw(g,p){ const cs=CASES[p.c], a=cs.A(), b=cs.B?cs.B():a, N=a.length, r=corr(a,b), xs=r.map((_,i)=>i), isAuto=!cs.B;
+   const side=isAuto?r.slice(1):r, mx=Math.max(...side.map(Math.abs)), pk=isAuto?N:Math.max(...r.map(Math.abs));
+   const pa=g.panel(0,2,{pad:{l:48,r:14,t:26,b:20}}), pb=g.panel(1,2,{pad:{l:48,r:14,t:26,b:22}});
+   pa.view(-.5,N-.5,Math.min(-.2*N,Math.min(...r)*1.2),Math.max(1.1*pk,N*.1)); pa.axes({xstep:Math.max(1,Math.round(N/8)),ystep:Math.max(1,Math.round(N/4)),xl:'cyclic shift'}); pa.title('full scale (N = '+N+')'); pa.bars(xs,r,Math.max(1,N/700)*1,'blue',.9);
+   const lim=Math.max(mx*1.5,2); pb.view(-.5,N-.5,-lim,lim); pb.axes({xstep:Math.max(1,Math.round(N/8)),ystep:lim>8?Math.round(lim/4):1,xl:'cyclic shift'}); pb.title('zoom on the side lobes'); pb.bars(xs.filter(i=>!(isAuto&&i===0)),side,Math.max(1,N/700),'yellow',.9);
+   if(cs.t){ [-1,-cs.t,cs.t-2].forEach(v=>pb.hline(v,'orange',[5,4],1.2)); } else if(p.c.startsWith('m')) pb.hline(-1,'orange',[5,4],1.2);
+   return cs.nm+' · peak <b>'+pk+'</b> · largest side lobe <b>'+mx+'</b> → <b>'+(20*Math.log10(mx/pk)).toFixed(1)+' dB</b> below the peak · distinct side-lobe values: '+[...new Set(side)].sort((x,y)=>x-y).slice(0,8).join(', ')+(new Set(side).size>8?', …':''); }});
+})();
+
+/* ---------- CDMA BER vs users ---------- */
+(function(){
+ const NS=[31,63,127,255,511];
+ GB.widget('w-cdma',{title:'CDMA: bit error probability against the number of users',h:380,hm:400,controls:[{k:'N',type:'select',label:'processing gain N',options:NS.map(n=>[n,String(n)+'  ('+(10*Math.log10(n)).toFixed(1)+' dB)']),value:127},{k:'eb',label:'Eb/N0 (dB)',min:4,max:20,step:1,value:12,fmt:v=>v+' dB'},{k:'nf',label:'near–far: one user stronger by',min:0,max:30,step:1,value:0,fmt:v=>v+' dB'},{k:'as',type:'check',label:'asynchronous users (÷3)',value:true}],
+  draw(g,p){ const N=+p.N, ebn=Math.pow(10,p.eb/10), A=Math.pow(10,p.nf/10), den=p.as?3*N:N; const ber=K=>{ if(K<1) return m.Q(Math.sqrt(2*ebn)); const mai=K===1?0:((K-2)+A)/den; const v=1/(1/(2*ebn)+mai)/1; return m.Q(Math.sqrt(v)); };
+   const Kmax=Math.min(N,300), v=g.full({l:46,b:32}); v.view(0,Kmax,-9,-.3); v.axes({xl:'number of users K',ystep:1,xstep:Math.max(5,Math.round(Kmax/8))}); const xs=[],ys=[]; for(let K=1;K<=Kmax;K++){ xs.push(K); ys.push(Math.log10(Math.max(ber(K),1e-12))); } v.line(xs,ys,'yellow',2.4); v.hline(-3,'axis'); v.hline(-5,'axis'); v.text(Kmax,-3,'10⁻³','mute','right',11,0,-8); v.text(Kmax,-5,'10⁻⁵','mute','right',11,0,-8);
+   const lim=t=>{ let k=0; for(let K=1;K<=N;K++){ if(ber(K)<=t) k=K; else break; } return k; };
+   return 'N = '+N+' · max users for BER ≤ 10⁻³: <b>'+lim(1e-3)+'</b> · for BER ≤ 10⁻⁵: <b>'+lim(1e-5)+'</b> · single-user BER <b>'+ber(1).toExponential(1)+'</b>'+(p.nf>0?' · with the strong user, the weak ones lose far more than they would from equal-power users':''); }});
+})();
+
+/* ---------- partial-band jamming ---------- */
+GB.widget('w-pbj',{title:'FH/BFSK against a partial-band jammer',h:340,hm:360,controls:[{k:'g',label:'Eb/J0 (dB)',min:4,max:30,step:1,value:13,fmt:v=>v+' dB'}],
+ draw(g,p){ const gam=Math.pow(10,p.g/10), f=r=>r/2*Math.exp(-r*gam/2); const v=g.full({l:46,b:32}); v.view(-3,0,-8,-.3); v.axes({xl:'log₁₀ ρ (fraction of band jammed)',ystep:1,xstep:.5}); const xs=[],ys=[]; for(let l=-3;l<=0.001;l+=.01){ xs.push(l); ys.push(Math.log10(Math.max(f(Math.pow(10,l)),1e-12))); } v.line(xs,ys,'yellow',2.6);
+  const full=f(1); v.dot(0,Math.log10(Math.max(full,1e-12)),'mute',5); v.text(0,Math.log10(Math.max(full,1e-12)),'full band','mute','right',11,-9,-10);
+  if(gam>2){ const rs=2/gam, pm=1/(Math.E*gam); v.dot(Math.log10(rs),Math.log10(pm),'red',6); v.text(Math.log10(rs),Math.log10(pm),'worst case ρ* = 2/γ','red','left',12,10,-10); }
+  return 'γ = Eb/J₀ = '+gam.toFixed(1)+' · full-band jamming: P<sub>b</sub> = <b>'+full.toExponential(1)+'</b> · worst-case partial band (ρ* = '+(gam>2?(2/gam).toFixed(3):'1')+'): P<sub>b</sub> = <b>'+(gam>2?(1/(Math.E*gam)).toExponential(1):full.toExponential(1))+'</b> = 1/(eγ)'; }});
+</script>
