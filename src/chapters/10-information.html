@@ -1,124 +1,176 @@
-<!--meta {"id": "ch10", "num": "10", "part": "Part III · Information Theory", "title": "How Much Is a Message Worth?", "lede": "In 1948 a quiet engineer at Bell Labs proved that noise does not limit <em>how accurately</em> you can communicate, only <em>how fast</em>. Everything from your phone to the Voyager probes is built on that one theorem."} -->
+<!--meta {"id":"ch10","num":"10","part":"Part III · Information Theory","title":"How Much Is a Message Worth? Entropy and Source Coding","lede":"In 1948 a quiet engineer at Bell Labs proved that noise does not limit <em>how accurately</em> you can communicate, only <em>how fast</em>. The first half of that story is about the message itself: how many bits does it really contain, and how do we write it down in no more than that?"} -->
 
-<div class="box story"><span class="tag">History · Shannon's miracle year</span>
-<p>Before 1948 everybody "knew" that noise forces a trade: to make a message more reliable, send it more slowly, or repeat it over and over. Send the word three times and take a majority vote. Send it a thousand times and the error shrinks, but so does your data rate, towards zero. Reliability costs rate. That was the common sense of the telegraph and telephone engineers.</p>
-<p>Claude Shannon, a 32-year-old mathematician at Bell Labs (who also built a juggling robot, a mechanical mouse that solved mazes, and rode a unicycle through the corridors), published <em>A Mathematical Theory of Communication</em> in the Bell System Technical Journal in two instalments in July and October 1948. It did three astonishing things. (1) It <strong>defined information</strong> as a number, in <em>bits</em> (John Tukey's coinage), independent of the meaning of the message. (2) It proved that every source has an irreducible compressed size, its <strong>entropy</strong> (Shannon later said that John von Neumann advised him to use that word, "because nobody knows what entropy really is, so in a debate you will always have the advantage"). (3) It proved that every noisy channel has a <strong>capacity</strong> $C$, and that for any rate $R<C$ there exist codes whose error probability can be made <em>as small as you please</em>, with no need for the rate to fall. Noise limits speed but not accuracy. It took engineers 45 years to build codes (turbo codes, 1993) that really got close.</p></div>
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Justify $-\log p$ as the measure of information; compute entropies, joint and conditional entropies and the entropy rate of a Markov source.</li>
+<li><b>Prove</b> the basic inequalities (Gibbs, $H\le\log K$, conditioning reduces entropy) and explain the asymptotic equipartition property (AEP) and the typical set.</li>
+<li>State and prove the Kraft inequality and the source-coding bounds $H\le\bar L<H+1$; run Huffman’s algorithm; encode with arithmetic coding and Lempel–Ziv.</li>
+<li>Quantify the cost of a wrong source model with relative entropy $D(p\|q)$.</li>
+<li>Derive the rate–distortion function of a Gaussian source and connect it to the “6 dB per bit” rule of PCM.</li>
+</ul>
+<p><b>Prerequisite:</b> Chapter 4 (probability, Bayes, Jensen-type arguments).</p></div>
+
+<div class="box story"><span class="tag">History · Shannon’s miracle year</span>
+<p>Before 1948 everybody “knew” that noise forces a trade: to make a message more reliable, send it more slowly, or repeat it over and over. Send the word three times and take a majority vote. Send it a thousand times and the error shrinks, but so does your data rate, towards zero. Reliability costs rate. That was the common sense of the telegraph and telephone engineers.</p>
+<p>Claude Shannon, a 32-year-old mathematician at Bell Labs (who also built a juggling robot, a mechanical mouse that solved mazes, and rode a unicycle through the corridors), published <em>A Mathematical Theory of Communication</em> in the Bell System Technical Journal in two instalments in July and October 1948. It did three astonishing things. (1) It <strong>defined information</strong> as a number, in <em>bits</em> (John Tukey’s coinage), independent of the meaning of the message. (2) It proved that every source has an irreducible compressed size, its <strong>entropy</strong> (Shannon later said that John von Neumann advised him to use that word, “because nobody knows what entropy really is, so in a debate you will always have the advantage”). (3) It proved that every noisy channel has a <strong>capacity</strong> $C$, and that for any rate $R<C$ there exist codes whose error probability can be made <em>as small as you please</em>, with no need for the rate to fall. Noise limits speed but not accuracy. It took engineers 45 years to build codes (turbo codes, 1993) that really got close.</p>
+<p>The first half of the theory (this chapter) has a famous sequel. In 1951 at MIT, Robert Fano gave his students the problem of finding the best code for a set of messages; a student named David Huffman, who had been about to give up, found it. We meet him below.</p></div>
 
 <div class="box real"><span class="tag">Real world · where this shows up</span>
-<p>ZIP, JPEG, MP3 and video codecs are source coding (the entropy half of the theory). Wi-Fi, LTE and 5G, DVB satellite TV, SSD flash memory, QR codes and CDs all use channel codes (the capacity half). The Voyager probes, 20 billion kilometres away, whisper at about 160 bits per second with a few watts of power, and the signal is recovered on Earth with error-correcting codes within a fraction of a dB of Shannon's limit.</p></div>
+<p>ZIP, PNG, JPEG, MP3 and video codecs are source coding (the entropy half of the theory): a 3 MB raw photo becomes 300 kB because the pixels are redundant; a WAV file becomes a 10× smaller MP3 because the ear ignores what it cannot hear (that is <i>lossy</i> coding, with rate–distortion theory in charge). The Voyager probes, 20 billion kilometres away, whisper at about 160 bits per second with a few watts of power, and the signal is recovered on Earth with error-correcting codes within a fraction of a dB of Shannon’s limit (Chapter 11). Every JPEG you view has been Huffman- or arithmetic-coded; every web page you download was probably compressed with gzip/Brotli (LZ77 + Huffman).</p></div>
 
 <h2>Surprise, measured in bits</h2>
-<p>Suppose I tell you something. How much <em>information</em> did I give? Shannon's answer starts from three common-sense requirements. (i) An event you were certain of carries no information. (ii) The rarer the event, the more it tells you. (iii) If two <em>independent</em> things happen, the information adds. The only function satisfying all three is $-\log p$. Taking the logarithm to base 2 measures it in <strong>bits</strong>:
-$$I(x)=\log_2\frac1{p(x)}\ \text{ bits}.$$
-Your friend says "the coin landed heads": $p=\frac12$, $I=1$ bit. "I rolled a six": $\log_26=2.58$ bits. "I won the lottery ($p=10^{-7}$)": 23 bits. This is the number of yes/no questions you'd need, on average, to pin the event down: the game of "twenty questions" is information theory.</p>
-<p>Entropy is the <strong>average surprise</strong> of a source:
+<p>Suppose I tell you something. How much <em>information</em> did I give? Shannon’s answer starts from three common-sense requirements. (i) An event you were certain of carries no information. (ii) The rarer the event, the more it tells you. (iii) If two <em>independent</em> things happen, the information adds.</p>
+<div class="box derive"><span class="tag">Derivation · why information is $-\log p$</span>
+<p>Let $f(p)$ be the information in an event of probability $p$, continuous and decreasing, with $f(1)=0$. Independence means probabilities multiply, and (iii) demands $f(pq)=f(p)+f(q)$. Put $p=2^{-u}$, $g(u)=f(2^{-u})$: then $g(u+v)=g(u)+g(v)$, and a continuous solution of this Cauchy equation must be linear, $g(u)=ku$. Hence $f(p)=-k\log_2p$, and choosing $k=1$ fixes the unit as the <b>bit</b> (the information of a fair coin flip, $p=\frac12$). Taking $\ln$ instead gives the <b>nat</b> ($1\ \mathrm{nat}=1.443$ bits), $\log_{10}$ the Hartley.
+$$I(x)=\log_2\frac1{p(x)}\ \text{ bits}.$$</p></div>
+<p>Your friend says “the coin landed heads”: $p=\frac12$, $I=1$ bit. “I rolled a six”: $\log_26=2.58$ bits. “I won the lottery ($p=10^{-7}$)”: 23 bits. This is the number of yes/no questions you’d need, on average, to pin the event down: the game of “twenty questions” is information theory. Entropy is the <strong>average surprise</strong> of a source:
 $$H(X)=\sum_xp(x)\log_2\frac1{p(x)}=-\sum_xp(x)\log_2p(x)\ \text{ bits/symbol}.$$</p>
 <div class="widget" id="w-binent">Top: the surprise $-\log_2p$ of an event with probability $p$: it explodes as $p\to0$. Bottom: the entropy of a coin that lands heads with probability $p$ (the <em>binary entropy function</em> $H_b(p)$): zero for a certain outcome, maximal (1 bit) when it is a fair coin: the most uncertainty a binary source can have.</div>
+
+<h3>The inequalities, proved</h3>
+<div class="box derive"><span class="tag">Derivation · Gibbs’ inequality and the bounds on entropy</span>
+<p><b>Key lemma</b> ($\ln x\le x-1$, equality only at $x=1$). For two probability distributions $p,q$ on the same alphabet,
+$$\sum_xp(x)\log_2\frac{q(x)}{p(x)}\le\frac1{\ln2}\sum_xp(x)\Big(\frac{q(x)}{p(x)}-1\Big)=\frac1{\ln2}\Big(\sum_xq(x)-\sum_xp(x)\Big)=0.$$
+Define the <b>relative entropy</b> (Kullback–Leibler divergence) $D(p\|q)=\sum_xp(x)\log_2\dfrac{p(x)}{q(x)}$. The lemma says <b>$D(p\|q)\ge0$</b>, with equality iff $p=q$. Consequences:</p>
+<ul>
+<li><b>$0\le H(X)\le\log_2K$.</b> $H\ge0$ because each term $p\log\frac1p\ge0$. Take $q$ uniform, $q=1/K$: $D(p\|q)=\log_2K-H(X)\ge0$, with equality iff $p$ is uniform. (GATE 2024: alphabet of 16 ⇒ max entropy 4 bits.)</li>
+<li><b>Chain rule.</b> $\log\frac1{p(x,y)}=\log\frac1{p(x)}+\log\frac1{p(y|x)}$; averaging over $p(x,y)$ gives $H(X,Y)=H(X)+H(Y\mid X)$.</li>
+<li><b>Conditioning reduces entropy.</b> $I(X;Y)\overset{\rm def}=H(X)-H(X\mid Y)=D\big(p(x,y)\,\|\,p(x)p(y)\big)\ge0$, so $H(X\mid Y)\le H(X)$, with equality iff $X,Y$ are independent. (<i>On average</i>, never in a particular case: seeing a particular $y$ can raise your uncertainty.)</li>
+<li><b>Subadditivity.</b> $H(X,Y)\le H(X)+H(Y)$, with equality for independent variables.</li>
+</ul></div>
 <div class="box key"><span class="tag">Properties of entropy (GATE tests them)</span>
 <ul>
-<li>$0\le H(X)\le\log_2K$ for $K$ outcomes. Equality on the right iff all outcomes are equally likely (GATE 2024: alphabet of 16 ⇒ max entropy 4 bits).</li>
+<li>$0\le H(X)\le\log_2K$ for $K$ outcomes. Equality on the right iff all outcomes are equally likely.</li>
 <li><b>Relabelling does not change entropy.</b> $H(X)=H(2X)=H(2^X)=H(g(X))$ for any <em>one-to-one</em> $g$. A <em>many-to-one</em> $g$ (like $X^2$) merges outcomes and can only <b>reduce</b> entropy: $H(g(X))\le H(X)$. (GATE 2022 Q.29.)</li>
-<li>Independent variables: $H(X,Y)=H(X)+H(Y)$. In general $H(X,Y)=H(X)+H(Y\mid X)$ (chain rule), and $H(Y\mid X)\le H(Y)$: knowing something never increases uncertainty on average.</li>
-<li>A geometric source ("toss until first head", $p=\frac12$): $H=\sum_{k\ge1}k2^{-k}=2$ bits (GATE 2014).</li>
+<li>Independent variables: $H(X,Y)=H(X)+H(Y)$. In general $H(X,Y)=H(X)+H(Y\mid X)$ (chain rule), and $H(Y\mid X)\le H(Y)$.</li>
+<li>A geometric source (“toss until first head”, $p=\frac12$): $H=\sum_{k\ge1}k2^{-k}=2$ bits (GATE 2014).</li>
 </ul></div>
 <div class="widget" id="w-tern">Entropy of a three-symbol source as a function of its probabilities $(p_1,p_2,p_3)$. The floor is the probability triangle (corners = certainty, centre = uniform). The dome peaks at $\log_23=1.585$ bits at the centre and falls to 0 at the three corners. The edges are the binary entropy curves.</div>
 <div class="box ex"><span class="tag">Worked example · GATE 2025 Q.54</span>
 <p>$X\in\{-1,0,1\}$ with $P(\pm1)=\alpha$ each, $P(0)=1-2\alpha$. Then $g(\alpha)=-2\alpha\log_2\alpha-(1-2\alpha)\log_2(1-2\alpha)$. Maximum at the uniform point $\alpha=\frac13$. Since the curve rises up to $\frac13$ and falls after: $g(0.25)=1.50$, $g(0.3)=1.571$, $g(0.4)=1.522$. So $g(0.3)>g(0.4)$ ✓ (B) and $g(0.3)>g(0.25)$ ✓ (C). Key: B, C.</p></div>
 <div class="box ex"><span class="tag">Worked example · information gained (GATE 2021 Q.51)</span>
-<p>A school has equal boys and girls; 75% study Science, 25% Commerce; a Commerce student is twice as likely to be a boy as a Science student. How many bits do you gain on learning that a randomly selected <em>girl</em> studies Commerce? Let $P(\text{boy}\mid\text{Sci})=b$, so $P(\text{boy}\mid\text{Com})=2b$. Boys are half the school: $0.75b+0.25(2b)=0.5\Rightarrow b=0.4$. Then $P(\text{girl}\mid\text{Com})=0.2$, $P(\text{girl}\mid\text{Sci})=0.6$ and $P(\text{Com}\mid\text{girl})=\dfrac{0.25(0.2)}{0.5}=0.1$. Information $=\log_2\frac1{0.1}=\mathbf{3.32}$ bits. (Bayes from Chapter 1, plus the definition of self-information.)</p></div>
+<p>A school has equal boys and girls; 75% study Science, 25% Commerce; a Commerce student is twice as likely to be a boy as a Science student. How many bits do you gain on learning that a randomly selected <em>girl</em> studies Commerce? Let $P(\text{boy}\mid\text{Sci})=b$, so $P(\text{boy}\mid\text{Com})=2b$. Boys are half the school: $0.75b+0.25(2b)=0.5\Rightarrow b=0.4$. Then $P(\text{girl}\mid\text{Com})=0.2$, $P(\text{girl}\mid\text{Sci})=0.6$ and $P(\text{Com}\mid\text{girl})=\dfrac{0.25(0.2)}{0.5}=0.1$. Information $=\log_2\frac1{0.1}=\mathbf{3.32}$ bits. (Bayes from Chapter 4, plus the definition of self-information.)</p></div>
+
+<h3>Sources with memory: the entropy rate</h3>
+<p>English text is not a sequence of independent letters: $q$ is almost always followed by $u$. For a stationary source the right measure is the <b>entropy rate</b> $\mathcal H=\lim_{n\to\infty}\frac1nH(X_1,\dots,X_n)=\lim H(X_n\mid X_{n-1},\dots,X_1)$ (the surprise of the next symbol given the whole past). For a first-order Markov chain with transition matrix $P$ and stationary distribution $\pi$,
+$$\mathcal H=\sum_i\pi_i\,H(\text{row }i\text{ of }P).$$
+<div class="box ex"><span class="tag">Worked example · a bursty binary source</span>
+<p>States $A,B$ with $P(A\to A)=0.9$, $P(B\to A)=0.5$. Stationary: $\pi_A=\frac{0.5}{0.5+0.1}=\frac56$, $\pi_B=\frac16$. $\mathcal H=\frac56H_b(0.1)+\frac16H_b(0.5)=\frac56(0.469)+\frac16(1)=\mathbf{0.557}$ bit/symbol. An i.i.d. source with the same marginals would have $H_b(1/6)=0.650$: the memory saves $14\%$. Shannon’s own experiments with human guessers put the entropy rate of English at about $1$–$1.3$ bits per letter, compared with $\log_227=4.75$ for random letters: English is $\approx75\%$ redundant, which is why a good compressor gets text down to a quarter of its size, and why you can read “Th qck brwn fx”.</p></div>
+
+<h2>Why entropy is the answer: the AEP</h2>
+<p>Why should the <em>average surprise</em> be the minimum number of bits per symbol? Because of the law of large numbers.</p>
+<div class="box derive"><span class="tag">Derivation · the asymptotic equipartition property (AEP) and typical sequences</span>
+<p>Let $X_1,\dots,X_n$ be i.i.d. with pmf $p$. The probability of a sequence is $p(x^n)=\prod p(x_i)$, so $-\frac1n\log_2p(X^n)=\frac1n\sum_i\big[-\log_2p(X_i)\big]$ is the sample mean of the i.i.d. variables $-\log p(X_i)$, whose mean is $H(X)$. By the weak law of large numbers (Chebyshev, Chapter 4), for any $\epsilon>0$
+$$P\Big(\Big|-\tfrac1n\log_2p(X^n)-H\Big|>\epsilon\Big)\to0.$$
+Define the <b>typical set</b> $A_\epsilon^{(n)}=\{x^n:\ 2^{-n(H+\epsilon)}\le p(x^n)\le2^{-n(H-\epsilon)}\}$. Then: (a) $P(A_\epsilon^{(n)})\to1$; (b) since each typical sequence has probability at least $2^{-n(H+\epsilon)}$ and the total is at most 1, $|A_\epsilon^{(n)}|\le2^{n(H+\epsilon)}$; (c) similarly $|A_\epsilon^{(n)}|\ge(1-\epsilon)2^{n(H-\epsilon)}$ for large $n$.</p>
+<p><b>Reading it:</b> out of the $K^n$ sequences, almost all the probability sits on only $\approx2^{nH}$ of them, all of which are <em>roughly equally likely</em>, each with probability $\approx2^{-nH}$. Number the typical sequences with $nH$ bits, send an escape flag for the (rare) atypical ones, and you have a code with $H$ bits per symbol. Conversely no code can do better, since fewer than $2^{n(H-\epsilon)}$ codewords cover vanishingly little probability. That is <b>Shannon’s source-coding theorem</b>. For a fair coin all $2^n$ sequences are typical and nothing can be compressed; for $p=0.1$ (H=0.469) about $2^{0.469n}$ of the $2^n$ sequences matter: a $53\%$ saving.</p></div>
 
 <h2>Source coding: squeezing out the redundancy</h2>
-<p>We want to encode each symbol as a string of bits so that the <em>average</em> length is as short as possible, and so that the receiver can decode a continuous stream without punctuation. A code is <strong>prefix-free</strong> (instantaneous) if no codeword is the beginning of another; then the codewords are the leaves of a binary tree, and decoding is just walking down the tree. A prefix code with lengths $\ell_1,\ldots,\ell_K$ exists if and only if the <strong>Kraft inequality</strong> holds:
+<p>We want to encode each symbol as a string of bits so that the <em>average</em> length is as short as possible, and so that the receiver can decode a continuous stream without punctuation. A code is <strong>prefix-free</strong> (instantaneous) if no codeword is the beginning of another; then the codewords are the leaves of a binary tree, and decoding is just walking down the tree.</p>
+<div class="box derive"><span class="tag">Derivation · the Kraft inequality</span>
+<p><b>Necessity.</b> Let $\ell_{\max}$ be the longest codeword. A codeword of length $\ell_i$ in a prefix code “blocks” all its $2^{\ell_{\max}-\ell_i}$ descendants at depth $\ell_{\max}$; the blocked sets are disjoint (prefix property) and there are only $2^{\ell_{\max}}$ nodes at that depth, so $\sum_i2^{\ell_{\max}-\ell_i}\le2^{\ell_{\max}}$, i.e.
 $$\sum_{i=1}^{K}2^{-\ell_i}\le1.$$
-(Each codeword of length $\ell$ "uses up" $2^{-\ell}$ of the tree's total capacity of 1.) And the average length obeys Shannon's <strong>source coding theorem</strong>:
+<b>Sufficiency.</b> If the lengths satisfy it, sort them increasingly and assign each codeword the first unused node at its depth; the inequality guarantees one is available. (The inequality also holds for every <i>uniquely decodable</i> code, by McMillan.) Each codeword of length $\ell$ uses up $2^{-\ell}$ of the tree’s total capacity of 1.</p></div>
+<div class="box derive"><span class="tag">Derivation · $H\le\bar L<H+1$</span>
+<p><b>Lower bound.</b> For any prefix code, with $q_i=2^{-\ell_i}/c$, $c=\sum2^{-\ell_i}\le1$: $\bar L-H=\sum p_i\ell_i+\sum p_i\log p_i=\sum p_i\log\frac{p_i}{2^{-\ell_i}}=D(p\|q)-\log c\ge0$. <b>Upper bound.</b> Choose the “Shannon lengths” $\ell_i=\lceil\log_2\frac1{p_i}\rceil$. They satisfy Kraft ($\sum2^{-\ell_i}\le\sum p_i=1$), so a prefix code exists, and $\bar L=\sum p_i\ell_i<\sum p_i\big(\log\frac1{p_i}+1\big)=H+1$. Combining,
 $$\boxed{\,H(X)\ \le\ \bar L\ <\ H(X)+1\,}\qquad\bar L=\sum_ip_i\ell_i,$$
-with $\bar L=H$ exactly when all $p_i$ are powers of $\frac12$ (a "dyadic" source: ideal length $\ell_i=\log_2\frac1{p_i}$). Encoding blocks of $n$ symbols together squeezes the overhead to $\frac1n$ bits per symbol, so entropy is exactly the minimum rate of lossless compression.</p>
-<h3>Huffman's algorithm</h3>
-<p>In 1951, MIT student David Huffman was offered a choice by his professor, Robert Fano: take the final exam, or solve an open problem: find the optimal prefix code. After months he was about to give up and throw out his notes when the answer came to him: build the tree from the <em>bottom</em>. <strong>Repeatedly merge the two least probable symbols into one</strong>, adding their probabilities, until one node remains. Label the branches 0 and 1. Rare symbols end up deep (long codes), common ones near the root (short codes). Huffman's code is provably optimal among symbol-by-symbol prefix codes. Try it:</p>
-<div class="widget" id="w-huff">Step through Huffman's algorithm. Drag "merges done" from 0 to $K-1$. The dendrogram shows which merges have happened; the codeword of each symbol is read off from the root. Compare average length $\bar L$ with the entropy $H$. For the dyadic source they are exactly equal.</div>
+with $\bar L=H$ exactly when all $p_i$ are powers of $\frac12$ (a “dyadic” source: ideal length $\ell_i=\log_2\frac1{p_i}$). Encoding blocks of $n$ symbols together gives $H\le\bar L_n/n<H+1/n$, so entropy is exactly the minimum rate of lossless compression, approached as the block length grows.</p></div>
+
+<h3>Huffman’s algorithm</h3>
+<p>In 1951, MIT student David Huffman was offered a choice by his professor, Robert Fano: take the final exam, or solve an open problem: find the optimal prefix code. After months he was about to give up and throw out his notes when the answer came to him: build the tree from the <em>bottom</em>. <strong>Repeatedly merge the two least probable symbols into one</strong>, adding their probabilities, until one node remains. Label the branches 0 and 1. Rare symbols end up deep (long codes), common ones near the root (short codes). Huffman’s code is provably optimal among symbol-by-symbol prefix codes.</p>
+<div class="box derive"><span class="tag">Why Huffman is optimal (proof sketch)</span>
+<p>(1) In an optimal code, a more probable symbol never has a longer codeword than a less probable one (swapping would reduce $\bar L$). (2) The two longest codewords have the same length and can be assumed to be siblings that differ only in the last bit (otherwise a leaf could be pruned). So the two least probable symbols may be merged into one parent node; (3) the cost of the reduced code differs from the original by the constant $p_a+p_b$, which does not depend on the rest of the tree: so an optimal code for the reduced alphabet extends to an optimal code for the original one. Induction on the alphabet size completes the proof. $\square$</p></div>
+<div class="widget" id="w-huff">Step through Huffman’s algorithm. Drag “merges done” from 0 to $K-1$. The dendrogram shows which merges have happened; the codeword of each symbol is read off from the root. Compare average length $\bar L$ with the entropy $H$. For the dyadic source they are exactly equal.</div>
+<div class="box ex"><span class="tag">Worked example · a non-dyadic source</span>
+<p>Probabilities $0.4,\ 0.3,\ 0.1,\ 0.1,\ 0.06,\ 0.04$. Merge $0.06+0.04=0.10$; then $0.1+0.1=0.2$; then $0.1+0.2=0.3$; then $0.3+0.3=0.6$; finally $0.4+0.6=1$. Codeword lengths $(1,2,4,4,4,4)$: $\bar L=0.4(1)+0.3(2)+0.1(4)\cdot2+0.06(4)+0.04(4)=\mathbf{2.20}$ bits, against $H=2.143$ bits: <b>efficiency $H/\bar L=97.4\%$</b>. A fixed-length code would need $\lceil\log_26\rceil=3$ bits.</p></div>
 <div class="box ex"><span class="tag">Worked example · GATE 2023 Q.65</span>
-<p>Eight symbols with probabilities $\frac12,\frac14,\frac18,\frac1{16},\frac1{32},\frac1{64},\frac1{128},\frac1{128}$. "The average number of yes/no questions asked in the most efficient sequence" is the Huffman average length $=H$ (dyadic): $\tfrac12(1)+\tfrac14(2)+\tfrac18(3)+\tfrac1{16}(4)+\tfrac1{32}(5)+\tfrac1{64}(6)+2\cdot\tfrac1{128}(7)=\mathbf{1.984}$ (key 1.97–1.99). The optimal question order is "is it a? is it b? ..." Probabilities are dyadic, so no cleverness is needed.</p></div>
-<p>Practical cousins: <b>Shannon–Fano</b> (split the sorted list into near-equal halves; not always optimal), <b>arithmetic coding</b> (encodes the whole message as one number, approaches $H$ without the $+1$), and <b>Lempel–Ziv</b> (ZIP, GIF, PNG: learns the source statistics on the fly; no probabilities needed).</p>
+<p>Eight symbols with probabilities $\frac12,\frac14,\frac18,\frac1{16},\frac1{32},\frac1{64},\frac1{128},\frac1{128}$. “The average number of yes/no questions asked in the most efficient sequence” is the Huffman average length $=H$ (dyadic): $\tfrac12(1)+\tfrac14(2)+\tfrac18(3)+\tfrac1{16}(4)+\tfrac1{32}(5)+\tfrac1{64}(6)+2\cdot\tfrac1{128}(7)=\mathbf{1.984}$ (key 1.97–1.99). The optimal question order is “is it a? is it b? …” Probabilities are dyadic, so no cleverness is needed.</p></div>
 
-<h2>Channels and mutual information</h2>
-<p>Now add noise. A <strong>discrete memoryless channel (DMC)</strong> is a table of conditional probabilities $p(y\mid x)$: given the input symbol $x$, the output is $y$ with that probability, independently each use. The simplest is the <strong>binary symmetric channel (BSC)</strong>: each bit flips with probability $p$. Another: the <strong>binary erasure channel (BEC)</strong>: each bit is lost (erased, and <em>flagged</em> as lost) with probability $\varepsilon$.</p>
-<p>How much does seeing $Y$ tell us about $X$? Before seeing $Y$ our uncertainty about $X$ is $H(X)$; after seeing it, $H(X\mid Y)$ (the "equivocation"). The reduction is the <strong>mutual information</strong>:
-$$I(X;Y)=H(X)-H(X\mid Y)=H(Y)-H(Y\mid X)=H(X)+H(Y)-H(X,Y)=\sum_{x,y}p(x,y)\log_2\frac{p(x,y)}{p(x)p(y)}.$$
-It is symmetric, non-negative, and <b>zero exactly when $X$ and $Y$ are independent</b> (GATE 2025 Q.60: a joint table $P(0,0)=0.06,\ P(0,1)=0.14,\ P(1,0)=0.24,\ P(1,1)=0.56$ has marginals $P(X=0)=0.2$, $P(Y=0)=0.3$ and $0.2\times0.3=0.06$ ✓ so every cell equals the product of marginals; $I=0$).</p>
-<div class="widget" id="w-mi">Binary symmetric channel with flip probability $p$ and input prior $\pi=P(X=1)$. The two bars decompose the entropies: $H(X)=H(X|Y)+I$ and $H(Y)=H(Y|X)+I$ with the same (green) $I(X;Y)$. The curve shows $I(X;Y)$ as a function of the prior: capacity is its peak.</div>
-<h3>Capacity: the best the channel can do</h3>
-<p>The mutual information depends on how <em>we</em> choose to use the channel (the input distribution). The <strong>channel capacity</strong> is the best we can do:
-$$C=\max_{p(x)}I(X;Y)\quad\text{bits per channel use}.$$
-For the BSC the maximum is at the uniform prior (by symmetry) and $H(Y\mid X)=H_b(p)$ no matter what we send, so
-$$\boxed{C_{\rm BSC}=1-H_b(p)},\qquad\boxed{C_{\rm BEC}=1-\varepsilon}.$$
-At $p=0$: 1 bit/use. At $p=\frac12$: $C=0$ (GATE 2014: the output is independent of the input; nothing gets through). At $p=1$: also $C=1$: the channel is a perfect inverter! The worst channel is the useless one, not the very noisy one. A cascade of two BSCs of crossover $p$ is a BSC with $p'=2p(1-p)$, a worse channel (Data-processing inequality: processing cannot create information).</p>
-<div class="widget" id="w-isurf">$I(X;Y)$ for the BSC as a surface over the prior $\pi$ and the flip probability $p$. The ridge along $\pi=\frac12$ is the capacity curve $1-H_b(p)$; the valley along $p=\frac12$ is where the channel is useless; the corners at $p=0$ and $p=1$ are perfect channels.</div>
-<div class="box ex"><span class="tag">Worked example · GATE 2022 Q.61 (a cyclic channel)</span>
-<p>Three inputs $a,b,c$; each is received correctly with probability $1-\alpha$ and as the "next" letter ($a\to b,\ b\to c,\ c\to a$) with probability $\alpha$. By symmetry the uniform input is optimal and $H(Y\mid X)=H_b(\alpha)$ for every input: $C=\log_23-H_b(\alpha)$. On $[0.25,1]$, $H_b(\alpha)$ is smallest at $\alpha=1$ (where the channel deterministically permutes the letters: no noise at all, just relabelling), so capacity is maximised at $\alpha=\mathbf{1.00}$ ($C=\log_23$). Again: <b>a perfectly predictable channel is a perfect channel</b>.</p></div>
+<h3>Beyond Huffman: arithmetic coding and Lempel–Ziv</h3>
+<p>Huffman wastes up to 1 bit per symbol (it must use an integer number of bits per symbol) and requires the probabilities in advance. Two ideas remove those limitations.</p>
+<p><b>Arithmetic coding</b> encodes the <em>whole message</em> as one number. Start with the interval $[0,1)$; for each symbol, subdivide the current interval in proportion to the symbol probabilities and keep the sub-interval of the symbol that occurred. The final interval has width $\prod p(x_i)=p(x^n)$, so naming a point inside it needs $\lceil\log_2\frac1{p(x^n)}\rceil\le nH+1$ bits for the <em>whole message</em>: the one-bit loss is shared by all $n$ symbols.</p>
+<div class="widget" id="w-arith">Arithmetic coding of a short message over $\{A,B,C\}$. Each row shows the current interval (bar) refined by the next symbol. The final interval width is $P(\text{message})$; the readout gives the code length $\lceil\log_2(1/P)\rceil$ and compares it with $n\,H$. With $P(A)=0.7$ the message “AB” has $P=0.7\times0.2=0.14$ and needs 3 bits.</div>
+<p><b>Lempel–Ziv</b> (1977, 1978; ZIP, gzip, GIF, PNG): <i>universal</i> codes that learn the source as they go, with no probabilities at all. LZ78 parses the input into the shortest phrase not seen before, and each phrase is sent as (index of its longest earlier prefix, new symbol). Example, “ABBABBABBBAABABAA”: phrases A | B | BA | BB | AB | BBA | ABA | BAA, sent as $(0,A),(0,B),(2,A),(2,B),(1,B),(4,A),(5,A),(3,A)$. The dictionary grows, long repetitions get replaced by short pointers, and for any stationary ergodic source the rate converges to the entropy rate $\mathcal H$. (DEFLATE, the heart of gzip and PNG, is LZ77 followed by Huffman coding.) <b>Run-length coding</b> (fax machines: a page is long runs of white) and <b>Golomb codes</b> (for geometric sources, e.g. prediction residuals in FLAC and in video) are special-purpose cousins.</p>
+<div class="box derive"><span class="tag">What if the model is wrong? The cost is $D(p\|q)$</span>
+<p>If the true distribution is $p$ but the code is built (Shannon lengths) for a model $q$, the average length is $\sum p_i\lceil\log\frac1{q_i}\rceil\approx\sum p_i\log\frac1{q_i}=H(p)+D(p\|q)$. <b>The relative entropy is the penalty, in bits per symbol, for using the wrong model.</b> Example: a fair-coin source ($p=(\frac12,\frac12)$) coded for $q=(\frac14,\frac34)$ with lengths $(2,0.415)$ costs $\frac12(2)+\frac12(0.415)=1.2075$ bits instead of 1: a penalty of $D=0.2075$ bits (20%). This is why adaptive coders keep tracking the statistics; and why a Huffman table built for English works poorly on Hindi text.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · what real compressors do</span>
+<p><b>Lossless.</b> JPEG’s final stage, MPEG’s final stage and every ZIP file use Huffman or arithmetic coding of <em>transformed</em> data: the transform (DCT, prediction, LZ dictionary) makes the symbols much more skewed, and entropy coding then exploits that. Modern video uses context-adaptive binary arithmetic coding (CABAC). A fundamental limit: no compressor can shrink every file. By counting, there are $2^n$ files of $n$ bits and only $2^n-1$ shorter ones, so any scheme that shortens some files must lengthen others: random (incompressible) data stays the same size, and compressing already-compressed or already-encrypted data does nothing. <b>Lossy.</b> Where an approximation is allowed, we trade rate against distortion (below).</p></div>
 
-<h3>A zoo of channel types</h3>
-<p>The two conditional entropies decide what a channel is. $H(X\mid Y)$ is the ambiguity left about the input after seeing the output ("equivocation"); $H(Y\mid X)$ is the output uncertainty caused by noise given the input.
-<table>
-<tr><th>Channel</th><th>Condition</th><th>Transition matrix</th><th>Capacity</th></tr>
-<tr><td><b>Lossless</b></td><td>$H(X\mid Y)=0$: the input can be read off the output</td><td>each column has a single non-zero entry</td><td>$\log_2(\#\text{inputs})$</td></tr>
-<tr><td><b>Deterministic</b></td><td>$H(Y\mid X)=0$: each input gives one definite output</td><td>each row has a single 1</td><td>$\log_2(\#\text{distinct outputs})$</td></tr>
-<tr><td><b>Noiseless</b></td><td>both: lossless and deterministic</td><td>a permutation matrix</td><td>$\log_2K$ (e.g. the cyclic channel at $\alpha=1$)</td></tr>
-<tr><td><b>Useless</b></td><td>$I(X;Y)=0$: output independent of input</td><td>all rows identical</td><td>0 (BSC with $p=\frac12$)</td></tr>
-</table>
-GATE 2017 showed a binary channel whose two rows were both $(0.25,\,0.75)$: identical rows ⇒ the output has the same distribution whatever is sent ⇒ <b>useless</b> (not noiseless, lossless or deterministic).</p>
-<h2>Why a noisy channel can still carry bits perfectly: the noise-ball picture</h2>
-<p>Here is the idea behind Shannon's theorem. Send a long block of $n$ symbols. The channel adds noise that, with high probability, moves the received point to somewhere within a "noise ball" around the sent point; that ball contains about $2^{nH(Y|X)}$ typical outputs. Altogether the receiver can see about $2^{nH(Y)}$ typical outputs. If we choose codewords so that their noise balls <em>don't overlap</em>, the receiver identifies the right codeword every time. How many non-overlapping balls fit? About
-$$\frac{2^{nH(Y)}}{2^{nH(Y|X)}}=2^{n\,I(X;Y)}\quad\Longrightarrow\quad\text{rate }R=I(X;Y)\to C\text{ bits per use.}$$
-This is a <em>sphere-packing</em> argument. Try packing balls yourself in a unit sphere:</p>
-<div class="widget" id="w-spheres">Illustration only: random sequential packing of non-overlapping noise balls (radius $r$) inside the space of received signals (big wire sphere). Bigger noise ⇒ bigger balls ⇒ fewer codewords fit ⇒ lower rate. The count (bits ≈ $\log_2$ of the number of balls) is a toy analogue of capacity.</div>
-<div class="box key"><span class="tag">Shannon's noisy-channel coding theorem</span>
-<p>For a DMC with capacity $C$: if $R<C$ there exist codes (long enough) with error probability $\to0$; if $R>C$, error probability is bounded away from 0 (and $\to1$ as $n\to\infty$). <em>Existence</em>, not construction: Shannon's proof is by choosing codewords <b>at random</b>! Constructing practical capacity-approaching codes took until turbo codes (1993), LDPC (Gallager 1960, rediscovered 1996) and polar codes (Arıkan 2008).</p></div>
-
-<h2>The Gaussian channel and the Shannon–Hartley formula</h2>
-<p>For the AWGN channel $Y=X+N$ with $N\sim\mathcal N(0,\sigma^2)$ and power constraint $E[X^2]\le P$, the optimal input is Gaussian and
-$$C=\tfrac12\log_2\Big(1+\frac P{\sigma^2}\Big)\ \text{bits per real sample}.$$
-(Picture: the received sphere has radius$^2$ $n(P+\sigma^2)$, noise balls have radius$^2$ $n\sigma^2$; the ratio of volumes in $n$ dimensions is $\big(\frac{P+\sigma^2}{\sigma^2}\big)^{n/2}$.) A channel of bandwidth $B$ supports $2B$ independent samples per second (Nyquist), with noise power per sample $\sigma^2=N_0B$ (Chapter 3) and signal power $P$:
-$$\boxed{\,C=B\log_2\!\Big(1+\frac{S}{N}\Big)=B\log_2\!\Big(1+\frac{P}{N_0B}\Big)\ \text{bits/s}\,}$$
-the <b>Shannon–Hartley theorem</b> (Ralph Hartley 1928 had the form $B\log(\ldots)$ without the noise; Shannon completed it). Remember, SNR here is a <em>ratio</em>: 30 dB $=1000$.</p>
-<ul>
-<li><b>Telephone line:</b> $B=4$ kHz, SNR 30 dB: $C=4000\log_2(1001)=39.9$ kbit/s: the famous barrier of analog modems (the 56k modem trick was to bypass the analog noise on the downstream path).</li>
-<li><b>Power-limited regime</b> ($S/N\ll1$): $C\approx1.44\,B\cdot S/N=1.44\,S/N_0$ independent of $B$.</li>
-<li><b>Bandwidth-limited regime</b> ($S/N\gg1$): every extra 3 dB of SNR buys $+1$ bit/s/Hz; doubling the bandwidth doubles $C$.</li>
-</ul>
-<div class="widget" id="w-cap">Capacity versus bandwidth with fixed signal power $P$ and noise density $N_0$. Capacity does <em>not</em> grow forever: it saturates at $C_\infty=\frac P{N_0}\log_2e=1.44\,P/N_0$, because more bandwidth also admits more noise. This is the plot GATE 2025 Q.15 asked about: increasing and concave, flattening to a horizontal asymptote.</div>
-<div class="box ex"><span class="tag">Worked examples · GATE capacity questions</span>
-<p><b>GATE 2014 (Set 2).</b> $P/\sigma^2=1000$ (so $P/N_0=1000$), $W\to\infty$: $C_\infty=1.44\times1000=1.44$ kbps. <b>GATE 2026 Q.55.</b> $B=1$ MHz, $kT=-174$ dBm/Hz so noise $=-174+60=-114$ dBm; $S=-80$ dBm; SNR $=34$ dB $=2512$; $C=B\log_2(2513)=11.3\,B>3B$ ✓ (C). <b>GATE 2021 Q.23.</b> Speech band-limited to 4 kHz is sampled at $1.25\times$ Nyquist $=10$ kHz; samples are uniform on $[-5,5]$ V, quantised by an 8-bit uniform quantiser: each of the 256 levels is equally likely, so each sample carries $H=8$ bits: source rate $80$ kbps. For reliable transmission over an AWGN channel with $S/N=26$ dB $=398$: $B\log_2(399)\ge80$ kbps ⇒ $B\ge\dfrac{80}{8.640}=\mathbf{9.26}$ kHz.</p></div>
-
-<h3>The ultimate limit: $-1.59$ dB</h3>
-<p>Express signal power as $P=E_bR$ (energy per bit times bit rate). At the capacity rate $R=C$ with spectral efficiency $\eta=C/B$ bit/s/Hz,
-$$\eta=\log_2\!\Big(1+\eta\frac{E_b}{N_0}\Big)\ \Longrightarrow\ \frac{E_b}{N_0}\Big|_{\min}=\frac{2^\eta-1}{\eta}.$$
-Push $\eta\to0$ (infinite bandwidth) and this tends to $\ln2=0.693=\mathbf{-1.59\ dB}$: <b>the Shannon limit.</b> No code, no modulation, no technology can deliver reliable communication at an $E_b/N_0$ below $-1.59$ dB. A rate of $\eta=2$ bit/s/Hz needs at least 1.76 dB; $\eta=6$ needs 10.2 dB. Modern codes (turbo, LDPC) work within 0.5–1 dB of this wall.</p>
-<div class="widget" id="w-shannon">The Shannon boundary: minimum $E_b/N_0$ against spectral efficiency. Reliable communication is possible only in the region to the right of the curve. The red markers are the uncoded schemes you will meet in Chapter 11 (at a bit-error rate of $10^{-5}$): they sit about 8–10 dB to the right of the wall; powerful codes close that gap.</div>
+<h2>Lossy coding: the rate–distortion function</h2>
+<p>For analog sources (voice, video) exact reproduction needs an infinite number of bits, so we accept distortion $D$ (e.g. mean-square error) and ask for the minimum rate $R(D)$. Shannon defined it as the minimum mutual information between source $X$ and reproduction $\hat X$ over all test channels with $\E[d(X,\hat X)]\le D$:
+$$R(D)=\min_{p(\hat x|x):\,\E d\le D}I(X;\hat X).$$
+<div class="box derive"><span class="tag">Derivation · rate–distortion of a Gaussian source: $R(D)=\tfrac12\log_2(\sigma^2/D)$</span>
+<p>Let $X\sim\mathcal N(0,\sigma^2)$ and squared-error distortion. Choose the “backward” test channel $X=\hat X+Z$ with $\hat X\sim\mathcal N(0,\sigma^2-D)$ and independent $Z\sim\mathcal N(0,D)$: then $\E(X-\hat X)^2=D$ and
+$$I(X;\hat X)=h(X)-h(X\mid\hat X)=\tfrac12\log_2(2\pi e\sigma^2)-\tfrac12\log_2(2\pi eD)=\tfrac12\log_2\frac{\sigma^2}D,$$
+using the differential entropy $h=\frac12\log2\pi e\sigma^2$ of a Gaussian (Chapter 11); Shannon showed that no other test channel does better. Hence
+$$\boxed{R(D)=\max\Big(0,\ \tfrac12\log_2\frac{\sigma^2}D\Big)\ \text{bits/sample},\qquad D(R)=\sigma^22^{-2R}.}$$
+Each extra bit per sample divides the distortion by 4: $10\log_{10}4=\mathbf{6.02\ dB}$ per bit, <b>the same “6 dB per bit” of PCM (Chapter 12)</b>. Scalar uniform quantisers followed by entropy coding come within 0.25 bit ($1.53$ dB) of this bound at high rate; vector quantisation and trellis coding close the rest. For a Bernoulli($p$) source with Hamming distortion, $R(D)=H_b(p)-H_b(D)$ for $D\le\min(p,1-p)$.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · lossy compression in the real world</span>
+<p>MP3/AAC discard components below the <i>masking threshold</i> of the ear, so the allowed distortion is shaped in frequency; JPEG quantises DCT coefficients with coarse steps at high spatial frequencies; video codecs (H.264/HEVC) predict each frame from earlier ones and transmit only the quantised residual, reaching 100–300:1 compression at acceptable quality. Voice codecs in phones (AMR, EVS) run at 5–24 kbit/s against the 64 kbit/s of plain PCM, by modelling speech production (linear prediction). All of these are engineering attempts to reach $R(D)$ for sources whose statistics are only approximately known.</p></div>
 
 <div class="box gate"><span class="tag">GATE pattern · information theory is the most reliably tested block</span>
 <ul>
-<li><b>Every year</b> has at least one entropy / capacity / mutual-information question. Types: (1) max entropy ($\log_2K$); (2) entropy of a small distribution (compute $-\sum p\log p$; know $\log_23=1.585$); (3) entropy properties (MSQ on bijections, 2022); (4) BSC/BEC/DMC capacity, including "which $p$ maximises capacity"; (5) $I(X;Y)=0$ for independent variables; (6) Shannon–Hartley numerics, $C_\infty=1.44P/N_0$; (7) Huffman/Kraft with dyadic probabilities.</li>
-<li>Shortcuts: relabelling ⇒ same entropy; independence ⇒ $I=0$; symmetric channel ⇒ uniform input optimal; dyadic ⇒ Huffman meets entropy exactly.</li>
-<li>Do <b>not</b> confuse SNR in dB with the ratio inside the log.</li>
+<li><b>Every year</b> has at least one entropy / capacity / mutual-information question. Types: (1) max entropy ($\log_2K$); (2) entropy of a small distribution (compute $-\sum p\log p$; know $\log_23=1.585$); (3) entropy properties (MSQ on bijections, 2022); (4) Huffman/Kraft with dyadic probabilities (2023); (5) the channel questions of Chapter 11 (BSC/BEC/DMC capacity, Shannon–Hartley numerics).</li>
+<li>Shortcuts: relabelling ⇒ same entropy; independence ⇒ $I=0$; dyadic ⇒ Huffman meets entropy exactly; for Kraft add $2^{-\ell_i}$.</li>
 </ul></div>
 
 <h2>Practice</h2>
-<div class="prob" data-type="nat" data-ans="0" data-tol="0.01" data-marks="1" data-src="GATE 2014 · Set 1 · Q.23">
-The capacity of a Binary Symmetric Channel (BSC) with cross-over probability 0.5 is ______.
-<div class="sol"><p>$C=1-H_b(0.5)=0$.</p></div></div>
+<p class="pset">Set A · Concept checks</p>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+Among all probability distributions on four symbols, the entropy is largest for
+<ol class="opts"><li>$(0.7,0.1,0.1,0.1)$</li><li>$(0.5,0.5,0,0)$</li><li>$(0.25,0.25,0.25,0.25)$</li><li>$(0.4,0.3,0.2,0.1)$</li></ol>
+<div class="sol"><p>The uniform distribution maximises entropy ($H=\log_24=2$ bits). <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,D" data-marks="1" data-src="Original">
+Which statements about Huffman coding are correct?
+<ol class="opts"><li>It produces a prefix-free code with the smallest average length among symbol-by-symbol codes.</li><li>It always achieves $\bar L=H$.</li><li>It needs no knowledge of the symbol probabilities.</li><li>For dyadic probabilities it achieves $\bar L=H$ exactly.</li></ol>
+<div class="sol"><p>(A) and (D). (B) only for dyadic sources; (C) false: it needs the probabilities (Lempel–Ziv does not).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+A lossless compressor claims to shrink <em>every</em> possible 1000-bit file by at least one bit. This is
+<ol class="opts"><li>possible with arithmetic coding</li><li>impossible, by a counting argument</li><li>possible if the file is random</li><li>possible only for text</li></ol>
+<div class="sol"><p>There are $2^{1000}$ files of 1000 bits and only $2^{1000}-1$ strings that are strictly shorter; two files would have to share a code. <b>(B)</b>.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="1.75" data-tol="0.01" data-marks="1" data-src="Original">
+The entropy (bits) of a source with probabilities $\frac12,\frac14,\frac18,\frac18$ is ______.
+<div class="sol"><p>$\frac12(1)+\frac14(2)+\frac18(3)+\frac18(3)=\mathbf{1.75}$ bits (dyadic: Huffman lengths 1, 2, 3, 3).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.469" data-tol="0.002" data-marks="1" data-src="Original">
+The entropy of a binary source with $P(1)=0.1$ is ______ bits.
+<div class="sol"><p>$-0.1\log_20.1-0.9\log_20.9=0.3322+0.1368=\mathbf{0.469}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="10" data-tol="0.01" data-marks="1" data-src="Original">
+An event of probability $1/1024$ occurs. The information conveyed, in bits, is ______.
+<div class="sol"><p>$\log_21024=\mathbf{10}$ bits.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.557" data-tol="0.003" data-marks="2" data-src="Original">
+A two-state Markov source has $P(A\to A)=0.9$ and $P(B\to A)=0.5$. Its entropy rate in bits/symbol is ______.
+<div class="sol"><p>$\pi=(\frac56,\frac16)$; $\mathcal H=\frac56H_b(0.1)+\frac16H_b(0.5)=0.391+0.167=\mathbf{0.557}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="2.2" data-tol="0.02" data-marks="2" data-src="Original">
+A source emits six symbols with probabilities 0.4, 0.3, 0.1, 0.1, 0.06, 0.04. The average length (bits/symbol) of an optimal Huffman code is ______.
+<div class="sol"><p>Lengths $(1,2,4,4,4,4)$: $0.4+0.6+0.4+0.4+0.24+0.16=\mathbf{2.20}$ (entropy 2.143).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="0.2075" data-tol="0.002" data-marks="2" data-src="Original">
+A fair-coin source is encoded with a code designed for the distribution $q=(\frac14,\frac34)$. The extra average length in bits per symbol compared with the optimal code is ______.
+<div class="sol"><p>$D(p\|q)=\frac12\log_2\frac{1/2}{1/4}+\frac12\log_2\frac{1/2}{3/4}=0.5-0.2925=\mathbf{0.2075}$ bits.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="Original">
+A three-symbol source has $P(A)=0.7$, $P(B)=0.2$, $P(C)=0.1$. Arithmetic coding of the message “AB” produces a final interval of width 0.14. The number of bits needed to name a point is $\lceil\log_2(1/0.14)\rceil=$ ______.
+<div class="sol"><p>$\log_2(1/0.14)=2.84\to\mathbf3$ bits (e.g. $0.100_2=0.5\in[0.49,0.63)$).</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1" data-tol="0.01" data-marks="2" data-src="Original">
+A Gaussian source with variance 1 must be reproduced with mean-square error at most 0.25. The minimum rate (bits/sample) is ______.
+<div class="sol"><p>$R=\frac12\log_2\frac{\sigma^2}D=\frac12\log_24=\mathbf1$ bit/sample.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
 
 <div class="prob" data-type="nat" data-ans="2" data-tol="0.01" data-marks="2" data-src="GATE 2014 · Set 1 · Q.52">
 A fair coin is tossed repeatedly until a head appears for the first time. Let $L$ be the number of tosses. The entropy $H(L)$ in bits is ______.
 <div class="sol"><p>$P(L=k)=2^{-k}$; $H=\sum_kk2^{-k}=2$ bits.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2014 · Set 2 · Q.22">
-The capacity of a band-limited AWGN channel is $C=W\log_2\!\big(1+\frac P{\sigma^2W}\big)$ bps, with $\sigma^2$ the one-sided noise PSD. For a fixed $P/\sigma^2=1000$, the capacity (kbps) with infinite bandwidth is approximately
-<ol class="opts"><li>1.44</li><li>1.08</li><li>0.72</li><li>0.36</li></ol>
-<div class="sol"><p>$C_\infty=\frac P{\sigma^2}\log_2e=1000\times1.4427=1.44$ kbps. <b>(A)</b>.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="2" data-tol="0.02" data-marks="2" data-src="GATE 2014 · Set 3 · Q.52">
-A binary random variable $X$ takes the value 1 with probability $\frac13$. $X$ is the input to a cascade of two independent identical BSCs, each with crossover probability $\frac12$, with outputs $Y_1$ and $Y_2$. The value of $H(Y_1)+H(Y_2)$ in bits is ______.
-<div class="sol"><p>A BSC with $p=\frac12$ makes its output uniform whatever the input: $H(Y_1)=1$; likewise $H(Y_2)=1$. Total $=\mathbf2$.</p></div></div>
 
 <div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="1" data-src="GATE 2020 · EC · Q.22">
 A binary random variable $X$ takes the value $+2$ or $-2$ with $P(X=+2)=\alpha$. The value of $\alpha$ (one decimal place) for which the entropy of $X$ is maximum is ______.
@@ -128,18 +180,10 @@ A binary random variable $X$ takes the value $+2$ or $-2$ with $P(X=+2)=\alpha$.
 In a school with equal numbers of boys and girls, 75% study Science and 25% Commerce. Commerce students are twice as likely to be boys as Science students. The information gained in knowing that a randomly selected <em>girl</em> studies Commerce is ______ bits (three decimals).
 <div class="sol"><p>$P(\text{Com}\mid\text{girl})=0.1$ ⇒ $\log_2 10=3.322$ bits (derived above).</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="9.26" data-tol="0.1" data-marks="1" data-src="GATE 2021 · EC · Q.23">
-A speech signal band-limited to 4 kHz is sampled at 1.25 times the Nyquist rate. The samples, statistically independent and uniform on $[-5\,\text{V},+5\,\text{V}]$, are quantised by an 8-bit uniform quantiser and transmitted over an AWGN voice-grade channel with signal-to-noise power ratio 26 dB. The minimum channel bandwidth (kHz, two decimals) for arbitrarily small error probability is ______.
-<div class="sol"><p>Rate $=10\,\text{ksamples/s}\times8=80$ kbps. $C=B\log_2(1+398.1)=8.64B\ge80\,000\Rightarrow B=9.26$ kHz.</p></div></div>
-
 <div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="GATE 2022 · EC · Q.29">
 $H(X)$ denotes the entropy of a discrete random variable $X$ taking $K$ distinct real values. Which statements are necessarily true?
 <ol class="opts"><li>$H(X)\le\log_2K$ bits</li><li>$H(X)\le H(2X)$</li><li>$H(X)\le H(X^2)$</li><li>$H(X)\le H(2^X)$</li></ol>
-<div class="sol"><p>(A) is the max-entropy bound. $2X$ and $2^X$ are one-to-one so entropies are equal: (B), (D) hold ("≤" includes "="). $X^2$ is many-to-one when $X$ takes both $x$ and $-x$: $H(X^2)<H(X)$ possible, so (C) is not necessary. Key A, B, D.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="1" data-tol="0.01" data-marks="2" data-src="GATE 2022 · EC · Q.61">
-A DMC has inputs $a,b,c$ and outputs $a,b,c$. Each input is received correctly with probability $1-\alpha$, and as the next letter ($a\to b,\ b\to c,\ c\to a$) with probability $\alpha$. The value of $\alpha\in[0.25,1]$ that maximises the capacity is ______ (two decimals).
-<div class="sol"><p>$C=\log_23-H_b(\alpha)$; $H_b$ is minimal (=0) at $\alpha=1$ on that interval. Answer <b>1.00</b>.</p></div></div>
+<div class="sol"><p>(A) is the max-entropy bound. $2X$ and $2^X$ are one-to-one so entropies are equal: (B), (D) hold (“≤” includes “=”). $X^2$ is many-to-one when $X$ takes both $x$ and $-x$: $H(X^2)<H(X)$ possible, so (C) is not necessary. Key A, B, D.</p></div></div>
 
 <div class="prob" data-type="nat" data-ans="1.98" data-tol="0.02" data-marks="2" data-src="GATE 2023 · EC · Q.65">
 Eight symbols a–h occur with frequencies $\frac12,\frac14,\frac18,\frac1{16},\frac1{32},\frac1{64},\frac1{128},\frac1{128}$. A symbol is chosen and determined by asking truthful yes/no questions. The average number of questions in the most efficient sequence is ______ (two decimals).
@@ -149,70 +193,27 @@ Eight symbols a–h occur with frequencies $\frac12,\frac14,\frac18,\frac1{16},\
 A source transmits symbols from an alphabet of size 16. The maximum achievable entropy (bits) is ______.
 <div class="sol"><p>$\log_216=4$.</p></div></div>
 
-<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="GATE 2025 · EC · Q.15 (plots described)">
-An AWGN channel has bandwidth $W$, noise PSD $N_0/2$, and average transmit power $P_{av}$ fixed. How does the capacity $C$ depend on $W$ (with $P_{av},N_0$ fixed)?
-<ol class="opts"><li>It increases with $W$, concavely, and saturates at $\frac{P_{av}}{N_0}\log_2e$</li><li>It increases linearly without bound</li><li>It decreases with $W$</li><li>It first increases then decreases</li></ol>
-<div class="sol"><p>$C=W\log_2(1+\frac{P}{N_0W})$: increasing, concave, with limit $1.44P/N_0$. <b>(A)</b>.</p></div></div>
-
 <div class="prob" data-type="msq" data-ans="B,C" data-marks="2" data-src="GATE 2025 · EC · Q.54">
 $X\in\{-1,0,1\}$ with $P(X=\pm1)=\alpha$, $P(0)=1-2\alpha$, $0<\alpha<\frac12$. Let $g(\alpha)$ be the entropy in bits. Which are TRUE?
 <ol class="opts"><li>$g(0.4)>g(0.3)$</li><li>$g(0.3)>g(0.4)$</li><li>$g(0.3)>g(0.25)$</li><li>$g(0.25)>g(0.3)$</li></ol>
 <div class="sol"><p>$g(0.4)=1.522$, $g(0.3)=1.571$, $g(0.25)=1.500$. Max at $\alpha=\frac13$. B and C.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="0" data-tol="0.005" data-marks="2" data-src="GATE 2025 · EC · Q.60">
-Bernoulli variables $X,Y$ with $P(0,0)=0.06,\ P(0,1)=0.14,\ P(1,0)=0.24,\ P(1,1)=0.56$. The mutual information $I(X;Y)$ (two decimals) is ______.
-<div class="sol"><p>$P(X=0)=0.20$, $P(Y=0)=0.30$; $0.2\times0.3=0.06$, $0.2\times0.7=0.14$, $0.8\times0.3=0.24$, $0.8\times0.7=0.56$: independent ⇒ $I=0$.</p></div></div>
-
-<div class="prob" data-type="msq" data-ans="C" data-marks="2" data-src="GATE 2026 · EC · Q.55">
-$B=1$ MHz, $kT=-174$ dBm/Hz, received signal power $S=-80$ dBm over an additive Gaussian channel. Which options are TRUE for the Shannon capacity $C$?
-<ol class="opts"><li>$C=B$</li><li>$C=2B$</li><li>$C>3B$</li><li>$C<B$</li></ol>
-<div class="sol"><p>SNR $=34$ dB, $C=11.3B$. Only (C).</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2026 · EC · Q.22 (reworded)">
-A discrete memoryless source with a four-symbol alphabet is represented by a multi-level signal taking the values $(-1,0,+1,+2)$ for a long random sequence, generating $10^4$ symbols per second. The equivalent Nyquist bandwidth of the signal is
-<ol class="opts"><li>10 kHz</li><li>64 kHz</li><li>5 kHz</li><li>20 kHz</li></ol>
-<div class="sol"><p>Nyquist: $R_s$ symbols/s need at least $R_s/2$ Hz of bandwidth: $5$ kHz. (The number of levels does not enter.)</p></div></div>
-
 <div class="prob" data-type="nat" data-ans="2.2" data-tol="0.02" data-marks="2" data-src="Original">
 A source emits five symbols with probabilities 0.4, 0.2, 0.2, 0.1, 0.1. The average codeword length (bits/symbol) of an optimal Huffman code is ______. (The entropy is 2.12 bits.)
-<div class="sol"><p>Merge 0.1+0.1=0.2; then 0.2+0.2=0.4; then 0.2+0.4... Lengths (2,2,2,3,3): $0.4\cdot2+0.2\cdot2+0.2\cdot2+0.1\cdot3+0.1\cdot3=2.2$ bits. (Different tie-breaks give different lengths, same average.)</p></div></div>
+<div class="sol"><p>Merge $0.1+0.1=0.2$; then two of the 0.2’s into $0.4$; then $0.2+0.4=0.6$; finally $0.4+0.6$. Lengths $(2,2,2,3,3)$: $0.4\cdot2+0.2\cdot2+0.2\cdot2+0.1\cdot3+0.1\cdot3=\mathbf{2.2}$ bits. (Different tie-breaks give different length sets, e.g. $(1,2,3,4,4)$, but the same average.)</p></div></div>
 
 <div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
 Which set of codeword lengths <em>cannot</em> belong to a binary prefix code?
 <ol class="opts"><li>1, 2, 3, 3</li><li>1, 2, 2, 3</li><li>2, 2, 2, 2</li><li>1, 3, 3, 3, 3</li></ol>
 <div class="sol"><p>Kraft sums: (A) $\frac12+\frac14+\frac18+\frac18=1$ ✓; (B) $\frac12+\frac14+\frac14+\frac18=1.125>1$ ✗; (C) $1$ ✓; (D) $\frac12+4\cdot\frac18=1$ ✓.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="2" data-src="Original">
-A BSC has crossover probability $p=0.11$. Its capacity (bits/use, using $H_b(0.11)=0.5$) is ______.
-<div class="sol"><p>$C=1-H_b(0.11)=0.50$.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="0.32" data-tol="0.02" data-marks="2" data-src="Original">
-Two identical BSCs, each with $p=0.1$, are cascaded. The capacity of the cascade (bits/use) is ______. (Use $H_b(0.18)=0.68$.)
-<div class="sol"><p>$p'=2(0.1)(0.9)=0.18$; $C=1-H_b(0.18)=0.32$.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="39.9" data-tol="0.3" data-marks="1" data-src="Original">
-A telephone channel has bandwidth 4 kHz and SNR 30 dB. Its Shannon capacity in kbit/s is ______.
-<div class="sol"><p>$4000\log_2(1001)=39.87$ kbit/s.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="31.5" data-tol="0.2" data-marks="2" data-src="GATE 2016 · EC (PYQ book, reworded)">
-A voice-grade AWGN telephone channel has bandwidth 4.0 kHz and two-sided noise PSD $\eta/2=2.5\times10^{-5}$ W/Hz. Information is sent at 52 kbit/s with arbitrarily small error probability. The minimum bit energy $E_b$ (mJ/bit) required is ______.
-<div class="sol"><p>$N_0=\eta=5\times10^{-5}$ W/Hz; noise power $N_0B=0.2$ W. Capacity condition $52\,000=4000\log_2(1+S/N)\Rightarrow S/N=2^{13}-1=8191$, so $S=8191\times0.2=1638$ W. $E_b=S/R_b=1638/52000=\mathbf{31.5}$ mJ/bit. (An absurd number for a real telephone line; the point is the method.)</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2017 · EC (PYQ book)">
-A binary memoryless channel has transition probabilities $P(0|0)=0.25,\ P(1|0)=0.75,\ P(0|1)=0.25,\ P(1|1)=0.75$. The channel is
-<ol class="opts"><li>lossless</li><li>noiseless</li><li>useless</li><li>deterministic</li></ol><div class="sol"><p>Both rows are $(0.25,\ 0.75)$: the output distribution does not depend on the input, so $I(X;Y)=0$: <b>useless</b>.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="1.75" data-tol="0.01" data-marks="1" data-src="GATE 2016 · EC (PYQ book)">
-A discrete memoryless source has alphabet $\{a_1,a_2,a_3,a_4\}$ with probabilities $\{\frac12,\frac14,\frac18,\frac18\}$. The minimum required average code-word length in bits for error-free reconstruction is ______.
-<div class="sol"><p>The minimum is the entropy: $\frac12(1)+\frac14(2)+2\cdot\frac18(3)=1.75$ bits (dyadic, so a Huffman code with lengths 1, 2, 3, 3 attains it).</p></div></div>
-
-<div class="summary"><h3>Chapter 7 in one breath</h3>
+<div class="summary"><h3>Chapter 10 in one breath</h3>
 <ul>
-<li>$I(x)=\log_2\frac1p$; $H=-\sum p\log_2p$; $0\le H\le\log_2K$; relabelling keeps $H$, merging lowers it; $H(X,Y)=H(X)+H(Y|X)$.</li>
-<li>Prefix codes: Kraft $\sum2^{-\ell_i}\le1$. $H\le\bar L<H+1$; Huffman = repeatedly merge the two smallest; dyadic ⇒ $\bar L=H$.</li>
-<li>$I(X;Y)=H(X)-H(X|Y)=H(Y)-H(Y|X)$, zero iff independent. $C=\max_{p(x)}I$.</li>
-<li>BSC: $C=1-H_b(p)$; BEC: $C=1-\varepsilon$; cascaded BSCs: $p'=2p(1-p)$; cyclic symmetric channel: $\log K-H(\text{row})$.</li>
-<li>Noisy-channel theorem: reliable iff $R<C$. AWGN: $C=B\log_2(1+S/N)$; $C_\infty=1.44P/N_0$; Shannon limit $E_b/N_0\ge-1.59$ dB; $E_b/N_0|_{\min}=\frac{2^\eta-1}\eta$.</li>
+<li>Information $=\log_2\frac1p$ (unique, from additivity). Entropy $H=-\sum p\log p$: $0\le H\le\log K$ (Gibbs: $D(p\|q)\ge0$); chain rule $H(X,Y)=H(X)+H(Y|X)$; conditioning reduces entropy; one-to-one relabelling keeps $H$, many-to-one lowers it.</li>
+<li>Entropy rate of a Markov source $=\sum_i\pi_iH(\text{row}_i)$; English $\approx1$–1.3 bits/letter.</li>
+<li>AEP: $\approx2^{nH}$ typical sequences carry almost all probability ⇒ entropy is the compression limit.</li>
+<li>Kraft: $\sum2^{-\ell_i}\le1$ ⇔ prefix code exists; $H\le\bar L<H+1$; dyadic ⇒ $\bar L=H$. Huffman (merge two least probable) is optimal; arithmetic coding removes the $+1$; Lempel–Ziv needs no probabilities. Wrong model costs $D(p\|q)$.</li>
+<li>Rate–distortion of a Gaussian: $R=\frac12\log_2(\sigma^2/D)$, $6.02$ dB per bit.</li>
 </ul></div>
 
 <script>
@@ -245,38 +246,15 @@ GB.three('w-tern',{title:'Entropy of a three-symbol source',h:400,cam:{r:9,theta
    if(k<K-1){ const act=[]; g.text(x0,g.h-14,'merge the two smallest remaining probabilities…  ('+k+' of '+(K-1)+' merges done)','mute',null,12); } const Lbar=T.all.filter(n=>n.leaf).reduce((s,n)=>s+n.p*n.code.length,0), H=m.H?ps.reduce((s,q)=>s-q*lg(q),0):0;
    return k>=K-1?'average length L̄ = <b>'+Lbar.toFixed(4)+'</b> bits · entropy H = <b>'+H.toFixed(4)+'</b> bits · efficiency H/L̄ = '+(100*H/Lbar).toFixed(1)+'%'+(Math.abs(Lbar-H)<1e-9?'  (dyadic: L̄ = H exactly)':''):'entropy H = '+H.toFixed(4)+' bits (the target)'; }}); })();
 
-/* ---------- mutual information of a BSC ---------- */
-GB.widget('w-mi',{title:'Mutual information of a binary symmetric channel',h:340,hm:360,controls:[{k:'p',label:'flip probability p',min:0,max:1,step:.01,value:.11},{k:'pi',label:'input prior π = P(X=1)',min:.01,max:.99,step:.01,value:.5}],
- draw(g,p){ const pp=p.p, pi=p.pi; const py1=pi*(1-pp)+(1-pi)*pp, HX=m.H(pi), HY=m.H(py1), HYX=m.H(pp), I=HY-HYX, HXY=HX-I; const ctx=g.ctx,C=g.C; const x0=24, sc=(g.w-48)/2.0;
-   const bar=(row,labelA,vA,colA,vB,colB,alignRight)=>{ const y=30+row*50, w1=vA*sc, w2=vB*sc; const start=alignRight?(x0+sc*1.0+ (1*sc*0) ): x0; };
-   const baseX=x0+Math.max(HXY,HYX)*sc; const rows=[['H(X) = '+HX.toFixed(3),HXY,I,'H(X|Y)='+HXY.toFixed(3)],['H(Y) = '+HY.toFixed(3),HYX,I,'H(Y|X)='+HYX.toFixed(3)]];
-   rows.forEach((r,i)=>{ const y=26+i*52; ctx.fillStyle=C.orange; ctx.globalAlpha=.8; ctx.fillRect(baseX-r[1]*sc,y,r[1]*sc,26); ctx.fillStyle=C.green; ctx.fillRect(baseX,y,r[2]*sc,26); ctx.globalAlpha=1; ctx.fillStyle=C.fg; ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.fillText(r[0],x0+2,y-5); if(r[1]*sc>70){ ctx.textAlign='center'; ctx.fillText(r[3],baseX-r[1]*sc/2,y+17); } else { ctx.textAlign='right'; ctx.fillText(r[3],baseX-r[1]*sc-4,y+17); } if(r[2]*sc>40){ ctx.textAlign='center'; ctx.fillStyle='#06121a'; ctx.fillText('I = '+I.toFixed(3),baseX+r[2]*sc/2,y+17);} });
-   const v=g.panel(0,1,{pad:{t:132,b:22,l:40,r:14}}).view(0,1,0,1.05); v.axes({xl:'prior π',ystep:.5}); v.fn(x=>{ const q=x*(1-pp)+(1-x)*pp; return m.H(q)-m.H(pp); },'green',2.4,null,300); v.dot(pi,I,'yellow',5); v.hline(1-m.H(pp),'yellow'); v.text(.02,1-m.H(pp)+.07,'C = 1 − H_b(p) = '+(1-m.H(pp)).toFixed(3),'yellow','left',12);
-   return 'I(X;Y) = <b>'+I.toFixed(4)+'</b> bits/use · capacity of this channel = <b>'+(1-m.H(pp)).toFixed(4)+'</b> (reached at π = ½)'; }});
 
-/* ---------- 3D I(X;Y) surface ---------- */
-GB.three('w-isurf',{title:'I(X;Y) for the BSC over (prior π, flip p)',h:400,cam:{r:9,theta:.8,phi:.5},spin:.4,
- setup(o){ const {THREE,scene,C,G3}=o; const f=(x,z)=>{ const pi=x/3+.5, pp=z/3+.5, q=pi*(1-pp)+(1-pi)*pp; return 2.2*(m.H(q)-m.H(pp)); }; const col=h=>{ const t=Math.min(1,h/2.2); return new THREE.Color().setHSL(.62-.5*t,.8,.2+.4*t); };
-  scene.add(G3.surface(f,-1.5,1.5,-1.5,1.5,48,48,col)); scene.add(G3.axes(1.7,['π','I','p'],C)); return {}; }, update(){} });
-
-/* ---------- sphere packing ---------- */
-GB.three('w-spheres',{title:'Noise balls inside the signal space',h:380,cam:{r:4.2,theta:.6,phi:.3},spin:.5,controls:[{k:'r',label:'noise-ball radius r (noise level)',min:.1,max:.5,step:.01,value:.25}],
- setup(o){ const {THREE,scene}=o; const big=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshBasicMaterial({color:0x58c4dd,wireframe:true,transparent:true,opacity:.18})); scene.add(big); const grp=new THREE.Group(); scene.add(grp); return {THREE,grp,last:-1}; },
- update(s,p){ if(s.last===p.r) return; s.last=p.r; const {THREE,grp}=s; while(grp.children.length){ const c=grp.children.pop(); c.geometry.dispose(); c.material.dispose(); }
-  const rng=m.rng(5), r=p.r, pts=[]; for(let a=0;a<6000&&pts.length<400;a++){ const x=[rng()*2-1,rng()*2-1,rng()*2-1]; if(Math.hypot(...x)>1-r) continue; if(pts.every(q=>Math.hypot(x[0]-q[0],x[1]-q[1],x[2]-q[2])>=2*r)) pts.push(x); }
-  pts.forEach((q,i)=>{ const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL((i*.137)%1,.7,.55),transparent:true,opacity:.55})); mesh.position.set(...q); grp.add(mesh); const dot=new THREE.Mesh(new THREE.SphereGeometry(.02,6,4),new THREE.MeshBasicMaterial({color:0xffffff})); dot.position.set(...q); grp.add(dot); });
-  return 'noise balls that fit: <b>'+pts.length+'</b> → about <b>'+Math.log2(Math.max(1,pts.length)).toFixed(1)+' bits</b> per use (toy model)'; }});
-
-/* ---------- capacity vs bandwidth ---------- */
-GB.widget('w-cap',{title:'Capacity vs bandwidth at fixed power',h:300,hm:320,controls:[{k:'snr0',label:'P/N₀ (dB·Hz)',min:20,max:60,step:1,value:40,fmt:v=>v+' dB-Hz'}],
- draw(g,p){ const PN=m.undb(p.snr0); const Cinf=PN*Math.LOG2E; const v=g.full({l:56,b:28}).view(0,5*PN/ (1+0) ,0,Cinf*1.15); const f=W=>W*lg(1+PN/W); v.view(0,6*PN,0,Cinf*1.15); v.axes({xl:'B (Hz)',yl:'C (bit/s)'}); v.hline(Cinf,'red'); v.fn(f,'yellow',2.6,null,400); v.fn(W=>PN*Math.LOG2E*0+W*lg(1+PN/W)*0,'mute',0);
-  v.text(6*PN*.98,Cinf*1.06,'C∞ = 1.44 P/N₀','red','right',12); const Bm=PN; v.dot(Bm,f(Bm),'blue',5); v.text(Bm,f(Bm)-Cinf*.07,'B = P/N₀: already '+(100*f(Bm)/Cinf).toFixed(0)+'% of C∞','blue','left',11); return 'C∞ = (P/N₀)·log₂e = <b>'+Cinf.toExponential(2)+'</b> bit/s'; }});
-
-/* ---------- Shannon limit ---------- */
-GB.widget('w-shannon',{title:'The Shannon boundary',h:340,hm:360,controls:[{k:'eta',label:'spectral efficiency η = R/B (bit/s/Hz)',min:.1,max:8,step:.05,value:2}],
- draw(g,p){ const v=g.full({l:48,b:30}).view(-2,22,Math.log10(.08),Math.log10(10)); v.axes({xl:'Eb/N0 (dB)',xstep:2,yticks:[.1,.2,.5,1,2,4,8].map(x=>[Math.log10(x),String(x)]),ystep:1}); const ebn0=e=>10*Math.log10((Math.pow(2,e)-1)/e);
-  const xs=[],ys=[]; for(let i=0;i<=300;i++){ const e=Math.pow(10,Math.log10(.08)+(Math.log10(10)-Math.log10(.08))*i/300); xs.push(ebn0(e)); ys.push(Math.log10(e)); } v.line(xs,ys,'yellow',2.6); v.poly(xs.map((x,i)=>[x,ys[i]]).concat([[22,Math.log10(10)],[22,Math.log10(.08)]]),'green',.1);
-  v.vline(-1.59,'red'); v.text(-1.5,Math.log10(.14),'−1.59 dB','red','left',11); v.text(14,Math.log10(.2),'reliable communication possible','green','center',12); v.text(-.8,Math.log10(5),'impossible','red','left',12);
-  [[1,9.59,'BPSK'],[2,9.59,'QPSK'],[4,13.4,'16-QAM'],[6,17.8,'64-QAM']].forEach(q=>{ v.dot(q[1],Math.log10(q[0]),'red',5); v.text(q[1]+.4,Math.log10(q[0]),q[2],'red','left',11); }); v.dot(ebn0(p.eta),Math.log10(p.eta),'blue',6);
-  return 'η = '+p.eta.toFixed(2)+' bit/s/Hz needs Eb/N0 ≥ <b>'+ebn0(p.eta).toFixed(2)+' dB</b> (limit as η→0: −1.59 dB)'; }});
+/* ---------- arithmetic coding ---------- */
+GB.widget('w-arith',{title:'Arithmetic coding: nested intervals',h:330,hm:360,controls:[{k:'msg',type:'select',label:'message',options:[[0,'AB'],[1,'AAB'],[2,'ABAC'],[3,'CAB'],[4,'AAAAB']],value:0},{k:'pa',label:'P(A)  (B and C share the rest 2:1)',min:.34,max:.9,step:.01,value:.7,fmt:v=>v.toFixed(2)}],
+ draw(g,p){ const msgs=['AB','AAB','ABAC','CAB','AAAAB']; const M=msgs[p.msg]; const pr={A:p.pa,B:(1-p.pa)*2/3,C:(1-p.pa)/3}; const ord=['A','B','C']; const cols={A:'blue',B:'orange',C:'green'};
+  const n=M.length; let lo=0,hi=1; const rows=[[0,1,'']]; const v=g.full({l:16,r:16,t:24,b:30}).view(0,1,0,n+1); v.axes({noy:true,xl:'interval position',grid:false,xticks:[[0,'0'],[.25,'.25'],[.5,'.5'],[.75,'.75'],[1,'1']]});
+  const ctx=g.ctx,C=g.C; let level=0; const drawRow=(a,b,r,sym)=>{ // draw the subdivision of [a,b) at row r
+    let x=a; ord.forEach(s=>{ const w=(b-a)*pr[s]; const col=C[cols[s]]; ctx.globalAlpha=(sym===s||sym===null)?.8:.18; ctx.fillStyle=col; const X0=v.X(x),X1=v.X(x+w),Y=v.Y(r+.6),H=Math.abs(v.Y(r+.6)-v.Y(r+.1)); ctx.fillRect(X0,Y,Math.max(0.5,X1-X0-1),H); ctx.globalAlpha=1; if(X1-X0>16&&(sym===s||sym===null)){ ctx.fillStyle=C.bg; ctx.font='600 12px system-ui'; ctx.textAlign='center'; ctx.fillText(s,(X0+X1)/2,Y+H/2+4); } x+=w; }); };
+  let a=0,b=1; for(let i=0;i<n;i++){ const s=M[i]; drawRow(a,b,n-i,s); let x=a; for(const t of ord){ const w=(b-a)*pr[t]; if(t===s){ a=x; b=x+w; break; } x+=w; } }
+  // final interval row
+  ctx.globalAlpha=.9; ctx.fillStyle=C.yellow; ctx.fillRect(v.X(a),v.Y(.6),Math.max(2,v.X(b)-v.X(a)),Math.abs(v.Y(.6)-v.Y(.1))); ctx.globalAlpha=1; g.text(v.X(a),v.Y(.35)-24,'final interval ['+a.toFixed(3)+', '+b.toFixed(3)+')','yellow',null,11);
+  const P=b-a, bits=Math.ceil(-Math.log2(P)), H=-Object.values(pr).reduce((s,q)=>s+q*Math.log2(q),0); return 'P(message) = <b>'+P.toFixed(4)+'</b> → code length ⌈log₂(1/P)⌉ = <b>'+bits+' bits</b> (ideal '+(-Math.log2(P)).toFixed(2)+') · source entropy n·H = '+(n*H).toFixed(2)+' bits'; }});
 </script>
