@@ -1,11 +1,13 @@
 /* App shell: chapter routing, sidebar, theme, font size, progress. Data injected by build.mjs:
-   window.GB_CHAPTERS = [{id,num,title,part,lede,sections:[{id,title}],probs}], <template id="t-{id}">, window.GB_INIT[id] */
+   window.GB_CHAPTERS = [{id,num,title,part,lede,sections:[{id,title}],probs}], <script type="text/x-chapter" id="t-{id}" data-n=bytes> holding base64(raw-deflate(chapter HTML)), window.GB_INIT[id] */
 (function(){
 'use strict';
 const $=s=>document.querySelector(s);
 const store={ get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:v; }catch(e){ return d; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
 const CH=window.GB_CHAPTERS, byId={}; CH.forEach((c,i)=>{ c.i=i; byId[c.id]=c; });
 let cur=null;
+/* chapters are stored deflate-compressed (base64) and inflated on demand: the file stays small and the DOM holds only the open chapter */
+function chapterHTML(id){ const el=document.getElementById('t-'+id), n=+el.dataset.n, bin=atob(el.textContent.trim()), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); const out=new Uint8Array(n); window.GBinflate(u,out); return new TextDecoder('utf-8').decode(out); }
 
 /* ---- theme & font ---- */
 function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); store.set('gb.theme',t); const b=$('#btn-theme'); if(b) b.textContent=t==='dark'?'☀':'☾'; document.dispatchEvent(new Event('gb-theme')); }
@@ -28,7 +30,7 @@ document.addEventListener('gb-prog',refreshProg);
 function show(id,sec,keepScroll){
   const c=byId[id]||CH[0]; if(!c) return; cur=c; store.set('gb.last',c.id);
   GB.reset(); const host=$('#chapter'); host.innerHTML='';
-  const tpl=document.getElementById('t-'+c.id); host.appendChild(tpl.content.cloneNode(true));
+  const tpl=document.createElement('template'); tpl.innerHTML=chapterHTML(c.id); host.appendChild(tpl.content);
   document.title=c.num+'. '+c.title+' — Signals in the Wild';
   $('#topbar .ttl').textContent=(c.num?c.num+' · ':'')+c.title;
   document.querySelectorAll('#side a.ch').forEach(a=>a.classList.toggle('on',a.dataset.id===c.id));

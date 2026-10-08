@@ -3,51 +3,51 @@
 <div class="hero-text">
 <div class="eyebrow">A visual textbook · Communication Systems</div>
 <h1>Signals<br>in the Wild</h1>
-<p class="tag1">How a thought crosses an ocean, a planet, a galaxy: noise, waves, bits and the mathematics that tames them. From first principles to the GATE exam.</p>
-<div class="chips"><span>Noise &amp; probability</span><span>Fourier</span><span>AM · FM</span><span>Information theory</span><span>PCM</span><span>Detection</span><span>PSK · QAM</span><span>Error-correcting codes</span></div>
-<div class="stats">16 chapters + a physics interlude · 60+ live figures &amp; 3-D scenes · 96 real GATE questions solved · works offline on your phone</div>
-<div><a class="btn p" href="#ch01">Begin the journey →</a><a class="btn s" href="#ch13">Jump to the PYQ vault</a></div>
+<p class="tag1">How a thought crosses an ocean, a planet, a galaxy: noise, waves, bits and the mathematics that tames them. From first principles to the GATE exam and to a working engineer’s bookshelf.</p>
+<div class="chips"><span>Signals &amp; systems</span><span>Fourier</span><span>Probability &amp; noise</span><span>AM · FM</span><span>Information theory</span><span>PCM</span><span>Detection</span><span>PSK · QAM</span><span>Error-correcting codes</span><span>CDMA · OFDM</span><span>Fading · MIMO</span><span>Link budgets</span></div>
+<div class="stats">23 chapters + an interlude + an exam toolkit · 100+ live figures &amp; 3-D scenes · 500+ problems, 95 of them real GATE questions · derivations, engineering practice and six systems sized from scratch · works offline on your phone</div>
+<div><a class="btn p" href="#ch01">Begin the journey →</a><a class="btn s" href="#ch24">Jump to the PYQ vault</a></div>
 </div></div>
 <p class="lede" style="font-size:1.12rem">Everything in this book is an answer to one question: how can I get a message from here to there, reliably, with limited power and limited bandwidth, when the universe adds noise to everything?</p>
 
 <!--meta {"id":"ch00","num":"0","part":"Start here","title":"Welcome: The Story of Sending a Thought","cover":true} -->
 
 <p>I want to start with a confession. When I first learned this subject, I memorised it: formulas for $\mu$, $\beta$, $Q(\sqrt{2E_b/N_0})$, Carson's rule, Huffman's algorithm. I could pass the exam. And I understood nothing, because nobody had told me the <em>story</em>: that every one of those formulas is a small, clever answer to a problem somebody once found very annoying.</p>
-<p>So this book does something different. In every chapter you will meet the person who got stuck, the picture that unstuck them, and only then the equation. Almost every figure moves; most have a slider. Play with them. If a formula feels arbitrary, change the slider until it stops feeling arbitrary. <em>That</em> is how the formulas stay in your head on exam day.</p>
-<p>And because you have a goal (the GATE exam), the book is also built around the questions GATE actually asks. I downloaded the official question papers of 2014 and 2019–2026 and read every communication question; <strong>96 of them are reproduced, solved and explained in these pages</strong> with their exam year, and each chapter closes with a "GATE pattern" box saying what to expect.</p>
+<p>So this book does something different. In every chapter you will meet the person who got stuck, the picture that unstuck them, and only then the equation, and then you will see where the equation <em>comes from</em>: every result that matters is <strong>derived</strong> in a purple box, step by step, with its assumptions stated, so that you know when it stops being true. Almost every figure moves; most have a slider. Play with them. If a formula feels arbitrary, change the slider until it stops feeling arbitrary. <em>That</em> is how the formulas stay in your head on exam day.</p>
+<p>The book has two ambitions that turn out to be the same ambition. It is a <strong>GATE guide</strong>: I downloaded the official question papers of 2014 and 2019–2026 and read every communication question; <strong>95 of them are reproduced, solved and explained in these pages</strong> with their exam year, each chapter closes with a "GATE pattern" box saying what to expect, and every problem set climbs from concept checks to numericals to exam-style questions. And it is an <strong>engineering guide</strong>: the real-world numbers are not parked at the end but woven into the theory, in teal <em>Engineering practice</em> boxes (why Wi-Fi uses a 0.8 µs guard interval, how GPS recovers a signal 19 dB below the noise, what is inside a CD, a GSM call, an LTE cell). The last chapters turn the toolkit into design: link budgets, fading and diversity, MIMO, multiple access, cellular planning, and a chapter that <strong>sizes six real systems from scratch</strong>.</p>
 
 <h2>The whole subject in one picture</h2>
 <p>Claude Shannon drew this diagram in 1948. Every communication system, from smoke signals to 5G, fits into it. Learn to see the book as a walk along this chain:</p>
-<div id="d-chain" class="dia">Shannon's model of a communication system, annotated with the chapter that covers each block. Information theory (Ch 7) tells us the best possible performance of each half; the rest of the book builds the blocks.</div>
+<div id="d-chain" class="dia">Shannon's model of a communication system, annotated with the chapters that cover each block. Information theory (Ch 10–11) tells us the best possible performance of each half; the rest of the book builds the blocks.</div>
 <table>
-<tr><th>Block</th><th>The question it answers</th><th>Chapter</th></tr>
-<tr><td>Probability, Fourier, random processes</td><td>The language: noise, spectra, filters</td><td>1, 2, 3</td></tr>
-<tr><td>Analog modulation (AM, FM)</td><td>How do I ride a message on a carrier wave?</td><td>4, 5</td></tr>
-<tr><td>Receivers and noise</td><td>How do I tune in one station, and how good does it sound?</td><td>6</td></tr>
-<tr><td>Information theory</td><td>How much can I compress? How fast can I send?</td><td>7</td></tr>
-<tr><td>Sampling and PCM</td><td>How do I turn a voice into bits?</td><td>8</td></tr>
-<tr><td>Pulses and ISI</td><td>How do I send bits as voltages without smearing?</td><td>9</td></tr>
-<tr><td>Detection</td><td>The wave arrives noisy; what did they send?</td><td>10</td></tr>
-<tr><td>Digital modulation</td><td>ASK, PSK, FSK, QAM: which, and what does it cost?</td><td>11</td></tr>
-<tr><td>Coding</td><td>How do I fix errors that noise made anyway?</td><td>12</td></tr>
-<tr><td>★ Interlude: connections</td><td>How noise, Fourier, resonance, links and matched filtering appear in physics and other engineering subjects</td><td>★ (after 12)</td></tr>
-<tr><td>Exam toolkit</td><td>PYQ index, formula sheets, mock test, timeline</td><td>13–15</td></tr>
+<tr><th>Part</th><th>The question it answers</th><th>Chapters</th></tr>
+<tr><td><b>I · Toolkit</b>: signals, systems, Fourier, sampling, probability, random processes</td><td>The language: filters, spectra, noise</td><td>1–5</td></tr>
+<tr><td><b>II · Analog</b>: AM, FM and PLL, receivers and noise, multiplexing</td><td>How do I ride a message on a carrier, tune in one station, and how good does it sound? How do many share one wire?</td><td>6–9</td></tr>
+<tr><td><b>III · Information theory</b>: entropy and source coding; channels and capacity</td><td>How much can I compress? How fast can I send?</td><td>10–11</td></tr>
+<tr><td><b>IV · Digital communication</b>: PCM; line codes and ISI; detection; modulation; synchronisation; block codes; convolutional, turbo, LDPC, polar</td><td>How do I turn a voice into bits, send them as pulses, guess right, choose a constellation, stay in step, and fix the errors noise made anyway?</td><td>12–18</td></tr>
+<tr><td><b>V · Systems</b>: spread spectrum; OFDM; the radio channel, diversity, MIMO; multiple access and cellular; case studies</td><td>How are these pieces assembled into GPS, Wi-Fi, 4G/5G, satellites, fibre?</td><td>19–23</td></tr>
+<tr><td><b>VI · Exam toolkit</b>: PYQ index, formula sheets, traps, mock tests</td><td>What do I carry into the exam?</td><td>24–25</td></tr>
+<tr><td>★ Interlude · Appendix</td><td>How noise, Fourier, resonance, links, codes and matrices appear in physics and other engineering subjects; timeline, tables, glossary, reading</td><td>26, 27</td></tr>
 </table>
 
 <h2>How the book is organised</h2>
 <div class="cols">
+<div class="box obj"><span class="tag">Objectives</span><p>Blue boxes open each chapter: what you will be able to <em>do</em> afterwards, and what to know first.</p></div>
 <div class="box story"><span class="tag">History</span><p>Orange boxes. Who solved the problem and when. These are not decoration: remembering a story is the easiest way to remember a result.</p></div>
 <div class="box real"><span class="tag">Real world</span><p>Teal boxes. Where the idea lives in your phone, your car, a deep-space probe or a hospital.</p></div>
+<div class="box derive"><span class="tag">Derivation</span><p>Purple boxes. Where the formula comes from, step by step, with the assumptions that make it true.</p></div>
+<div class="box eng"><span class="tag">Engineering practice</span><p>Teal boxes with a thick left edge. Numbers and trade-offs from real systems: standards, parameters, design margins.</p></div>
+<div class="box ex"><span class="tag">Worked example</span><p>Pink-bordered boxes. A full calculation, usually from a real GATE question.</p></div>
 <div class="box key"><span class="tag">Key idea</span><p>Yellow boxes. The formulas and rules to carry into the exam.</p></div>
 <div class="box gate"><span class="tag">GATE pattern</span><p>Green boxes. What the real papers asked, and how often.</p></div>
 <div class="box trap"><span class="tag">Trap</span><p>Red boxes. Mistakes that cost marks (factor-of-two errors, dB confusions).</p></div>
 <div class="box pause"><span class="tag">Pause and ponder</span><p>Dashed boxes. Try before you read on.</p></div>
 </div>
-<p><strong>Problems</strong> in each chapter come in the three GATE flavours: <em>MCQ</em> (click an option), <em>MSQ</em> (select all that apply, then Check), <em>NAT</em> (type a number). The tag on top says where the question came from (e.g. "GATE 2024 · EC · Q.28" for the real paper, or "Original"). Your results are saved in your browser, the sidebar shows your progress, and every solution is one tap away. <b>Try first. Then read.</b></p>
+<p><strong>Problems</strong> in each chapter come in three tiers (Set A concept checks, Set B numerical practice, Set C exam-style and previous-year questions) and in the three GATE flavours: <em>MCQ</em> (click an option), <em>MSQ</em> (select all that apply, then Check), <em>NAT</em> (type a number). The tag on top says where the question came from (e.g. "GATE 2024 · EC · Q.28" for the real paper, or "Original"). Your results are saved in your browser, the sidebar shows your progress, and every solution is one tap away. <b>Try first. Then read.</b></p>
 
 <h2>What GATE actually asks: the pattern from real papers</h2>
 <div class="box key"><span class="tag">How this analysis was done</span>
-<p>I downloaded the official GATE Electronics &amp; Communication (EC) question papers from the organising institutes' websites: <b>2014 (all four sets), 2019, 2020, 2021, 2022, 2023, 2024, 2025 and 2026</b>, together with the official answer keys for 2014 and 2021–2026 (the 2021 key is a scanned image, read by OCR). For <b>2015–2018</b>, whose official files I could not find online, I used the chapter-wise solved-papers collection you added to the folder: I read only the Communication unit, to see which questions appeared and what they asked, and wrote my own solutions (its stated answers were used as a cross-check, which caught one disagreement: for 2019 Q.34 the collection prints (B), but the geometry gives $E=3$, i.e. (D); I trust the mathematics). The 2019–2021 papers are scanned images, so I read them with OCR and by eye; official keys for 2019 and 2020 were not available, so those answers are my own derivations (checked numerically). I then went through every question and kept the ones belonging to the Communications syllabus: random processes, analog, information theory, digital and coding. <b>This is my classification</b>; borderline questions (e.g. ADC SNR, which sits between Signals and Communications) are counted here. </p></div>
+<p>I downloaded the official GATE Electronics &amp; Communication (EC) question papers from the organising institutes' websites: <b>2014 (all four sets), 2019, 2020, 2021, 2022, 2023, 2024, 2025 and 2026</b>, together with the official answer keys for 2014 and 2021–2026 (the 2021 key is a scanned image, read by OCR). For <b>2015–2018</b>, whose official files I could not find online, I used a chapter-wise solved-papers collection: I read only the Communication unit, to see which questions appeared and what they asked, and wrote my own solutions (its stated answers were used as a cross-check, which caught one disagreement: for 2019 Q.34 the collection prints (B), but the geometry gives $E=3$, i.e. (D); I trust the mathematics). The 2019–2021 papers are scanned images, so I read them with OCR and by eye; official keys for 2019 and 2020 were not available, so those answers are my own derivations (checked numerically). I then went through every question and kept the ones belonging to the Communications syllabus: random processes, analog, information theory, digital and coding. <b>This is my classification</b>; borderline questions (e.g. ADC SNR, which sits between Signals and Communications) are counted here. </p></div>
 <p>Communication has been worth roughly <strong>7 to 14 marks out of 100</strong>, and <b>the weight has grown</b>: papers of 2015–2018 (which had several sets, so I averaged per set) carried about <strong>7–8 marks</strong> of Communication; the eight papers 2019–2026 carried about <strong>11.5 on average</strong> (range 8–14). The split between 1-mark and 2-mark questions is roughly even. Here is where the marks went:</p>
 <div class="widget" id="w-pyq">Marks of Communication questions by topic (my classification of the official papers). Use the "view" menu for totals, a single year, or a comparison with the older papers. Notice the stability: <b>information theory, AM/FM, PCM/ADC and detection</b> are present nearly every year; random-process questions are in 7 of 8; coding in 6 of 8 and rising.</div>
 <div class="cols">
@@ -67,17 +67,24 @@
 <span class="tag" style="margin-top:.6em">Rare</span><ul><li>Superheterodyne (once: 2021), ISI/Nyquist criterion (2024), noise figure (never in this sample, but cheap to learn).</li></ul></div>
 </div>
 <div class="box trap"><span class="tag">Honest caveats</span>
-<p>(1) Eight (or twelve) papers is a small sample; a topic being absent does not make it impossible. 2015–2018 numbers are approximate: each year had 2–3 sets with different questions, the collection may not list every question, and I divided pooled marks by the number of sets. (2) I could not retrieve official keys for 2019 and 2020: I solved those myself and checked numerically, but treat them as "derived". (When I compared my 2021 answers to the OCR'd key, one needed fixing: Q.52 asks for the SQNR as a <em>ratio</em>, not in dB. Always read the units the question wants.) (3) GATE sometimes updates the syllabus; the book covers the syllabus you pasted at the start in full. (4) The questions here are reproduced from the public papers for study; for the real thing, always cross-check with the official files (links in Chapter 13).</p></div>
+<p>(1) Eight (or twelve) papers is a small sample; a topic being absent does not make it impossible. 2015–2018 numbers are approximate: each year had 2–3 sets with different questions, the collection may not list every question, and I divided pooled marks by the number of sets. (2) I could not retrieve official keys for 2019 and 2020: I solved those myself and checked numerically, but treat them as "derived". (When I compared my 2021 answers to the OCR'd key, one needed fixing: Q.52 asks for the SQNR as a <em>ratio</em>, not in dB. Always read the units the question wants.) (3) GATE sometimes updates the syllabus; the book covers the full GATE communication syllabus and goes well beyond it. (4) The questions here are reproduced from the public papers for study; for the real thing, always cross-check with the official files (links in Chapter 24).</p></div>
 
-<h2>A study plan that fits the data</h2>
+<h2>Three ways to read this book</h2>
+<div class="cols">
+<div class="box key"><span class="tag">GATE sprint · 5 weeks</span>
 <table>
 <tr><th>Week</th><th>Chapters</th><th>Why in this order</th></tr>
-<tr><td>1</td><td>1–3 (maths) quickly, then 7 (information theory)</td><td>Information theory is high-yield and needs only Chapter 1; random processes (Ch 3) feed everything else.</td></tr>
-<tr><td>2</td><td>4–6 (analog)</td><td>AM/FM is every year; Chapter 6's FOM numbers are easy marks.</td></tr>
-<tr><td>3</td><td>8–10 (PCM, ISI, detection)</td><td>The $Q(\cdot)$ detection questions are the bread and butter.</td></tr>
-<tr><td>4</td><td>11–12 (modulation, coding)</td><td>Coding is rising; modulation formulas assemble the rest.</td></tr>
-<tr><td>5</td><td>13–15: PYQ index, mock test, cheat sheet</td><td>Solve every real PYQ again without looking; do the mock under time.</td></tr>
-</table>
+<tr><td>1</td><td>1–5 quickly, then 10–11 (information theory)</td><td>Information theory is high-yield and needs only probability; random processes (Ch 5) feed everything else.</td></tr>
+<tr><td>2</td><td>6–9 (analog, receivers)</td><td>AM/FM is every year; Chapter 8's noise numbers are easy marks.</td></tr>
+<tr><td>3</td><td>12–15 (PCM, ISI, detection, modulation)</td><td>The $Q(\cdot)$ detection questions are the bread and butter.</td></tr>
+<tr><td>4</td><td>17–18 (coding), skim 16</td><td>Coding is rising; Chapter 17's first half is enough for GATE.</td></tr>
+<tr><td>5</td><td>24–25: PYQ index, cheat sheet, mock test</td><td>Solve every real PYQ again without looking; do the mock under time.</td></tr>
+</table></div>
+<div class="box real"><span class="tag">Engineering course · one semester</span>
+<p>Read the whole book in order, skipping nothing in the derivation boxes. Part I (3 weeks) is the toolkit; Part II (2) analog; Part III (2); Part IV (4) the heart of digital communication; Part V (3): spread spectrum and OFDM in week 1, wireless channel and cellular in week 2, case studies in week 3. Use the widgets as laboratory exercises: each has a question hidden in its caption. Work Set B and C of every chapter; use Chapter 23 as the template for a design project.</p></div>
+<div class="box story"><span class="tag">Reference reader · browse by need</span>
+<p>Need a link budget? Chapter 21, then 23. Choosing a code? Chapters 17–18 (the table “Choosing a code” in Ch 17). Why does Wi-Fi look the way it does? Chapters 20 and 22. How does GPS work? Chapters 16, 19 and 23. What is a PLL? Chapter 7, then 16. Formulas in a hurry? Chapter 25.</p></div>
+</div>
 <p><b>Exam technique for this subject.</b> (i) Draw the picture: constellation, spectrum, or block diagram: it usually gives the answer in two lines. (ii) Keep a mental table of $Q(1)=0.159$, $Q(2)=0.0228$, $Q(3)=0.00135$, $Q(4)=3.2\times10^{-5}$. (iii) In every NAT, check units (dB vs ratio; Hz vs rad/s; one-sided vs two-sided PSD $N_0$ vs $N_0/2$). (iv) Spend 2 minutes per 1-mark question, 3–4 per 2-mark; this is a "fast-formula" subject, so be quick on the easy ones and bank the time.</p>
 
 <h2>Conventions used throughout</h2>
@@ -93,10 +100,10 @@
 
 <script>
 GB.diagram('d-chain',{w:820,h:210,alt:'Shannon communication system with chapters',items:[
- ['box',10,20,100,44,'Source\n(voice, video, bits)','blue'],['arr',[110,42,140,42]],['box',140,20,110,44,'Source encoder\ncompress / digitise','green'],['txt',195,78,'Ch 7, 8','tm'],['arr',[250,42,280,42]],['box',280,20,100,44,'Channel encoder\nadd redundancy','purple'],['txt',330,78,'Ch 12','tm'],['arr',[380,42,410,42]],['box',410,20,100,44,'Modulator\nAM FM ASK PSK QAM','orange'],['txt',460,78,'Ch 4, 5, 9, 11','tm'],['arr',[510,42,560,42]],
- ['box',560,20,110,44,'Channel\n+ noise N(t)','red'],['txt',615,78,'Ch 2, 3, 6','tm'],
- ['box',560,130,110,44,'Demodulator\ndetector','orange'],['txt',615,188,'Ch 4–6, 9–11','tm'],['arr',[615,64,615,130]],
- ['arr',[560,152,530,152]],['box',420,130,110,44,'Channel decoder\ncorrect errors','purple'],['txt',475,188,'Ch 12','tm'],['arr',[420,152,390,152]],
+ ['box',10,20,100,44,'Source\n(voice, video, bits)','blue'],['arr',[110,42,140,42]],['box',140,20,110,44,'Source encoder\ncompress / digitise','green'],['txt',195,78,'Ch 10–12','tm'],['arr',[250,42,280,42]],['box',280,20,100,44,'Channel encoder\nadd redundancy','purple'],['txt',330,78,'Ch 17–18','tm'],['arr',[380,42,410,42]],['box',410,20,100,44,'Modulator\nAM FM ASK PSK QAM','orange'],['txt',460,78,'Ch 6–7, 15, 19–20','tm'],['arr',[510,42,560,42]],
+ ['box',560,20,110,44,'Channel\n+ noise N(t)','red'],['txt',615,78,'Ch 5, 8, 21–22','tm'],
+ ['box',560,130,110,44,'Demodulator\ndetector','orange'],['txt',615,188,'Ch 6–8, 13–16','tm'],['arr',[615,64,615,130]],
+ ['arr',[560,152,530,152]],['box',420,130,110,44,'Channel decoder\ncorrect errors','purple'],['txt',475,188,'Ch 17–18','tm'],['arr',[420,152,390,152]],
  ['box',280,130,110,44,'Source decoder\nreconstruct','green'],['arr',[280,152,250,152]],['box',140,130,110,44,'Destination','blue'],
  ['txt',770,40,'noise','tm'],['arr',[740,60,680,45],'']]});
 

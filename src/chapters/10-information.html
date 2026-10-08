@@ -168,6 +168,10 @@ A Gaussian source with variance 1 must be reproduced with mean-square error at m
 
 <p class="pset">Set C · Exam-style problems</p>
 
+<div class="prob" data-type="nat" data-ans="1.75" data-tol="0.01" data-marks="1" data-src="GATE 2016 · EC (PYQ book)">
+A discrete memoryless source has alphabet $\{a_1,a_2,a_3,a_4\}$ with probabilities $\{\frac12,\frac14,\frac18,\frac18\}$. The minimum required average code-word length in bits for error-free reconstruction is ______.
+<div class="sol"><p>The minimum is the entropy: $\frac12(1)+\frac14(2)+2\cdot\frac18(3)=1.75$ bits (dyadic, so a Huffman code with lengths 1, 2, 3, 3 attains it).</p></div></div>
+
 <div class="prob" data-type="nat" data-ans="2" data-tol="0.01" data-marks="2" data-src="GATE 2014 · Set 1 · Q.52">
 A fair coin is tossed repeatedly until a head appears for the first time. Let $L$ be the number of tosses. The entropy $H(L)$ in bits is ______.
 <div class="sol"><p>$P(L=k)=2^{-k}$; $H=\sum_kk2^{-k}=2$ bits.</p></div></div>

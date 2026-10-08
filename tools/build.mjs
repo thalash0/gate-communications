@@ -1,6 +1,6 @@
 // Build: src/chapters/*.html  ->  dist/gate-comm-book.html (single self-contained file; works offline on desktop & Android)
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
-import katex from 'katex';
+import katex from 'katex'; import zlib from 'zlib';
 const here = path.dirname(fileURLToPath(import.meta.url)); const root = path.resolve(here, '..');
 const R = p => fs.readFileSync(path.join(root, p), 'utf8');
 
@@ -54,7 +54,7 @@ for (const f of files) {
   const sections = []; body = body.replace(/<h2(\s[^>]*)?>([\s\S]*?)<\/h2>/g, (m, attrs, t) => { const ex = /id="([^"]+)"/.exec(attrs || ''); const sid = ex ? ex[1] : slug(t); sections.push({ id: sid, title: t.replace(/<[^>]+>/g, '') }); return ex ? m : `<h2 id="${sid}">${t}</h2>`; });
   const probs = (body.match(/class="prob"/g) || []).length;
   const head = `<div class="kicker">${meta.kicker || (meta.part + (meta.num ? ' · Chapter ' + meta.num : ''))}</div><h1>${meta.title}</h1>${meta.lede ? `<p class="lede">${meta.lede}</p>` : ''}`;
-  templates.push(`<template id="t-${id}">${meta.cover ? '' : head}${body}${probs ? '<div class="score"></div>' : ''}</template>`);
+  { const raw = Buffer.from((meta.cover ? '' : head) + body + (probs ? '<div class="score"></div>' : ''), 'utf8'); const comp = zlib.deflateRawSync(raw, { level: 9 }); templates.push(`<script type="text/x-chapter" id="t-${id}" data-n="${raw.length}">${comp.toString('base64')}</` + 'script>'); }
   js.push(`GB_INIT[${JSON.stringify(id)}]=function(){ ${scripts.map((s, i) => `try{\n${s}\n}catch(e){console.error(${JSON.stringify(id + ' script ' + i)},e);}`).join('\n')} };`);
   chapters.push({ id, num: meta.num || '', title: meta.title.replace(/<[^>]+>/g, ''), part: meta.part, lede: meta.lede || '', sections, probs });
   console.log(`${id.padEnd(8)} ${String(Math.round(body.length / 1024)).padStart(5)} KB  h2:${String(sections.length).padStart(2)}  problems:${String(probs).padStart(3)}  scripts:${scripts.length}  ${meta.title.slice(0, 50)}`);
@@ -65,6 +65,7 @@ const out = tpl
   .replace('/*KATEXCSS*/', () => katexCss()).replace('/*CSS*/', () => R('src/css/style.css'))
   .replace('<!--TEMPLATES-->', () => templates.join('\n'))
   .replace('/*THREE*/', () => safe(fs.readFileSync(path.join(root, 'vendor/three.min.js'), 'utf8')))
+  .replace('/*INFLATE*/', () => safe(fs.readFileSync(path.join(root, 'vendor/tiny-inflate.js'), 'utf8')))
   .replace('/*LIB*/', () => safe(R('src/js/lib.js')))
   .replace('/*CHAPTERJS*/', () => 'window.GB_INIT={};\n' + safe(js.join('\n')))
   .replace('/*CHAPTERDATA*/', () => JSON.stringify(chapters))
