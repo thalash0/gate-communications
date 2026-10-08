@@ -1,23 +1,80 @@
-<!--meta {"id":"ch02","num":"2","part":"Part I · The Mathematical Toolkit","title":"Signals as Spinning Arrows","lede":"Every signal is a chord. Fourier gave us the ears to hear the notes, and communication engineers spend their lives moving those notes up and down the dial."} -->
+<!--meta {"id":"ch02","num":"2","part":"Part I · The Mathematical Toolkit","title":"Fourier Analysis: Signals as Spinning Arrows","lede":"Every signal is a chord. Fourier gave us the ears to hear the notes, and communication engineers spend their lives moving those notes up and down the dial."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Derive the Fourier series coefficients from orthogonality, compute them for square, triangle and pulse-train waves, and explain Gibbs’ overshoot.</li>
+<li>Obtain the Fourier transform as the limit of the series when the period becomes infinite, and prove the key properties (shift, scaling, duality, convolution, Parseval) rather than memorise them.</li>
+<li>Derive the standard transform pairs (rect, exponential, Gaussian, impulse train) and use them to find spectra by inspection.</li>
+<li>Define and compute energy spectral density, power spectral density and autocorrelation of deterministic signals.</li>
+<li>State and prove the time–bandwidth trade-off ($\Delta t\,\Delta f\ge\frac1{4\pi}$); relate it to why data rate needs bandwidth.</li>
+<li>Use the DFT/FFT correctly: frequency resolution, zero-padding, windowing, spectral leakage.</li>
+</ul>
+<p><b>Prerequisite:</b> Chapter 1 (LTI systems, impulse, sifting property).</p></div>
 
 <div class="box story"><span class="tag">History · a scandal about heat</span>
-<p>In December 1807 Joseph Fourier read a paper to the Paris Academy claiming that <em>any</em> temperature profile along a metal rod, however jagged, could be written as a sum of sines. Lagrange, one of the greatest mathematicians alive, thought this was nonsense. The paper was not published for fifteen years. Fourier, who had earlier gone to Egypt with Napoleon's army and come home convinced that desert heat was good for the health, turned out to be right (with a few technical conditions that Dirichlet cleaned up in 1829).</p>
-<p>Seventy years later, Alexander Graham Bell was trying to send <em>several</em> telegraph messages down one wire by giving each a different pitch, which is "frequency-division multiplexing" long before anyone had the words. Bell's "harmonic telegraph" failed as a telegraph, but while working on it he and Watson accidentally built the telephone. Every radio, every Wi-Fi router and every mobile tower is a descendant of the idea that <strong>a wire (or the sky) can carry many conversations at once, because different conversations occupy different frequencies</strong>. That idea needs Fourier.</p></div>
+<p>In December 1807 Joseph Fourier read a paper to the Paris Academy claiming that <em>any</em> temperature profile along a metal rod, however jagged, could be written as a sum of sines. Lagrange, one of the greatest mathematicians alive, thought this was nonsense. The paper was not published for fifteen years. Fourier, who had earlier gone to Egypt with Napoleon’s army and come home convinced that desert heat was good for the health, turned out to be right (with a few technical conditions that Dirichlet cleaned up in 1829).</p>
+<p>Seventy years later, Alexander Graham Bell was trying to send <em>several</em> telegraph messages down one wire by giving each a different pitch, which is “frequency-division multiplexing” long before anyone had the words. Bell’s “harmonic telegraph” failed as a telegraph, but while working on it he and Watson accidentally built the telephone. Every radio, every Wi-Fi router and every mobile tower is a descendant of the idea that <strong>a wire (or the sky) can carry many conversations at once, because different conversations occupy different frequencies</strong>. That idea needs Fourier.</p></div>
 
-<h2>Spinning arrows</h2>
-<p>Forget formulas for a minute. A pure musical note is a sine wave. A sine wave is the shadow of an arrow spinning in a circle: if an arrow of length $A$ rotates at $f$ turns per second, the height of its tip is $A\sin(2\pi f t)$. Euler's formula packages this into one line:
-$$e^{j\theta}=\cos\theta+j\sin\theta,\qquad \cos\theta=\frac{e^{j\theta}+e^{-j\theta}}2 .$$
-A real cosine is therefore <strong>two arrows spinning in opposite directions</strong>, one at $+f$ and one at $-f$, whose imaginary parts cancel. That is the entire reason spectra of real signals are symmetric and have "negative frequencies": they are bookkeeping for the second arrow.</p>
+<h2>Why sinusoids? The idea behind the whole chapter</h2>
+<p>In Chapter 1 we proved that every LTI system treats the complex exponential $e^{j2\pi ft}$ in the simplest imaginable way: it multiplies it by a number $H(f)$. If we could write every signal as a <em>sum</em> of such exponentials, the response to <em>any</em> signal would follow from this one fact, with no convolution integral in sight. The Fourier series does it for periodic signals and the Fourier transform for everything else. The payoff is not only mathematical: the sinusoid decomposition is exactly the picture that a radio engineer, a spectrum analyser and your ear all share.</p>
+<p>A pure musical note is a sine wave, and a sine wave is the shadow of an arrow spinning in a circle: an arrow of length $A$ rotating $f$ times per second has a tip at height $A\sin(2\pi ft)$. Euler’s formula packages this:
+$$e^{j\theta}=\cos\theta+j\sin\theta,\qquad\cos\theta=\frac{e^{j\theta}+e^{-j\theta}}2,\qquad\sin\theta=\frac{e^{j\theta}-e^{-j\theta}}{2j}.$$
+A real cosine is therefore <strong>two arrows spinning in opposite directions</strong>, at $+f$ and $-f$, whose imaginary parts cancel. That is the entire reason spectra of real signals are symmetric and contain “negative frequencies”: they are bookkeeping for the second arrow.</p>
 
-<p>Now the Fourier transform has a one-sentence meaning: <strong>"How much of the arrow spinning at frequency $f$ is hiding in my signal?"</strong> The way to find out is the most beautiful trick in signal processing. Take your signal $g(t)$ and <em>wind it around the origin</em> at $f$ turns per second: at time $t$ plot the point $g(t)\,e^{-j2\pi ft}$. If $g$ contains a component that spins at exactly $f$, the winding cancels its spin: that component now sits still, always pulling the same way, and the whole curve gets lopsided. Take the centre of mass of the wound-up curve: <em>that is the Fourier transform at $f$</em>. For every other $f$ the curve is balanced around the origin and the centre of mass stays near zero.</p>
+<h2>Fourier series: periodic signals as a sum of harmonics</h2>
+<h3>Orthogonality: the one fact you need</h3>
+<p>Let $x(t)$ have period $T$ and $f_0=1/T$. Consider the harmonics $e^{j2\pi nf_0t}$, $n=0,\pm1,\pm2,\dots$. Integrate a product of two of them over one period:
+$$\int_0^{T}e^{j2\pi mf_0t}\,e^{-j2\pi nf_0t}\,dt=\int_0^Te^{j2\pi(m-n)t/T}dt=\begin{cases}T,&m=n\\[2pt]\dfrac{e^{j2\pi(m-n)}-1}{j2\pi(m-n)/T}=0,&m\ne n.\end{cases}$$
+The harmonics are <b>orthogonal</b>, exactly as the unit vectors $\hat x,\hat y,\hat z$ are, and $\int_T|e^{j2\pi nf_0t}|^2dt=T$ plays the role of $|\hat x|^2$. Whenever you have an orthogonal set, the coefficients of an expansion are found by projecting.</p>
+<div class="box derive"><span class="tag">Derivation · Fourier series coefficients</span>
+<p>Assume $x(t)=\sum_{k=-\infty}^{\infty}c_ke^{j2\pi kf_0t}$. Multiply both sides by $e^{-j2\pi nf_0t}$ and integrate over a period:
+$$\int_0^Tx(t)e^{-j2\pi nf_0t}dt=\sum_kc_k\underbrace{\int_0^Te^{j2\pi(k-n)f_0t}dt}_{T\,\delta_{kn}}=T\,c_n
+\quad\Longrightarrow\quad\boxed{\,c_n=\frac1T\int_{T}x(t)\,e^{-j2\pi nf_0t}\,dt\,}$$
+$c_0$ is the average (DC value). For a real signal $c_{-n}=c_n^*$. The equivalent real (trigonometric) form follows by grouping $\pm n$: with $c_n=\tfrac12(a_n-jb_n)$,
+$$x(t)=a_0+\sum_{n=1}^{\infty}\big[a_n\cos(2\pi nf_0t)+b_n\sin(2\pi nf_0t)\big],\quad a_n=\frac2T\!\int_Tx\cos,\ \ b_n=\frac2T\!\int_Tx\sin,$$
+and the <b>amplitude of the $n$th harmonic</b> is $2|c_n|=\sqrt{a_n^2+b_n^2}$ with phase $\angle c_n$. <b>Parseval for periodic signals</b>: multiply the series by its conjugate and average over a period; by orthogonality the cross terms vanish, leaving
+$$P=\frac1T\int_T|x|^2dt=\sum_{n=-\infty}^{\infty}|c_n|^2=a_0^2+\sum_{n\ge1}\frac{a_n^2+b_n^2}2.$$
+Power in each harmonic adds, just as for the sinusoids of Chapter 1.</p></div>
 
+<div class="box ex"><span class="tag">Worked example · the square wave (derive its coefficients)</span>
+<p>$x(t)=+1$ for $0<t<T/2$ and $-1$ for $T/2<t<T$ (odd symmetry, zero mean). Then $a_n=0$ and
+$$b_n=\frac2T\Big[\int_0^{T/2}\sin\tfrac{2\pi nt}T\,dt-\int_{T/2}^{T}\sin\tfrac{2\pi nt}T\,dt\Big]=\frac2T\cdot2\cdot\frac{T}{2\pi n}\big(1-\cos n\pi\big)=\frac{2(1-\cos n\pi)}{\pi n}=\begin{cases}\dfrac4{\pi n},&n\text{ odd}\\0,&n\text{ even.}\end{cases}$$
+$$x(t)=\frac4\pi\Big[\sin\omega_0t+\tfrac13\sin3\omega_0t+\tfrac15\sin5\omega_0t+\cdots\Big].$$
+<b>Power check (Parseval).</b> $P_x=1$. The harmonics carry $\sum_{n\text{ odd}}\frac{(4/\pi n)^2}2=\frac8{\pi^2}\sum_{n\text{ odd}}\frac1{n^2}=\frac8{\pi^2}\cdot\frac{\pi^2}8=1$ ✓ (using $\sum_{\rm odd}n^{-2}=\pi^2/8$). The fundamental alone carries $8/\pi^2=81.1\%$ of the power, the third harmonic $9.0\%$, the fifth $3.2\%$. <b>Total harmonic distortion</b> (power in all harmonics except the fundamental, relative to the fundamental) $=\sqrt{(1-0.811)/0.811}=48\%$.</p></div>
+
+<div class="widget" id="w-fs">Build a periodic wave from its harmonics. Increase the number of harmonics $N$: the partial sum converges to the target everywhere except right at a jump, where it always overshoots by about <b>9% of the jump</b> however large $N$ is (Gibbs). The overshoot gets narrower, not smaller. The bar chart shows the line spectrum: how the harmonic amplitudes fall off ($1/n$ for jumps, $1/n^2$ for a triangle, whose slope jumps instead).</div>
+
+<div class="box key"><span class="tag">Smoothness decides the spectrum</span>
+<p>A signal with a <em>jump</em> (discontinuity) has harmonics falling like $1/n$; one that is continuous but with a corner (triangle) like $1/n^2$; one with continuous first derivative like $1/n^3$; infinitely smooth signals (a Gaussian pulse train) fall faster than any power. This is not just maths: <b>sharp edges cost bandwidth.</b> A 3.3 V digital clock edge with a 1 ns rise time has significant spectral content to $\approx0.35/t_r=350$ MHz, and its harmonics are what radiate and fail EMC tests; designers deliberately slow the edges down (“slew-rate control”).</p></div>
+
+<h3>Rectangular pulse train: the spectrum with a sinc envelope</h3>
+<p>Pulses of height $A$ and width $\tau$, repeating every $T$ (duty cycle $d=\tau/T$). Using the definition,
+$$c_n=\frac1T\int_{-\tau/2}^{\tau/2}Ae^{-j2\pi nt/T}dt=\frac AT\cdot\frac{\sin(\pi n\tau/T)}{\pi n/T}=\frac{A\tau}{T}\,\sinc\!\Big(\frac{n\tau}{T}\Big)=Ad\,\sinc(nd).$$
+The lines sit at multiples of $1/T$; their heights follow a <b>sinc envelope</b> that first crosses zero at $f=1/\tau$. So: narrow pulses (small $\tau$) ⇒ the envelope is wide; long period ⇒ the lines crowd closer together. Take the limit $T\to\infty$ and the lines merge into a continuous curve. That limit is the Fourier transform.</p>
+
+<h2>From series to transform</h2>
+<div class="box derive"><span class="tag">Derivation · the Fourier transform as the limit of the series</span>
+<p>Take an aperiodic signal $x(t)$ (say a single pulse) and build a periodic one by repeating it every $T$. Its series is $x_T(t)=\sum_nc_ne^{j2\pi nt/T}$ with $c_n=\frac1T\int_{-T/2}^{T/2}x(t)e^{-j2\pi nt/T}dt$. Define $X(f)=\int_{-\infty}^{\infty}x(t)e^{-j2\pi ft}dt$. For large $T$ the integral over a period is the whole integral, so $c_n\approx\frac1TX(n/T)$. Substitute in the series, with $\Delta f=1/T$:
+$$x_T(t)=\sum_{n}X(n\Delta f)\,e^{j2\pi(n\Delta f)t}\,\Delta f\ \xrightarrow{\ T\to\infty\ }\ \int_{-\infty}^{\infty}X(f)e^{j2\pi ft}\,df,$$
+a Riemann sum turning into an integral. That gives the pair
+$$\boxed{X(f)=\int_{-\infty}^{\infty}x(t)\,e^{-j2\pi ft}dt,\qquad x(t)=\int_{-\infty}^{\infty}X(f)\,e^{+j2\pi ft}df.}$$
+<b>Interpretation:</b> $X(f)\,df$ is the (complex) amplitude of the arrow spinning at frequency $f$ within the band $df$; $|X(f)|$ is a spectral <em>density</em> (volts per hertz), not an amplitude. We use $f$ in hertz rather than $\omega$ so that no stray $2\pi$’s appear in the inverse. Sufficient condition for existence: $\int|x|<\infty$ (plus mild regularity); signals like constants and sinusoids are handled by allowing impulses in $X(f)$.</p></div>
+
+<p>The Fourier transform has a one-sentence meaning: <strong>“How much of the arrow spinning at frequency $f$ is hiding in my signal?”</strong> To find out, take $x(t)$ and <em>wind it around the origin</em> at $f$ turns per second: at time $t$ plot the point $x(t)e^{-j2\pi ft}$. If $x$ contains a component that spins at exactly $f$, the winding cancels its spin: that component now sits still, always pulling the same way, and the whole curve gets lopsided. The centre of mass of the wound-up curve <em>is</em> the Fourier transform at $f$. For every other $f$ the curve is balanced and the centre of mass stays near zero.</p>
 <div class="widget" id="w-wind">The signal is $g(t)=\cos(2\pi\cdot3t)+0.6\cos(2\pi\cdot5t)$ for $0\le t\le4\,\mathrm{s}$. Slide the winding frequency. When it passes <b>3</b> or <b>5</b>, the wound curve suddenly swings off-centre and the yellow centre-of-mass dot jumps out. The bottom-left plot is the length of that dot versus $f$: the spectrum. (There is no peak at $-3,-5$ in the plot only because we show positive $f$.)</div>
+<p>$|X(f)|$ is the amplitude spectrum and $\angle X(f)$ the phase spectrum. For real $x(t)$: $X(-f)=X^*(f)$, so $|X|$ is even and the phase is odd. If additionally $x$ is even then $X$ is real and even; if $x$ is odd, $X$ is purely imaginary and odd (the even/odd split of Chapter 1 maps to the real/imaginary split).</p>
 
-<div class="box def"><span class="tag">Definition · the Fourier transform</span>
-$$X(f)=\int_{-\infty}^{\infty}x(t)\,e^{-j2\pi ft}\,dt,\qquad x(t)=\int_{-\infty}^{\infty}X(f)\,e^{+j2\pi ft}\,df .$$
-<p>$|X(f)|$ is the amplitude, $\angle X(f)$ the phase. For real $x(t)$: $X(-f)=X^*(f)$, so $|X|$ is even and the phase is odd. We use $f$ in Hz (not $\omega$), so no stray $2\pi$'s appear in the inverse transform.</p></div>
-
-<h2>The pairs worth memorising</h2>
+<h2>Transform pairs, derived</h2>
+<div class="box derive"><span class="tag">Four derivations that give you almost every pair</span>
+<h4>1. The rectangle</h4>
+$$\mathcal F\{\rect(t/T)\}=\int_{-T/2}^{T/2}e^{-j2\pi ft}dt=\frac{e^{-j\pi fT}-e^{j\pi fT}}{-j2\pi f}=\frac{\sin\pi fT}{\pi f}=T\,\sinc(fT).$$
+<h4>2. The one-sided exponential</h4>
+$$\mathcal F\{e^{-at}u(t)\}=\int_0^\infty e^{-(a+j2\pi f)t}dt=\frac1{a+j2\pi f},\qquad a>0.$$
+By even/odd symmetry, $e^{-a|t|}=e^{-at}u(t)+e^{at}u(-t)$ gives $\dfrac1{a+j2\pi f}+\dfrac1{a-j2\pi f}=\dfrac{2a}{a^2+4\pi^2f^2}$.
+<h4>3. The Gaussian is its own transform</h4>
+<p>Let $X(f)=\int e^{-\pi t^2}e^{-j2\pi ft}dt$. Differentiate under the integral: $X'(f)=\int(-j2\pi t)e^{-\pi t^2}e^{-j2\pi ft}dt$. Since $\frac d{dt}e^{-\pi t^2}=-2\pi te^{-\pi t^2}$, this is $j\int\big[\frac{d}{dt}e^{-\pi t^2}\big]e^{-j2\pi ft}dt$; integrate by parts (boundary terms vanish): $=j\cdot(j2\pi f)\int e^{-\pi t^2}e^{-j2\pi ft}dt=-2\pi fX(f)$. The solution of $X'=-2\pi fX$ is $X=X(0)e^{-\pi f^2}$, and $X(0)=\int e^{-\pi t^2}dt=1$. Hence $e^{-\pi t^2}\leftrightarrow e^{-\pi f^2}$, and by scaling $e^{-t^2/2\sigma^2}\leftrightarrow\sigma\sqrt{2\pi}\,e^{-2\pi^2\sigma^2f^2}$.</p>
+<h4>4. The impulse and the constant</h4>
+<p>Sifting gives $\mathcal F\{\delta(t)\}=\int\delta(t)e^{-j2\pi ft}dt=1$. By duality (proved below) $\mathcal F\{1\}=\delta(f)$, and by the frequency-shift property $\mathcal F\{e^{j2\pi f_0t}\}=\delta(f-f_0)$ and $\cos(2\pi f_0t)\leftrightarrow\tfrac12[\delta(f-f_0)+\delta(f+f_0)]$: the “two counter-rotating arrows” of the start of the chapter, each now a spike. The step: $u(t)=\tfrac12+\tfrac12\sgn t$ and $\mathcal F\{\sgn t\}=\frac1{j\pi f}$ (the limit $a\to0$ of the odd signal $\sgn(t)e^{-a|t|}$, whose transform $\frac1{a+j2\pi f}-\frac1{a-j2\pi f}=\frac{-j4\pi f}{a^2+4\pi^2f^2}\to\frac1{j\pi f}$).</p></div>
 <table>
 <tr><th>Time $x(t)$</th><th>Frequency $X(f)$</th><th>Say it in words</th></tr>
 <tr><td>$\delta(t)$</td><td>$1$</td><td>A spike contains every frequency equally.</td></tr>
@@ -33,13 +90,9 @@ $$X(f)=\int_{-\infty}^{\infty}x(t)\,e^{-j2\pi ft}\,dt,\qquad x(t)=\int_{-\infty}
 <tr><td>$\sum_n\delta(t-nT)$</td><td>$\frac1T\sum_k\delta(f-\frac kT)$</td><td>Impulse train ⇒ impulse train (sampling lives here).</td></tr>
 <tr><td>$\sgn(t)$ ; $u(t)$</td><td>$\frac1{j\pi f}$ ; $\tfrac12\delta(f)+\frac1{j2\pi f}$</td><td>Step has a DC part plus a $1/f$ tail.</td></tr>
 </table>
-<p>Here $\sinc(x)=\dfrac{\sin\pi x}{\pi x}$ (zeros at nonzero integers, value 1 at 0), which is the convention GATE uses.</p>
+<p>Here $\sinc(x)=\dfrac{\sin\pi x}{\pi x}$ (zeros at nonzero integers, value 1 at 0), the convention GATE uses. <b>Why the impulse train’s transform is an impulse train:</b> a periodic signal has the series $\sum c_ne^{j2\pi nt/T}$ with $c_n=\frac1T\int_{-T/2}^{T/2}\delta(t)e^{-j2\pi nt/T}dt=\frac1T$ for every $n$; each exponential becomes a spike at $n/T$ with weight $c_n=1/T$. In general <b>the spectrum of a periodic signal is a train of impulses at $nf_0$ weighted by the series coefficients</b>: $X(f)=\sum c_n\delta(f-nf_0)$.</p>
 
-<h3>Squeeze in time, spread in frequency</h3>
-<p>Look at the rect pair. A narrow rectangle in time gives a wide, low sinc in frequency; a wide rectangle gives a tall, narrow sinc. You cannot be short in time <em>and</em> narrow in frequency: $\Delta t\cdot\Delta f\gtrsim$ const. This is not a technology limit, it is mathematics (the same mathematics as Heisenberg's uncertainty principle). It is why <strong>fast data needs wide bandwidth</strong>, the single most important sentence in digital communication.</p>
-<div class="widget" id="w-ftpair">Pick a pulse and drag its width $T$. Watch the spectrum do the opposite. The area of the time pulse equals the height of the spectrum at $f=0$, and the height of the pulse at $t=0$ equals the area of the spectrum.</div>
-
-<h2>The property toolbox</h2>
+<h2>The property toolbox, with proofs</h2>
 <table>
 <tr><th>Property</th><th>Time domain</th><th>Frequency domain</th></tr>
 <tr><td>Linearity</td><td>$ax+by$</td><td>$aX+bY$</td></tr>
@@ -48,116 +101,148 @@ $$X(f)=\int_{-\infty}^{\infty}x(t)\,e^{-j2\pi ft}\,dt,\qquad x(t)=\int_{-\infty}
 <tr><td><b>Multiply by a cosine</b></td><td>$x(t)\cos 2\pi f_ct$</td><td>$\tfrac12[X(f-f_c)+X(f+f_c)]$</td></tr>
 <tr><td>Scaling</td><td>$x(at)$</td><td>$\frac1{|a|}X(f/a)$</td></tr>
 <tr><td>Differentiation</td><td>$\dot x(t)$</td><td>$j2\pi f\,X(f)$</td></tr>
+<tr><td>Integration</td><td>$\int_{-\infty}^tx$</td><td>$\dfrac{X(f)}{j2\pi f}+\tfrac12X(0)\delta(f)$</td></tr>
 <tr><td><b>Convolution</b></td><td>$x*h$</td><td>$X(f)H(f)$</td></tr>
 <tr><td>Multiplication</td><td>$x(t)\,y(t)$</td><td>$X*Y$</td></tr>
 <tr><td>Duality</td><td>$X(t)$</td><td>$x(-f)$</td></tr>
 <tr><td>Parseval / Rayleigh</td><td>$\int|x|^2dt$</td><td>$\int|X|^2df$</td></tr>
+<tr><td>Area</td><td>$\int x\,dt=X(0)$</td><td>$x(0)=\int X\,df$</td></tr>
 </table>
+<div class="box derive"><span class="tag">Proofs of the properties that matter most</span>
+<h4>Time shift</h4>
+$\int x(t-t_0)e^{-j2\pi ft}dt\overset{u=t-t_0}{=}e^{-j2\pi ft_0}\int x(u)e^{-j2\pi fu}du=X(f)e^{-j2\pi ft_0}$. A delay is a linear phase: this is the distortionless channel of Chapter 1.
+<h4>Frequency shift and modulation</h4>
+$\int x(t)e^{j2\pi f_0t}e^{-j2\pi ft}dt=\int x(t)e^{-j2\pi(f-f_0)t}dt=X(f-f_0)$. Writing $\cos2\pi f_ct=\tfrac12(e^{j2\pi f_ct}+e^{-j2\pi f_ct})$ gives the cosine rule. <b>Multiplying by a carrier copies the spectrum to $\pm f_c$ at half height.</b> This single line is amplitude modulation.
+<h4>Scaling</h4>
+For $a>0$: $\int x(at)e^{-j2\pi ft}dt\overset{u=at}{=}\frac1a\int x(u)e^{-j2\pi(f/a)u}du=\frac1aX(f/a)$ (a similar substitution gives $1/|a|$ for $a<0$). <b>Compress in time by $a$, stretch in frequency by $a$</b>, the root of “fast data needs wide bandwidth”.
+<h4>Differentiation</h4>
+Differentiate the inverse transform under the integral: $\dot x(t)=\int X(f)\,(j2\pi f)\,e^{j2\pi ft}df$. A differentiator multiplies by $j2\pi f$: it boosts high frequencies and underlies FM demodulation (Chapter 7).
+<h4>Duality</h4>
+The forward and inverse transforms differ only by the sign in the exponent. So if $x(t)\leftrightarrow X(f)$, then $X(t)\leftrightarrow x(-f)$. Examples: rect↔sinc becomes sinc↔rect; $\delta(t)\leftrightarrow1$ becomes $1\leftrightarrow\delta(f)$.
+<h4>Convolution theorem</h4>
+$$\mathcal F\{x*h\}=\int\!\!\Big[\int x(\tau)h(t-\tau)d\tau\Big]e^{-j2\pi ft}dt=\int x(\tau)e^{-j2\pi f\tau}\!\!\int h(t-\tau)e^{-j2\pi f(t-\tau)}dt\,d\tau=X(f)H(f).$$
+Its dual: multiplication in time is convolution in frequency, $\mathcal F\{xy\}=X*Y$: this is why <b>a product widens the spectrum</b> (bandwidths add) and why mixing and modulation create sum and difference frequencies.
+<h4>Parseval’s theorem</h4>
+$\int|x|^2dt=\int x(t)x^*(t)dt=\int x(t)\Big[\int X^*(f)e^{-j2\pi ft}df\Big]dt=\int X^*(f)\Big[\int x(t)e^{-j2\pi ft}dt\Big]df=\int|X|^2df$. Energy can be counted in either domain; $|X(f)|^2$ is the <b>energy spectral density</b> (J/Hz).</div>
+
 <div class="box key"><span class="tag">The one row that runs the entire analog half of this book</span>
-<p>Multiplying by $\cos 2\pi f_ct$ <strong>copies the spectrum up to $\pm f_c$, at half height</strong>. That is amplitude modulation. Everything in Chapter 4 is a variation on this one line.</p></div>
+<p>Multiplying by $\cos 2\pi f_ct$ <strong>copies the spectrum up to $\pm f_c$, at half height</strong>. That is amplitude modulation. Everything in Chapter 6 is a variation on this one line.</p></div>
+
+<h3>Squeeze in time, spread in frequency</h3>
+<p>Look at the rect pair. A narrow rectangle in time gives a wide, low sinc in frequency; a wide rectangle gives a tall, narrow sinc. You cannot be short in time <em>and</em> narrow in frequency. This is not a technology limit, it is mathematics (the same mathematics as Heisenberg’s uncertainty principle). It is why <strong>fast data needs wide bandwidth</strong>, the single most important sentence in digital communication.</p>
+<div class="widget" id="w-ftpair">Pick a pulse and drag its width $T$. Watch the spectrum do the opposite. The area of the time pulse equals the height of the spectrum at $f=0$, and the height of the pulse at $t=0$ equals the area of the spectrum.</div>
+<div class="box derive"><span class="tag">Derivation · the time–bandwidth (uncertainty) inequality</span>
+<p>For a real, energy-$E$ signal define the RMS time width $\Delta t^2=\frac1E\int t^2x^2dt$ and RMS bandwidth $\Delta f^2=\frac1E\int f^2|X|^2df$ (signal centred at the origin in both domains). By the differentiation property and Parseval, $\int\dot x^2dt=4\pi^2\int f^2|X|^2df=4\pi^2E\,\Delta f^2$. Apply the Cauchy–Schwarz inequality $\big(\int ab\big)^2\le\int a^2\int b^2$ to $a=tx$, $b=\dot x$:
+$$\Big(\int t\,x\dot x\,dt\Big)^2\le\Delta t^2E\cdot4\pi^2E\Delta f^2.$$
+Integrate by parts: $\int tx\dot x\,dt=\tfrac12\int t\,d(x^2)=-\tfrac12\int x^2dt=-\tfrac E2$ (the boundary term vanishes for finite-energy signals). Hence $\frac{E^2}4\le4\pi^2E^2\Delta t^2\Delta f^2$:
+$$\boxed{\Delta t\;\Delta f\ \ge\ \frac1{4\pi}}$$
+with equality only for the Gaussian. <b>A pulse of duration $\tau$ needs bandwidth of order $1/\tau$; a system of bandwidth $B$ can resolve events no closer than about $1/B$.</b> Radar range resolution $\Delta R=c/2B$, a sampling scope’s bandwidth, the symbol rate $R_s\le2B$ of Chapter 13, and the pulse-width limits of every digital link all come from this one inequality.</p></div>
 
 <h2>Convolution: flip, slide, multiply, add up</h2>
-<p>A linear time-invariant system (a filter, a cable, a radio channel) responds to every instant of the input with a scaled, delayed copy of its impulse response $h(t)$. The output at time $t$ is the total of all those overlapping copies:
+<p>A linear time-invariant system (a filter, a cable, a radio channel) responds to every instant of the input with a scaled, delayed copy of its impulse response $h(t)$. We derived in Chapter 1 that the output is
 $$y(t)=(x*h)(t)=\int_{-\infty}^{\infty}x(\tau)\,h(t-\tau)\,d\tau .$$
-Visually: flip $h$ left-right, slide it so that its origin sits at $t$, multiply with $x$ point by point, and take the area. Slide a different distance, get a different number: that is $y(t)$. In the frequency domain this laborious operation turns into plain multiplication: $Y(f)=X(f)H(f)$. That is why we love Fourier.</p>
+Visually: flip $h$ left-right, slide it so that its origin sits at $t$, multiply with $x$ point by point, and take the area. Slide a different distance, get a different number: that is $y(t)$. In the frequency domain this laborious operation becomes plain multiplication, $Y(f)=X(f)H(f)$, by the convolution theorem just proved. That is why we love Fourier.</p>
 <div class="widget" id="w-conv">The shaded area under the product $x(\tau)h(t-\tau)$ is the output value at the current $t$ (yellow dot, lower plot). Drag $t$ or press play. Two rectangles give a triangle; a rectangle through an RC filter gives a charging-then-discharging curve.</div>
+<div class="box ex"><span class="tag">Worked example · rect * rect = triangle, three ways</span>
+<p>Time domain: the overlap of two unit rectangles slid by $t$ is $1-|t|$ for $|t|\le1$, i.e. $\tri(t)$. Frequency domain: $\sinc f\cdot\sinc f=\sinc^2f$, and indeed $\tri(t)\leftrightarrow\sinc^2f$ (the pair in the table). Check with the area rule: $\int\tri=1=\sinc^2(0)$ ✓. This is the reason the spectrum of a triangular or “half-sine” pulse falls as $1/f^2$ instead of $1/f$: each extra convolution with a rectangle smooths the pulse and multiplies the spectrum by another sinc.</p></div>
 
-<h2>Energy, power and "bandwidth"</h2>
-<p>A signal with finite $E=\int|x(t)|^2dt<\infty$ is an <strong>energy signal</strong> (a single pulse). A signal that never dies but has finite average power $P=\lim\frac1{2T}\int_{-T}^{T}|x|^2dt$ is a <strong>power signal</strong> (a sine, a random bit stream). Parseval says energy can be counted in either domain: $E=\int|X(f)|^2df$, so $|X(f)|^2$ is the <em>energy spectral density</em>. For a periodic signal with Fourier-series coefficients $c_n$, the power is $P=\sum_n|c_n|^2$; a pure $A\cos(2\pi f_0t)$ has $P=A^2/2$.</p>
-<p><strong>Bandwidth</strong> has no unique meaning: null-to-null (main lobe), 3-dB (half power), or "contains 99% of the energy". Always read which one the question wants.</p>
+<h2>Energy, power and correlation</h2>
+<p>A signal with finite $E=\int|x|^2dt<\infty$ is an <strong>energy signal</strong> (a single pulse); one that never dies but has finite average power is a <strong>power signal</strong> (sine, random bit stream). For energy signals, define the <b>autocorrelation</b> $R_x(\tau)=\int x(t)x^*(t-\tau)dt$: “how much does the signal resemble a copy of itself delayed by $\tau$?”. Its maximum is at $\tau=0$ (value $E$), and by the convolution theorem (correlation is convolution with the flipped conjugate)
+$$R_x(\tau)\ \longleftrightarrow\ |X(f)|^2=\mathcal E_x(f)\quad(\text{energy spectral density}).$$
+For periodic power signals the same logic gives a <b>power spectral density</b> $S_x(f)=\sum_n|c_n|^2\delta(f-nf_0)$ with $R_x(\tau)=\sum|c_n|^2e^{j2\pi nf_0\tau}$ (a periodic function). The identical relation, $R\leftrightarrow S$, holds for random signals; it is the Wiener–Khinchin theorem of Chapter 5. When a signal passes through an LTI filter, $\mathcal E_y=|H|^2\mathcal E_x$: the filter acts on <em>power</em> through $|H|^2$ and ignores phase.</p>
+<p><strong>Bandwidth</strong> has no unique meaning: null-to-null (main lobe), 3-dB (half power), RMS, or “contains 99% of the energy”. Always read which one the question wants. For a rectangular pulse of width $\tau$: null-to-null $2/\tau$, first-null (one-sided) $1/\tau$, 3-dB about $0.44/\tau$; about 90% of the energy lies below $1/\tau$.</p>
 <div class="box ex"><span class="tag">Worked example · 99% energy bandwidth (GATE 2026 Q.46)</span>
 <p>$x(t)=e^{-2t}$, $t\ge0$. Then $X(f)=\dfrac1{2+j2\pi f}$ and $|X|^2=\dfrac1{4+4\pi^2f^2}$. Total energy (time domain): $\int_0^\infty e^{-4t}dt=\tfrac14$. Energy within $|f|<B$:
 $$\int_{-B}^{B}\frac{df}{4+4\pi^2f^2}=\frac1{2\pi}\arctan(\pi B).$$
-At $B\to\infty$ this gives $\frac1{2\pi}\cdot\frac\pi2=\frac14$ ✓. Setting it to $0.99\cdot\tfrac14$: $\arctan(\pi B)=0.99\cdot\frac\pi2\Rightarrow\pi B=\tan(0.99\tfrac\pi2)=63.66$, so $B=\dfrac{63.66}{\pi}\approx20.3\ \mathrm{Hz}$. This is option (B) "$63/\pi<B<64/\pi$". Note how a mere exponential, whose spectrum decays only like $1/f^2$, needs huge bandwidth to get the last 1%.</p></div>
+At $B\to\infty$ this gives $\frac1{2\pi}\cdot\frac\pi2=\frac14$ ✓. Setting it to $0.99\cdot\tfrac14$: $\arctan(\pi B)=0.99\cdot\frac\pi2\Rightarrow\pi B=\tan(0.99\tfrac\pi2)=63.66$, so $B=\dfrac{63.66}{\pi}\approx20.3\ \mathrm{Hz}$. This is option (B) “$63/\pi<B<64/\pi$”. Note how a mere exponential, whose spectrum decays only like $1/f^2$, needs huge bandwidth to get the last 1%.</p></div>
 
-<h2>Sampling: the bridge from analog to digital</h2>
-<p>To sample is to multiply by an impulse train. Multiplication in time is convolution in frequency, and the transform of an impulse train is an impulse train, so <strong>sampling at rate $f_s$ makes copies of the spectrum every $f_s$ Hz</strong>:
-$$X_s(f)=f_s\sum_{k=-\infty}^{\infty}X(f-kf_s).$$
-If the copies do not overlap, a low-pass filter picks out the original and the continuous signal is perfectly recovered. They do not overlap when $f_s>2W$ where $W$ is the highest frequency: this is the <strong>Nyquist–Shannon sampling theorem</strong> ($f_s=2W$ is the "Nyquist rate"). Violate it and the tails of neighbouring copies fold onto the baseband: <strong>aliasing</strong>. A tone at $f$ sampled at $f_s$ masquerades as a tone at $|f-nf_s|$ with $n$ chosen to land inside $[0,f_s/2]$.</p>
-<div class="widget" id="w-alias">Sample a sinusoid at $f_s=10$ Hz. Increase the tone frequency past 5 Hz (half of $f_s$): the red dots are <em>also</em> the samples of a slower, dashed sinusoid. Once sampled, the two are indistinguishable. This is the wagon-wheel effect in movies.</div>
-<div class="box story"><span class="tag">History · Nyquist, Shannon and a lot of people in between</span>
-<p>Harry Nyquist (Bell Labs, 1928) showed that a telegraph channel of bandwidth $B$ can carry at most $2B$ distinct pulses per second. Vladimir Kotelnikov proved the sampling theorem in 1933 in the Soviet Union, and Claude Shannon gave it its modern form in 1949 (E. T. Whittaker had a version in 1915). Every GATE sampling question is a footnote to these pages.</p></div>
-<div class="box trap"><span class="tag">Traps that cost marks</span>
+<h2>Computing spectra: the DFT and FFT</h2>
+<p>A computer or a modem works with $N$ samples $x[n]$ taken at rate $f_s$. The <b>discrete Fourier transform</b> is
+$$X[k]=\sum_{n=0}^{N-1}x[n]\,e^{-j2\pi kn/N},\qquad x[n]=\frac1N\sum_{k=0}^{N-1}X[k]e^{+j2\pi kn/N},\qquad k=0,\dots,N-1,$$
+a projection of the data onto $N$ orthogonal complex exponentials (same orthogonality argument as for the series: the sum of $e^{j2\pi(k-m)n/N}$ over $n$ is $N\delta_{km}$). Bin $k$ corresponds to frequency $kf_s/N$ (bins above $N/2$ are the negative frequencies). Four facts determine whether you read a spectrum correctly:</p>
 <ul>
-<li><b>Products widen spectra.</b> If $m(t)$ has bandwidth $W$, then $m^2(t)$ has bandwidth $2W$ (convolution of two width-$2W$ spectra gives width $4W$ total span, i.e. one-sided $2W$), so its Nyquist rate is $4W$, not $2W$. For $x_1x_2$: bandwidths add. For $x_1*x_2$: bandwidth is the <em>smaller</em> one.</li>
-<li><b>Modulated signals.</b> If $y(t)=m(t)\cos2\pi f_ct$, the highest frequency is $f_c+W$, but you may not need to sample that fast if the question only asks to recover $m(t)$ (see Problem 2 below).</li>
-<li>Sinusoids sampled exactly at $2f$ can vanish (samples at zero crossings), hence "strictly greater than".</li>
-</ul></div>
-
-<h2>The Hilbert transform and the analytic signal</h2>
-<p>The Hilbert transform $\hat x(t)$ of a signal is what you get when you <strong>delay every frequency component by a quarter of a cycle ($-90^\circ$)</strong> without changing its amplitude. Its transfer function is $H(f)=-j\,\sgn(f)$. Thus
-$$\widehat{\cos 2\pi f_0t}=\sin2\pi f_0t,\qquad \widehat{\sin2\pi f_0t}=-\cos2\pi f_0t .$$
-Why do we care? Because a real signal wastes half its spectrum on negative frequencies. Cut them off and double the positive ones and you get the <strong>analytic signal</strong>
-$$x_+(t)=x(t)+j\hat x(t)\quad\longleftrightarrow\quad X_+(f)=2X(f)\,u(f).$$
-For a cosine, $x_+(t)=e^{j2\pi f_0t}$: a point spinning on a circle, i.e. a helix when you draw it against time. The real signal is its shadow on the real axis, and the Hilbert transform is its shadow on the imaginary axis. If the amplitude of the cosine wobbles (AM), the helix's radius wobbles: <strong>the instantaneous amplitude is the radius</strong>, $|x_+(t)|$, which is the envelope. If its frequency wobbles (FM), the helix tightens and loosens. This one picture is the soul of the next three chapters.</p>
-<div class="widget" id="w-hilb">The analytic signal $x_+(t)$ as a corkscrew in (Re, Im, time). Its shadow on the red–time wall is $x(t)$; its shadow on the blue–time wall is $\hat x(t)$. Choose a tone, an AM tone, or an FM tone, and drag to rotate.</div>
-<p>Single-sideband (SSB) modulation is produced by keeping only $X_+(f)$ (or its conjugate) and shifting it: $s_{\rm SSB}(t)=m(t)\cos2\pi f_ct\mp\hat m(t)\sin2\pi f_ct$. Memorise that formula; Chapter 4 uses it.</p>
-
-<h2>Bandpass signals and the complex envelope</h2>
-<p>A transmitted signal lives near a carrier frequency $f_c$: it is "narrowband" if its bandwidth is much smaller than $f_c$. Any such signal can be written
-$$x(t)=a(t)\cos\!\big(2\pi f_ct+\phi(t)\big)=x_I(t)\cos2\pi f_ct-x_Q(t)\sin2\pi f_ct,$$
-with $x_I=a\cos\phi$ ("in-phase") and $x_Q=a\sin\phi$ ("quadrature"). Packing the two into one complex number gives the <strong>complex envelope</strong> $\tilde x(t)=x_I+jx_Q=a(t)e^{j\phi(t)}$, and then $x(t)=\mathrm{Re}\{\tilde x(t)\,e^{j2\pi f_ct}\}$. The complex envelope is the baseband "movie" of the signal; the carrier is just the projector's spinning light bulb.</p>
-<ul>
-<li><strong>AM</strong>: $\phi=0$, $a(t)=A_c[1+\mu m(t)]$: the tip moves along a radial line.</li>
-<li><strong>PM/FM</strong>: $a$ constant, $\phi(t)$ varies: the tip moves on a circle.</li>
-<li><strong>QPSK/QAM</strong>: the tip jumps between a few points of the plane: the "constellation".</li>
+<li><b>Resolution:</b> adjacent bins are $\Delta f=f_s/N=1/(NT_s)=1/T_{\rm obs}$ apart. To separate two tones $5$ Hz apart you must observe for at least $0.2$ s, however fast you sample.</li>
+<li><b>Zero-padding</b> (appending zeros before the FFT) interpolates the spectrum smoothly but adds <em>no</em> new resolution.</li>
+<li><b>Leakage:</b> observing $N$ samples is multiplying by a rectangular window, which convolves the spectrum with a sinc. A tone that does not fit an integer number of cycles in the window smears across bins with $-13$ dB sidelobes decaying slowly. A smooth window (Hann, Hamming, Blackman) lowers the sidelobes (to $-31$ dB, $-43$ dB, $-58$ dB) at the price of a wider main lobe. Exactly the smoothness-versus-bandwidth rule of the pulse train.</li>
+<li><b>Cost:</b> evaluating the sums directly takes $N^2$ complex multiplications; the <b>fast Fourier transform</b> (Cooley–Tukey 1965, but known to Gauss in 1805) splits an $N$-point DFT into two $N/2$-point DFTs plus $N/2$ “butterflies”, giving $\tfrac N2\log_2N$ multiplications: for $N=4096$ that is $24\,576$ instead of $16.8$ million.</li>
 </ul>
-<div class="widget" id="w-iq">Left: the passband waveform. Right: the tip of $\tilde x(t)$ in the I–Q plane (with its trail). Increasing $\mu$ makes the tip stretch radially; increasing $\beta$ makes it swing in angle. Same carrier, two ways to hide information.</div>
-<div class="box trap"><span class="tag">Power of a bandpass signal</span>
-<p>$\overline{x^2(t)}=\tfrac12\,\overline{|\tilde x(t)|^2}$. The carrier cosine contributes a factor $\tfrac12$. So $A\cos(2\pi f_ct)$ has power $A^2/2$ though its complex envelope has $|\tilde x|^2=A^2$. Forget this and every power in Chapters 4, 5 and 10 will be off by 2.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · the FFT is a bank of matched filters</span>
+<p>Each FFT bin is the output of a narrow filter matched to a sinusoid at that bin’s frequency. A tone of amplitude $A$ adds coherently over $N$ samples, giving $|X|=AN/2$, while white noise of variance $\sigma^2$ adds in power, giving $\sqrt N\sigma$. The tone therefore stands out of the noise floor by an extra $10\log_{10}(N/2)\,$dB (“processing gain”) compared with looking at the raw samples: a 4096-point FFT lifts a tone 33 dB. That is how a spectrum analyser finds a signal below the noise, and it will reappear as the matched filter (Chapter 14), the CDMA correlator (Chapter 19) and OFDM (Chapter 20), where the IFFT/FFT pair <em>is</em> the modulator and demodulator of Wi-Fi, LTE and 5G.</p></div>
 
 <h2>Practice</h2>
+<p class="pset">Set A · Concept checks<small>Understanding, not arithmetic.</small></p>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+A periodic signal satisfies $x(t+T/2)=-x(t)$ (half-wave symmetry). Its Fourier series contains
+<ol class="opts"><li>only even harmonics</li><li>only odd harmonics</li><li>only DC and the fundamental</li><li>both, but with random phases</li></ol>
+<div class="sol"><p>Split $c_n=\frac1T\int_0^Txe^{-j2\pi nt/T}dt$ into the halves $[0,T/2]$ and $[T/2,T]$. In the second, put $t=u+T/2$ and use $x(u+T/2)=-x(u)$ and $e^{-j2\pi n(u+T/2)/T}=(-1)^ne^{-j2\pi nu/T}$: it equals $-(-1)^n$ times the first. So $c_n=\frac{1-(-1)^n}T\int_0^{T/2}xe^{-j2\pi nt/T}dt$, which is zero for even $n$. The square and triangle waves above are examples. <b>(B)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,C" data-marks="1" data-src="Original">
+$x(t)$ is real. Select the true statements.
+<ol class="opts"><li>If $x(t)$ is even, $X(f)$ is real.</li><li>If $x(t)$ is odd, $X(f)$ is real.</li><li>$|X(f)|$ is even in $f$.</li><li>$\angle X(f)$ is even in $f$.</li></ol>
+<div class="sol"><p>Real $x$: $X(-f)=X^*(f)$, so the magnitude is even and the phase odd (C true, D false). Even $x$: only the cosine part survives, $X(f)=\int x\cos(2\pi ft)dt$ is real (A true); odd $x$ gives purely imaginary $X$ (B false).</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A pulse $x(t)$ is replaced by $x(2t)$ (played twice as fast). Its spectrum $X(f)$ becomes
+<ol class="opts"><li>$2X(2f)$</li><li>$X(f/2)$</li><li>$\tfrac12X(f/2)$</li><li>$\tfrac12X(2f)$</li></ol>
+<div class="sol"><p>Scaling: $x(at)\leftrightarrow\frac1{|a|}X(f/a)$ with $a=2$: twice as wide, half as high. <b>(C)</b>. Area of the pulse halves, and $X(0)$ equals the area.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+
+<div class="prob" data-type="nat" data-ans="0.984" data-tol="0.003" data-marks="2" data-src="Original">
+A periodic train of rectangular pulses of height 5 V, width 1 ms and period 10 ms is applied to a narrow band-pass filter tuned to the fundamental (100 Hz). The amplitude of the sinusoid at the output (volts, three decimals; unity filter gain) is ______.
+<div class="sol"><p>$c_1=Ad\,\sinc(d)=5(0.1)\sinc(0.1)=0.5\times0.9836=0.4918$. The real sinusoid has amplitude $2|c_1|=\mathbf{0.984}$ V. (DC term: $0.5$ V; first spectral null at $1/\tau=1$ kHz, i.e. at the 10th harmonic.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="81.1" data-tol="0.2" data-marks="1" data-src="Original">
+The percentage of the power of a symmetric square wave contained in its fundamental frequency is ______.
+<div class="sol"><p>$\dfrac{(4/\pi)^2/2}{1}=\dfrac8{\pi^2}=0.811$, i.e. <b>81.1%</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1" data-tol="0.01" data-marks="2" data-src="Original">
+The energy of $x(t)=2\,\sinc(4t)$ is ______. (Here $\sinc(x)=\sin\pi x/\pi x$.)
+<div class="sol"><p>$\sinc(4t)\leftrightarrow\frac14\rect(f/4)$, so $X(f)=\tfrac12\rect(f/4)$: height $0.5$ over $|f|\le2$. Energy $=\int|X|^2df=0.25\times4=\mathbf1$. (Time-domain check: $\int4\sinc^2(4t)dt=4\cdot\frac14=1$ ✓.)</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="-2" data-tol="0.01" data-marks="1" data-src="Original">
+$x(t)=\delta(t-2)+\delta(t+2)$. The value of its Fourier transform at $f=0.25$ Hz is ______.
+<div class="sol"><p>$X(f)=e^{-j4\pi f}+e^{j4\pi f}=2\cos(4\pi f)$. At $f=0.25$: $2\cos\pi=\mathbf{-2}$.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="7.81" data-tol="0.02" data-marks="1" data-src="Original">
+A signal sampled at 8 kHz is analysed with a 1024-point FFT. The spacing between FFT bins in Hz is ______.
+<div class="sol"><p>$\Delta f=f_s/N=8000/1024=\mathbf{7.81}$ Hz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="100" data-tol="1" data-marks="1" data-src="Original">
+A rectangular pulse of duration 10 ns is transmitted. The width, in MHz, of the main lobe of its spectrum on the positive-frequency side (from 0 to the first null) is ______.
+<div class="sol"><p>First null at $f=1/\tau=1/(10\,\mathrm{ns})=\mathbf{100}$ MHz.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+
 <div class="prob" data-type="mcq" data-ans="B" data-marks="2" data-src="GATE 2026 · EC · Q.46">
 Consider a real baseband signal $x(t)=e^{-2t}$ for $t\ge0$ (and 0 otherwise), $t$ in seconds. If 99% of the energy of $x(t)$ lies within $B$ Hz, then which is TRUE?
 <ol class="opts"><li>$B>1\ \mathrm{kHz}$</li><li>$63/\pi\ \mathrm{Hz}<B<64/\pi\ \mathrm{Hz}$</li><li>$126/\pi\ \mathrm{Hz}<B<128/\pi\ \mathrm{Hz}$</li><li>$B<1\ \mathrm{Hz}$</li></ol>
 <div class="sol"><p>Derived above: $B=\tan(0.99\pi/2)/\pi=63.66/\pi$ Hz. Official key: <b>(B)</b>.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="10" data-tol="0.5" data-marks="1" data-src="GATE 2014 · Set 3 · Q.19">
-A modulated signal is $y(t)=m(t)\cos(40000\pi t)$, where the baseband signal $m(t)$ has frequency components less than 5 kHz only. The minimum required rate (in kHz) at which $y(t)$ should be sampled to recover $m(t)$ is ______.
-<div class="sol"><p>The carrier is $20$ kHz; the signal occupies $15$–$25$ kHz. If we sample at $f_s=10$ kHz, $t=n/10^4$ s and $\cos(40000\pi n/10^4)=\cos(4\pi n)=1$ for every $n$, so $y[n]=m(nT_s)$: the samples <em>are</em> samples of $m$ at 10 kHz $=2\times5$ kHz, which is the Nyquist rate of $m$. Answer <b>10</b> (key 9.5–10.5). Contrast: to reconstruct $y(t)$ itself by bandpass sampling you would need a minimum of 25 kHz. The question says "to recover $m(t)$".</p></div></div>
+<div class="prob" data-type="nat" data-ans="2" data-tol="0.01" data-marks="2" data-src="Original (GATE-style)">
+A signal has spectrum $X(f)=\tri(f/3)$ (a triangle of height 1 and half-width 3 Hz). Its energy in joules is ______.
+<div class="sol"><p>$E=\int\tri^2(f/3)df=3\int_{-1}^{1}(1-|u|)^2du=3\cdot2\cdot\frac13=\mathbf2$. (Time-domain: $x(t)=3\sinc^2(3t)$, $x(0)=3=\int X\,df$ ✓ area of the triangle $=3$.)</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="1" data-src="Original">
-$x(t)=\rect(t)$ (unit width, unit height) is multiplied by $\cos(2\pi\cdot10\,t)$. The peak magnitude of the resulting spectrum $|Y(f)|$ is ______.
-<div class="sol"><p>$X(f)=\sinc f$, $Y(f)=\tfrac12[\sinc(f-10)+\sinc(f+10)]$. The peak is at $f=\pm10$: $\tfrac12\cdot1=0.5$ (the other lobe is $\sinc(20)=0$ at that point).</p></div></div>
+<div class="prob" data-type="mcq" data-ans="A" data-marks="2" data-src="Original (GATE-style)">
+For $x(t)=e^{-2t}u(t)$, the value of $\displaystyle\int_{-\infty}^{\infty}\frac{df}{2+j2\pi f}$ (interpreted as a principal value) is
+<ol class="opts"><li>$0.5$</li><li>$1$</li><li>$0$</li><li>$\infty$</li></ol>
+<div class="sol"><p>The integral is $x(0)$ by the area rule. But $x$ jumps from 0 to 1 at $t=0$, and the inverse transform converges to the <b>midpoint</b>, $\frac{0+1}2=0.5$. Check directly: the real part is $\int\frac{2\,df}{4+4\pi^2f^2}=\frac12$; the imaginary part is odd and integrates to zero. <b>(A)</b>.</p></div></div>
 
-<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="Original">
-A 7 kHz sinusoid is sampled at 10 kHz and reconstructed with an ideal low-pass filter of cut-off 5 kHz. The frequency (in kHz) of the reconstructed sinusoid is ______.
-<div class="sol"><p>Alias: $|7-10|=3$ kHz.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
-A signal $m(t)$ is bandlimited to 4 kHz. The minimum sampling rate that allows $m^2(t)$ to be recovered from its samples is
-<ol class="opts"><li>4 kHz</li><li>8 kHz</li><li>16 kHz</li><li>32 kHz</li></ol>
-<div class="sol"><p>Squaring doubles the bandwidth: $m^2$ has components up to 8 kHz, so Nyquist rate = 16 kHz.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="12.5" data-tol="0.05" data-marks="1" data-src="Original">
-$x(t)=5\cos(2\pi\cdot1000t+\pi/4)$ volts across $1\,\Omega$. Its complex envelope is $\tilde x=5e^{j\pi/4}$. The average power of $x(t)$ in watts is ______.
-<div class="sol"><p>$\tfrac12|\tilde x|^2=\tfrac12\cdot25=12.5$ W.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
-The Hilbert transform of $x(t)=\cos(\omega t)+\sin(3\omega t)$ is
-<ol class="opts"><li>$\sin(\omega t)-\cos(3\omega t)$</li><li>$\sin(\omega t)+\cos(3\omega t)$</li><li>$-\sin(\omega t)-\cos(3\omega t)$</li><li>$\cos(\omega t)-\sin(3\omega t)$</li></ol>
-<div class="sol"><p>$\widehat{\cos}=\sin$, $\widehat{\sin}=-\cos$. So $\sin\omega t-\cos3\omega t$.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="0.5" data-tol="0.01" data-marks="2" data-src="Original">
-$x(t)=e^{-t}u(t)$. Using Parseval, $\int_{-\infty}^{\infty}\dfrac{df}{1+4\pi^2f^2}=$ ______.
-<div class="sol"><p>$X(f)=\frac1{1+j2\pi f}$, $|X|^2=\frac1{1+4\pi^2f^2}$. Energy $=\int_0^\infty e^{-2t}dt=\tfrac12$.</p></div></div>
-
-<div class="prob" data-type="nat" data-ans="8" data-tol="0.05" data-marks="2" data-src="GATE 2018 · EC (PYQ book)">
-The signal $4\,\sinc(2t)$ is applied to a Hilbert transformer, giving $y(t)$. Here $\sinc(x)=\sin(\pi x)/(\pi x)$. The value of $\int_{-\infty}^{\infty}y^2(t)\,dt$ is ______.
-<div class="sol"><p>The Hilbert transformer has $|H(f)|=1$ for all $f\ne0$: it changes phases but not magnitudes, so <b>it preserves energy</b>. $x(t)=4\sinc(2t)\leftrightarrow X(f)=2\rect(f/2)$, energy $=\int_{-1}^{1}2^2df=\mathbf8$.</p></div></div>
-
-<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2015 · EC (PYQ book)">
-Let $m(t)$ have bandwidth much smaller than $f_c$ and let $\hat m(t)$ be its Hilbert transform. The signal $s(t)=m(t)\cos2\pi f_ct+\hat m(t)\sin2\pi f_ct$ is a
-<ol class="opts"><li>high-pass signal</li><li>low-pass signal</li><li>band-pass signal</li><li>notch (band-stop) signal</li></ol><div class="sol"><p>$m\cos\omega_ct+\hat m\sin\omega_ct$ is exactly the lower-sideband SSB signal of Chapter 4: all its energy lies in a band just below $f_c$. A signal concentrated around $f_c\gg W$ is a band-pass signal. <b>(C)</b>.</p></div></div>
+<div class="prob" data-type="mcq" data-ans="D" data-marks="2" data-src="Original (GATE-style)">
+The Fourier transform of $\dfrac{d}{dt}\rect(t)$ is
+<ol class="opts"><li>$\sinc f$</li><li>$j\sinc f$</li><li>$2\pi f\,\sinc f$</li><li>$j2\pi f\,\sinc f$</li></ol>
+<div class="sol"><p>Differentiation multiplies by $j2\pi f$, and $\rect\leftrightarrow\sinc f$. Direct check: $\frac d{dt}\rect(t)=\delta(t+\tfrac12)-\delta(t-\tfrac12)$, with transform $e^{j\pi f}-e^{-j\pi f}=2j\sin\pi f=j2\pi f\,\frac{\sin\pi f}{\pi f}$ ✓. <b>(D)</b>.</p></div></div>
 
 <div class="summary"><h3>Chapter 2 in one breath</h3>
 <ul>
-<li>A real cosine = two counter-rotating arrows; the Fourier transform measures how much of each spin rate a signal contains (wind it, take the centre of mass).</li>
-<li>Know the pairs: rect↔sinc, tri↔sinc², exp↔1/(a+j2πf), Gaussian↔Gaussian, comb↔comb. Short in time ⇒ wide in frequency.</li>
-<li>Multiply by $\cos2\pi f_ct$ ⇒ spectrum shifts to $\pm f_c$ at half height. Convolution ⇔ multiplication.</li>
-<li>Sampling at $f_s$ replicates the spectrum every $f_s$; need $f_s>2W$. Product widens (adds bandwidths); alias at $|f-nf_s|$.</li>
-<li>Hilbert transform = $-90^\circ$ phase shift; $x+j\hat x$ is a one-sided spectrum (helix); gives SSB.</li>
-<li>Bandpass signal $=\mathrm{Re}\{\tilde x e^{j2\pi f_ct}\}$; AM wiggles the radius, PM/FM wiggle the angle; power is $\tfrac12\overline{|\tilde x|^2}$.</li>
+<li>Harmonics are orthogonal, so $c_n=\frac1T\int_Tx\,e^{-j2\pi nf_0t}dt$; power $=\sum|c_n|^2$ (Parseval). Jumps ⇒ $1/n$ harmonics and a 9% Gibbs overshoot; smoother signals fall faster. Pulse train: $c_n=Ad\,\sinc(nd)$.</li>
+<li>Fourier transform = series with $T\to\infty$: $X(f)=\int x\,e^{-j2\pi ft}dt$. Real $x$: $X(-f)=X^*(f)$.</li>
+<li>Pairs (derived): rect↔sinc, one-sided exp↔$\frac1{a+j2\pi f}$, Gaussian↔Gaussian, $\delta\leftrightarrow1$, comb↔comb. Periodic signals have impulse spectra weighted by $c_n$.</li>
+<li>Shift ⇒ phase ramp; multiply by $\cos2\pi f_ct$ ⇒ copies at $\pm f_c$, half height; scale $a$ ⇒ stretch $1/a$; convolution ⇔ product; Parseval; area rules $X(0)=\int x$, $x(0)=\int X$.</li>
+<li>$\Delta t\,\Delta f\ge1/4\pi$: short pulses need wide bandwidth (first null $\approx1/\tau$).</li>
+<li>$R_x\leftrightarrow|X|^2$ (ESD); filters scale spectral density by $|H|^2$.</li>
+<li>DFT: resolution $f_s/N$; zero-padding interpolates; windows trade leakage for resolution; FFT costs $\frac N2\log_2N$ and gives $\approx10\log N$ dB processing gain.</li>
 </ul></div>
 
 <script>
@@ -191,27 +276,15 @@ GB.widget('w-ftpair',{title:'Time width vs bandwidth',h:320,hm:340,controls:[{k:
    const h=hs[p.h], t0=p.t; const a=g.panel(0,2).view(-2.5,3.5,-.1,1.3); a.axes({xl:'τ'}); a.fn(x_,'blue',2,null,500); a.fn(tau=>h(t0-tau),'orange',2,null,500); a.fill(tau=>x_(tau)*h(t0-tau),null,'yellow',.5,500); a.title('x(τ) (blue) and h(t−τ) (orange); product shaded','mute');
    const Y=yfun(p.h), yy=Y.Y.map(v=>v); const ymax=Math.max(1.05,...yy)*1.1; const b=g.panel(1,2).view(-2.5,3.5,-.1,ymax); b.axes({xl:'t'}); b.line(Y.T,Y.Y,'green',2.2); let s=0; taus.forEach(tau=>{ s+=x_(tau)*h(t0-tau)*dt; }); b.dot(t0,s,'yellow',6); b.title('y(t) = (x∗h)(t)','green'); return 'y('+t0.toFixed(2)+') = <b>'+s.toFixed(3)+'</b>'; }}); })();
 
-/* ---------- aliasing ---------- */
-GB.widget('w-alias',{title:'Aliasing: two tones, same samples',h:330,hm:350,controls:[{k:'f',label:'tone frequency f (Hz)',min:.5,max:19,step:.1,value:3},{k:'fs',label:'sampling rate fs (Hz)',min:6,max:14,step:1,value:10}],
- draw(g,p){ const fs=p.fs, f=p.f; const fa=Math.abs(f-Math.round(f/fs)*fs); const v=g.panel(0,2).view(0,2,-1.3,1.3); v.axes({xl:'t (s)',xstep:.25});
-  v.fn(t=>Math.cos(TAU*f*t),'blue',1.6,null,800); if(Math.abs(fa-f)>.05) v.fn(t=>Math.cos(TAU*fa*t),'red',1.6,[6,4],800); for(let n=0;n<=2*fs;n++){ const t=n/fs; v.dot(t,Math.cos(TAU*f*t),'yellow',4); }
-  g.legend([['tone f','blue'],['alias','red']],g.w-170,14);
-  const u=g.panel(1,2).view(-2*fs,2*fs,0,1.4); u.axes({xl:'f (Hz)',noy:true,xstep:fs/2,xticks:[-2,-1,0,1,2].map(k=>[k*fs,String(k*fs)])}); u.rect(-fs/2,0,fs/2,1.4,'green',.12); u.text(0,1.28,'baseband  |f| < fs/2','green','center',11);
-  for(let k=-2;k<=2;k++){ [f,-f].forEach(s=>{ const x=s+k*fs; if(Math.abs(x)<=2*fs) u.stem([x],[k===0?1:.55],k===0?'blue':'mute',2,3); }); }
-  return f<=fs/2?'No aliasing: f = '+f.toFixed(1)+' Hz is below fs/2 = '+(fs/2)+' Hz.':'Aliasing! A '+f.toFixed(1)+' Hz tone looks like <b>'+fa.toFixed(1)+' Hz</b> (|f − n·fs|).'; }});
 
-/* ---------- analytic signal helix ---------- */
-GB.three('w-hilb',{title:'The analytic signal: a corkscrew',h:360,cam:{r:9,theta:.9,phi:.35},spin:.6,anim:true,speed:1,controls:[{k:'t',type:'select',label:'signal',options:[[0,'pure tone'],[1,'AM tone (envelope wobbles)'],[2,'FM tone (frequency wobbles)']],value:1},{k:'a',label:'modulation depth',min:0,max:.9,step:.05,value:.5}],
- setup(o){ const {THREE,scene,C,G3}=o; scene.add(G3.axes(1.8,['Re','time','Im'],C)); const grp=new THREE.Group(); scene.add(grp); return {THREE,G3,C,grp,key:''}; },
- update(s,p,t){ const key=p.t+'_'+p.a; if(s.key===key) return; s.key=key; const {THREE,G3,C}=s; while(s.grp.children.length){ const c=s.grp.children.pop(); c.geometry&&c.geometry.dispose(); }
-  const N=420, pts=[], re=[], im=[]; for(let i=0;i<=N;i++){ const u=i/N*6; let A=1, th=TAU*u; if(p.t===1) A=1+p.a*Math.cos(TAU*u*.2); if(p.t===2) th=TAU*u+9*p.a*Math.sin(TAU*u*.2); const x=A*Math.cos(th), y_=A*Math.sin(th), tt=u-3; pts.push([x,tt*0.6,y_]); re.push([x,tt*0.6,-1.9]); im.push([-1.9,tt*0.6,y_]); }
-  s.grp.add(G3.tube(pts,0xffd866,.025)); s.grp.add(G3.line(re,0xfc6255)); s.grp.add(G3.line(im,0x58c4dd)); return 'height = time, radius = envelope, turning rate = frequency'; }});
-
-/* ---------- IQ plane ---------- */
-GB.widget('w-iq',{title:'Same carrier, two ways to carry a message',h:300,hm:420,anim:true,speed:1,controls:[{k:'mu',label:'AM depth μ',min:0,max:.9,step:.05,value:.5},{k:'beta',label:'phase swing β (rad)',min:0,max:2.5,step:.1,value:0}],
- draw(g,p,t){ const fm=1, fc=14, env=u=>1+p.mu*Math.cos(TAU*fm*u), ph=u=>p.beta*Math.sin(TAU*fm*u); const narrow=g.w<520;
-  const a=narrow?new GB.V(g,36,22,g.w-50,g.h*0.34):new GB.V(g,40,22,g.w*0.58-50,g.h-50), b=narrow?new GB.V(g,40,g.h*0.46,g.w-80,g.h*0.46):new GB.V(g,g.w*0.58+8,20,g.w*0.42-24,g.h-44);
-  const t0=(t*0.25)%1; a.view(0,2,-2.1,2.1); a.axes({xl:'t',ystep:1}); a.fn(u=>env(u)*Math.cos(TAU*fc*u+ph(u)),'blue',1.3,null,1400); a.fn(env,'yellow',1.2,[4,3],300); a.fn(u=>-env(u),'yellow',1.2,[4,3],300); a.vline(2*t0,'green'); a.title('x(t) = a(t) cos(2π fc t + φ(t))');
-  b.view(-2.2,2.2,-2.2,2.2,{equal:true}); b.axes({xstep:1,ystep:1,xl:'I',yl:'Q'}); const xs=[],ys=[]; for(let i=0;i<=200;i++){ const u=i/200; xs.push(env(u)*Math.cos(ph(u))); ys.push(env(u)*Math.sin(ph(u))); } b.line(xs,ys,'mute',1.2,[3,3]);
-  const e=env(t0), q=ph(t0); b.arrow(0,0,e*Math.cos(q),e*Math.sin(q),'yellow',2.2,10); b.dot(e*Math.cos(q),e*Math.sin(q),'green',5); b.title('complex envelope  a(t)e^{jφ(t)}','yellow'); return 'a(t) = '+e.toFixed(2)+', φ(t) = '+q.toFixed(2)+' rad'; }});
+/* ---------- Fourier series synthesis ---------- */
+GB.widget('w-fs',{title:'Fourier series synthesis and Gibbs’ phenomenon',h:420,hm:480,controls:[{k:'w',type:'select',label:'target wave',options:[[0,'square wave (±1)'],[1,'sawtooth'],[2,'triangle'],[3,'pulse train, duty 25%']],value:0},{k:'N',label:'highest harmonic N',min:1,max:61,step:2,value:5,fmt:v=>String(v)}],
+ draw(g,p){ const N=p.N|0, w=p.w;
+  const tgt=[t=>{ const u=t-Math.floor(t); return u<.5?1:-1; },t=>{ const u=t-Math.floor(t+.5); return 2*u; },t=>{ const u=Math.abs(t-Math.floor(t+.5)); return 1-4*u; },t=>{ const u=Math.abs(t-Math.floor(t+.5)); return u<.125?1:0; }][w];
+  const coef=n=>{ if(w===0) return n%2?[0,4/(Math.PI*n)]:[0,0]; if(w===1) return [0,2*(n%2?1:-1)/(Math.PI*n)]; if(w===2) return n%2?[8/(Math.PI*Math.PI*n*n),0]:[0,0]; return [.5*m.sinc(n/4),0]; };
+  const dc=w===3?.25:0; const S=t=>{ let s=dc; for(let n=1;n<=N;n++){ const c=coef(n); s+=c[0]*Math.cos(TAU*n*t)+c[1]*Math.sin(TAU*n*t); } return s; };
+  const a=g.panel(0,2,{pad:{b:12}}).view(-1,1,-1.6,1.6); a.axes({xl:'t / T',ystep:1}); a.fn(tgt,'mute',1.6,[4,3],900); a.fn(S,'yellow',2.2,null,1400); a.title('target (grey) and partial sum with harmonics up to N (yellow)','yellow');
+  const b=g.panel(1,2).view(0,32,-.05,1.15); b.axes({xl:'harmonic n',ystep:.5}); const xs=[],ys=[]; for(let n=0;n<=31;n++){ xs.push(n); if(n===0) ys.push(Math.abs(dc)); else { const c=coef(n); ys.push(n<=N?Math.hypot(c[0],c[1]):0); } } b.stem(xs,ys,'blue',3,3); b.title('amplitude of each harmonic  √(aₙ²+bₙ²)  (DC = a₀)','blue');
+  let mx=-9; for(let i=0;i<=4000;i++){ mx=Math.max(mx,S(-1+2*i/4000)); } const jump=w===3?1:(w===2?0:2); const ov=Math.max(0,mx-1);
+  return 'N = <b>'+N+'</b> · peak of partial sum = <b>'+mx.toFixed(3)+'</b> (target peak 1) · overshoot = <b>'+(100*ov).toFixed(1)+'%</b> of the amplitude'+(jump?' = <b>'+(100*ov/jump).toFixed(1)+'%</b> of the jump (Gibbs: tends to ≈ 9%, it does not vanish as N grows)':' (no jump, so no Gibbs overshoot)'); }});
 </script>

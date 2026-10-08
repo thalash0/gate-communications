@@ -2,7 +2,7 @@
 import puppeteer from 'puppeteer-core'; import path from 'path'; import fs from 'fs'; import { fileURLToPath } from 'url';
 const here = path.dirname(fileURLToPath(import.meta.url)); const root = path.resolve(here, '..');
 const args = process.argv.slice(2); const mobile = args.includes('--mobile'); const shots = args.includes('--shots'); const ids = args.filter(a => !a.startsWith('--'));
-const browser = await puppeteer.launch({ executablePath: '/snap/bin/chromium', headless: 'new', args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] });
+const browser = await puppeteer.launch({ executablePath: process.env.CHROME || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : '/snap/bin/chromium'), headless: 'new', args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] });
 const page = await browser.newPage();
 await page.setViewport(mobile ? { width: 390, height: 800, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { width: 1200, height: 900 });
 const errors = []; page.on('console', m => { if (['error', 'warning'].includes(m.type())) errors.push(m.type() + ': ' + m.text()); }); page.on('pageerror', e => errors.push('PAGEERR: ' + e.message));

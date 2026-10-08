@@ -1,0 +1,241 @@
+<!--meta {"id":"ch03","num":"3","part":"Part I · The Mathematical Toolkit","title":"Sampling, the Hilbert Transform and the Complex Envelope","lede":"Two bridges every communication engineer crosses daily: from continuous waves to numbers (sampling), and from a signal glued to a carrier to the slow baseband movie that carries its information (the complex envelope)."} -->
+
+<div class="box obj"><span class="tag">What you will be able to do after this chapter</span>
+<ul>
+<li>Derive the spectrum of a sampled signal, the sampling theorem and the sinc-interpolation formula, and predict aliases.</li>
+<li>Analyse practical samplers: flat-top sampling, the zero-order-hold droop, clock-jitter SNR, oversampling.</li>
+<li>Find the allowed sampling rates of a <em>bandpass</em> signal (undersampling), the technique behind software-defined radio.</li>
+<li>Derive the Hilbert transform and the analytic signal; compute envelope, instantaneous phase and instantaneous frequency.</li>
+<li>Derive the complex-envelope representation $x(t)=\mathrm{Re}\{\tilde x(t)e^{j2\pi f_ct}\}$, the I/Q demodulator, and the equivalent baseband model of a bandpass system.</li>
+</ul>
+<p><b>Prerequisite:</b> Chapter 2 (transform pairs, convolution/multiplication properties, impulse train).</p></div>
+
+<div class="box story"><span class="tag">History · Nyquist, Kotelnikov, Shannon and a lot of people in between</span>
+<p>Harry Nyquist (Bell Labs, 1928) showed that a telegraph channel of bandwidth $B$ can carry at most $2B$ distinct pulses per second. Vladimir Kotelnikov proved the sampling theorem in 1933 in the Soviet Union, and Claude Shannon gave it its modern form in 1949 (E. T. Whittaker had a version in 1915). In 1937 Alec Reeves, working at the International Telephone and Telegraph laboratories in Paris, conceived pulse-code modulation, sampling speech and sending the samples as numbers; he was thirty years too early, since nobody could build the electronics. Not until 1962 did Bell’s T1 system put 24 digitised telephone calls on one pair of copper wires, and with that the analog world began to retreat.</p></div>
+
+<div class="box real"><span class="tag">Real world · where the sampling theorem lives</span>
+<p>An audio CD stores $44\,100$ samples per second per channel because humans hear up to $\approx20$ kHz, and $44.1>2\times20$ leaves room for a realisable anti-alias filter. Telephone speech (0.3–3.4 kHz) is sampled at $8$ kHz. A Wi-Fi 20 MHz channel is sampled at $20$–$40$ Msps; a cellular base-station receiver digitises an IF band at hundreds of Msps; a software-defined radio samples an entire band of the radio spectrum and then <em>chooses</em> the station in software. All of them are the same theorem.</p></div>
+
+<h2>Sampling: multiplying by a comb</h2>
+<h3>The spectrum of a sampled signal</h3>
+<p>To sample a signal every $T_s$ seconds is, in the idealised mathematical model, to multiply it by the impulse train $\sum_n\delta(t-nT_s)$:
+$$x_s(t)=x(t)\sum_{n=-\infty}^{\infty}\delta(t-nT_s)=\sum_nx(nT_s)\,\delta(t-nT_s).$$
+The comb is periodic, so by Chapter 2 it has a Fourier series with coefficients $c_k=\frac1{T_s}$ for all $k$:
+$\sum_n\delta(t-nT_s)=\frac1{T_s}\sum_ke^{j2\pi kf_st}$ with $f_s=1/T_s$.</p>
+<div class="box derive"><span class="tag">Derivation · replicas of the spectrum</span>
+<p>Multiply $x(t)$ by the series term by term and use the frequency-shift property ($x(t)e^{j2\pi kf_st}\leftrightarrow X(f-kf_s)$):
+$$\boxed{\,X_s(f)=\frac1{T_s}\sum_{k=-\infty}^{\infty}X(f-kf_s)=f_s\sum_{k}X(f-kf_s)\,}$$
+Sampling creates an infinite sequence of <b>copies of the original spectrum, centred at every multiple of $f_s$</b>, each scaled by $f_s$. Everything about sampling follows from this picture.</p></div>
+<ul>
+<li>If $X(f)=0$ for $|f|>W$ and $f_s\ge2W$, the copies <b>do not overlap</b>. An ideal low-pass filter of gain $T_s$ and cut-off between $W$ and $f_s-W$ isolates the $k=0$ copy and returns $x(t)$ exactly. That is the <b>Nyquist–Shannon sampling theorem</b>; $f_s=2W$ is the <i>Nyquist rate</i> and $f_s/2$ the <i>Nyquist (folding) frequency</i>. (Strictly $f_s>2W$ when $X$ contains an impulse at $\pm W$, e.g. $\sin2\pi Wt$ sampled at its zero crossings gives all zeros.)</li>
+<li>If $f_s<2W$ the tails of neighbouring copies overlap and add: <b>aliasing</b>. The overlap cannot be undone afterwards: information is lost. A tone at $f$ becomes indistinguishable from a tone at $|f-nf_s|$, with $n$ chosen to land in $[0,f_s/2]$.</li>
+</ul>
+<div class="widget" id="w-alias">Sample a sinusoid at $f_s=10$ Hz. Increase the tone frequency past 5 Hz (half of $f_s$): the red dots are <em>also</em> the samples of a slower, dashed sinusoid. Once sampled, the two are indistinguishable. This is the wagon-wheel effect in movies.</div>
+
+<h3>Reconstruction: the sinc interpolation formula</h3>
+<div class="box derive"><span class="tag">Derivation · rebuilding the waveform from its samples</span>
+<p>Ideal reconstruction filter: $H_r(f)=T_s\,\rect(f/f_s)$ (passes $|f|<f_s/2$ and restores the factor $f_s$ that sampling introduced). Its impulse response is $h_r(t)=\sinc(f_st)=\sinc(t/T_s)$. The output of the filter driven by $x_s(t)=\sum x(nT_s)\delta(t-nT_s)$ is, by superposition,
+$$x(t)=\sum_{n=-\infty}^{\infty}x(nT_s)\,\sinc\!\Big(\frac{t-nT_s}{T_s}\Big).$$
+Each sample launches a sinc that is 1 at its own instant and 0 at every other sampling instant (a property you will recognise as the Nyquist criterion of Chapter 13). Between samples the sum of overlapping sincs fills in the curve. The sinc is non-causal and infinitely long, so real reconstruction is an approximation; the more you oversample, the less sharp the filter needs to be.</p></div>
+
+<h3>Practical samplers</h3>
+<p><b>Flat-top (sample-and-hold) sampling.</b> Real circuits hold each sample for a time $\tau$ (so the capacitor can be charged and the ADC can convert). This is equivalent to impulse sampling followed by a filter with impulse response $\rect\big((t-\tau/2)/\tau\big)$, i.e. frequency response $H_{\rm ap}(f)=\tau\sinc(f\tau)e^{-j\pi f\tau}$. The spectrum of the baseband copy is therefore multiplied by $\sinc(f\tau)$: an <b>aperture effect</b> (droop) that attenuates the high frequencies. For a zero-order-hold DAC the hold time equals the sample period, $\tau=T_s$, and at the band edge $f=f_s/2$ the droop is $\sinc(\tfrac12)=\tfrac2\pi=0.637=-3.9$ dB. An <b>equaliser</b> with response $1/\sinc(f/f_s)$ (analog, or an FIR filter before the DAC) cancels it.</p>
+<div class="box derive"><span class="tag">Derivation · how clock jitter limits the SNR of an ADC</span>
+<p>Sample a sinusoid $A\sin2\pi ft$ at instants that are late or early by a random $\epsilon$ (rms $\sigma_t$). The sampling error is $\approx\frac{d}{dt}(A\sin2\pi ft)\cdot\epsilon=2\pi fA\cos(2\pi ft)\,\epsilon$, with mean-square value $\frac12(2\pi fA\sigma_t)^2$, against a signal power $\frac12A^2$:
+$$\mathrm{SNR}_{\rm jitter}=\frac1{(2\pi f\sigma_t)^2}\quad\Longleftrightarrow\quad \mathrm{SNR}_{\rm dB}=-20\log_{10}(2\pi f\sigma_t).$$
+The error grows with signal frequency <em>and</em> amplitude, because fast-moving signals are most sensitive to timing. For $\sigma_t=1$ ps, a 100 MHz input gives $64$ dB (about 10.4 bits); $\sigma_t=10$ ps gives only $44$ dB (7 bits). High-speed ADCs and IF-sampling radios live and die by clock quality.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · anti-alias and oversampling</span>
+<p>Any energy above $f_s/2$ at the ADC input aliases onto the band of interest, including <em>noise</em> and interference you did not know was there. So an <b>anti-alias filter</b> always precedes an ADC. Because a steep analog filter is expensive (Chapter 1: the $n=16$ Butterworth example), designers instead <b>oversample</b> by a factor $L=f_s/2W$ so that a gentle filter suffices, then filter and decimate digitally. A bonus: quantisation noise (Chapter 12) of fixed total power is spread over $f_s/2$, and only the fraction $1/L$ falls in the signal band, an SNR gain of $10\log_{10}L$ dB (3 dB per doubling). Sigma–delta converters push this to the extreme: a 1-bit quantiser sampled at a few MHz yields a 16–24-bit audio ADC.</p></div>
+
+<h3>Sampling a bandpass signal: undersampling on purpose</h3>
+<p>The condition $f_s\ge2f_{\max}$ is sufficient but wasteful for a signal that occupies only a band $f_L\le|f|\le f_H$ of width $B=f_H-f_L$. The spectrum then consists of two islands, at $[f_L,f_H]$ and $[-f_H,-f_L]$, and sampling places copies of both islands at every multiple of $f_s$. The copies can interleave without overlap, in which case the signal can be recovered with $f_s$ as small as $2B$.</p>
+<div class="box derive"><span class="tag">Derivation · allowed sampling rates for a bandpass signal</span>
+<p>Divide the frequency axis into <b>Nyquist zones</b> of width $f_s/2$: zone $m$ is $[m\tfrac{f_s}2,(m+1)\tfrac{f_s}2]$, $m=0,1,2,\dots$. Sampling folds every zone onto $[0,f_s/2]$ (zone 0 straight, zone 1 mirrored, zone 2 straight, …) and the negative-frequency mirror of each positive zone onto $[f_s/2,f_s]$. A band lying <em>inside one zone</em> therefore folds without touching its own mirror image, while a band that <em>straddles</em> a multiple of $f_s/2$ is folded over itself. So the signal survives sampling iff for some integer $m\ge0$
+$$m\frac{f_s}2\le f_L\quad\text{and}\quad f_H\le(m+1)\frac{f_s}2.$$
+Write $k=m+1$ and rearrange:
+$$\boxed{\ \frac{2f_H}{k}\ \le\ f_s\ \le\ \frac{2f_L}{k-1},\qquad k=1,2,\dots,\Big\lfloor\frac{f_H}{B}\Big\rfloor\ }$$
+(for $k=1$ the right-hand side is infinite: ordinary low-pass sampling, $f_s\ge2f_H$). The upper limit on $k$ comes from requiring the window to be non-empty, which forces $f_s\ge2B$. The largest $k$ gives the lowest rate; exactly $f_s=2B$ is reachable only if $f_H/B$ is an integer.</p></div>
+<div class="widget" id="w-bps">Choose the band edges of a bandpass signal (blue: positive-frequency island, orange: its negative-frequency mirror) and the sampling rate. The chart shows where all copies fall once folded into the interval $[0,f_s)$. Whenever blue and orange overlap (red), the band is aliased and cannot be recovered. Try the band 30–38 MHz: you will find allowed windows $19$–$20$, $25.3$–$30$, $38$–$60$ and $\ge76$ MHz. Notice how <i>narrow</i> the lowest window is.</div>
+<div class="box ex"><span class="tag">Worked example · the minimum sampling rate for a 30–38 MHz IF signal</span>
+<p>$f_L=30$, $f_H=38$, $B=8$ MHz. $\lfloor f_H/B\rfloor=\lfloor4.75\rfloor=4$. For $k=4$: $\frac{2\cdot38}4=19\le f_s\le\frac{2\cdot30}3=20$ MHz. So $f_s=19$ MHz suffices, compared with $76$ MHz from the low-pass theorem. Check by folding: $30\bmod19=11$, $38\bmod19=0$ (i.e. $19$), so the positive island lands on $[11,19]$ and the negative on $[0,8]$: disjoint ✓. Practical designs avoid the window edges (guard bands, finite filter slopes), so they pick $f_s\approx19.5$ MHz.</p></div>
+<div class="box eng"><span class="tag">Engineering practice · IF sampling and the “$f_s=4f_c$” trick</span>
+<p>A software-defined radio samples a band at its intermediate frequency and does the down-conversion <em>numerically</em>. The cheapest scheme sets $f_s=4f_{\rm IF}$: then $\cos(2\pi f_{\rm IF}nT_s)=\cos(\pi n/2)=1,0,-1,0,\dots$ and $\sin(\pi n/2)=0,1,0,-1,\dots$, so the multiplications by cosine and sine reduce to <em>choosing and sign-flipping alternate samples</em>: no multiplier at all. The in-phase samples are $x[0],-x[2],x[4],\dots$ and the quadrature samples $-x[1],x[3],-x[5],\dots$. A subsequent low-pass/decimate stage rejects the $2f_{\rm IF}$ images (the demodulation of the next section).</p></div>
+
+<h2>The Hilbert transform and the analytic signal</h2>
+<p>The Hilbert transform $\hat x(t)$ of a signal is what you get when you <strong>delay every frequency component by a quarter of a cycle ($-90^\circ$)</strong> without changing its amplitude. In the frequency domain:
+$$\hat X(f)=-j\,\sgn(f)\,X(f),\qquad H(f)=-j\sgn(f)=\begin{cases}-j,&f>0\\+j,&f<0\end{cases}$$
+(a phase of $-90^\circ$ at positive frequencies and $+90^\circ$ at negative frequencies, which keeps the output real).</p>
+<div class="box derive"><span class="tag">Derivation · its impulse response is $1/\pi t$</span>
+<p>Chapter 2 gave $\sgn(t)\leftrightarrow\frac1{j\pi f}$. By duality ($X(t)\leftrightarrow x(-f)$), $\frac1{j\pi t}\leftrightarrow\sgn(-f)=-\sgn(f)$. Multiply by $j$: $\frac1{\pi t}\leftrightarrow-j\,\sgn(f)$. Hence
+$$\hat x(t)=x(t)*\frac1{\pi t}=\frac1\pi\,\mathrm{P.V.}\!\int_{-\infty}^{\infty}\frac{x(\tau)}{t-\tau}\,d\tau.$$
+The impulse response is non-causal and decays slowly ($1/t$), so an ideal Hilbert transformer cannot be built exactly; FIR approximations with an odd symmetric impulse response are used in practice (a type III linear-phase filter, with group delay of half its length).</p></div>
+<p>Immediate consequences, all easy to verify with $H(f)=-j\sgn f$:</p>
+<ul>
+<li>$\widehat{\cos2\pi f_0t}=\sin2\pi f_0t$ and $\widehat{\sin2\pi f_0t}=-\cos2\pi f_0t$ (for $f_0>0$).</li>
+<li>Applying it twice gives $-1$: $\hat{\hat x}=-x$ (since $(-j\sgn f)^2=-1$).</li>
+<li>$|H|=1$ except at $f=0$: <b>it preserves energy</b>, $\int\hat x^2=\int x^2$; and $x$ is orthogonal to $\hat x$: $\int x\hat x\,dt=\int j\sgn(f)|X(f)|^2df=0$ (odd integrand).</li>
+</ul>
+<h3>The analytic signal: a real signal without its redundant negative half</h3>
+<p>A real signal wastes half its spectrum on negative frequencies, which are mirror images of the positive ones. Build the <b>analytic signal</b> (pre-envelope)
+$$x_+(t)=x(t)+j\hat x(t)\quad\Longrightarrow\quad X_+(f)=X(f)\,[1+\sgn f]=2X(f)\,u(f).$$
+The negative frequencies cancel and the positive ones double. For $x=\cos2\pi f_0t$, $x_+=\cos+j\sin=e^{j2\pi f_0t}$: a point spinning on a circle, i.e. a <b>helix</b> when drawn against time. The real signal is the helix’s shadow on the real axis, $\hat x$ its shadow on the imaginary axis. Write $x_+(t)=a(t)e^{j\theta(t)}$ in polar form:
+$$\text{envelope }a(t)=|x_+(t)|=\sqrt{x^2+\hat x^2},\quad\text{phase }\theta(t)=\arg x_+,\quad\text{instantaneous frequency }f_i(t)=\frac1{2\pi}\frac{d\theta}{dt}.$$
+If the amplitude of the cosine wobbles (AM) the helix’s radius wobbles; if its frequency wobbles (FM) the helix tightens and loosens. These are <em>definitions</em> that make “instantaneous amplitude and frequency” precise for any real signal, and they are the soul of the next chapters.</p>
+<div class="widget" id="w-hilb">The analytic signal $x_+(t)$ as a corkscrew in (Re, Im, time). Its shadow on the red–time wall is $x(t)$; its shadow on the blue–time wall is $\hat x(t)$. Choose a tone, an AM tone, or an FM tone, and drag to rotate.</div>
+<p>Single-sideband (SSB) modulation is produced by keeping only $X_+(f)$ (or its conjugate) and shifting it: $s_{\rm SSB}(t)=m(t)\cos2\pi f_ct\mp\hat m(t)\sin2\pi f_ct$. Chapter 6 proves it.</p>
+
+<h2>Bandpass signals and the complex envelope</h2>
+<p>A transmitted signal lives near a carrier frequency $f_c$: it is a <b>bandpass</b> (narrowband) signal if its bandwidth is much smaller than $f_c$. Carrier cycles are fast and carry no information by themselves; what matters is how the amplitude and phase change slowly <em>relative</em> to the carrier. The complex envelope isolates exactly that.</p>
+<div class="box derive"><span class="tag">Derivation · from analytic signal to I/Q</span>
+<ol class="steps">
+<li>Take the bandpass real signal $x(t)$, spectrum around $\pm f_c$. Form $x_+(t)$: spectrum $2X(f)u(f)$ around $+f_c$ only.</li>
+<li>Shift it to baseband: $\tilde x(t)=x_+(t)\,e^{-j2\pi f_ct}$, so $\tilde X(f)=X_+(f+f_c)=2X(f+f_c)u(f+f_c)$. This is a <em>low-pass</em> complex signal, the <b>complex envelope</b>.</li>
+<li>Undo the shift and keep the real part: $\boxed{x(t)=\mathrm{Re}\{\tilde x(t)\,e^{j2\pi f_ct}\}}$.</li>
+<li>Write $\tilde x=x_I+jx_Q=a(t)e^{j\phi(t)}$. Expanding: $x(t)=x_I\cos2\pi f_ct-x_Q\sin2\pi f_ct=a(t)\cos(2\pi f_ct+\phi(t))$. Explicitly, from $x_+=x+j\hat x$:
+$$x_I=x\cos2\pi f_ct+\hat x\sin2\pi f_ct,\qquad x_Q=\hat x\cos2\pi f_ct-x\sin2\pi f_ct.$$</li>
+</ol></div>
+<p>$x_I$ (“in-phase”) multiplies the cosine and $x_Q$ (“quadrature”) the sine: the signal is a <b>sum of two amplitude-modulated carriers in phase quadrature</b>, which are orthogonal over a carrier period. That is why two independent messages can share one carrier (QAM, Chapters 6 and 15). The complex envelope is the baseband “movie”; the carrier is just the projector’s spinning light bulb.</p>
+<ul>
+<li><strong>AM</strong>: $\phi=0$, $a(t)=A_c[1+\mu m(t)]$: the tip moves along a radial line.</li>
+<li><strong>PM/FM</strong>: $a$ constant, $\phi(t)$ varies: the tip moves on a circle.</li>
+<li><strong>QPSK/QAM</strong>: the tip jumps between a few points of the plane: the “constellation”.</li>
+</ul>
+<div class="widget" id="w-iq">Left: the passband waveform. Right: the tip of $\tilde x(t)$ in the I–Q plane (with its trail). Increasing $\mu$ makes the tip stretch radially; increasing $\beta$ makes it swing in angle. Same carrier, two ways to hide information.</div>
+
+<h3>The I/Q demodulator</h3>
+<div class="box derive"><span class="tag">Derivation · recovering $x_I$ and $x_Q$ with two multipliers and two filters</span>
+<p>Multiply $x(t)=x_I\cos\omega_ct-x_Q\sin\omega_ct$ by $2\cos\omega_ct$ and by $-2\sin\omega_ct$ and use the product-to-sum identities:
+$$2x\cos\omega_ct=x_I(1+\cos2\omega_ct)-x_Q\sin2\omega_ct\ \xrightarrow{\rm LPF}\ x_I,$$
+$$-2x\sin\omega_ct=-x_I\sin2\omega_ct+x_Q(1-\cos2\omega_ct)\ \xrightarrow{\rm LPF}\ x_Q.$$
+The terms at $2f_c$ are removed by the low-pass filters (bandwidth $\ge$ the message bandwidth, $\ll2f_c$). This pair of mixers and filters is the front end of every modern receiver: the output is the complex baseband signal $x_I+jx_Q$, ready for the ADC. If the local oscillator has a phase error $\varphi$, the outputs are rotated: $\tilde x\to\tilde xe^{-j\varphi}$ (a rotation of the constellation); a frequency error $\Delta f$ makes the constellation spin at $\Delta f$ turns per second (Chapter 16).</p></div>
+<div class="box derive"><span class="tag">Power and energy of bandpass signals</span>
+<p>By Parseval, $\int|x_+|^2dt=\int4|X|^2u(f)\,df=2E_x$ (only the positive half of the symmetric $|X|^2$ survives, doubled in amplitude, quadrupled in power), and $|\tilde x|=|x_+|$, so
+$$E_x=\tfrac12\int|\tilde x(t)|^2dt,\qquad P_x=\tfrac12\,\overline{|\tilde x(t)|^2}=\tfrac12\overline{x_I^2+x_Q^2}.$$
+<b>A carrier $A\cos2\pi f_ct$ has complex envelope $A$ and power $A^2/2$.</b> Forget the $\tfrac12$ and every power in the next chapters is off by 2.</p></div>
+
+<h3>Bandpass systems have equivalent baseband models</h3>
+<div class="box derive"><span class="tag">Derivation · a bandpass filter acting on a bandpass signal</span>
+<p>Let $y=x*h$ with real bandpass $h$. In the frequency domain $Y=HX$, and for positive frequencies $Y_+(f)=2Y(f)u(f)=H(f)\cdot2X(f)u(f)=H(f)X_+(f)$. Shift by $f_c$: $\tilde Y(f)=H(f+f_c)\tilde X(f)$ for $f>-f_c$. Defining the <b>equivalent low-pass frequency response</b> $H_l(f)=H(f+f_c)\,u(f+f_c)$,
+$$\tilde Y(f)=H_l(f)\,\tilde X(f).$$
+The whole bandpass system acts on the complex envelope as an ordinary (complex) low-pass filter with the same shape, moved to $f=0$. Real bandpass simulation therefore needs only a sample rate set by the message bandwidth, not by the carrier frequency: simulating a 2.4 GHz Wi-Fi link takes tens of MHz of sample rate rather than billions. If $H_l$ is not conjugate-symmetric (i.e. $|H|$ not symmetric about $f_c$, as with an SSB filter or a multipath channel), $h_l$ is complex and mixes $x_I$ and $x_Q$: I/Q crosstalk. If $H_l(f)=|H_l|e^{-j2\pi ft_g}$ (linear phase) then $\tilde y(t)=|H_l|\tilde x(t-t_g)$: the envelope is simply delayed, which is exactly the group-delay result of Chapter 1.</p></div>
+
+<div class="box eng"><span class="tag">Engineering practice · direct conversion and I/Q imbalance</span>
+<p>“Zero-IF” (direct-conversion) receivers are the standard in phones: one local oscillator at $f_c$ drives two mixers in quadrature, two low-pass filters and two ADCs deliver $x_I$ and $x_Q$. Compared with a superhet (Chapter 8) there are no image filters or IF stages, so the chip is tiny. The price is <b>I/Q imbalance</b>: if the two arms have gain mismatch $\varepsilon$ and phase error $\varphi$, the output contains the desired $\tilde x$ plus an unwanted mirror-image copy of strength $\approx\frac12\sqrt{\varepsilon^2+\varphi^2}$; a $1^\circ$ phase error alone gives an image at $20\log(\tfrac12\cdot0.0175)=-41$ dBc, which is why high-order QAM (Chapter 15) demands calibration. The same maths explains “DC offset” and LO leakage in these receivers.</p></div>
+
+<h2>Practice</h2>
+<p class="pset">Set A · Concept checks</p>
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A signal bandlimited to $W$ is sampled at $f_s=1.5W$. The sampled spectrum shows that
+<ol class="opts"><li>reconstruction is still perfect with a sharp enough filter</li><li>the signal energy is lost</li><li>copies overlap in the band $[f_s-W,\,W]$, so frequencies there are aliased</li><li>only the DC component is affected</li></ol>
+<div class="sol"><p>Copies are centred at multiples of $f_s=1.5W$ and extend $\pm W$. The $k=0$ copy occupies $[-W,W]$ and the $k=1$ copy $[0.5W,2.5W]$: overlap on $[0.5W,W]=[f_s-W,W]$. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="msq" data-ans="A,B,D" data-marks="1" data-src="Original">
+Select all true statements about the Hilbert transform.
+<ol class="opts"><li>$\widehat{\cos\omega t}=\sin\omega t$.</li><li>It preserves the energy of a signal.</li><li>It is a causal operation.</li><li>$\hat{\hat x}=-x$.</li></ol>
+<div class="sol"><p>Its impulse response $1/\pi t$ is two-sided, so it is not causal (C false). A, B, D are shown above.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="B" data-marks="1" data-src="Original">
+The complex envelope of $x(t)=10\cos(2\pi f_ct+30^\circ)$ is
+<ol class="opts"><li>$10$</li><li>$10e^{j30^\circ}$</li><li>$5e^{j30^\circ}$</li><li>$10e^{-j30^\circ}$</li></ol>
+<div class="sol"><p>$x=\mathrm{Re}\{10e^{j30^\circ}e^{j2\pi f_ct}\}$ with the convention $x=\mathrm{Re}\{\tilde xe^{j2\pi f_ct}\}$. <b>(B)</b>. Its power is $\frac12\cdot10^2=50$ W.</p></div></div>
+
+<p class="pset">Set B · Numerical practice</p>
+<div class="prob" data-type="nat" data-ans="3" data-tol="0.01" data-marks="1" data-src="Original">
+A 7 kHz sinusoid is sampled at 10 kHz and reconstructed with an ideal low-pass filter of cut-off 5 kHz. The frequency (in kHz) of the reconstructed sinusoid is ______.
+<div class="sol"><p>Alias: $|7-10|=\mathbf3$ kHz.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="Original">
+A signal $m(t)$ is bandlimited to 4 kHz. The minimum sampling rate that allows $m^2(t)$ to be recovered from its samples is
+<ol class="opts"><li>4 kHz</li><li>8 kHz</li><li>16 kHz</li><li>32 kHz</li></ol>
+<div class="sol"><p>Squaring doubles the bandwidth (convolution of $M$ with itself: support $[-8,8]$ kHz), so Nyquist rate $=16$ kHz.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="19" data-tol="0.05" data-marks="2" data-src="Original">
+A bandpass signal occupies 30 MHz to 38 MHz. The minimum sampling rate (MHz) that permits perfect reconstruction is ______.
+<div class="sol"><p>$k_{\max}=\lfloor38/8\rfloor=4$: $2f_H/k=19\le f_s\le2f_L/(k-1)=20$. Minimum: <b>19 MHz</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="44" data-tol="0.3" data-marks="2" data-src="Original">
+An ADC samples a 100 MHz sine wave with an rms clock jitter of 10 ps. The jitter-limited SNR in dB is ______.
+<div class="sol"><p>$\mathrm{SNR}=-20\log_{10}(2\pi f\sigma_t)=-20\log_{10}(2\pi\cdot10^8\cdot10^{-11})=-20\log_{10}(6.283\times10^{-3})=\mathbf{44}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="3.92" data-tol="0.05" data-marks="1" data-src="Original">
+A DAC with a zero-order hold (hold time $=T_s$) produces droop at the band edge $f=f_s/2$. The magnitude of the droop in dB is ______.
+<div class="sol"><p>$\sinc(\tfrac12)=\frac{\sin(\pi/2)}{\pi/2}=\frac2\pi=0.6366\Rightarrow-20\log_{10}0.6366=\mathbf{3.92}$ dB.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="12.5" data-tol="0.05" data-marks="1" data-src="Original">
+$x(t)=5\cos(2\pi\cdot1000t+\pi/4)$ volts across $1\,\Omega$. Its complex envelope is $\tilde x=5e^{j\pi/4}$. The average power of $x(t)$ in watts is ______.
+<div class="sol"><p>$\tfrac12|\tilde x|^2=\tfrac12\cdot25=\mathbf{12.5}$ W.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="A" data-marks="1" data-src="Original">
+The Hilbert transform of $x(t)=\cos(\omega t)+\sin(3\omega t)$ is
+<ol class="opts"><li>$\sin(\omega t)-\cos(3\omega t)$</li><li>$\sin(\omega t)+\cos(3\omega t)$</li><li>$-\sin(\omega t)-\cos(3\omega t)$</li><li>$\cos(\omega t)-\sin(3\omega t)$</li></ol>
+<div class="sol"><p>$\widehat{\cos}=\sin$, $\widehat{\sin}=-\cos$. So $\sin\omega t-\cos3\omega t$.</p></div></div>
+
+<p class="pset">Set C · Exam-style problems</p>
+<div class="prob" data-type="nat" data-ans="10" data-tol="0.5" data-marks="1" data-src="GATE 2014 · Set 3 · Q.19">
+A modulated signal is $y(t)=m(t)\cos(40000\pi t)$, where the baseband signal $m(t)$ has frequency components less than 5 kHz only. The minimum required rate (in kHz) at which $y(t)$ should be sampled to recover $m(t)$ is ______.
+<div class="sol"><p>The carrier is $20$ kHz; the signal occupies $15$–$25$ kHz. If we sample at $f_s=10$ kHz, $t=n/10^4$ s and $\cos(40000\pi n/10^4)=\cos(4\pi n)=1$ for every $n$, so $y[n]=m(nT_s)$: the samples <em>are</em> samples of $m$ at 10 kHz $=2\times5$ kHz, which is the Nyquist rate of $m$. Answer <b>10</b> (key 9.5–10.5). Contrast: to reconstruct $y(t)$ itself you would apply the bandpass rule above: band 15–25 kHz, $B=10$, $k_{\max}=2$: $25\le f_s\le30$ kHz. The question says “to recover $m(t)$”, and uses the fact that the carrier is known and coherent.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="8" data-tol="0.05" data-marks="2" data-src="GATE 2018 · EC (PYQ book)">
+The signal $4\,\sinc(2t)$ is applied to a Hilbert transformer, giving $y(t)$. Here $\sinc(x)=\sin(\pi x)/(\pi x)$. The value of $\int_{-\infty}^{\infty}y^2(t)\,dt$ is ______.
+<div class="sol"><p>The Hilbert transformer has $|H(f)|=1$ for all $f\ne0$: it changes phases but not magnitudes, so <b>it preserves energy</b>. $x(t)=4\sinc(2t)\leftrightarrow X(f)=2\rect(f/2)$, energy $=\int_{-1}^{1}2^2df=\mathbf8$.</p></div></div>
+
+<div class="prob" data-type="mcq" data-ans="C" data-marks="1" data-src="GATE 2015 · EC (PYQ book)">
+Let $m(t)$ have bandwidth much smaller than $f_c$ and let $\hat m(t)$ be its Hilbert transform. The signal $s(t)=m(t)\cos2\pi f_ct+\hat m(t)\sin2\pi f_ct$ is a
+<ol class="opts"><li>high-pass signal</li><li>low-pass signal</li><li>band-pass signal</li><li>notch (band-stop) signal</li></ol><div class="sol"><p>$m\cos\omega_ct+\hat m\sin\omega_ct$ is exactly the lower-sideband SSB signal of Chapter 6: all its energy lies in a band just below $f_c$. A signal concentrated around $f_c\gg W$ is a band-pass signal. <b>(C)</b>.</p></div></div>
+
+<div class="prob" data-type="nat" data-ans="1.414" data-tol="0.01" data-marks="2" data-src="Original (GATE-style)">
+$x(t)=\cos(2\pi f_ct)+\sin(2\pi f_ct)$ (a single carrier with phase offset). Its envelope $a(t)=\sqrt{x^2+\hat x^2}$ is a constant equal to ______.
+<div class="sol"><p>$x=\sqrt2\cos(2\pi f_ct-45^\circ)$, whose Hilbert transform is $\sqrt2\sin(2\pi f_ct-45^\circ)$. Envelope $=\sqrt{2\cos^2+2\sin^2}=\mathbf{\sqrt2=1.414}$.</p></div></div>
+
+<div class="summary"><h3>Chapter 3 in one breath</h3>
+<ul>
+<li>Sampling $=$ multiplication by a comb ⇒ $X_s(f)=f_s\sum_kX(f-kf_s)$: spectral copies at every $kf_s$. No overlap iff $f_s>2W$. Aliases at $|f-nf_s|$. Product widens (bandwidths add); $m^2$ needs $4W$.</li>
+<li>Reconstruction: ideal LPF = sinc interpolation, $x(t)=\sum x(nT_s)\sinc((t-nT_s)/T_s)$. Hold circuits droop as $\sinc(f/f_s)$; jitter limits SNR to $-20\log(2\pi f\sigma_t)$; oversampling relaxes the anti-alias filter and gains $10\log L$ dB.</li>
+<li>Bandpass sampling: $\frac{2f_H}k\le f_s\le\frac{2f_L}{k-1}$, $k\le\lfloor f_H/B\rfloor$; minimum approaches $2B$.</li>
+<li>Hilbert: $H=-j\sgn f$, $h=1/\pi t$, energy-preserving, $\hat{\hat x}=-x$. Analytic signal $x_+=x+j\hat x$, spectrum $2Xu(f)$; envelope $\sqrt{x^2+\hat x^2}$; $f_i=\frac1{2\pi}\dot\theta$.</li>
+<li>Bandpass: $x=\mathrm{Re}\{\tilde xe^{j2\pi f_ct}\}=x_I\cos-x_Q\sin$; recover with $2\cos$ and $-2\sin$ mixers + LPFs; power $\frac12\overline{|\tilde x|^2}$; bandpass systems act as $H(f+f_c)$ on $\tilde x$.</li>
+</ul></div>
+
+<script>
+const m=GB.m, TAU=2*Math.PI;
+/* ---------- aliasing ---------- */
+GB.widget('w-alias',{title:'Aliasing: two tones, same samples',h:330,hm:350,controls:[{k:'f',label:'tone frequency f (Hz)',min:.5,max:19,step:.1,value:3},{k:'fs',label:'sampling rate fs (Hz)',min:6,max:14,step:1,value:10}],
+ draw(g,p){ const fs=p.fs, f=p.f; const fa=Math.abs(f-Math.round(f/fs)*fs); const v=g.panel(0,2).view(0,2,-1.3,1.3); v.axes({xl:'t (s)',xstep:.25});
+  v.fn(t=>Math.cos(TAU*f*t),'blue',1.6,null,800); if(Math.abs(fa-f)>.05) v.fn(t=>Math.cos(TAU*fa*t),'red',1.6,[6,4],800); for(let n=0;n<=2*fs;n++){ const t=n/fs; v.dot(t,Math.cos(TAU*f*t),'yellow',4); }
+  g.legend([['tone f','blue'],['alias','red']],g.w-170,14);
+  const u=g.panel(1,2).view(-2*fs,2*fs,0,1.4); u.axes({xl:'f (Hz)',noy:true,xstep:fs/2,xticks:[-2,-1,0,1,2].map(k=>[k*fs,String(k*fs)])}); u.rect(-fs/2,0,fs/2,1.4,'green',.12); u.text(0,1.28,'baseband  |f| < fs/2','green','center',11);
+  for(let k=-2;k<=2;k++){ [f,-f].forEach(s=>{ const x=s+k*fs; if(Math.abs(x)<=2*fs) u.stem([x],[k===0?1:.55],k===0?'blue':'mute',2,3); }); }
+  return f<=fs/2?'No aliasing: f = '+f.toFixed(1)+' Hz is below fs/2 = '+(fs/2)+' Hz.':'Aliasing! A '+f.toFixed(1)+' Hz tone looks like <b>'+fa.toFixed(1)+' Hz</b> (|f − n·fs|).'; }});
+
+/* ---------- analytic signal helix ---------- */
+GB.three('w-hilb',{title:'The analytic signal: a corkscrew',h:360,cam:{r:9,theta:.9,phi:.35},spin:.6,anim:true,speed:1,controls:[{k:'t',type:'select',label:'signal',options:[[0,'pure tone'],[1,'AM tone (envelope wobbles)'],[2,'FM tone (frequency wobbles)']],value:1},{k:'a',label:'modulation depth',min:0,max:.9,step:.05,value:.5}],
+ setup(o){ const {THREE,scene,C,G3}=o; scene.add(G3.axes(1.8,['Re','time','Im'],C)); const grp=new THREE.Group(); scene.add(grp); return {THREE,G3,C,grp,key:''}; },
+ update(s,p,t){ const key=p.t+'_'+p.a; if(s.key===key) return; s.key=key; const {THREE,G3,C}=s; while(s.grp.children.length){ const c=s.grp.children.pop(); c.geometry&&c.geometry.dispose(); }
+  const N=420, pts=[], re=[], im=[]; for(let i=0;i<=N;i++){ const u=i/N*6; let A=1, th=TAU*u; if(p.t===1) A=1+p.a*Math.cos(TAU*u*.2); if(p.t===2) th=TAU*u+9*p.a*Math.sin(TAU*u*.2); const x=A*Math.cos(th), y_=A*Math.sin(th), tt=u-3; pts.push([x,tt*0.6,y_]); re.push([x,tt*0.6,-1.9]); im.push([-1.9,tt*0.6,y_]); }
+  s.grp.add(G3.tube(pts,0xffd866,.025)); s.grp.add(G3.line(re,0xfc6255)); s.grp.add(G3.line(im,0x58c4dd)); return 'height = time, radius = envelope, turning rate = frequency'; }});
+
+/* ---------- IQ plane ---------- */
+GB.widget('w-iq',{title:'Same carrier, two ways to carry a message',h:300,hm:420,anim:true,speed:1,controls:[{k:'mu',label:'AM depth μ',min:0,max:.9,step:.05,value:.5},{k:'beta',label:'phase swing β (rad)',min:0,max:2.5,step:.1,value:0}],
+ draw(g,p,t){ const fm=1, fc=14, env=u=>1+p.mu*Math.cos(TAU*fm*u), ph=u=>p.beta*Math.sin(TAU*fm*u); const narrow=g.w<520;
+  const a=narrow?new GB.V(g,36,22,g.w-50,g.h*0.34):new GB.V(g,40,22,g.w*0.58-50,g.h-50), b=narrow?new GB.V(g,40,g.h*0.46,g.w-80,g.h*0.46):new GB.V(g,g.w*0.58+8,20,g.w*0.42-24,g.h-44);
+  const t0=(t*0.25)%1; a.view(0,2,-2.1,2.1); a.axes({xl:'t',ystep:1}); a.fn(u=>env(u)*Math.cos(TAU*fc*u+ph(u)),'blue',1.3,null,1400); a.fn(env,'yellow',1.2,[4,3],300); a.fn(u=>-env(u),'yellow',1.2,[4,3],300); a.vline(2*t0,'green'); a.title('x(t) = a(t) cos(2π fc t + φ(t))');
+  b.view(-2.2,2.2,-2.2,2.2,{equal:true}); b.axes({xstep:1,ystep:1,xl:'I',yl:'Q'}); const xs=[],ys=[]; for(let i=0;i<=200;i++){ const u=i/200; xs.push(env(u)*Math.cos(ph(u))); ys.push(env(u)*Math.sin(ph(u))); } b.line(xs,ys,'mute',1.2,[3,3]);
+  const e=env(t0), q=ph(t0); b.arrow(0,0,e*Math.cos(q),e*Math.sin(q),'yellow',2.2,10); b.dot(e*Math.cos(q),e*Math.sin(q),'green',5); b.title('complex envelope  a(t)e^{jφ(t)}','yellow'); return 'a(t) = '+e.toFixed(2)+', φ(t) = '+q.toFixed(2)+' rad'; }});
+
+/* ---------- bandpass sampling ---------- */
+GB.widget('w-bps',{title:'Bandpass sampling: where do the copies land?',h:300,hm:340,controls:[{k:'fl',label:'lower band edge f_L (MHz)',min:10,max:60,step:1,value:30},{k:'B',label:'bandwidth B (MHz)',min:2,max:14,step:1,value:8},{k:'fs',label:'sampling rate f_s (MHz)',min:4,max:90,step:.25,value:19}],
+ draw(g,p){ const fl=p.fl, fh=p.fl+p.B, fs=p.fs, B=p.B;
+  // fold positive island [fl,fh] and negative island [-fh,-fl] into [0,fs)
+  const fold=f=>{ let r=f%fs; if(r<0) r+=fs; return r; };
+  const M=4000; let overlap=false; const P=new Array(M).fill(0), Nn=new Array(M).fill(0);
+  for(let i=0;i<M;i++){ const f=fl+(fh-fl)*i/(M-1); P[Math.min(M-1,Math.floor(fold(f)/fs*M))]=1; Nn[Math.min(M-1,Math.floor(fold(-f)/fs*M))]=1; }
+  let cnt=0; for(let i=0;i<M;i++){ if(P[i]&&Nn[i]) cnt++; } overlap=cnt>6;
+  const v=g.panel(0,2).view(0,fs,0,1.3); v.axes({xl:'folded frequency (MHz)',noy:true,ystep:1,xstep:fs/8});
+  for(let i=0;i<M;i++){ const x0=i/M*fs; if(P[i]&&Nn[i]) v.rect(x0,0,x0+fs/M*1.5,1.0,'red',.9); else if(P[i]) v.rect(x0,0,x0+fs/M*1.5,1.0,'blue',.8); else if(Nn[i]) v.rect(x0,0,x0+fs/M*1.5,1.0,'orange',.8); }
+  v.title('all copies of the band folded into [0, fs):  blue = positive island, orange = negative island, red = overlap','mute');
+  const u=g.panel(1,2).view(0,100,0,1.3); u.axes({xl:'f (MHz)',noy:true,xstep:10}); u.rect(fl,0,fh,1,'blue',.5); u.text((fl+fh)/2,1.15,'signal band '+fl+'–'+fh,'blue','center',11);
+  for(let k=1;k*fs<100;k++) u.vline(k*fs,'mute',[3,3],1);
+  u.title('original band on the f axis; dotted lines at multiples of fs','mute');
+  const kmax=Math.floor(fh/B+1e-9); const wins=[]; for(let k=1;k<=kmax;k++){ const lo=2*fh/k, hi=k>1?2*fl/(k-1):Infinity; if(lo<=hi) wins.push('k='+k+': '+lo.toFixed(2)+(hi===Infinity?' and up':'–'+hi.toFixed(2))); }
+  return (overlap?'<b style="color:#fc6255">ALIASED</b> — copies overlap.':'<b style="color:#83c167">OK</b> — no overlap, the band can be recovered.')+' Allowed windows (MHz): '+(wins.length?wins.join(' · '):'none')+' · low-pass rule 2f_H = '+(2*fh)+' MHz'; }});
+</script>

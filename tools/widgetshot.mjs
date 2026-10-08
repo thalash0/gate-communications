@@ -2,7 +2,7 @@
 import puppeteer from 'puppeteer-core'; import path from 'path'; import fs from 'fs'; import { fileURLToPath } from 'url';
 const here = path.dirname(fileURLToPath(import.meta.url)); const root = path.resolve(here, '..');
 const a = process.argv.slice(2); const mobile = a.includes('--mobile'); const [ch, ...ws] = a.filter(x => !x.startsWith('--'));
-const browser = await puppeteer.launch({ executablePath: '/snap/bin/chromium', headless: 'new', args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const browser = await puppeteer.launch({ executablePath: process.env.CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', headless: 'new', args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage(); await page.setViewport(mobile ? { width: 390, height: 800, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { width: 1100, height: 900 });
 page.on('pageerror', e => console.log('PAGEERR', e.message)); page.on('console', m => { if (m.type() === 'error') console.log('console:', m.text().slice(0, 200)); });
 await page.goto('file://' + path.join(root, 'dist/gate-comm-book.html') + '#' + ch); await new Promise(r => setTimeout(r, 800));
